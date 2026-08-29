@@ -15,13 +15,13 @@
     <!-- Floating Sweet Gestures (Hearts) -->
     <div class="heart-container">
         <div class="heart-floating delay-1"></div>
-        <div class="heart-floating delay-2"></div>
+        <div class="heart-floating heart-maroon delay-2"></div>
         <div class="heart-floating delay-3"></div>
-        <div class="heart-floating delay-4"></div>
+        <div class="heart-floating heart-maroon delay-4"></div>
         <div class="heart-floating delay-5"></div>
-        <div class="heart-floating delay-1" style="left: 20%; animation-delay: 7s;"></div>
+        <div class="heart-floating heart-maroon delay-1" style="left: 20%; animation-delay: 7s;"></div>
         <div class="heart-floating delay-2" style="left: 40%; animation-delay: 9s;"></div>
-        <div class="heart-floating delay-3" style="left: 60%; animation-delay: 2s;"></div>
+        <div class="heart-floating heart-maroon delay-3" style="left: 60%; animation-delay: 2s;"></div>
         <div class="heart-floating delay-4" style="left: 80%; animation-delay: 14s;"></div>
     </div>
 
