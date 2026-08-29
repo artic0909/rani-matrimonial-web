@@ -5,13 +5,13 @@
 @section('content')
 
 <!-- Hero Section -->
-<section class="relative min-h-[85vh] flex flex-col justify-end overflow-hidden pb-16">
+<section class="relative min-h-screen flex flex-col justify-end overflow-hidden pb-16 md:pb-24">
     <!-- Background Image -->
-    <div class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat" style="background-image: url('{{ asset('img/indexbanner.jpg') }}');"></div>
+    <div class="absolute inset-0 z-0 bg-cover bg-top bg-no-repeat" style="background-image: url('{{ asset('img/hero.png') }}');"></div>
     
-    <!-- Maroon/Gold Gradient Overlay -->
-    <div class="absolute inset-0 z-0 bg-gradient-to-t from-rani-dark/95 via-rani-primary-dark/70 to-transparent"></div>
-    <div class="absolute inset-0 z-0 bg-rani-primary-dark/40 mix-blend-multiply"></div>
+    <!-- Maroon/Gold Gradient Overlay (Reduced Opacity) -->
+    <div class="absolute inset-0 z-0 bg-gradient-to-t from-rani-dark/90 via-rani-primary-dark/40 to-transparent"></div>
+    <div class="absolute inset-0 z-0 bg-rani-primary-dark/20 mix-blend-multiply"></div>
 
     <!-- Floating Sweet Gestures (Hearts) -->
     <div class="heart-container">
@@ -41,8 +41,8 @@
         </div>
 
         <!-- Horizontal Search Widget (Shaadi Style) -->
-        <div class="w-full bg-black/60 backdrop-blur-md p-6 rounded-xl border border-white/10 shadow-2xl var(--animate-fade-in-up)" style="animation-delay: 0.4s;">
-            <form action="#" method="GET" class="flex flex-col lg:flex-row items-end gap-4 lg:gap-3 justify-center">
+        <div class="w-full bg-black/60 backdrop-blur-md p-5 sm:p-6 rounded-xl border border-white/10 shadow-2xl var(--animate-fade-in-up)" style="animation-delay: 0.4s;">
+            <form action="#" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-row items-end gap-4 lg:gap-3 justify-center">
                 
                 <!-- Looking for -->
                 <div class="w-full lg:w-48 text-left">
@@ -59,8 +59,8 @@
                 </div>
 
                 <!-- Aged -->
-                <div class="w-full lg:w-auto text-left flex items-end gap-3">
-                    <div class="w-24">
+                <div class="w-full lg:w-auto text-left flex items-end gap-3 sm:col-span-2 lg:col-span-1">
+                    <div class="flex-1 lg:w-24">
                         <label class="block text-xs font-semibold text-white mb-1 tracking-wide">aged</label>
                         <div class="relative">
                             <select class="w-full rounded bg-white text-gray-800 py-2.5 px-3 text-sm outline-none focus:ring-2 focus:ring-rani-gold appearance-none cursor-pointer">
@@ -75,7 +75,7 @@
                         </div>
                     </div>
                     <span class="text-white text-sm pb-2.5 font-medium">to</span>
-                    <div class="w-24">
+                    <div class="flex-1 lg:w-24">
                         <label class="block text-xs font-semibold text-white mb-1 tracking-wide">&nbsp;</label>
                         <div class="relative">
                             <select class="w-full rounded bg-white text-gray-800 py-2.5 px-3 text-sm outline-none focus:ring-2 focus:ring-rani-gold appearance-none cursor-pointer">
@@ -134,7 +134,7 @@
                 </div>
 
                 <!-- Submit Button -->
-                <div class="w-full lg:w-40">
+                <div class="w-full sm:col-span-2 lg:col-span-1 lg:w-40 mt-2 lg:mt-0">
                     <button type="button" class="w-full bg-rani-gold hover:bg-[#c59b27] text-rani-primary-dark font-bold text-sm py-2.5 px-4 rounded shadow-lg transition-colors">
                         Let's Begin
                     </button>
