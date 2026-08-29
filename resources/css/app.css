@@ -1,0 +1,61 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../../resources/views/**/*.blade.php';
+
+@theme {
+    --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-serif: 'Playfair Display', ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
+    --color-rani-primary: #750000;
+    --color-rani-primary-dark: #3b0000;
+    --color-rani-gold: #d4af37;
+    --color-rani-gold-light: #f9f1d8;
+    --color-rani-dark: #1a0000;
+    --color-rani-light: #fdfbf7;
+    
+    --animate-float: float 6s ease-in-out infinite;
+    --animate-pulse-slow: pulse-slow 4s infinite;
+    --animate-fade-in-up: fadeInUp 0.8s ease-out forwards;
+}
+
+@layer utilities {
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+    @keyframes pulse-slow {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.8; transform: scale(1.02); }
+    }
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+    .animation-delay-4000 {
+        animation-delay: 4s;
+    }
+    .glass-effect {
+        background: rgba(253, 251, 247, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    .glass-effect-dark {
+        background: rgba(59, 0, 0, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+}
