@@ -10,8 +10,7 @@
     <div class="absolute inset-0 z-0 bg-cover bg-top bg-no-repeat" style="background-image: url('{{ asset('img/hero.png') }}');"></div>
     
     <!-- Maroon/Gold Gradient Overlay (Reduced Opacity) -->
-    <div class="absolute inset-0 z-0 bg-gradient-to-t from-rani-dark/90 via-rani-primary-dark/40 to-transparent"></div>
-    <div class="absolute inset-0 z-0 bg-rani-primary-dark/20 mix-blend-multiply"></div>
+    <div class="absolute inset-0 z-0 bg-gradient-to-t from-rani-dark/80 via-rani-primary-dark/20 to-transparent"></div>
 
     <!-- Floating Sweet Gestures (Hearts) -->
     <div class="heart-container">
