@@ -29,8 +29,12 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                 <div class="col-span-1 md:col-span-1">
-                    <div class="mb-6">
-                        <img src="{{ asset('logo.png') }}" alt="Ranimatrimonial" class="h-16 w-auto" />
+                    <div class="mb-6 flex items-center gap-3">
+                        <img src="{{ asset('logo.png') }}" alt="Ranimatrimonial" class="h-14 w-auto" />
+                        <div class="flex items-baseline">
+                            <span class="text-3xl font-serif italic font-bold text-white tracking-wide">Rani</span>
+                            <span class="text-lg font-serif text-rani-gold tracking-wider ml-1">matrimonial</span>
+                        </div>
                     </div>
                     <p class="text-rani-gold-light/70 text-sm leading-relaxed mb-6 font-light">
                         Bringing hearts together across India. A modern, safe, and beautiful way to find your forever partner, respecting all cultures and traditions.

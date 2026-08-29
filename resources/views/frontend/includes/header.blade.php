@@ -3,8 +3,12 @@
         <div class="flex justify-between items-center">
             <!-- Logo -->
             <div class="flex-shrink-0 flex items-center">
-                <a href="/" class="flex items-center gap-2">
-                    <img src="{{ asset('logo.png') }}" alt="Ranimatrimonial" class="h-14 md:h-16 w-auto transition-transform duration-300 hover:scale-105" />
+                <a href="/" class="flex items-center gap-2 md:gap-3 group">
+                    <img src="{{ asset('logo.png') }}" alt="Ranimatrimonial" class="h-12 md:h-14 w-auto transition-transform duration-300 group-hover:scale-105 shadow-sm rounded-full" />
+                    <div class="flex items-baseline">
+                        <span class="text-2xl md:text-3xl font-serif italic font-bold tracking-wide transition-colors" :class="{ 'text-rani-primary-dark': scrolled, 'text-white': !scrolled }">Rani</span>
+                        <span class="text-base md:text-lg font-serif tracking-wider ml-1 transition-colors" :class="{ 'text-rani-gold': scrolled, 'text-rani-gold-light': !scrolled }">matrimonial</span>
+                    </div>
                 </a>
             </div>
 
