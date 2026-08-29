@@ -7,7 +7,7 @@
 <!-- Hero Section -->
 <section class="relative min-h-[85vh] flex flex-col justify-end overflow-hidden pb-16">
     <!-- Background Image -->
-    <div class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1583324113626-70df0f4deaab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');"></div>
+    <div class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat" style="background-image: url('{{ asset('img/indexbanner.jpg') }}');"></div>
     
     <!-- Maroon/Gold Gradient Overlay -->
     <div class="absolute inset-0 z-0 bg-gradient-to-t from-rani-dark/95 via-rani-primary-dark/70 to-transparent"></div>
