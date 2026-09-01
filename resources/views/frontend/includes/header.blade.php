@@ -14,17 +14,16 @@
 
             <!-- Desktop Navigation -->
             <nav class="hidden md:flex space-x-8 items-center">
-                <a href="#" class="font-serif text-base transition-colors hover:text-rani-gold font-medium" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">Home</a>
-                <a href="#" class="font-serif text-base transition-colors hover:text-rani-gold font-medium" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">Search</a>
+                <a href="#" class="font-serif text-base transition-colors hover:text-rani-gold font-medium" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">About</a>
+                <a href="#" class="font-serif text-base transition-colors hover:text-rani-gold font-medium" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">Help</a>
                 <a href="#" class="font-serif text-base transition-colors hover:text-rani-gold font-medium" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">Success Stories</a>
-                <a href="#" class="font-serif text-base transition-colors hover:text-rani-gold font-medium" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">Membership</a>
             </nav>
 
             <!-- Auth Buttons -->
             <div class="hidden md:flex items-center space-x-4">
                 <a href="#" class="font-medium text-sm transition-colors" :class="{ 'text-rani-primary hover:text-rani-gold': scrolled, 'text-rani-light hover:text-rani-gold': !scrolled }">Log in</a>
                 <a href="#" class="px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 border border-rani-gold text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary">
-                    Register Free
+                    Register Now
                 </a>
             </div>
 
@@ -43,13 +42,12 @@
     <!-- Mobile Menu -->
     <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="md:hidden absolute w-full bg-rani-light shadow-2xl border-t border-rani-gold/30" style="display: none;">
         <div class="px-4 pt-2 pb-6 space-y-1">
-            <a href="#" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">Home</a>
-            <a href="#" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">Search</a>
+            <a href="#" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">About</a>
+            <a href="#" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">Help</a>
             <a href="#" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">Success Stories</a>
-            <a href="#" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">Membership</a>
             <div class="mt-4 pt-4 border-t border-rani-gold/30 flex flex-col gap-3">
                 <a href="#" class="block w-full text-center px-4 py-2 text-base font-medium text-rani-primary">Log in</a>
-                <a href="#" class="block w-full text-center px-4 py-2 border border-rani-gold rounded-full shadow-sm text-base font-medium text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark">Register Free</a>
+                <a href="#" class="block w-full text-center px-4 py-2 border border-rani-gold rounded-full shadow-sm text-base font-medium text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark">Register Now</a>
             </div>
         </div>
     </div>
