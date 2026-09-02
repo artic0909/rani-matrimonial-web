@@ -59,12 +59,13 @@ class AuthController extends Controller
         $otp = rand(1000, 9999);
         
         try {
-            $sid = env('TWILIO_SID');
-            $token = env('TWILIO_AUTH_TOKEN');
+            $apiKey = env('TWILIO_SID');
+            $apiSecret = env('TWILIO_AUTH_TOKEN');
+            $accountSid = env('TWILIO_ACCOUNT_SID');
             $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
 
-            if ($sid && $token && $twilioNumber) {
-                $twilio = new Client($sid, $token);
+            if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
+                $twilio = new Client($apiKey, $apiSecret, $accountSid);
                 // Format mobile number (assuming Indian numbers for now)
                 $formattedMobile = "whatsapp:+91" . ltrim($mobile, '0');
                 
