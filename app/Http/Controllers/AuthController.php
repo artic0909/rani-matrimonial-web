@@ -109,6 +109,49 @@ class AuthController extends Controller
         return response()->json(['success' => true]);
     }
 
+    // Send Selfie Link via WhatsApp
+    public function sendSelfieLink(Request $request)
+    {
+        $request->validate(['mobile' => 'required|digits:10']);
+        
+        $mobile = $request->mobile;
+        
+        // The dynamic variable {{1}} for the CTA button URL
+        $linkParam = $mobile;
+
+        try {
+            $apiKey = env('TWILIO_SID');
+            $apiSecret = env('TWILIO_AUTH_TOKEN');
+            $accountSid = env('TWILIO_ACCOUNT_SID');
+            $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
+
+            if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
+                $twilio = new Client($apiKey, $apiSecret, $accountSid);
+                $formattedMobile = "whatsapp:+91" . ltrim($mobile, '0');
+                
+                // Uses the new CTA template for the selfie link
+                $templateSid = env('TWILIO_WHATSAPP_SELFIE_TEMPLATE_SID', 'HX4db8644d7e55d48df4ca8aca61737cd5');
+                
+                if ($templateSid) {
+                    $twilio->messages->create(
+                        $formattedMobile,
+                        [
+                            "from" => $twilioNumber,
+                            "contentSid" => $templateSid,
+                            "contentVariables" => json_encode([
+                                "1" => $linkParam
+                            ])
+                        ]
+                    );
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error('Twilio Selfie Link Error: ' . $e->getMessage());
+        }
+
+        return response()->json(['success' => true, 'message' => 'Secure link sent to phone via WhatsApp.']);
+    }
+
     // Register Step 1 (Modal form submission)
     public function showRegister()
     {

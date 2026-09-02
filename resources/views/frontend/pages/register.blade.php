@@ -615,7 +615,7 @@
                                 <svg class="w-7 h-7 mb-2 text-rani-gold group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
                                 Take Live Selfie
                             </button>
-                            <button type="button" @click="mockPhoneSelfie" class="flex-1 py-4 px-4 rounded-xl option-btn font-medium flex flex-col items-center group">
+                            <button type="button" @click="mockPhoneSelfie($event)" class="flex-1 py-4 px-4 rounded-xl option-btn font-medium flex flex-col items-center group">
                                 <svg class="w-7 h-7 mb-2 text-rani-gold group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                                 Link to Phone
                             </button>
@@ -771,9 +771,25 @@
                 this.isCameraOpen = false;
                 this.isSelfieVerified = true;
             },
-            mockPhoneSelfie() {
-                alert("A secure link has been sent to your phone! Please complete the verification there.");
-                this.isSelfieVerified = true;
+            mockPhoneSelfie(e) {
+                const btn = e?.currentTarget;
+                if(btn) btn.innerHTML = 'Sending...';
+                
+                fetch('/api/send-selfie-link', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value },
+                    body: JSON.stringify({ mobile: this.formData.mobile })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(btn) btn.innerHTML = 'Link Sent!';
+                    alert(data.message || "A secure link has been sent to your phone! Please complete the verification there.");
+                    this.isSelfieVerified = true;
+                })
+                .catch(err => {
+                    if(btn) btn.innerHTML = 'Try Again';
+                    alert("Error sending link. Please try again.");
+                });
             },
             submitForm(e) {
                 if(this.isSubmitting) return;
