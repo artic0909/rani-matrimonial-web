@@ -150,7 +150,7 @@ class AuthController extends Controller
                 $formattedMobile = "whatsapp:+91" . ltrim($mobile, '0');
                 
                 // Uses the new CTA template for the selfie link
-                $templateSid = env('TWILIO_WHATSAPP_SELFIE_TEMPLATE_SID', 'HX4db8644d7e55d48df4ca8aca61737cd5');
+                $templateSid = env('TWILIO_WHATSAPP_SELFIE_TEMPLATE_SID', 'HX03fe4268119a35c7e02cc6360e34cbd7');
                 
                 if ($templateSid) {
                     $twilio->messages->create(
