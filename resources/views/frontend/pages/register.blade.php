@@ -156,12 +156,12 @@
                     
                     <!-- Step 1: Profile For -->
                     <div x-show="step === 1" 
-                         x-transition:enter="transition ease-out duration-500 delay-100" 
+                         x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                         x-transition:leave="transition ease-in duration-300" 
-                         x-transition:leave-start="opacity-100 translate-x-0" 
-                         x-transition:leave-end="opacity-0 -translate-x-12">
+                          
+                          
+                         >
                         
                         <div class="flex justify-center mb-6">
                             <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-rani-gold border border-rani-gold/50 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
@@ -186,12 +186,12 @@
 
                     <!-- Step 2: Gender -->
                     <div x-show="step === 2" style="display: none;"
-                         x-transition:enter="transition ease-out duration-500 delay-100" 
+                         x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                         x-transition:leave="transition ease-in duration-300" 
-                         x-transition:leave-start="opacity-100 translate-x-0" 
-                         x-transition:leave-end="opacity-0 -translate-x-12">
+                          
+                          
+                         >
                         
                         <div class="flex justify-center mb-6">
                             <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-rani-gold border border-rani-gold/50 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
@@ -220,12 +220,12 @@
 
                     <!-- Step 3: Name -->
                     <div x-show="step === 3" style="display: none;"
-                         x-transition:enter="transition ease-out duration-500 delay-100" 
+                         x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                         x-transition:leave="transition ease-in duration-300" 
-                         x-transition:leave-start="opacity-100 translate-x-0" 
-                         x-transition:leave-end="opacity-0 -translate-x-12">
+                          
+                          
+                         >
                         
                         <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Personal Details</h4>
                         <div class="space-y-5 mb-8">
@@ -249,12 +249,12 @@
 
                     <!-- Step 4: DOB -->
                     <div x-show="step === 4" style="display: none;"
-                         x-transition:enter="transition ease-out duration-500 delay-100" 
+                         x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                         x-transition:leave="transition ease-in duration-300" 
-                         x-transition:leave-start="opacity-100 translate-x-0" 
-                         x-transition:leave-end="opacity-0 -translate-x-12">
+                          
+                          
+                         >
                         
                         <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Date of Birth</h4>
                         <div class="mb-8">
@@ -280,12 +280,12 @@
 
                     <!-- Step 5: Religion -->
                     <div x-show="step === 5" style="display: none;"
-                         x-transition:enter="transition ease-out duration-500 delay-100" 
+                         x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                         x-transition:leave="transition ease-in duration-300" 
-                         x-transition:leave-start="opacity-100 translate-x-0" 
-                         x-transition:leave-end="opacity-0 -translate-x-12">
+                          
+                          
+                         >
                          
                         <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Religion & Community</h4>
                         <div class="space-y-5 mb-8">
@@ -318,12 +318,12 @@
 
                     <!-- Step 6: Contact Info -->
                     <div x-show="step === 6" style="display: none;"
-                         x-transition:enter="transition ease-out duration-500 delay-100" 
+                         x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                         x-transition:leave="transition ease-in duration-300" 
-                         x-transition:leave-start="opacity-100 translate-x-0" 
-                         x-transition:leave-end="opacity-0 -translate-x-12">
+                          
+                          
+                         >
                          
                         <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Contact Information</h4>
                         <div class="space-y-5 mb-8">
@@ -346,12 +346,12 @@
 
                     <!-- Step 7: Location -->
                     <div x-show="step === 7" style="display: none;"
-                         x-transition:enter="transition ease-out duration-500 delay-100" 
+                         x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                         x-transition:leave="transition ease-in duration-300" 
-                         x-transition:leave-start="opacity-100 translate-x-0" 
-                         x-transition:leave-end="opacity-0 -translate-x-12">
+                          
+                          
+                         >
                          
                         <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Location</h4>
                         <div class="space-y-5 mb-8">
@@ -375,12 +375,12 @@
 
                     <!-- Step 8: Marital Status -->
                     <div x-show="step === 8" style="display: none;"
-                         x-transition:enter="transition ease-out duration-500 delay-100" 
+                         x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                         x-transition:leave="transition ease-in duration-300" 
-                         x-transition:leave-start="opacity-100 translate-x-0" 
-                         x-transition:leave-end="opacity-0 -translate-x-12">
+                          
+                          
+                         >
                          
                         <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Physical & Diet</h4>
                         <div class="space-y-5 mb-8">
@@ -422,12 +422,12 @@
 
                     <!-- Step 9: Qualification -->
                     <div x-show="step === 9" style="display: none;"
-                         x-transition:enter="transition ease-out duration-500 delay-100" 
+                         x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                         x-transition:leave="transition ease-in duration-300" 
-                         x-transition:leave-start="opacity-100 translate-x-0" 
-                         x-transition:leave-end="opacity-0 -translate-x-12">
+                          
+                          
+                         >
                          
                         <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Education</h4>
                         <div class="space-y-5 mb-8">
@@ -458,12 +458,12 @@
 
                     <!-- Step 10: Income -->
                     <div x-show="step === 10" style="display: none;"
-                         x-transition:enter="transition ease-out duration-500 delay-100" 
+                         x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                         x-transition:leave="transition ease-in duration-300" 
-                         x-transition:leave-start="opacity-100 translate-x-0" 
-                         x-transition:leave-end="opacity-0 -translate-x-12">
+                          
+                          
+                         >
                          
                         <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Income Details</h4>
                         <div class="space-y-5 mb-8">
@@ -485,12 +485,12 @@
 
                     <!-- Step 11: Work details -->
                     <div x-show="step === 11" style="display: none;"
-                         x-transition:enter="transition ease-out duration-500 delay-100" 
+                         x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                         x-transition:leave="transition ease-in duration-300" 
-                         x-transition:leave-start="opacity-100 translate-x-0" 
-                         x-transition:leave-end="opacity-0 -translate-x-12">
+                          
+                          
+                         >
                          
                         <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Career Details</h4>
                         <div class="space-y-5 mb-8">
@@ -518,12 +518,12 @@
 
                     <!-- Step 12: About Yourself & Hobbies -->
                     <div x-show="step === 12" style="display: none;"
-                         x-transition:enter="transition ease-out duration-500 delay-100" 
+                         x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                         x-transition:leave="transition ease-in duration-300" 
-                         x-transition:leave-start="opacity-100 translate-x-0" 
-                         x-transition:leave-end="opacity-0 -translate-x-12">
+                          
+                          
+                         >
                          
                         <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Express Yourself</h4>
                         <div class="space-y-6 mb-8">
@@ -551,12 +551,12 @@
 
                     <!-- Step 13: OTP Verification -->
                     <div x-show="step === 13" style="display: none;"
-                         x-transition:enter="transition ease-out duration-500 delay-100" 
+                         x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                         x-transition:leave="transition ease-in duration-300" 
-                         x-transition:leave-start="opacity-100 translate-x-0" 
-                         x-transition:leave-end="opacity-0 -translate-x-12">
+                          
+                          
+                         >
                          
                         <div class="flex justify-center mb-6">
                             <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-rani-gold border border-rani-gold/50 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
@@ -582,12 +582,12 @@
 
                     <!-- Step 14: Selfie & Profile Picture -->
                     <div x-show="step === 14" style="display: none;"
-                         x-transition:enter="transition ease-out duration-500 delay-100" 
+                         x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                         x-transition:leave="transition ease-in duration-300" 
-                         x-transition:leave-start="opacity-100 translate-x-0" 
-                         x-transition:leave-end="opacity-0 -translate-x-12">
+                          
+                          
+                         >
                          
                         <h4 class="text-2xl font-serif text-white mb-6 text-center text-shadow-sm">Profile Picture</h4>
                         
