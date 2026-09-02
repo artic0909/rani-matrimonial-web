@@ -152,6 +152,51 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'message' => 'Secure link sent to phone via WhatsApp.']);
     }
 
+    // Show selfie capture page on phone
+    public function showSelfieCapture(Request $request)
+    {
+        $mobile = $request->query('phone');
+        if (!$mobile) {
+            return abort(400, "Phone number is required.");
+        }
+        return view('frontend.pages.selfie_capture', compact('mobile'));
+    }
+
+    // Save phone selfie to Cache
+    public function savePhoneSelfie(Request $request)
+    {
+        $request->validate([
+            'mobile' => 'required|digits:10',
+            'selfie_data' => 'required|string'
+        ]);
+
+        $mobile = $request->mobile;
+        // Save selfie data URL into cache for 30 minutes
+        \Illuminate\Support\Facades\Cache::put('selfie_verified_' . $mobile, $request->selfie_data, now()->addMinutes(30));
+
+        return response()->json(['success' => true]);
+    }
+
+    // Desktop polling to check if selfie was captured
+    public function checkSelfieStatus(Request $request)
+    {
+        $mobile = $request->query('phone');
+        if (!$mobile) {
+            return response()->json(['success' => false]);
+        }
+
+        $selfieData = \Illuminate\Support\Facades\Cache::get('selfie_verified_' . $mobile);
+        
+        if ($selfieData) {
+            return response()->json([
+                'success' => true,
+                'selfie_data' => $selfieData
+            ]);
+        }
+
+        return response()->json(['success' => false]);
+    }
+
     // Register Step 1 (Modal form submission)
     public function showRegister()
     {

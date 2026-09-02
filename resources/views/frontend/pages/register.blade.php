@@ -677,12 +677,21 @@
                 setTimeout(() => this.nextStep(), 300);
             },
             nextStep() {
+                // Validation before advancing
+                if (this.step === 1 && !this.formData.profile_for) return alert("Please select who this profile is for.");
+                if (this.step === 2 && !this.formData.gender) return alert("Please select gender.");
+                if (this.step === 3 && (!this.formData.first_name || !this.formData.last_name)) return alert("First name and Last name are required.");
+                if (this.step === 4 && (!this.formData.dob_day || !this.formData.dob_month || !this.formData.dob_year)) return alert("Date of Birth is required.");
+                if (this.step === 5 && (!this.formData.religion || !this.formData.community)) return alert("Religion and Community are required.");
+                if (this.step === 6 && (!this.formData.email || !this.formData.mobile)) return alert("Email and Mobile number are required.");
+                if (this.step === 7 && (!this.formData.state || !this.formData.city)) return alert("State and City are required.");
+                if (this.step === 8 && (!this.formData.marital_status || !this.formData.height || !this.formData.diet)) return alert("Physical & Diet details are required.");
+                if (this.step === 9 && !this.formData.highest_qualification) return alert("Highest Qualification is required.");
+                if (this.step === 10 && !this.formData.income_type) return alert("Income detail is required.");
+                if (this.step === 11 && (!this.formData.profession || !this.formData.designation)) return alert("Career details are required.");
+                if (this.step === 12 && !this.formData.about_yourself) return alert("Please write a little about yourself.");
+
                 if (this.step === 12) {
-                    if(!this.formData.mobile) {
-                        alert("Mobile number is required");
-                        this.step = 6;
-                        return;
-                    }
                     this.sendOtp();
                 }
                 if (this.step < 14) this.step++;
@@ -783,8 +792,28 @@
                 .then(res => res.json())
                 .then(data => {
                     if(btn) btn.innerHTML = 'Link Sent!';
-                    alert(data.message || "A secure link has been sent to your phone! Please complete the verification there.");
-                    this.isSelfieVerified = true;
+                    alert("A secure link has been sent to your phone! Please open WhatsApp, click the link, and take your selfie.");
+                    
+                    // Start Polling for selfie status
+                    let attempts = 0;
+                    const pollInterval = setInterval(() => {
+                        attempts++;
+                        if (attempts > 100) { // Timeout after ~5 mins
+                            clearInterval(pollInterval);
+                            return;
+                        }
+                        
+                        fetch('/api/check-selfie-status?phone=' + this.formData.mobile)
+                            .then(r => r.json())
+                            .then(statusData => {
+                                if (statusData.success && statusData.selfie_data) {
+                                    clearInterval(pollInterval);
+                                    this.selfieDataUrl = statusData.selfie_data;
+                                    this.isSelfieVerified = true;
+                                }
+                            });
+                    }, 3000); // Check every 3 seconds
+
                 })
                 .catch(err => {
                     if(btn) btn.innerHTML = 'Try Again';
