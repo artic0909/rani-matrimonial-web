@@ -11,6 +11,7 @@ Route::get('/', function () {
 // Candidate Auth Routes
 Route::post('/api/send-otp', [AuthController::class, 'sendOtp'])->name('send.otp');
 Route::post('/api/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.otp');
+Route::post('/api/check-user-exists', [AuthController::class, 'checkUserExists'])->name('check.user.exists');
 Route::post('/api/send-registration-otp', [AuthController::class, 'sendRegistrationOtp'])->name('send.registration.otp');
 Route::post('/api/verify-registration-otp', [AuthController::class, 'verifyRegistrationOtp'])->name('verify.registration.otp');
 Route::post('/api/send-selfie-link', [AuthController::class, 'sendSelfieLink'])->name('send.selfie.link');

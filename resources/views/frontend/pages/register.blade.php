@@ -683,7 +683,26 @@
                 if (this.step === 3 && (!this.formData.first_name || !this.formData.last_name)) return alert("First name and Last name are required.");
                 if (this.step === 4 && (!this.formData.dob_day || !this.formData.dob_month || !this.formData.dob_year)) return alert("Date of Birth is required.");
                 if (this.step === 5 && (!this.formData.religion || !this.formData.community)) return alert("Religion and Community are required.");
-                if (this.step === 6 && (!this.formData.email || !this.formData.mobile)) return alert("Email and Mobile number are required.");
+                if (this.step === 6) {
+                    if (!this.formData.email || !this.formData.mobile) return alert("Email and Mobile number are required.");
+                    
+                    fetch('/api/check-user-exists', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value },
+                        body: JSON.stringify({ email: this.formData.email, mobile: this.formData.mobile })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.exists) {
+                            alert(data.message);
+                        } else {
+                            this.step++;
+                        }
+                    })
+                    .catch(err => alert("Error verifying details."));
+                    return; // Prevent normal advancement
+                }
+
                 if (this.step === 7 && (!this.formData.state || !this.formData.city)) return alert("State and City are required.");
                 if (this.step === 8 && (!this.formData.marital_status || !this.formData.height || !this.formData.diet)) return alert("Physical & Diet details are required.");
                 if (this.step === 9 && !this.formData.highest_qualification) return alert("Highest Qualification is required.");

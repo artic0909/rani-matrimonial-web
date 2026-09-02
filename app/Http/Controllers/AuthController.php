@@ -48,6 +48,26 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'redirect' => route('dashboard')]);
     }
 
+    // Check if email or mobile already exists
+    public function checkUserExists(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'mobile' => 'required|digits:10'
+        ]);
+
+        $exists = Candidate::where('email', $request->email)
+            ->orWhere('mobile', $request->mobile)
+            ->first();
+
+        if ($exists) {
+            $field = ($exists->email === $request->email) ? 'Email' : 'Mobile number';
+            return response()->json(['exists' => true, 'message' => "This {$field} is already registered."]);
+        }
+
+        return response()->json(['exists' => false]);
+    }
+
     // Send OTP for Registration
     public function sendRegistrationOtp(Request $request)
     {
