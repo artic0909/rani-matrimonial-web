@@ -676,15 +676,31 @@
                 this.formData.gender = val;
                 setTimeout(() => this.nextStep(), 300);
             },
+            showError(msg) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Missing Information',
+                    text: msg,
+                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                });
+            },
+            showSuccess(title, text) {
+                Swal.fire({
+                    icon: 'success',
+                    title: title,
+                    text: text,
+                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                });
+            },
             nextStep() {
                 // Validation before advancing
-                if (this.step === 1 && !this.formData.profile_for) return alert("Please select who this profile is for.");
-                if (this.step === 2 && !this.formData.gender) return alert("Please select gender.");
-                if (this.step === 3 && (!this.formData.first_name || !this.formData.last_name)) return alert("First name and Last name are required.");
-                if (this.step === 4 && (!this.formData.dob_day || !this.formData.dob_month || !this.formData.dob_year)) return alert("Date of Birth is required.");
-                if (this.step === 5 && (!this.formData.religion || !this.formData.community)) return alert("Religion and Community are required.");
+                if (this.step === 1 && !this.formData.profile_for) return this.showError("Please select who this profile is for.");
+                if (this.step === 2 && !this.formData.gender) return this.showError("Please select gender.");
+                if (this.step === 3 && (!this.formData.first_name || !this.formData.last_name)) return this.showError("First name and Last name are required.");
+                if (this.step === 4 && (!this.formData.dob_day || !this.formData.dob_month || !this.formData.dob_year)) return this.showError("Date of Birth is required.");
+                if (this.step === 5 && (!this.formData.religion || !this.formData.community)) return this.showError("Religion and Community are required.");
                 if (this.step === 6) {
-                    if (!this.formData.email || !this.formData.mobile) return alert("Email and Mobile number are required.");
+                    if (!this.formData.email || !this.formData.mobile) return this.showError("Email and Mobile number are required.");
                     
                     fetch('/api/check-user-exists', {
                         method: 'POST',
@@ -694,21 +710,21 @@
                     .then(res => res.json())
                     .then(data => {
                         if (data.exists) {
-                            alert(data.message);
+                            this.showError(data.message);
                         } else {
                             this.step++;
                         }
                     })
-                    .catch(err => alert("Error verifying details."));
+                    .catch(err => this.showError("Error verifying details."));
                     return; // Prevent normal advancement
                 }
 
-                if (this.step === 7 && (!this.formData.state || !this.formData.city)) return alert("State and City are required.");
-                if (this.step === 8 && (!this.formData.marital_status || !this.formData.height || !this.formData.diet)) return alert("Physical & Diet details are required.");
-                if (this.step === 9 && !this.formData.highest_qualification) return alert("Highest Qualification is required.");
-                if (this.step === 10 && !this.formData.income_type) return alert("Income detail is required.");
-                if (this.step === 11 && (!this.formData.profession || !this.formData.designation)) return alert("Career details are required.");
-                if (this.step === 12 && !this.formData.about_yourself) return alert("Please write a little about yourself.");
+                if (this.step === 7 && (!this.formData.state || !this.formData.city)) return this.showError("State and City are required.");
+                if (this.step === 8 && (!this.formData.marital_status || !this.formData.height || !this.formData.diet)) return this.showError("Physical & Diet details are required.");
+                if (this.step === 9 && !this.formData.highest_qualification) return this.showError("Highest Qualification is required.");
+                if (this.step === 10 && !this.formData.income_type) return this.showError("Income detail is required.");
+                if (this.step === 11 && (!this.formData.profession || !this.formData.designation)) return this.showError("Career details are required.");
+                if (this.step === 12 && !this.formData.about_yourself) return this.showError("Please write a little about yourself.");
 
                 if (this.step === 12) {
                     this.sendOtp();
@@ -725,6 +741,7 @@
                 }
             },
             sendOtp() {
+                this.isOtpSending = true;
                 fetch('/api/send-registration-otp', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value },
@@ -732,14 +749,16 @@
                 })
                 .then(res => res.json())
                 .then(data => {
-                    if(!data.success) {
-                        alert(data.message || 'Error sending OTP');
-                    }
+                    this.isOtpSending = false;
+                    this.showSuccess('OTP Sent', 'A verification code has been sent to ' + this.formData.mobile);
                 })
-                .catch(err => console.error(err));
+                .catch(err => {
+                    this.isOtpSending = false;
+                    this.showError('Error sending OTP.');
+                });
             },
             verifyOtp() {
-                if(this.otp.length !== 4) return alert("Please enter the 4-digit OTP.");
+                if(this.otp.length !== 4) return this.showError("Please enter the 4-digit OTP.");
                 
                 this.isVerifyingOtp = true;
                 fetch('/api/verify-registration-otp', {
@@ -753,7 +772,7 @@
                     if(data.success) {
                         this.nextStep();
                     } else {
-                        alert(data.message || 'Invalid OTP');
+                        this.showError('Invalid OTP. Please try again.');
                         const inputs = document.querySelectorAll('.otp-input');
                         inputs.forEach(i => i.value = '');
                         this.otp = '';
@@ -761,7 +780,7 @@
                 })
                 .catch(err => {
                     this.isVerifyingOtp = false;
-                    alert('Error verifying OTP');
+                    this.showError('Error verifying OTP.');
                 });
             },
             handleOtpInput(e, index) {
@@ -784,7 +803,7 @@
                     })
                     .catch(err => {
                         console.error("Camera access denied", err);
-                        alert("Camera access required for PC selfie.");
+                        this.showError("Camera access required for PC selfie.");
                         this.isCameraOpen = false;
                     });
             },
@@ -811,7 +830,7 @@
                 .then(res => res.json())
                 .then(data => {
                     if(btn) btn.innerHTML = 'Link Sent!';
-                    alert("A secure link has been sent to your phone! Please open WhatsApp, click the link, and take your selfie.");
+                    this.showSuccess('Secure Link Sent!', 'Please open WhatsApp on your phone, click the link, and follow the instructions to take your selfie.');
                     
                     // Start Polling for selfie status
                     let attempts = 0;
@@ -836,7 +855,7 @@
                 })
                 .catch(err => {
                     if(btn) btn.innerHTML = 'Try Again';
-                    alert("Error sending link. Please try again.");
+                    this.showError("Error sending link. Please try again.");
                 });
             },
             submitForm(e) {
@@ -844,7 +863,16 @@
                 this.isSubmitting = true;
                 
                 const form = document.getElementById('unifiedRegForm');
-                const formData = new FormData(form);
+                
+                // Construct FormData properly from Alpine state
+                const fd = new FormData();
+                for (const key in this.formData) {
+                    if (key !== 'profile_image') {
+                        fd.append(key, this.formData[key]);
+                    }
+                }
+                // Construct dob field as expected by backend
+                fd.append('dob', `${this.formData.dob_year}-${this.formData.dob_month}-${this.formData.dob_day}`);
                 
                 if (this.selfieDataUrl) {
                     const byteString = atob(this.selfieDataUrl.split(',')[1]);
@@ -854,12 +882,12 @@
                         ia[i] = byteString.charCodeAt(i);
                     }
                     const blob = new Blob([ab], { type: 'image/jpeg' });
-                    formData.append('selfie_image', blob, 'selfie.jpg');
+                    fd.append('selfie_image', blob, 'selfie.jpg');
                 }
                 
                 fetch(form.action, {
                     method: 'POST',
-                    body: formData,
+                    body: fd,
                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
                 .then(response => response.json())
@@ -868,12 +896,12 @@
                     if(data.success && data.redirect) {
                         window.location.href = data.redirect;
                     } else {
-                        alert(data.message || 'An error occurred during registration.');
+                        this.showError(data.message || 'An error occurred during registration.');
                     }
                 })
                 .catch(error => {
                     this.isSubmitting = false;
-                    alert('Submission failed. Please check validation or try again.');
+                    this.showError('An error occurred. Please try again.');
                 });
             }
         }

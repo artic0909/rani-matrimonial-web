@@ -11,6 +11,33 @@
             background: linear-gradient(to right, #D4AF37, #C59B27);
             color: #4a0404;
         }
+        @keyframes scanline {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        .scanning-active .scan-line {
+            display: block;
+            animation: scanline 2s linear forwards;
+        }
+        .scan-line {
+            display: none;
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #4ade80;
+            box-shadow: 0 0 15px 3px rgba(74,222,128,0.7);
+            z-index: 10;
+        }
+        .border-red {
+            border-color: #ef4444 !important;
+        }
+        .border-green {
+            border-color: #4ade80 !important;
+            border-style: solid !important;
+        }
     </style>
 </head>
 <body class="bg-[#2a0202] min-h-screen flex flex-col font-sans text-white relative">
@@ -39,13 +66,15 @@
         <!-- Camera State -->
         <div id="camera-container" class="w-full max-w-sm hidden flex-col items-center">
             <p class="text-sm mb-4 text-[#D4AF37] font-medium text-center">Position your face in the center</p>
-            <div class="w-full aspect-[3/4] bg-black rounded-2xl overflow-hidden border-2 border-[#D4AF37] relative shadow-2xl">
+            <div class="w-full aspect-[3/4] bg-black rounded-2xl overflow-hidden border-2 border-[#D4AF37] relative shadow-2xl" id="video-wrapper">
                 <video id="video" autoplay playsinline class="w-full h-full object-cover transform scale-x-[-1]"></video>
                 <!-- Face Guide Overlay -->
-                <div class="absolute inset-0 border-[6px] border-dashed border-white/30 rounded-[100px] m-8 pointer-events-none"></div>
+                <div id="face-guide" class="absolute inset-0 border-[6px] border-dashed border-white/30 rounded-[100px] m-8 pointer-events-none transition-colors duration-300 overflow-hidden relative">
+                    <div class="scan-line"></div>
+                </div>
             </div>
             
-            <button onclick="takeSnapshot()" class="mt-8 bg-white text-[#4a0404] w-20 h-20 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.5)] border-4 border-[#D4AF37]">
+            <button id="capture-btn" onclick="startScanning()" class="mt-8 bg-white text-[#4a0404] w-20 h-20 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(212,175,55,0.5)] border-4 border-[#D4AF37]">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
             </button>
         </div>
@@ -101,6 +130,30 @@
                 document.getElementById('intro').classList.remove('hidden');
                 console.error(err);
             });
+        }
+
+        function startScanning() {
+            const btn = document.getElementById('capture-btn');
+            const guide = document.getElementById('face-guide');
+            const wrapper = document.getElementById('video-wrapper');
+            
+            btn.innerHTML = '<div class="animate-spin rounded-full h-6 w-6 border-b-2 border-[#4a0404]"></div>';
+            btn.disabled = true;
+
+            // Turn border red initially
+            guide.classList.remove('border-white/30');
+            guide.classList.add('border-red');
+            wrapper.classList.add('scanning-active');
+
+            // Wait 2 seconds (scanning effect), then turn green and capture
+            setTimeout(() => {
+                guide.classList.remove('border-red');
+                guide.classList.add('border-green');
+                
+                setTimeout(() => {
+                    takeSnapshot();
+                }, 500); // Wait half a second on green before snapshot
+            }, 2000);
         }
 
         function takeSnapshot() {
