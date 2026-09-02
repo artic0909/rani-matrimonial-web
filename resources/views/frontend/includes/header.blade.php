@@ -77,7 +77,7 @@
         let dob = this.registerData.dob_year + '-' + this.registerData.dob_month + '-' + this.registerData.dob_day;
         let payload = { ...this.registerData, dob: dob };
         
-        fetch('/api/register', {
+        fetch('/api/register-phase-1', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
             body: JSON.stringify(payload)
@@ -193,7 +193,7 @@
                 
                 <div class="flex-1 text-center">
                     <h2 class="text-xl font-serif font-bold text-rani-primary-dark">Registration</h2>
-                    <div class="text-xs text-gray-400 mt-1" x-text="`Step ${registerStep} of 9`"></div>
+                    <div class="text-xs text-gray-400 mt-1" x-text="`Step ${registerStep} of 6`"></div>
                 </div>
                 
                 <button @click="showRegister = false; registerStep = 1; authError = '';" type="button" class="text-gray-400 hover:text-red-500 transition-colors p-1 -mr-1">
@@ -370,7 +370,7 @@
                     </div>
                 </div>
 
-                <button :disabled="!(registerData.religion && registerData.community)" @click="registerStep = 7" class="w-full text-white font-bold text-lg py-3.5 rounded-full transition-all duration-300" :class="(registerData.religion && registerData.community) ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:shadow-lg transform hover:-translate-y-0.5 border border-rani-gold/50' : 'bg-gray-300 cursor-not-allowed'">Continue</button>
+                <button :disabled="!(registerData.religion && registerData.community)" @click="registerCandidate()" class="w-full text-white font-bold text-lg py-3.5 rounded-full transition-all duration-300" :class="(registerData.religion && registerData.community) ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:shadow-lg transform hover:-translate-y-0.5 border border-rani-gold/50' : 'bg-gray-300 cursor-not-allowed'">Save & Continue to Profile</button>
             </div>
                 <span class="font-bold border border-rani-gold text-rani-primary-dark rounded-full w-5 h-5 flex items-center justify-center shrink-0 text-xs mt-0.5 bg-white">i</span>
                 <p class="leading-relaxed text-sm text-gray-700">Ranimatrimonial.com is built for genuine match-seekers. Any falsification, commercial use or marriage bureaus is strictly prohibited & may be reported to law enforcement.</p>

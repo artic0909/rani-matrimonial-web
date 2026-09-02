@@ -130,8 +130,28 @@ class AuthController extends Controller
 
         return redirect()->route('register.complete');
     }
+    
+    // Process Phase 1 of Registration (AJAX)
+    public function registerPhase1(Request $request)
+    {
+        $validated = $request->validate([
+            'profile_for' => 'required|string',
+            'gender' => 'required|string',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'dob' => 'required|date',
+            'religion' => 'required|string',
+            'community' => 'required|string',
+            'email' => 'required|email|unique:candidates,email',
+            'mobile' => 'required|digits:10|unique:candidates,mobile',
+        ]);
 
-    // Show complete profile page
+        Session::put('registration_phase_1', $validated);
+
+        return response()->json(['success' => true, 'redirect' => route('register.complete')]);
+    }
+
+    // Show Phase 2 page
     public function completeProfile()
     {
         if (!Session::has('registration_phase_1')) {
