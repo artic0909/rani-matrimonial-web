@@ -109,95 +109,49 @@ class AuthController extends Controller
     }
 
     // Register Step 1 (Modal form submission)
-    public function registerStep1(Request $request)
+    public function showRegister()
     {
-        $validated = $request->validate([
-            'profile_for' => 'required|string',
-            'gender' => 'required|string',
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
-            'middle_name' => 'nullable|string',
-            'dob' => 'required|date',
-            'religion' => 'required|string',
-            'community' => 'required|string',
-            'living_in' => 'required|string',
-            'email' => 'required|email|unique:candidates,email',
-            'mobile' => 'required|digits:10|unique:candidates,mobile',
-        ]);
-
-        // Store phase 1 data in session
-        Session::put('registration_phase_1', $validated);
-
-        return redirect()->route('register.complete');
-    }
-    
-    // Process Phase 1 of Registration (AJAX)
-    public function registerPhase1(Request $request)
-    {
-        $validated = $request->validate([
-            'profile_for' => 'required|string',
-            'gender' => 'required|string',
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
-            'dob' => 'required|date',
-            'religion' => 'required|string',
-            'community' => 'required|string',
-            'email' => 'required|email|unique:candidates,email',
-            'mobile' => 'required|digits:10|unique:candidates,mobile',
-        ]);
-
-        Session::put('registration_phase_1', $validated);
-
-        return response()->json(['success' => true, 'redirect' => route('register.complete')]);
+        return view('frontend.pages.register');
     }
 
-    // Show Phase 2 page
-    public function completeProfile()
-    {
-        if (!Session::has('registration_phase_1')) {
-            return redirect()->route('login'); // Redirect to home if they haven't done phase 1
-        }
-        
-        return view('frontend.pages.complete_profile');
-    }
-
-    // Register Final Submission
+    // Process Final Registration
     public function registerFinal(Request $request)
     {
-        // Phase 2 Validation
         $validated = $request->validate([
+            'profile_for' => 'required|string',
+            'gender' => 'required|string',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'dob' => 'required|date',
+            'religion' => 'required|string',
+            'community' => 'required|string',
+            'email' => 'required|email|unique:candidates,email',
+            'mobile' => 'required|digits:10|unique:candidates,mobile',
+            
             'state' => 'required|string',
             'city' => 'required|string',
             'sub_community' => 'nullable|string',
             'marital_status' => 'required|string',
             'height' => 'required|string',
             'diet' => 'required|string',
+            
             'highest_qualification' => 'required|string',
             'college_name' => 'nullable|string',
             'college_address' => 'nullable|string',
+            
             'income_type' => 'required|string',
             'profession' => 'required|string',
             'designation' => 'required|string',
             'company_name' => 'nullable|string',
             'company_address' => 'nullable|string',
+            
             'about_yourself' => 'nullable|string',
             'hobbies_interests' => 'nullable|array',
             'profile_picture' => 'nullable|image|max:2048', // Allow images up to 2MB
             'selfie_image' => 'nullable|file|mimes:jpeg,png,jpg|max:5120', // From webcam
         ]);
 
-        $phase1Data = Session::get('registration_phase_1');
-        
-        if (!$phase1Data) {
-            return response()->json(['success' => false, 'message' => 'Session expired. Please start over.'], 400);
-        }
-
-        // Check if OTP was verified
-        // We will assume OTP is verified if the frontend proceeds, but we could enforce a session check here
-        // For strictness, let's verify if the OTP was verified. Wait, we didn't store a "verified" flag. Let's just trust the flow for now.
-
-        // Merge both phases
-        $candidateData = array_merge($phase1Data, $validated);
+        $candidateData = $validated;
         
         // Handle file upload
         if ($request->hasFile('profile_picture')) {
@@ -208,7 +162,6 @@ class AuthController extends Controller
         if ($request->hasFile('selfie_image')) {
             $selfiePath = $request->file('selfie_image')->store('selfies', 'public');
             $candidateData['selfie_verified'] = true;
-            // Optionally save the selfie path somewhere if you add a column for it. For now we just use the bool.
         }
         
         $candidate = Candidate::create($candidateData);
@@ -216,8 +169,6 @@ class AuthController extends Controller
         // Auto login after registration
         Auth::login($candidate);
         
-        Session::forget(['registration_phase_1', 'reg_otp_code']);
-
         return response()->json(['success' => true, 'redirect' => route('dashboard')]);
     }
 

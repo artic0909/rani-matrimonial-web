@@ -134,9 +134,9 @@
 
                 <!-- Submit Button -->
                 <div class="w-full sm:col-span-2 lg:col-span-1 lg:w-40 mt-2 lg:mt-0">
-                    <button type="button" @click="$dispatch('open-register-modal')" class="w-full bg-rani-gold hover:bg-[#c59b27] text-rani-primary-dark font-bold text-sm py-2.5 px-4 rounded shadow-lg transition-colors">
+                    <a href="{{ route('register.page') }}" class="block text-center w-full bg-rani-gold hover:bg-[#c59b27] text-rani-primary-dark font-bold text-sm py-2.5 px-4 rounded shadow-lg transition-colors">
                         Let's Begin
-                    </button>
+                    </a>
                 </div>
             </form>
         </div>
@@ -231,14 +231,14 @@
                 Join thousands of Indians who have found their perfect match on Ranimatrimonial. Your beautiful love story is just a click away.
             </p>
             
-            <button type="button" @click="$dispatch('open-register-modal')" class="inline-block bg-gradient-to-r from-rani-gold to-[#c59b27] hover:from-[#c59b27] hover:to-rani-gold text-rani-primary-dark font-serif font-bold text-xl py-4 px-12 rounded shadow-xl transform transition hover:-translate-y-1 relative z-10">
+            <a href="{{ route('register.page') }}" class="inline-block bg-gradient-to-r from-rani-gold to-[#c59b27] hover:from-[#c59b27] hover:to-rani-gold text-rani-primary-dark font-serif font-bold text-xl py-4 px-12 rounded shadow-xl transform transition hover:-translate-y-1 relative z-10">
                 Register Now for Free
-            </button>
+            </a>
             <p class="mt-5 text-sm text-rani-gold-light/60 relative z-10 tracking-wide uppercase">No credit card required</p>
         </div>
     </div>
 </section>
 
-@include('frontend.components.register-modal')
+
 
 @endsection

@@ -114,7 +114,7 @@
             <!-- Auth Buttons -->
             <div class="hidden md:flex items-center space-x-4">
                 <a href="#" @click.prevent="showLogin = true" class="font-medium text-sm transition-colors" :class="{ 'text-rani-primary hover:text-rani-gold': scrolled, 'text-rani-light hover:text-rani-gold': !scrolled }">Log in</a>
-                <a href="#" @click.prevent="showRegister = true" class="px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 border border-rani-gold text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary">
+                <a href="{{ route('register.page') }}" class="px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 border border-rani-gold text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary">
                     Register Now
                 </a>
             </div>
@@ -139,7 +139,7 @@
             <a href="#" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">Success Stories</a>
             <div class="mt-4 pt-4 border-t border-rani-gold/30 flex flex-col gap-3">
                 <a href="#" @click.prevent="showLogin = true" class="block w-full text-center px-4 py-2 text-base font-medium text-rani-primary">Log in</a>
-                <a href="#" @click.prevent="showRegister = true" class="block w-full text-center px-4 py-2 border border-rani-gold rounded-full shadow-sm text-base font-medium text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark">Register Now</a>
+                <a href="{{ route('register.page') }}" class="block w-full text-center px-4 py-2 border border-rani-gold rounded-full shadow-sm text-base font-medium text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark">Register Now</a>
             </div>
         </div>
     </div>
