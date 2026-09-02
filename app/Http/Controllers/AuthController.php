@@ -47,6 +47,35 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'redirect' => route('dashboard')]);
     }
 
+    // Send OTP for Registration (Checking for uniqueness)
+    public function sendRegistrationOtp(Request $request)
+    {
+        $request->validate([
+            'mobile' => 'required|digits:10|unique:candidates,mobile',
+            'email' => 'required|email|unique:candidates,email'
+        ]);
+
+        // Simulate OTP
+        Session::put('reg_otp_mobile', $request->mobile);
+        Session::put('reg_otp_code', '1234');
+
+        return response()->json(['success' => true, 'message' => 'OTP sent to ' . $request->mobile]);
+    }
+
+    // Verify OTP for Registration
+    public function verifyRegistrationOtp(Request $request)
+    {
+        $request->validate(['otp' => 'required|digits:4']);
+
+        $code = Session::get('reg_otp_code');
+
+        if ($request->otp !== $code) {
+            return response()->json(['success' => false, 'message' => 'Invalid OTP'], 400);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
     // Register Candidate
     public function register(Request $request)
     {
