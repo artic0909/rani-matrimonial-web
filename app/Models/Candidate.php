@@ -13,7 +13,8 @@ class Candidate extends Authenticatable
         
         'middle_name', 'living_in', 'college_address', 'income_type',
         'profession', 'designation', 'company_name', 'company_address',
-        'about_yourself', 'profile_picture', 'hobbies_interests', 'selfie_verified'
+        'about_yourself', 'profile_picture', 'hobbies_interests', 'selfie_verified',
+        'full_address', 'aadhar_number'
     ];
 
     protected function casts(): array

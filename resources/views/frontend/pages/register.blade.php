@@ -237,13 +237,24 @@
                                 <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Middle Name (Optional)</label>
                                 <input type="text" name="middle_name" x-model="formData.middle_name" class="w-full px-5 py-3.5 rounded-xl theme-input">
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Last Name</label>
-                                <input type="text" name="last_name" x-model="formData.last_name" required class="w-full px-5 py-3.5 rounded-xl theme-input" placeholder="e.g. Sharma">
+                            <!-- Last Name & Aadhar Number Row -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+                                <div>
+                                    <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Last Name</label>
+                                    <input type="text" x-model="formData.last_name" placeholder="e.g. Sharma" 
+                                        class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Aadhar Number</label>
+                                    <input type="text" x-model="formData.aadhar_number" placeholder="12-digit Aadhar Number" maxlength="12"
+                                        class="w-full px-5 py-3.5 rounded-xl theme-input"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                </div>
                             </div>
                         </div>
                         <div class="mt-4">
-                            <button type="button" @click="nextStep" :disabled="!formData.first_name || !formData.last_name" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                            <button type="button" @click="nextStep" :disabled="!formData.first_name || !formData.last_name || !formData.aadhar_number" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
                         </div>
                     </div>
 
@@ -354,22 +365,57 @@
                          >
                          
                         <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Location</h4>
-                        <div class="space-y-5 mb-8">
+                        
+                        <!-- Country Row -->
+                        <div class="mb-5">
+                            <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Country (Living In)</label>
+                            <select x-model="formData.country" 
+                                class="w-full px-5 py-3.5 rounded-xl theme-input appearance-none">
+                                <option value="">Select Country</option>
+                                <option value="India">India</option>
+                                <option value="USA">USA</option>
+                                <option value="UK">UK</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Australia">Australia</option>
+                                <option value="UAE">UAE</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- State & City Row -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                             <div>
                                 <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">State</label>
-                                <input type="text" name="state" x-model="formData.state" required class="w-full px-5 py-3.5 rounded-xl theme-input" placeholder="e.g. Maharashtra">
+                                <select x-model="formData.state" class="w-full px-5 py-3.5 rounded-xl theme-input appearance-none">
+                                    <option value="">Select State</option>
+                                    <option value="West Bengal">West Bengal</option>
+                                    <option value="Maharashtra">Maharashtra</option>
+                                    <option value="Delhi">Delhi</option>
+                                </select>
                             </div>
+
                             <div>
                                 <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">City</label>
-                                <input type="text" name="city" x-model="formData.city" required class="w-full px-5 py-3.5 rounded-xl theme-input" placeholder="e.g. Mumbai">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Sub-community (Optional)</label>
-                                <input type="text" name="sub_community" x-model="formData.sub_community" class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <input type="text" x-model="formData.city" placeholder="e.g. Kolkata" 
+                                    class="w-full px-5 py-3.5 rounded-xl theme-input">
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <button type="button" @click="nextStep" :disabled="!(formData.state && formData.city)" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+
+                        <!-- Full Address -->
+                        <div class="mb-5">
+                            <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Full Address</label>
+                            <textarea x-model="formData.full_address" placeholder="Enter your complete residential address" rows="3"
+                                class="w-full px-5 py-3.5 rounded-xl theme-input resize-none"></textarea>
+                        </div>
+
+                        <!-- Sub-community -->
+                        <div class="mb-5">
+                            <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Sub-community (Optional)</label>
+                            <input type="text" name="sub_community" x-model="formData.sub_community" class="w-full px-5 py-3.5 rounded-xl theme-input">
+                        </div>
+
+                        <div class="mt-8">
+                            <button type="button" @click="nextStep" :disabled="!(formData.country && formData.state && formData.city && formData.full_address)" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
                         </div>
                     </div>
 
@@ -654,13 +700,15 @@
             step: 1,
             formData: {
                 profile_for: '', gender: '', first_name: '', middle_name: '', last_name: '', 
-                dob_day: '', dob_month: '', dob_year: '', religion: '', community: '', living_in: '', 
+                dob_day: '', dob_month: '', dob_year: '', religion: '', community: '',
                 email: '', mobile: '',
-                state: '', city: '', sub_community: '',
+                country: '', state: '', city: '', sub_community: '', full_address: '',
                 marital_status: '', height: '', diet: '',
                 highest_qualification: '', college_name: '', college_address: '',
-                profession: '', designation: '', income_type: '', company_name: '', company_address: '',
+                income_type: '',
+                profession: '', designation: '', company_name: '', company_address: '',
                 about_yourself: '',
+                aadhar_number: '',
                 hobbies: []
             },
             otp: '',
@@ -696,7 +744,38 @@
                 // Validation before advancing
                 if (this.step === 1 && !this.formData.profile_for) return this.showError("Please select who this profile is for.");
                 if (this.step === 2 && !this.formData.gender) return this.showError("Please select gender.");
-                if (this.step === 3 && (!this.formData.first_name || !this.formData.last_name)) return this.showError("First name and Last name are required.");
+                
+                if (this.step === 3) {
+                    if (!this.formData.first_name || !this.formData.last_name) return this.showError("First name and Last name are required.");
+                    if (!this.formData.aadhar_number || this.formData.aadhar_number.length !== 12) return this.showError("Please enter a valid 12-digit Aadhar Number.");
+                    
+                    fetch('/api/check-user-exists', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value },
+                        body: JSON.stringify({ aadhar_number: this.formData.aadhar_number })
+                    })
+                    .then(res => {
+                        if (!res.ok) return res.json().then(err => { throw err; });
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (data.exists) {
+                            this.showError(data.message, 'Account Exists');
+                        } else {
+                            this.step++;
+                        }
+                    })
+                    .catch(err => {
+                        if (err && err.errors) {
+                            const firstError = Object.values(err.errors)[0][0];
+                            this.showError(firstError, 'Invalid Input');
+                        } else {
+                            this.showError("Error verifying details.", 'Error');
+                        }
+                    });
+                    return; // Prevent normal advancement
+                }
+
                 if (this.step === 4 && (!this.formData.dob_day || !this.formData.dob_month || !this.formData.dob_year)) return this.showError("Date of Birth is required.");
                 if (this.step === 5 && (!this.formData.religion || !this.formData.community)) return this.showError("Religion and Community are required.");
                 if (this.step === 6) {
@@ -731,7 +810,11 @@
                     return; // Prevent normal advancement
                 }
 
-                if (this.step === 7 && (!this.formData.state || !this.formData.city)) return this.showError("State and City are required.");
+                if (this.step === 7) {
+                    if (!this.formData.country || !this.formData.state || !this.formData.city) return this.showError("Country, State, and City are required.");
+                    if (!this.formData.full_address) return this.showError("Full Address is required.");
+                }
+                
                 if (this.step === 8 && (!this.formData.marital_status || !this.formData.height || !this.formData.diet)) return this.showError("Physical & Diet details are required.");
                 if (this.step === 9 && !this.formData.highest_qualification) return this.showError("Highest Qualification is required.");
                 if (this.step === 10 && !this.formData.income_type) return this.showError("Income detail is required.");

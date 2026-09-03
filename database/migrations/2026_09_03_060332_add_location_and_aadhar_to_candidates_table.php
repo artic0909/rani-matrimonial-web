@@ -1,0 +1,29 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('candidates', function (Blueprint $table) {
+            $table->text('full_address')->nullable();
+            $table->string('aadhar_number', 12)->nullable()->unique();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('candidates', function (Blueprint $table) {
+            $table->dropColumn(['full_address', 'aadhar_number']);
+        });
+    }
+};

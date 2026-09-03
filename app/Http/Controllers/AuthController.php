@@ -48,21 +48,30 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'redirect' => route('dashboard')]);
     }
 
-    // Check if email or mobile already exists
+    // Check if email, mobile, or aadhar already exists
     public function checkUserExists(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'mobile' => 'required|digits:10'
-        ]);
+        // Support checking either (email+mobile) or (aadhar_number)
+        if ($request->has('aadhar_number')) {
+            $request->validate(['aadhar_number' => 'required|digits:12']);
+            $exists = Candidate::where('aadhar_number', $request->aadhar_number)->first();
+            if ($exists) {
+                return response()->json(['exists' => true, 'message' => "This Aadhar Number is already registered."]);
+            }
+        } else {
+            $request->validate([
+                'email' => 'required|email',
+                'mobile' => 'required|digits:10'
+            ]);
 
-        $exists = Candidate::where('email', $request->email)
-            ->orWhere('mobile', $request->mobile)
-            ->first();
+            $exists = Candidate::where('email', $request->email)
+                ->orWhere('mobile', $request->mobile)
+                ->first();
 
-        if ($exists) {
-            $field = ($exists->email === $request->email) ? 'Email' : 'Mobile number';
-            return response()->json(['exists' => true, 'message' => "This {$field} is already registered."]);
+            if ($exists) {
+                $field = ($exists->email === $request->email) ? 'Email' : 'Mobile number';
+                return response()->json(['exists' => true, 'message' => "This {$field} is already registered."]);
+            }
         }
 
         return response()->json(['exists' => false]);
@@ -231,14 +240,17 @@ class AuthController extends Controller
             'gender' => 'required|string',
             'first_name' => 'required|string',
             'last_name' => 'required|string',
+            'aadhar_number' => 'required|digits:12|unique:candidates,aadhar_number',
             'dob' => 'required|date',
             'religion' => 'required|string',
             'community' => 'required|string',
             'email' => 'required|email|unique:candidates,email',
             'mobile' => 'required|digits:10|unique:candidates,mobile',
             
+            'country' => 'required|string',
             'state' => 'required|string',
             'city' => 'required|string',
+            'full_address' => 'required|string',
             'sub_community' => 'nullable|string',
             'marital_status' => 'required|string',
             'height' => 'required|string',
