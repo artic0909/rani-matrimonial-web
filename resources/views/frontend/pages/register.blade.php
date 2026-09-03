@@ -4,8 +4,29 @@
 
 @section('content')
 
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <!-- Theme-based Styling Overrides -->
 <style>
+    /* Custom SweetAlert Theme for Rani Matrimonial */
+    .rani-swal-popup {
+        background: #4a0404 !important;
+        border: 1px solid #D4AF37 !important;
+        color: #fff !important;
+        border-radius: 15px !important;
+    }
+    .rani-swal-title {
+        color: #D4AF37 !important;
+    }
+    .rani-swal-confirm {
+        background: linear-gradient(to right, #D4AF37, #C59B27) !important;
+        color: #4a0404 !important;
+        border-radius: 9999px !important;
+        font-weight: bold !important;
+        padding: 12px 32px !important;
+    }
+
     .glass-card {
         background: rgba(255, 255, 255, 0.15);
         backdrop-filter: blur(16px);
@@ -180,7 +201,7 @@
                             </template>
                         </div>
                         <div class="mt-4">
-                            <button type="button" :disabled="!formData.profile_for" @click="nextStep" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                            <button type="button" @click="nextStep" class="w-full theme-btn py-4 rounded-full text-lg transition-all">Continue</button>
                         </div>
                     </div>
 
@@ -249,12 +270,12 @@
                                     <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Aadhar Number</label>
                                     <input type="text" x-model="formData.aadhar_number" placeholder="12-digit Aadhar Number" maxlength="12"
                                         class="w-full px-5 py-3.5 rounded-xl theme-input"
-                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                        @input="formData.aadhar_number = $event.target.value.replace(/[^0-9]/g, '')">
                                 </div>
                             </div>
                         </div>
                         <div class="mt-4">
-                            <button type="button" @click="nextStep" :disabled="!formData.first_name || !formData.last_name || !formData.aadhar_number" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                            <button type="button" @click="nextStep" class="w-full theme-btn py-4 rounded-full text-lg transition-all">Continue</button>
                         </div>
                     </div>
 
@@ -415,7 +436,7 @@
                         </div>
 
                         <div class="mt-8">
-                            <button type="button" @click="nextStep" :disabled="!(formData.country && formData.state && formData.city && formData.full_address)" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                            <button type="button" @click="nextStep" class="w-full theme-btn py-4 rounded-full text-lg transition-all">Continue</button>
                         </div>
                     </div>
 
@@ -747,7 +768,7 @@
                 
                 if (this.step === 3) {
                     if (!this.formData.first_name || !this.formData.last_name) return this.showError("First name and Last name are required.");
-                    if (!this.formData.aadhar_number || this.formData.aadhar_number.length !== 12) return this.showError("Please enter a valid 12-digit Aadhar Number.");
+                    if (!this.formData.aadhar_number || this.formData.aadhar_number.toString().length !== 12) return this.showError("Please enter a valid 12-digit Aadhar Number.");
                     
                     fetch('/api/check-user-exists', {
                         method: 'POST',
