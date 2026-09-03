@@ -676,10 +676,10 @@
                 this.formData.gender = val;
                 setTimeout(() => this.nextStep(), 300);
             },
-            showError(msg) {
+            showError(msg, title = 'Missing Information') {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Missing Information',
+                    title: title,
                     text: msg,
                     customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                 });
@@ -707,15 +707,27 @@
                         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value },
                         body: JSON.stringify({ email: this.formData.email, mobile: this.formData.mobile })
                     })
-                    .then(res => res.json())
+                    .then(res => {
+                        if (!res.ok) {
+                            return res.json().then(err => { throw err; });
+                        }
+                        return res.json();
+                    })
                     .then(data => {
                         if (data.exists) {
-                            this.showError(data.message);
+                            this.showError(data.message, 'Account Exists');
                         } else {
                             this.step++;
                         }
                     })
-                    .catch(err => this.showError("Error verifying details."));
+                    .catch(err => {
+                        if (err && err.errors) {
+                            const firstError = Object.values(err.errors)[0][0];
+                            this.showError(firstError, 'Invalid Input');
+                        } else {
+                            this.showError("Error verifying details.", 'Error');
+                        }
+                    });
                     return; // Prevent normal advancement
                 }
 
