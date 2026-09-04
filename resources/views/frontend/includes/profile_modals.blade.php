@@ -7,11 +7,9 @@
      x-transition:enter-end="opacity-100"
      x-transition:leave="transition ease-in duration-200"
      x-transition:leave-start="opacity-100"
-     x-transition:leave-end="opacity-0"
-     @keydown.escape.window="editModalOpen = false">
+     x-transition:leave-end="opacity-0">
      
     <div class="relative w-full max-w-2xl mx-auto my-auto" 
-         @click.away="editModalOpen = false" 
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 translate-y-4 sm:scale-95"
          x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -27,9 +25,9 @@
             <!-- Header -->
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/70">
                 <h3 class="text-xl font-bold font-serif text-rani-primary-dark tracking-wide" x-text="getModalTitle()"></h3>
-                <button @click="editModalOpen = false" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-full text-sm w-8 h-8 inline-flex justify-center items-center transition-colors">
-                    <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                <button @click="editModalOpen = false" type="button" class="text-gray-400 bg-transparent hover:bg-red-50 hover:text-red-600 rounded-full text-sm w-9 h-9 inline-flex justify-center items-center transition-all duration-200 hover:rotate-90 hover:scale-110 border border-transparent hover:border-red-200" title="Close (X)">
+                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                     </svg>
                 </button>
             </div>
