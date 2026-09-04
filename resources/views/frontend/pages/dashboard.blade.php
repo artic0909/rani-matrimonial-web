@@ -3,12 +3,32 @@
 @section('title', 'Dashboard | Ranimatrimonial')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="relative pt-8 pb-20">
+    <!-- Background Image -->
+    <div class="fixed inset-0 z-0 bg-cover bg-top bg-no-repeat" style="background-image: url('{{ asset('img/hero.png') }}');"></div>
+    
+    <!-- Maroon/Gold Gradient Overlay (Reduced Opacity) -->
+    <div class="fixed inset-0 z-0 bg-gradient-to-t from-rani-dark/80 via-rani-primary-dark/40 to-rani-primary-dark/20"></div>
+    
+    <!-- Floating Sweet Gestures (Hearts) -->
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none heart-container opacity-50">
+        <div class="heart-floating delay-1"></div>
+        <div class="heart-floating heart-maroon delay-2"></div>
+        <div class="heart-floating delay-3"></div>
+        <div class="heart-floating heart-maroon delay-4"></div>
+        <div class="heart-floating delay-5"></div>
+        <div class="heart-floating heart-maroon delay-1" style="left: 20%; animation-delay: 7s;"></div>
+        <div class="heart-floating delay-2" style="left: 40%; animation-delay: 9s;"></div>
+        <div class="heart-floating heart-maroon delay-3" style="left: 60%; animation-delay: 2s;"></div>
+        <div class="heart-floating delay-4" style="left: 80%; animation-delay: 14s;"></div>
+    </div>
+
+<div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex flex-col lg:flex-row gap-6">
         
         <!-- Left Column: Profile Snapshot -->
         <div class="w-full lg:w-1/4 flex flex-col gap-6">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="p-6 flex flex-col items-center border-b border-gray-100 relative">
                     <!-- Profile Image -->
                     <div class="relative mb-4">
@@ -61,7 +81,7 @@
                 <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                 <h3 class="font-serif font-bold text-2xl italic mb-2 relative z-10">Rani Live</h3>
                 <p class="text-sm text-rani-gold-light/90 mb-4 relative z-10">5 Minute Video Meetings</p>
-                <div class="bg-white/20 rounded-lg p-3 backdrop-blur-sm relative z-10 border border-white/30">
+                <div class="bg-white/95 backdrop-blur-sm/20 rounded-lg p-3 backdrop-blur-sm relative z-10 border border-white/30">
                     <p class="text-xs font-medium uppercase tracking-widest text-rani-gold">Starts In</p>
                     <p class="text-lg font-bold">2 Days</p>
                 </div>
@@ -72,7 +92,7 @@
         <div class="w-full lg:w-2/4 flex flex-col gap-6">
             
             <!-- Activity Summary -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <h3 class="font-bold text-gray-800 font-serif text-lg">Your Activity Summary</h3>
                 </div>
@@ -100,7 +120,7 @@
                     </div>
                     <!-- Item 4 (Premium feature mock) -->
                     <div class="p-4 flex flex-col items-center justify-center text-center bg-gray-50 relative overflow-hidden group">
-                        <div class="absolute inset-0 bg-white/60 flex items-center justify-center backdrop-blur-[1px] opacity-100 group-hover:opacity-0 transition-opacity z-10">
+                        <div class="absolute inset-0 bg-white/95 backdrop-blur-sm/60 flex items-center justify-center backdrop-blur-[1px] opacity-100 group-hover:opacity-0 transition-opacity z-10">
                             <svg class="w-5 h-5 text-rani-primary" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
                         </div>
                         <span class="text-2xl font-bold text-gray-300 mb-1 relative z-0">0</span>
@@ -110,14 +130,14 @@
             </div>
 
             <!-- Improve your Profile Banner -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <h3 class="font-bold text-gray-800 font-serif text-lg">Improve your Profile</h3>
                 </div>
                 <div class="p-6 flex flex-col sm:flex-row items-center gap-6 bg-gradient-to-r from-orange-50 to-pink-50">
                     <div class="relative shrink-0">
                         <!-- Abstract illustration -->
-                        <div class="w-24 h-24 rounded-full bg-white shadow-md flex items-center justify-center border-4 border-pink-100">
+                        <div class="w-24 h-24 rounded-full bg-white/95 backdrop-blur-sm shadow-md flex items-center justify-center border-4 border-pink-100">
                             <svg class="w-12 h-12 text-pink-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                         </div>
                         <div class="absolute -bottom-2 -right-2 bg-blue-500 rounded-full p-1.5 border-2 border-white shadow-md">
@@ -137,7 +157,7 @@
             </div>
 
             <!-- Matches preview -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                     <h3 class="font-bold text-gray-800 font-serif text-lg">New Matches For You</h3>
                     <a href="#" class="text-rani-primary text-sm font-medium hover:underline">See all</a>
@@ -156,7 +176,7 @@
         <div class="w-full lg:w-1/4 flex flex-col gap-6">
             
             <!-- VIP Banner -->
-            <div class="bg-white rounded-xl shadow-sm border border-rani-gold overflow-hidden relative group cursor-pointer">
+            <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm border border-rani-gold overflow-hidden relative group cursor-pointer">
                 <div class="bg-rani-light/50 p-6 flex flex-col items-center text-center border-b border-gray-100">
                     <div class="flex items-center gap-1 mb-1">
                         <svg class="w-5 h-5 text-rani-gold" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
@@ -185,7 +205,7 @@
             </div>
 
             <!-- Notifications -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
@@ -217,5 +237,6 @@
         </div>
 
     </div>
+</div>
 </div>
 @endsection
