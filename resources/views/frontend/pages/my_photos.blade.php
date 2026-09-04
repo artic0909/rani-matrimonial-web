@@ -19,131 +19,327 @@
         <div class="heart-floating delay-5"></div>
         <div class="heart-floating heart-maroon delay-1" style="left: 20%; animation-delay: 7s;"></div>
         <div class="heart-floating delay-2" style="left: 40%; animation-delay: 9s;"></div>
-        <div class="heart-floating heart-maroon delay-3" style="left: 60%; animation-delay: 2s;"></div>
+        <div class="heart-floating delay-3" style="left: 60%; animation-delay: 2s;"></div>
         <div class="heart-floating delay-4" style="left: 80%; animation-delay: 14s;"></div>
     </div>
 
     <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <!-- Top Gallery Header Card -->
-        <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/60 mb-10 p-6 md:p-10 relative overflow-hidden z-10 hover:shadow-rani-gold/10 transition-shadow duration-500">
+        <!-- Main Card Container -->
+        <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/60 mb-10 overflow-hidden relative z-10">
             <!-- Subtle royal accent top -->
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold opacity-90"></div>
             
-            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+            <!-- Tab Navigation Header -->
+            <div class="px-6 md:px-10 pt-8 pb-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <div class="flex items-center gap-3 mb-2">
-                        <span class="px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rani-light/50 text-rani-primary-dark border border-rani-gold/30">Photo Gallery</span>
-                        <span class="text-sm font-semibold text-gray-500 font-sans">(<span x-text="photos.length"></span>/10 Photos Uploaded)</span>
-                    </div>
-                    <h1 class="text-3xl md:text-4xl font-bold text-rani-primary-dark font-serif tracking-wide drop-shadow-sm">Manage My Photos</h1>
-                    <p class="text-sm text-gray-600 mt-1 max-w-xl">
-                        Profiles with multiple photos receive up to <strong class="text-rani-primary">5x more connection requests</strong>. Upload clear, high-quality pictures.
-                    </p>
+                    <h1 class="text-2xl md:text-3xl font-bold font-serif text-rani-primary-dark tracking-wide">My Photos</h1>
+                    <p class="text-xs text-gray-500 font-sans mt-0.5">Manage your profile photo, gallery pictures, and privacy settings</p>
                 </div>
 
-                <!-- Add Photos Button -->
-                <div>
-                    <label for="gallery_file_input" class="cursor-pointer inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white font-semibold text-sm shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 border border-rani-gold/40">
-                        <svg class="w-5 h-5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        <span>Upload Photos</span>
-                        <input type="file" id="gallery_file_input" class="hidden" accept="image/*" multiple @change="handleFileUpload">
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Upload Drag & Drop Area (if under 10 photos) -->
-        <div class="mb-10" x-show="photos.length < 10">
-            <div class="border-2 border-dashed border-rani-gold/40 hover:border-rani-primary bg-white/80 hover:bg-white/95 backdrop-blur-md rounded-3xl p-8 md:p-12 text-center transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl group"
-                 @click="document.getElementById('gallery_file_input').click()"
-                 @dragover.prevent="isDragging = true"
-                 @dragleave.prevent="isDragging = false"
-                 @drop.prevent="handleFileDrop($event)">
-                
-                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-rani-light/40 border border-rani-gold/20 flex items-center justify-center text-rani-primary group-hover:scale-110 transition-transform">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                </div>
-
-                <h3 class="text-lg font-bold text-gray-800 font-serif mb-1">Drag and drop your photos here, or <span class="text-rani-primary underline">browse</span></h3>
-                <p class="text-xs text-gray-500">Supports JPG, PNG, WEBP (Max 15MB each). You can select multiple images at once.</p>
-
-                <!-- Loading State Indicator -->
-                <div x-show="isUploading" style="display: none;" class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-rani-primary text-white rounded-full text-xs font-semibold shadow-md animate-pulse">
-                    <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                    Uploading & Compressing Photos...
-                </div>
-            </div>
-        </div>
-
-        <!-- Photos Grid -->
-        <div class="space-y-6">
-            <div class="flex items-center justify-between">
-                <h2 class="text-2xl font-bold font-serif text-white tracking-wide drop-shadow-md">My Uploaded Photos</h2>
-            </div>
-
-            <!-- Empty State -->
-            <template x-if="photos.length === 0">
-                <div class="bg-white/95 backdrop-blur-md rounded-3xl p-12 text-center shadow-xl border border-white/60">
-                    <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-rani-light/40 flex items-center justify-center text-rani-gold border border-rani-gold/30">
-                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-serif font-bold text-gray-800 mb-2">No Photos Uploaded Yet</h3>
-                    <p class="text-gray-500 text-sm max-w-md mx-auto mb-6">Add your beautiful pictures to complete your profile and attract authentic matches.</p>
-                    <button type="button" @click="document.getElementById('gallery_file_input').click()" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-rani-primary text-white font-semibold text-sm hover:bg-rani-primary-dark transition-all shadow-md">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Upload First Photo
+                <!-- Sub-Tabs: Photo & Settings -->
+                <div class="flex items-center space-x-2 bg-gray-100/80 p-1.5 rounded-2xl border border-gray-200/60 self-start sm:self-auto">
+                    <button type="button" 
+                            @click="activeTab = 'photo'" 
+                            :class="activeTab === 'photo' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md font-bold' : 'text-gray-600 hover:text-rani-primary font-medium'"
+                            class="px-6 py-2 rounded-xl text-sm transition-all duration-300 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        Photo
+                    </button>
+                    <button type="button" 
+                            @click="activeTab = 'settings'" 
+                            :class="activeTab === 'settings' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md font-bold' : 'text-gray-600 hover:text-rani-primary font-medium'"
+                            class="px-6 py-2 rounded-xl text-sm transition-all duration-300 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Settings
                     </button>
                 </div>
-            </template>
+            </div>
 
-            <!-- Gallery Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" x-show="photos.length > 0">
-                <template x-for="photo in photos" :key="photo.id">
-                    <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden border border-white/60 group hover:shadow-2xl transition-all duration-300 flex flex-col justify-between">
+            <!-- ================= TAB 1: PHOTO ================= -->
+            <div x-show="activeTab === 'photo'" class="p-6 md:p-10 space-y-10">
+                
+                <!-- Hero Message & Upload Section -->
+                <div class="text-center max-w-2xl mx-auto space-y-4">
+                    <h2 class="text-2xl md:text-3xl font-bold font-serif text-rani-primary-dark tracking-wide">
+                        Get more responses by uploading up to 20 photos on your profile.
+                    </h2>
+                </div>
+
+                <!-- Spotlight: Profile Photo & Upload Box Card -->
+                <div class="bg-gradient-to-br from-rani-light/30 via-white to-rani-light/20 rounded-3xl p-6 md:p-8 border border-rani-gold/30 shadow-md">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
                         
-                        <!-- Image Frame -->
-                        <div class="relative aspect-4/5 overflow-hidden bg-gray-100 cursor-pointer" @click="previewPhoto(photo)">
-                            <img :src="photo.url" :alt="'Photo #' + photo.id" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            
-                            <!-- Profile Picture Badge -->
-                            <template x-if="photo.is_profile_picture">
-                                <span class="absolute top-3 left-3 bg-gradient-to-r from-rani-gold to-yellow-500 text-rani-dark text-xs font-bold px-3 py-1 rounded-full shadow-lg border border-white flex items-center gap-1">
-                                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                                    Main Profile
+                        <!-- 1st: Logged-in Candidate Profile Picture Display -->
+                        <div class="md:col-span-4 flex flex-col items-center justify-center text-center p-4 bg-white/80 backdrop-blur-xs rounded-2xl border border-gray-100 shadow-sm relative group">
+                            <div class="relative mb-3">
+                                <img :src="profileImageUrl" 
+                                     alt="{{ $candidate->first_name }}" 
+                                     class="w-36 h-36 md:w-40 md:h-40 rounded-full border-4 border-rani-gold object-cover shadow-lg bg-white">
+                                
+                                <!-- Profile Badge -->
+                                <span class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-rani-gold to-yellow-500 text-rani-dark text-[11px] font-bold px-3 py-0.5 rounded-full shadow border border-white whitespace-nowrap">
+                                    Profile Picture
                                 </span>
-                            </template>
+                            </div>
 
-                            <!-- Hover Overlay -->
-                            <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                <span class="p-2.5 bg-black/50 rounded-full backdrop-blur-xs">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
-                                </span>
+                            <h3 class="font-serif font-bold text-gray-800 text-lg mt-2">{{ $candidate->first_name }}{{ $candidate->middle_name ? ' ' . $candidate->middle_name : '' }} {{ $candidate->last_name }}</h3>
+                            <p class="text-xs text-gray-500 font-sans">ID: RANI{{ str_pad($candidate->id, 6, '0', STR_PAD_LEFT) }}</p>
+
+                            <!-- Change Profile Photo Button -->
+                            <label for="direct_profile_input" class="mt-3 cursor-pointer text-xs font-bold text-rani-primary hover:text-rani-primary-dark hover:underline flex items-center gap-1.5 transition-colors">
+                                <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                Change Profile Photo
+                                <input type="file" id="direct_profile_input" class="hidden" accept="image/*" @change="uploadProfilePhotoDirect">
+                            </label>
+                        </div>
+
+                        <!-- Drag & Drop Upload Container -->
+                        <div class="md:col-span-8 flex flex-col justify-center">
+                            <div class="border-2 border-dashed border-rani-gold/50 hover:border-rani-primary bg-white/90 hover:bg-white rounded-2xl p-6 md:p-8 text-center transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md group"
+                                 @click="document.getElementById('gallery_file_input').click()"
+                                 @dragover.prevent="isDragging = true"
+                                 @dragleave.prevent="isDragging = false"
+                                 @drop.prevent="handleFileDrop($event)">
+                                
+                                <p class="text-sm md:text-base font-semibold text-gray-700 mb-3">Upload photos from your computer or phone</p>
+                                
+                                <button type="button" class="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white font-bold text-sm shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all border border-rani-gold/30">
+                                    <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                                    Browse Photos
+                                </button>
+                                
+                                <input type="file" id="gallery_file_input" class="hidden" accept="image/*" multiple @change="handleFileUpload">
+
+                                <!-- Spinner -->
+                                <div x-show="isUploading" style="display: none;" class="mt-4 flex items-center justify-center gap-2 text-xs font-bold text-rani-primary animate-pulse">
+                                    <svg class="animate-spin h-4 w-4 text-rani-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                    Uploading & Compressing Photos...
+                                </div>
+                            </div>
+
+                            <p class="text-xs text-gray-500 mt-3 leading-relaxed text-center md:text-left">
+                                <strong>Note:</strong> You can upload up to 20 photos to your profile. Each photo must be less than 15 MB and in JPG, JPEG, PNG, or WEBP format. All photos uploaded are screened as per Photo Guidelines and 98% of those get activated within 2 hours.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery Photos Section (1st profile picture, 2nd, 3rd... from database) -->
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                        <h3 class="text-xl font-bold font-serif text-gray-800 tracking-wide flex items-center gap-2">
+                            <span>Uploaded Photos</span>
+                            <span class="text-xs font-sans px-2.5 py-0.5 rounded-full bg-rani-light/60 text-rani-primary-dark font-bold">(<span x-text="photos.length"></span> Photos)</span>
+                        </h3>
+                    </div>
+
+                    <!-- Gallery Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+                        <template x-for="(photo, index) in photos" :key="photo.id">
+                            <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100 group hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
+                                
+                                <!-- Photo Box -->
+                                <div class="relative aspect-4/5 overflow-hidden bg-gray-100 cursor-pointer" @click="previewPhoto(photo)">
+                                    <img :src="photo.url" :alt="'Photo #' + photo.id" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    
+                                    <!-- 1st Badge or Active Profile Badge -->
+                                    <template x-if="photo.is_profile_picture">
+                                        <span class="absolute top-2 left-2 bg-gradient-to-r from-rani-gold to-yellow-500 text-rani-dark text-[10px] font-bold px-2 py-0.5 rounded-full shadow border border-white flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                            Profile Photo
+                                        </span>
+                                    </template>
+
+                                    <!-- Index position badge -->
+                                    <span class="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-xs" x-text="'#' + (index + 1)"></span>
+
+                                    <!-- Hover Zoom Icon -->
+                                    <div class="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                        <span class="p-2 bg-black/50 rounded-full backdrop-blur-xs">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Actions -->
+                                <div class="p-2.5 bg-gray-50/50 flex items-center justify-between border-t border-gray-100 gap-1">
+                                    <template x-if="!photo.is_profile_picture">
+                                        <button type="button" @click="setAsProfile(photo)" class="text-[11px] font-bold text-rani-primary hover:text-rani-primary-dark hover:underline flex items-center gap-1 transition-colors">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            Set Profile
+                                        </button>
+                                    </template>
+                                    <template x-if="photo.is_profile_picture">
+                                        <span class="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                            Active
+                                        </span>
+                                    </template>
+
+                                    <button type="button" @click="deletePhoto(photo)" class="text-gray-400 hover:text-red-600 p-1 rounded hover:bg-red-50 transition-colors" title="Delete Photo">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Other Ways to Upload Note -->
+                <div class="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4 flex items-start gap-3">
+                    <span class="text-xl">✉️</span>
+                    <div>
+                        <h4 class="text-xs font-bold text-amber-900 uppercase tracking-wide">Other ways to upload your photos</h4>
+                        <p class="text-xs text-amber-800 mt-0.5">
+                            Send your photos through post or courier to our registered office. Please mention your <strong>Profile ID (RANI{{ str_pad($candidate->id, 6, '0', STR_PAD_LEFT) }})</strong> and Name on the back of the physical photographs.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- ================= BOTTOM INSTRUCTIONS / GUIDELINES ================= -->
+                <div class="pt-8 border-t border-gray-200 space-y-6">
+                    <div class="text-center">
+                        <h3 class="text-lg md:text-xl font-bold font-serif text-gray-800">Photo Upload Instructions & Guidelines</h3>
+                        <p class="text-xs text-gray-500 mt-1">Please ensure your pictures follow these standard matrimonial guidelines for fast approval</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- Photos you CAN upload -->
+                        <div class="bg-emerald-50/60 border border-emerald-200/80 rounded-2xl p-5">
+                            <div class="flex items-center gap-2 mb-4 text-emerald-800 font-bold text-sm">
+                                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                <span>Photos you CAN upload</span>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="text-center bg-white rounded-xl p-3 border border-emerald-100 shadow-sm">
+                                    <div class="w-full aspect-square bg-emerald-50 rounded-lg mb-2 overflow-hidden flex items-center justify-center text-emerald-600">
+                                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                    </div>
+                                    <span class="text-xs font-bold text-gray-700">Close Up</span>
+                                    <p class="text-[11px] text-gray-500">Clear face portrait</p>
+                                </div>
+
+                                <div class="text-center bg-white rounded-xl p-3 border border-emerald-100 shadow-sm">
+                                    <div class="w-full aspect-square bg-emerald-50 rounded-lg mb-2 overflow-hidden flex items-center justify-center text-emerald-600">
+                                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                    </div>
+                                    <span class="text-xs font-bold text-gray-700">Full View</span>
+                                    <p class="text-[11px] text-gray-500">Full body / standing pose</p>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Card Actions -->
-                        <div class="p-4 bg-white flex items-center justify-between border-t border-gray-100 gap-2">
-                            <template x-if="!photo.is_profile_picture">
-                                <button type="button" @click="setAsProfile(photo)" class="text-xs font-bold text-rani-primary hover:text-rani-primary-dark hover:underline flex items-center gap-1 transition-colors">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    Set Profile
-                                </button>
-                            </template>
-                            <template x-if="photo.is_profile_picture">
-                                <span class="text-xs font-semibold text-emerald-600 flex items-center gap-1">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-                                    Active Avatar
-                                </span>
-                            </template>
+                        <!-- Photos you CANNOT upload -->
+                        <div class="bg-red-50/60 border border-red-200/80 rounded-2xl p-5">
+                            <div class="flex items-center gap-2 mb-4 text-red-800 font-bold text-sm">
+                                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                <span>Photos you CANNOT upload</span>
+                            </div>
 
-                            <button type="button" @click="deletePhoto(photo)" class="text-gray-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Delete Photo">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <div class="text-center bg-white rounded-xl p-2.5 border border-red-100 shadow-sm">
+                                    <div class="w-full aspect-square bg-red-50 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center text-red-400">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path></svg>
+                                    </div>
+                                    <span class="text-[11px] font-bold text-gray-700">Side Face</span>
+                                </div>
+
+                                <div class="text-center bg-white rounded-xl p-2.5 border border-red-100 shadow-sm">
+                                    <div class="w-full aspect-square bg-red-50 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center text-red-400">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                    </div>
+                                    <span class="text-[11px] font-bold text-gray-700">Blur</span>
+                                </div>
+
+                                <div class="text-center bg-white rounded-xl p-2.5 border border-red-100 shadow-sm">
+                                    <div class="w-full aspect-square bg-red-50 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center text-red-400">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                    </div>
+                                    <span class="text-[11px] font-bold text-gray-700">Group</span>
+                                </div>
+
+                                <div class="text-center bg-white rounded-xl p-2.5 border border-red-100 shadow-sm">
+                                    <div class="w-full aspect-square bg-red-50 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center text-red-400">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    </div>
+                                    <span class="text-[11px] font-bold text-gray-700">Watermark</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Footer Help Links -->
+                    <div class="flex items-center justify-center gap-4 text-xs font-semibold text-gray-500 pt-2">
+                        <a href="#" class="text-rani-primary hover:underline">Photo Guidelines</a>
+                        <span>•</span>
+                        <a href="#" class="text-rani-primary hover:underline">Photo FAQ</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================= TAB 2: SETTINGS ================= -->
+            <div x-show="activeTab === 'settings'" style="display: none;" class="p-6 md:p-10 space-y-8 max-w-2xl mx-auto">
+                <div>
+                    <h2 class="text-2xl font-bold font-serif text-rani-primary-dark">Photo Privacy Settings</h2>
+                    <p class="text-sm text-gray-500 mt-1">Control who can see your photos on Ranimatrimonial</p>
+                </div>
+
+                <form @submit.prevent="saveSettings" class="space-y-8">
+                    
+                    <!-- Profile Photo Privacy -->
+                    <div class="bg-gray-50/70 p-6 rounded-2xl border border-gray-200/80 space-y-4">
+                        <h3 class="text-base font-bold text-gray-800 font-serif">Profile Photo</h3>
+                        
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="radio" value="Visible to all Members (Recommended)" x-model="settings.photo_privacy" class="w-4 h-4 text-rani-primary focus:ring-rani-primary border-gray-300">
+                                <span class="text-sm text-gray-700 font-medium">Visible to all Members (Recommended)</span>
+                            </label>
+                            
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="radio" value="Visible to Members I like and to all Premium Members" x-model="settings.photo_privacy" class="w-4 h-4 text-rani-primary focus:ring-rani-primary border-gray-300">
+                                <span class="text-sm text-gray-700 font-medium">Visible to Members I like and to all Premium Members</span>
+                            </label>
                         </div>
                     </div>
-                </template>
+
+                    <!-- Album Privacy -->
+                    <div class="bg-gray-50/70 p-6 rounded-2xl border border-gray-200/80 space-y-4">
+                        <h3 class="text-base font-bold text-gray-800 font-serif">Album</h3>
+                        
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="radio" value="Visible to Members I like and to all Premium Members" x-model="settings.album_privacy" class="w-4 h-4 text-rani-primary focus:ring-rani-primary border-gray-300">
+                                <span class="text-sm text-gray-700 font-medium">Visible to Members I like and to all Premium Members</span>
+                            </label>
+                            
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="radio" value="Only visible to members I like" x-model="settings.album_privacy" class="w-4 h-4 text-rani-primary focus:ring-rani-primary border-gray-300">
+                                <span class="text-sm text-gray-700 font-medium">Only visible to members I like</span>
+                            </label>
+
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="radio" value="Visible to all Members" x-model="settings.album_privacy" class="w-4 h-4 text-rani-primary focus:ring-rani-primary border-gray-300">
+                                <span class="text-sm text-gray-700 font-medium">Visible to all Members</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div>
+                        <button type="submit" :disabled="isSavingSettings" class="px-8 py-3 rounded-full bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white font-bold text-sm shadow-md hover:shadow-lg transition-all disabled:opacity-50">
+                            <span x-show="!isSavingSettings">Save my settings</span>
+                            <span x-show="isSavingSettings">Saving...</span>
+                        </button>
+                    </div>
+                </form>
             </div>
+
         </div>
 
     </div>
@@ -164,11 +360,19 @@
 <script>
 window.galleryManager = function() {
     return {
+        activeTab: 'photo',
+        profileImageUrl: '{{ $candidate->profile_picture ? asset('storage/' . $candidate->profile_picture) : "https://ui-avatars.com/api/?name=".urlencode($candidate->first_name)."&background=D4AF37&color=fff" }}',
         photos: @json($formattedPhotos ?? []),
         isUploading: false,
         isDragging: false,
+        isSavingSettings: false,
         previewModalOpen: false,
         activePreviewUrl: '',
+
+        settings: {
+            photo_privacy: @json($candidate->photo_privacy ?? 'Visible to all Members (Recommended)'),
+            album_privacy: @json($candidate->album_privacy ?? 'Visible to Members I like and to all Premium Members')
+        },
 
         previewPhoto(photo) {
             this.activePreviewUrl = photo.url;
@@ -191,12 +395,56 @@ window.galleryManager = function() {
             event.target.value = '';
         },
 
+        async uploadProfilePhotoDirect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 15 * 1024 * 1024) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'File Too Large',
+                    text: 'Profile picture must be under 15MB.',
+                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                });
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('profile_picture', file);
+
+            try {
+                const response = await fetch('{{ route("profile.upload-photo") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    this.profileImageUrl = result.image_url;
+                    window.location.reload();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Upload Failed',
+                        text: result.message || 'Could not update profile picture.',
+                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    });
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        },
+
         async uploadFiles(files) {
-            if (this.photos.length + files.length > 10) {
+            if (this.photos.length + files.length > 20) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Limit Exceeded',
-                    text: 'You can have a maximum of 10 photos in your gallery.',
+                    text: 'You can have a maximum of 20 photos in your gallery.',
                     customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                 });
                 return;
@@ -230,7 +478,6 @@ window.galleryManager = function() {
 
                 const result = await response.json();
                 if (result.success) {
-                    // Prepend newly uploaded photos
                     this.photos = [...result.photos, ...this.photos];
                     Swal.fire({
                         icon: 'success',
@@ -239,6 +486,8 @@ window.galleryManager = function() {
                         timer: 2000,
                         showConfirmButton: false,
                         customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    }).then(() => {
+                        window.location.reload();
                     });
                 } else {
                     const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat().join('<br>') : 'Error uploading photos');
@@ -276,6 +525,7 @@ window.galleryManager = function() {
 
                 const result = await response.json();
                 if (result.success) {
+                    this.profileImageUrl = result.image_url;
                     this.photos = this.photos.map(p => {
                         p.is_profile_picture = (p.id === photo.id);
                         return p;
@@ -288,6 +538,8 @@ window.galleryManager = function() {
                         timer: 2000,
                         showConfirmButton: false,
                         customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    }).then(() => {
+                        window.location.reload();
                     });
                 } else {
                     Swal.fire({
@@ -329,8 +581,8 @@ window.galleryManager = function() {
                 const result = await response.json();
                 if (result.success) {
                     this.photos = this.photos.filter(p => p.id !== photo.id);
-                    if (result.was_profile_picture && this.photos.length > 0) {
-                        this.photos[0].is_profile_picture = true;
+                    if (result.was_profile_picture && result.new_profile_url) {
+                        this.profileImageUrl = result.new_profile_url;
                     }
 
                     Swal.fire({
@@ -340,6 +592,8 @@ window.galleryManager = function() {
                         timer: 1500,
                         showConfirmButton: false,
                         customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    }).then(() => {
+                        window.location.reload();
                     });
                 } else {
                     Swal.fire({
@@ -351,6 +605,44 @@ window.galleryManager = function() {
                 }
             } catch (error) {
                 console.error('Delete Error:', error);
+            }
+        },
+
+        async saveSettings() {
+            this.isSavingSettings = true;
+            try {
+                const response = await fetch('{{ route("photos.settings") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(this.settings)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Settings Saved!',
+                        text: result.message || 'Your photo privacy settings have been updated.',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.message || 'Could not save settings.',
+                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+            } finally {
+                this.isSavingSettings = false;
             }
         }
     };

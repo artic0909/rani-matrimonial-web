@@ -524,7 +524,31 @@ class AuthController extends Controller
     public function myPhotos()
     {
         $candidate = Auth::user();
-        $photos = $candidate->photos;
+        
+        // Auto-sync candidate's active profile picture into candidate_photos if not already present
+        if ($candidate->profile_picture && \Illuminate\Support\Facades\Storage::disk('public')->exists($candidate->profile_picture)) {
+            $existingProfilePhoto = \App\Models\CandidatePhoto::where('candidate_id', $candidate->id)
+                ->where('photo_path', $candidate->profile_picture)
+                ->first();
+
+            if (!$existingProfilePhoto) {
+                \App\Models\CandidatePhoto::where('candidate_id', $candidate->id)->update(['is_profile_picture' => false]);
+                \App\Models\CandidatePhoto::create([
+                    'candidate_id' => $candidate->id,
+                    'photo_path' => $candidate->profile_picture,
+                    'is_profile_picture' => true,
+                ]);
+            } else if (!$existingProfilePhoto->is_profile_picture) {
+                \App\Models\CandidatePhoto::where('candidate_id', $candidate->id)->update(['is_profile_picture' => false]);
+                $existingProfilePhoto->update(['is_profile_picture' => true]);
+            }
+        }
+
+        // Retrieve photos ordered with the active Profile Picture 1st, then remaining photos in descending order
+        $photos = \App\Models\CandidatePhoto::where('candidate_id', $candidate->id)
+            ->orderBy('is_profile_picture', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
         
         $formattedPhotos = $photos->map(function ($photo) {
             return [
@@ -661,6 +685,26 @@ class AuthController extends Controller
             'message' => 'Photo deleted successfully.',
             'was_profile_picture' => $wasProfilePic,
             'new_profile_url' => $newProfileUrl,
+        ]);
+    }
+
+    // Update Photo Privacy & Album Settings
+    public function updatePhotoSettings(Request $request)
+    {
+        $request->validate([
+            'photo_privacy' => 'required|string|max:255',
+            'album_privacy' => 'required|string|max:255',
+        ]);
+
+        $candidate = Auth::user();
+        $candidate->update([
+            'photo_privacy' => $request->photo_privacy,
+            'album_privacy' => $request->album_privacy,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Photo privacy settings updated successfully.',
         ]);
     }
 }

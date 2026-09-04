@@ -35,7 +35,10 @@ class Candidate extends Authenticatable
         'pref_working_with', 'pref_profession', 'pref_annual_income', 'pref_diet',
         'pref_profile_managed_by',
         // Contact Details
-        'contact_display_option'
+        'contact_display_option',
+        // Photo Settings
+        'photo_privacy',
+        'album_privacy'
     ];
 
     protected function casts(): array

@@ -37,4 +37,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/my-photos/upload', [AuthController::class, 'uploadGalleryPhotos'])->name('photos.upload');
     Route::post('/api/my-photos/set-profile', [AuthController::class, 'setProfilePhoto'])->name('photos.set-profile');
     Route::post('/api/my-photos/delete', [AuthController::class, 'deletePhoto'])->name('photos.delete');
+    Route::post('/api/my-photos/settings', [AuthController::class, 'updatePhotoSettings'])->name('photos.settings');
 });
