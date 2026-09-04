@@ -404,6 +404,7 @@ class AuthController extends Controller
                 break;
             case 'basic':
                 $rules = [
+                    'gender' => 'nullable|string|in:Male,Female,male,female',
                     'first_name' => 'nullable|string|max:100',
                     'middle_name' => 'nullable|string|max:100',
                     'last_name' => 'nullable|string|max:100',

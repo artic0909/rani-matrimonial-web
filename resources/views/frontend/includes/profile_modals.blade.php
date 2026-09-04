@@ -61,7 +61,15 @@
                                 <input type="text" x-model="formData.last_name" placeholder="Last Name" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Gender</label>
+                                <select x-model="formData.gender" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Date of Birth</label>
                                 <input type="date" x-model="formData.dob" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
@@ -398,6 +406,7 @@ window.profileEditor = function() {
             about_yourself: @json($candidate->about_yourself ?? ''),
             
             // Basics
+            gender: @json($candidate->gender ?? ''),
             first_name: @json($candidate->first_name ?? ''),
             middle_name: @json($candidate->middle_name ?? ''),
             last_name: @json($candidate->last_name ?? ''),
