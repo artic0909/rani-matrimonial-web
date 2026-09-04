@@ -396,24 +396,73 @@ window.galleryManager = function() {
             event.target.value = '';
         },
 
+        async compressImageClient(file) {
+            if (!file || !file.type || !file.type.startsWith('image/')) {
+                return file;
+            }
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        try {
+                            const canvas = document.createElement('canvas');
+                            const maxDim = 1920;
+                            let width = img.width;
+                            let height = img.height;
+
+                            if (width > maxDim || height > maxDim) {
+                                if (width > height) {
+                                    height = Math.round((height * maxDim) / width);
+                                    width = maxDim;
+                                } else {
+                                    width = Math.round((width * maxDim) / height);
+                                    height = maxDim;
+                                }
+                            }
+
+                            canvas.width = width;
+                            canvas.height = height;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+
+                            canvas.toBlob((blob) => {
+                                if (blob) {
+                                    const safeName = file.name.replace(/\.[^/.]+$/, "") + ".webp";
+                                    const compressedFile = new File([blob], safeName, {
+                                        type: 'image/webp',
+                                        lastModified: Date.now()
+                                    });
+                                    resolve(compressedFile);
+                                } else {
+                                    resolve(file);
+                                }
+                            }, 'image/webp', 0.82);
+                        } catch (err) {
+                            console.warn('Canvas compression error, using original file:', err);
+                            resolve(file);
+                        }
+                    };
+                    img.onerror = () => resolve(file);
+                    img.src = e.target.result;
+                };
+                reader.onerror = () => resolve(file);
+                reader.readAsDataURL(file);
+            });
+        },
+
         async uploadProfilePhotoDirect(event) {
             const file = event.target.files[0];
             if (!file) return;
 
-            if (file.size > 15 * 1024 * 1024) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'File Too Large',
-                    text: 'Profile picture must be under 15MB.',
-                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
-                });
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('profile_picture', file);
+            this.isUploading = true;
+            this.uploadProgressText = 'Optimizing & uploading profile photo...';
 
             try {
+                const optimizedFile = await this.compressImageClient(file);
+                const formData = new FormData();
+                formData.append('profile_picture', optimizedFile);
+
                 const response = await fetch('{{ route("profile.upload-photo") }}', {
                     method: 'POST',
                     headers: {
@@ -423,10 +472,36 @@ window.galleryManager = function() {
                     body: formData
                 });
 
+                if (!response.ok) {
+                    let errMsg = `Upload failed (${response.status})`;
+                    try {
+                        const errData = await response.json();
+                        errMsg = errData.message || (errData.errors ? Object.values(errData.errors).flat().join('<br>') : errMsg);
+                    } catch (e) {
+                        if (response.status === 413) errMsg = 'Photo exceeds server upload size limit.';
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Upload Failed',
+                        html: errMsg,
+                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    });
+                    return;
+                }
+
                 const result = await response.json();
                 if (result.success) {
                     this.profileImageUrl = result.image_url;
-                    window.location.reload();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Profile Picture Updated!',
+                        text: 'Your new profile photo has been updated successfully.',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    }).then(() => {
+                        window.location.reload();
+                    });
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -436,7 +511,16 @@ window.galleryManager = function() {
                     });
                 }
             } catch (e) {
-                console.error(e);
+                console.error('Profile Upload Error:', e);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Upload Error',
+                    text: 'An error occurred while uploading. Please try a different photo.',
+                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                });
+            } finally {
+                this.isUploading = false;
+                event.target.value = '';
             }
         },
 
@@ -457,18 +541,6 @@ window.galleryManager = function() {
                 return;
             }
 
-            for (const file of fileList) {
-                if (file.size > 15 * 1024 * 1024) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'File Too Large',
-                        text: `${file.name} exceeds 15MB. Please choose smaller files.`,
-                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
-                    });
-                    return;
-                }
-            }
-
             this.isUploading = true;
             this.uploadProgressText = `Preparing ${fileList.length} photo(s)...`;
 
@@ -476,13 +548,20 @@ window.galleryManager = function() {
             let newlyUploaded = [];
             let errors = [];
 
-            // Process each file with progress feedback to avoid request size limitations
+            // Process and optimize each file before upload to eliminate payload size issues
             for (let i = 0; i < fileList.length; i++) {
-                const file = fileList[i];
-                this.uploadProgressText = `Uploading & compressing photo ${i + 1} of ${fileList.length}...`;
+                const rawFile = fileList[i];
+                this.uploadProgressText = `Optimizing & uploading photo ${i + 1} of ${fileList.length}...`;
                 
+                let processedFile = rawFile;
+                try {
+                    processedFile = await this.compressImageClient(rawFile);
+                } catch (compErr) {
+                    console.warn('Compression skipped for', rawFile.name, compErr);
+                }
+
                 const formData = new FormData();
-                formData.append('photo', file);
+                formData.append('photo', processedFile);
 
                 try {
                     const response = await fetch('{{ route("photos.upload") }}', {
@@ -494,17 +573,29 @@ window.galleryManager = function() {
                         body: formData
                     });
 
+                    if (!response.ok) {
+                        let errMsg = `Upload error (${response.status})`;
+                        try {
+                            const errData = await response.json();
+                            errMsg = errData.message || (errData.errors ? Object.values(errData.errors).flat().join(', ') : errMsg);
+                        } catch (e) {
+                            if (response.status === 413) errMsg = 'File exceeds maximum upload size.';
+                        }
+                        errors.push(`${rawFile.name}: ${errMsg}`);
+                        continue;
+                    }
+
                     const result = await response.json();
                     if (result.success && result.photos && result.photos.length > 0) {
                         uploadedCount++;
                         newlyUploaded.push(...result.photos);
                     } else {
-                        const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat().join('<br>') : 'Upload error');
-                        errors.push(`${file.name}: ${errorMsg}`);
+                        const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat().join('<br>') : 'Upload rejected');
+                        errors.push(`${rawFile.name}: ${errorMsg}`);
                     }
                 } catch (err) {
-                    console.error('Upload Error for', file.name, err);
-                    errors.push(`${file.name}: Connection or server error`);
+                    console.error('Upload Error for', rawFile.name, err);
+                    errors.push(`${rawFile.name}: Network timeout or connection issue`);
                 }
             }
 
@@ -515,7 +606,7 @@ window.galleryManager = function() {
                 Swal.fire({
                     icon: 'success',
                     title: 'Photos Uploaded!',
-                    text: `${uploadedCount} photo(s) uploaded and added to your gallery.`,
+                    text: `${uploadedCount} photo(s) have been successfully processed and added to your gallery.`,
                     timer: 2000,
                     showConfirmButton: false,
                     customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
@@ -525,8 +616,8 @@ window.galleryManager = function() {
             } else if (errors.length > 0) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Upload Failed',
-                    html: errors.join('<br>'),
+                    title: 'Upload Notice',
+                    html: `<div class="text-left text-xs space-y-1.5">${errors.map(e => `<div>• ${e}</div>`).join('')}</div>`,
                     customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                 });
             }
