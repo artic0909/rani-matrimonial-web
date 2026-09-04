@@ -405,7 +405,9 @@ class AuthController extends Controller
             case 'basic':
                 $rules = [
                     'first_name' => 'nullable|string|max:100',
+                    'middle_name' => 'nullable|string|max:100',
                     'last_name' => 'nullable|string|max:100',
+                    'dob' => 'nullable|date',
                     'marital_status' => 'nullable|string|max:100',
                     'height' => 'nullable|string|max:50',
                     'diet' => 'nullable|string|max:100',

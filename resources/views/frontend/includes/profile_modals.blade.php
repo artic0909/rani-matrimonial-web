@@ -47,17 +47,25 @@
 
                     <!-- 2. Basics & Lifestyle -->
                     <div x-show="currentSection === 'basic'" class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">First Name</label>
-                                <input type="text" x-model="formData.first_name" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                                <input type="text" x-model="formData.first_name" placeholder="First Name" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Middle Name</label>
+                                <input type="text" x-model="formData.middle_name" placeholder="Middle Name (Optional)" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Last Name</label>
-                                <input type="text" x-model="formData.last_name" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                                <input type="text" x-model="formData.last_name" placeholder="Last Name" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
                             </div>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Date of Birth</label>
+                                <input type="date" x-model="formData.dob" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                            </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Marital Status</label>
                                 <select x-model="formData.marital_status" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
@@ -67,18 +75,6 @@
                                     <option value="Widowed">Widowed</option>
                                     <option value="Awaiting Divorce">Awaiting Divorce</option>
                                     <option value="Annulled">Annulled</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Diet</label>
-                                <select x-model="formData.diet" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
-                                    <option value="">Select Diet</option>
-                                    <option value="Veg">Veg</option>
-                                    <option value="Non-Veg">Non-Veg</option>
-                                    <option value="Occasionally Non-Veg">Occasionally Non-Veg</option>
-                                    <option value="Eggetarian">Eggetarian</option>
-                                    <option value="Jain">Jain</option>
-                                    <option value="Vegan">Vegan</option>
                                 </select>
                             </div>
                         </div>
@@ -114,6 +110,20 @@
                                 </select>
                             </div>
                             <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Diet</label>
+                                <select x-model="formData.diet" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                                    <option value="">Select Diet</option>
+                                    <option value="Veg">Veg</option>
+                                    <option value="Non-Veg">Non-Veg</option>
+                                    <option value="Occasionally Non-Veg">Occasionally Non-Veg</option>
+                                    <option value="Eggetarian">Eggetarian</option>
+                                    <option value="Jain">Jain</option>
+                                    <option value="Vegan">Vegan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Blood Group</label>
                                 <select x-model="formData.blood_group" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
                                     <option value="">Select Blood Group</option>
@@ -128,12 +138,12 @@
                                     <option value="Don't Know">Don't Know</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Grew Up In</label>
                                 <input type="text" x-model="formData.grew_up_in" placeholder="e.g. Kolkata, India" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
                             </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Disability</label>
                                 <select x-model="formData.disability" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
@@ -142,10 +152,10 @@
                                     <option value="Other">Other</option>
                                 </select>
                             </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Health Info</label>
-                            <input type="text" x-model="formData.health_info" placeholder="e.g. Normal, No health issues" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Health Info</label>
+                                <input type="text" x-model="formData.health_info" placeholder="e.g. Normal, No health issues" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                            </div>
                         </div>
                     </div>
 
@@ -389,7 +399,9 @@ window.profileEditor = function() {
             
             // Basics
             first_name: @json($candidate->first_name ?? ''),
+            middle_name: @json($candidate->middle_name ?? ''),
             last_name: @json($candidate->last_name ?? ''),
+            dob: @json($candidate->dob ? \Carbon\Carbon::parse($candidate->dob)->format('Y-m-d') : ''),
             marital_status: @json($candidate->marital_status ?? ''),
             diet: @json($candidate->diet ?? ''),
             height: @json($candidate->height ?? ''),
