@@ -38,6 +38,21 @@
             opacity: 0.95 !important;
             transform: scale(1.02) !important;
         }
+        .rani-swal-cancel {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: #f3f4f6 !important;
+            border: 1px solid rgba(212, 175, 55, 0.4) !important;
+            border-radius: 9999px !important;
+            font-weight: 600 !important;
+            padding: 10px 24px !important;
+            transition: all 0.2s ease !important;
+        }
+        .rani-swal-cancel:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-color: #D4AF37 !important;
+            color: #D4AF37 !important;
+            transform: scale(1.02) !important;
+        }
     </style>
 
     <!-- AlpineJS for interactivity -->

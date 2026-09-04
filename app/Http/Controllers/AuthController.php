@@ -566,18 +566,46 @@ class AuthController extends Controller
     // Upload one or multiple photos to Gallery
     public function uploadGalleryPhotos(Request $request)
     {
-        $request->validate([
-            'photos' => 'required|array|min:1|max:10',
-            'photos.*' => 'required|image|mimes:jpeg,png,jpg,webp|max:15360',
-        ]);
+        ini_set('memory_limit', '512M');
+        set_time_limit(300);
+
+        // Accept either array 'photos' or single 'photo'
+        $files = [];
+        if ($request->hasFile('photos')) {
+            $uploaded = $request->file('photos');
+            $files = is_array($uploaded) ? $uploaded : [$uploaded];
+        } elseif ($request->hasFile('photo')) {
+            $files = [$request->file('photo')];
+        }
+
+        if (empty($files)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No image file was provided or upload size limit was exceeded.'
+            ], 422);
+        }
 
         $candidate = Auth::user();
-        $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+        $currentCount = \App\Models\CandidatePhoto::where('candidate_id', $candidate->id)->count();
+        $newCount = count($files);
 
+        if ($currentCount + $newCount > 20) {
+            $allowed = max(0, 20 - $currentCount);
+            return response()->json([
+                'success' => false,
+                'message' => "You can upload at most {$allowed} more photo(s) (maximum 20 total)."
+            ], 422);
+        }
+
+        $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
         $uploadedPhotos = [];
         $hasProfilePic = $candidate->profile_picture && \Illuminate\Support\Facades\Storage::disk('public')->exists($candidate->profile_picture);
 
-        foreach ($request->file('photos') as $index => $file) {
+        foreach ($files as $index => $file) {
+            if (!$file->isValid()) {
+                continue;
+            }
+
             $filename = uniqid('gallery_' . $candidate->id . '_') . '.webp';
             $path = 'gallery/' . $filename;
 
@@ -585,7 +613,7 @@ class AuthController extends Controller
             $encoded = $image->scaleDown(1600)->encodeUsingFileExtension('webp', 75);
             \Illuminate\Support\Facades\Storage::disk('public')->put($path, (string) $encoded);
 
-            $isFirst = (!$hasProfilePic && $index === 0 && count($candidate->photos) === 0);
+            $isFirst = (!$hasProfilePic && $index === 0 && $currentCount === 0);
 
             $photoRecord = \App\Models\CandidatePhoto::create([
                 'candidate_id' => $candidate->id,
@@ -601,8 +629,8 @@ class AuthController extends Controller
             $uploadedPhotos[] = [
                 'id' => $photoRecord->id,
                 'url' => asset('storage/' . $path),
-                'is_profile_picture' => $photoRecord->is_profile_picture,
-                'created_at' => $photoRecord->created_at->diffForHumans(),
+                'is_profile_picture' => (bool)$photoRecord->is_profile_picture,
+                'created_at' => $photoRecord->created_at ? $photoRecord->created_at->diffForHumans() : '',
             ];
         }
 

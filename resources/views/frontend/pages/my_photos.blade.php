@@ -114,7 +114,7 @@
                                 <!-- Spinner -->
                                 <div x-show="isUploading" style="display: none;" class="mt-4 flex items-center justify-center gap-2 text-xs font-bold text-rani-primary animate-pulse">
                                     <svg class="animate-spin h-4 w-4 text-rani-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                    Uploading & Compressing Photos...
+                                    <span x-text="uploadProgressText"></span>
                                 </div>
                             </div>
 
@@ -440,75 +440,95 @@ window.galleryManager = function() {
             }
         },
 
+        uploadProgressText: 'Uploading & Compressing Photos...',
+
         async uploadFiles(files) {
-            if (this.photos.length + files.length > 20) {
+            const fileList = Array.from(files);
+            if (!fileList.length) return;
+
+            if (this.photos.length + fileList.length > 20) {
+                const allowed = Math.max(0, 20 - this.photos.length);
                 Swal.fire({
                     icon: 'warning',
                     title: 'Limit Exceeded',
-                    text: 'You can have a maximum of 20 photos in your gallery.',
+                    text: `You already have ${this.photos.length} photos. You can upload at most ${allowed} more (max 20 total).`,
                     customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                 });
                 return;
             }
 
-            const formData = new FormData();
-            for (let i = 0; i < files.length; i++) {
-                if (files[i].size > 15 * 1024 * 1024) {
+            for (const file of fileList) {
+                if (file.size > 15 * 1024 * 1024) {
                     Swal.fire({
                         icon: 'warning',
                         title: 'File Too Large',
-                        text: `${files[i].name} exceeds 15MB. Please choose smaller files.`,
+                        text: `${file.name} exceeds 15MB. Please choose smaller files.`,
                         customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                     });
                     return;
                 }
-                formData.append('photos[]', files[i]);
             }
 
             this.isUploading = true;
+            this.uploadProgressText = `Preparing ${fileList.length} photo(s)...`;
 
-            try {
-                const response = await fetch('{{ route("photos.upload") }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                });
+            let uploadedCount = 0;
+            let newlyUploaded = [];
+            let errors = [];
 
-                const result = await response.json();
-                if (result.success) {
-                    this.photos = [...result.photos, ...this.photos];
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Photos Uploaded!',
-                        text: result.message || 'Your photos have been added to your gallery.',
-                        timer: 2000,
-                        showConfirmButton: false,
-                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
-                    }).then(() => {
-                        window.location.reload();
+            // Process each file with progress feedback to avoid request size limitations
+            for (let i = 0; i < fileList.length; i++) {
+                const file = fileList[i];
+                this.uploadProgressText = `Uploading & compressing photo ${i + 1} of ${fileList.length}...`;
+                
+                const formData = new FormData();
+                formData.append('photo', file);
+
+                try {
+                    const response = await fetch('{{ route("photos.upload") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: formData
                     });
-                } else {
-                    const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat().join('<br>') : 'Error uploading photos');
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Upload Failed',
-                        html: errorMsg,
-                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
-                    });
+
+                    const result = await response.json();
+                    if (result.success && result.photos && result.photos.length > 0) {
+                        uploadedCount++;
+                        newlyUploaded.push(...result.photos);
+                    } else {
+                        const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat().join('<br>') : 'Upload error');
+                        errors.push(`${file.name}: ${errorMsg}`);
+                    }
+                } catch (err) {
+                    console.error('Upload Error for', file.name, err);
+                    errors.push(`${file.name}: Connection or server error`);
                 }
-            } catch (error) {
-                console.error('Upload Error:', error);
+            }
+
+            this.isUploading = false;
+
+            if (uploadedCount > 0) {
+                this.photos = [...newlyUploaded, ...this.photos];
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Photos Uploaded!',
+                    text: `${uploadedCount} photo(s) uploaded and added to your gallery.`,
+                    timer: 2000,
+                    showConfirmButton: false,
+                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                }).then(() => {
+                    window.location.reload();
+                });
+            } else if (errors.length > 0) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Server Error',
-                    text: 'An error occurred while uploading. Please try again.',
+                    title: 'Upload Failed',
+                    html: errors.join('<br>'),
                     customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                 });
-            } finally {
-                this.isUploading = false;
             }
         },
 
@@ -563,7 +583,12 @@ window.galleryManager = function() {
                 showCancelButton: true,
                 confirmButtonText: 'Yes, delete it',
                 cancelButtonText: 'Cancel',
-                customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                customClass: { 
+                    popup: 'rani-swal-popup', 
+                    title: 'rani-swal-title', 
+                    confirmButton: 'rani-swal-confirm',
+                    cancelButton: 'rani-swal-cancel'
+                }
             });
 
             if (!confirmation.isConfirmed) return;
