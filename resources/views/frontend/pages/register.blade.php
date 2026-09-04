@@ -342,6 +342,10 @@
                                     <option value="Other">Other</option>
                                 </select>
                             </div>
+                            <div>
+                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Sub Community (Optional)</label>
+                                <input type="text" name="sub_community" x-model="formData.sub_community" placeholder="Enter Sub Community" class="w-full px-5 py-3.5 rounded-xl theme-input">
+                            </div>
                         </div>
                         <div class="mt-4">
                             <button type="button" @click="nextStep" :disabled="!(formData.religion && formData.community)" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
@@ -429,11 +433,7 @@
                                 class="w-full px-5 py-3.5 rounded-xl theme-input resize-none"></textarea>
                         </div>
 
-                        <!-- Sub-community -->
-                        <div class="mb-5">
-                            <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Sub-community (Optional)</label>
-                            <input type="text" name="sub_community" x-model="formData.sub_community" class="w-full px-5 py-3.5 rounded-xl theme-input">
-                        </div>
+
 
                         <div class="mt-8">
                             <button type="button" @click="nextStep" class="w-full theme-btn py-4 rounded-full text-lg transition-all">Continue</button>
