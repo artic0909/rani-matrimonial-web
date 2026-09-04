@@ -41,15 +41,15 @@
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                             </div>
                         @else
-                            <button class="absolute bottom-1 right-1 bg-rani-primary text-white rounded-full p-1 border-2 border-white shadow-sm hover:scale-110 transition-transform" title="Add Photo">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                            </button>
+                            <a href="{{ route('my-photos') }}" class="absolute bottom-1 right-1 bg-rani-primary text-white rounded-full p-1.5 border-2 border-white shadow-sm hover:scale-110 transition-transform flex items-center justify-center" title="Manage Photos">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            </a>
                         @endif
                     </div>
                     
-                    <h2 class="text-xl font-bold text-gray-800 font-serif">{{ $candidate->first_name }} {{ $candidate->last_name }}</h2>
+                    <h2 class="text-xl font-bold text-gray-800 font-serif">{{ $candidate->first_name }}{{ $candidate->middle_name ? ' ' . $candidate->middle_name : '' }} {{ $candidate->last_name }}</h2>
                     <p class="text-sm text-gray-500 mb-2">ID: RANI{{ str_pad($candidate->id, 6, '0', STR_PAD_LEFT) }}</p>
-                    <a href="#" class="text-rani-primary text-sm font-medium hover:underline">Edit Profile</a>
+                    <a href="{{ route('my-profile') }}" class="text-rani-primary text-sm font-medium hover:underline">Edit Profile</a>
                 </div>
                 
                 <div class="p-4 bg-gray-50 flex justify-between items-center">

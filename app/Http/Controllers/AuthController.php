@@ -505,10 +505,162 @@ class AuthController extends Controller
 
         $candidate->update(['profile_picture' => $path]);
 
+        // Sync with candidate_photos table
+        \App\Models\CandidatePhoto::where('candidate_id', $candidate->id)->update(['is_profile_picture' => false]);
+        \App\Models\CandidatePhoto::create([
+            'candidate_id' => $candidate->id,
+            'photo_path' => $path,
+            'is_profile_picture' => true,
+        ]);
+
         return response()->json([
             'success' => true, 
             'message' => 'Profile picture updated successfully.',
             'image_url' => asset('storage/' . $path)
+        ]);
+    }
+
+    // My Photos Page View
+    public function myPhotos()
+    {
+        $candidate = Auth::user();
+        $photos = $candidate->photos;
+        
+        $formattedPhotos = $photos->map(function ($photo) {
+            return [
+                'id' => $photo->id,
+                'url' => asset('storage/' . $photo->photo_path),
+                'is_profile_picture' => (bool)$photo->is_profile_picture,
+                'created_at' => $photo->created_at ? $photo->created_at->diffForHumans() : '',
+            ];
+        })->values();
+
+        return view('frontend.pages.my_photos', compact('candidate', 'photos', 'formattedPhotos'));
+    }
+
+    // Upload one or multiple photos to Gallery
+    public function uploadGalleryPhotos(Request $request)
+    {
+        $request->validate([
+            'photos' => 'required|array|min:1|max:10',
+            'photos.*' => 'required|image|mimes:jpeg,png,jpg,webp|max:15360',
+        ]);
+
+        $candidate = Auth::user();
+        $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+
+        $uploadedPhotos = [];
+        $hasProfilePic = $candidate->profile_picture && \Illuminate\Support\Facades\Storage::disk('public')->exists($candidate->profile_picture);
+
+        foreach ($request->file('photos') as $index => $file) {
+            $filename = uniqid('gallery_' . $candidate->id . '_') . '.webp';
+            $path = 'gallery/' . $filename;
+
+            $image = $manager->decodePath($file->getRealPath());
+            $encoded = $image->scaleDown(1600)->encodeUsingFileExtension('webp', 75);
+            \Illuminate\Support\Facades\Storage::disk('public')->put($path, (string) $encoded);
+
+            $isFirst = (!$hasProfilePic && $index === 0 && count($candidate->photos) === 0);
+
+            $photoRecord = \App\Models\CandidatePhoto::create([
+                'candidate_id' => $candidate->id,
+                'photo_path' => $path,
+                'is_profile_picture' => $isFirst,
+            ]);
+
+            if ($isFirst) {
+                $candidate->update(['profile_picture' => $path]);
+                $hasProfilePic = true;
+            }
+
+            $uploadedPhotos[] = [
+                'id' => $photoRecord->id,
+                'url' => asset('storage/' . $path),
+                'is_profile_picture' => $photoRecord->is_profile_picture,
+                'created_at' => $photoRecord->created_at->diffForHumans(),
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => count($uploadedPhotos) . ' photo(s) uploaded successfully.',
+            'photos' => $uploadedPhotos,
+        ]);
+    }
+
+    // Set a gallery photo as main profile picture
+    public function setProfilePhoto(Request $request)
+    {
+        $request->validate([
+            'photo_id' => 'required|integer',
+        ]);
+
+        $candidate = Auth::user();
+        $photo = \App\Models\CandidatePhoto::where('id', $request->photo_id)
+            ->where('candidate_id', $candidate->id)
+            ->first();
+
+        if (!$photo) {
+            return response()->json(['success' => false, 'message' => 'Photo not found.'], 404);
+        }
+
+        // Reset previous profile flags and set current
+        \App\Models\CandidatePhoto::where('candidate_id', $candidate->id)->update(['is_profile_picture' => false]);
+        $photo->update(['is_profile_picture' => true]);
+
+        // Update candidate profile_picture
+        $candidate->update(['profile_picture' => $photo->photo_path]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile picture set successfully.',
+            'image_url' => asset('storage/' . $photo->photo_path),
+        ]);
+    }
+
+    // Delete a gallery photo
+    public function deletePhoto(Request $request)
+    {
+        $request->validate([
+            'photo_id' => 'required|integer',
+        ]);
+
+        $candidate = Auth::user();
+        $photo = \App\Models\CandidatePhoto::where('id', $request->photo_id)
+            ->where('candidate_id', $candidate->id)
+            ->first();
+
+        if (!$photo) {
+            return response()->json(['success' => false, 'message' => 'Photo not found.'], 404);
+        }
+
+        $wasProfilePic = $photo->is_profile_picture || ($candidate->profile_picture === $photo->photo_path);
+
+        // Delete physical file
+        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($photo->photo_path)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($photo->photo_path);
+        }
+
+        $photo->delete();
+
+        // If it was the profile picture, assign the next available photo or null
+        $newProfileUrl = null;
+        if ($wasProfilePic) {
+            $nextPhoto = \App\Models\CandidatePhoto::where('candidate_id', $candidate->id)->latest()->first();
+            if ($nextPhoto) {
+                $nextPhoto->update(['is_profile_picture' => true]);
+                $candidate->update(['profile_picture' => $nextPhoto->photo_path]);
+                $newProfileUrl = asset('storage/' . $nextPhoto->photo_path);
+            } else {
+                $candidate->update(['profile_picture' => null]);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Photo deleted successfully.',
+            'was_profile_picture' => $wasProfilePic,
+            'new_profile_url' => $newProfileUrl,
         ]);
     }
 }

@@ -45,4 +45,9 @@ class Candidate extends Authenticatable
             'selfie_verified' => 'boolean',
         ];
     }
+
+    public function photos(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CandidatePhoto::class, 'candidate_id')->orderBy('sort_order')->orderByDesc('id');
+    }
 }

@@ -80,7 +80,7 @@
             <nav class="flex space-x-8">
                 <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">Dashboard</a>
                 <a href="{{ route('my-profile') }}" class="{{ request()->routeIs('my-profile') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">My Profile</a>
-                <a href="#" class="border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300 font-medium text-sm py-3 px-1 transition-colors">My Photos</a>
+                <a href="{{ route('my-photos') }}" class="{{ request()->routeIs('my-photos') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">My Photos</a>
                 <a href="#" class="border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300 font-medium text-sm py-3 px-1 transition-colors">Partner Preferences</a>
                 <a href="#" class="border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300 font-medium text-sm py-3 px-1 transition-colors">Settings</a>
                 <a href="#" class="border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300 font-medium text-sm py-3 px-1 transition-colors">More</a>
@@ -97,10 +97,10 @@
         <div class="px-2 pt-2 pb-3 space-y-1">
             <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('dashboard') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Dashboard</a>
             <a href="{{ route('my-profile') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('my-profile') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">My Profile</a>
+            <a href="{{ route('my-photos') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('my-photos') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">My Photos</a>
             <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rani-primary hover:bg-gray-50">Matches</a>
             <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rani-primary hover:bg-gray-50">Search</a>
             <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rani-primary hover:bg-gray-50">Inbox</a>
-            <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rani-primary hover:bg-gray-50">My Profile</a>
             <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rani-primary hover:bg-gray-50">Partner Preferences</a>
             <div class="border-t border-gray-200 my-2"></div>
             <form method="POST" action="/logout">
