@@ -21,9 +21,37 @@ class AuthController extends Controller
             return response()->json(['success' => false, 'message' => 'Mobile number not registered.'], 404);
         }
 
-        // Simulate OTP (e.g., 1234)
+        $otp = rand(1000, 9999);
+        
+        try {
+            $apiKey = env('TWILIO_SID');
+            $apiSecret = env('TWILIO_AUTH_TOKEN');
+            $accountSid = env('TWILIO_ACCOUNT_SID');
+            $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
+
+            if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
+                $twilio = new Client($apiKey, $apiSecret, $accountSid);
+                $formattedMobile = "whatsapp:+91" . ltrim($request->mobile, '0');
+                
+                $templateSid = env('TWILIO_WHATSAPP_TEMPLATE_SID', 'HX669abffc47f8e40515248108fed98ad8');
+                
+                $twilio->messages->create(
+                    $formattedMobile,
+                    [
+                        "from" => $twilioNumber,
+                        "contentSid" => $templateSid,
+                        "contentVariables" => json_encode([
+                            "1" => (string) $otp
+                        ])
+                    ]
+                );
+            }
+        } catch (\Exception $e) {
+            \Log::error('Twilio Login OTP Error: ' . $e->getMessage());
+        }
+
         Session::put('otp_mobile', $request->mobile);
-        Session::put('otp_code', '1234'); // Hardcoded for testing
+        Session::put('otp_code', (string) $otp);
 
         return response()->json(['success' => true, 'message' => 'OTP sent to ' . $request->mobile]);
     }
