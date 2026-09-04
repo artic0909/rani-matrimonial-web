@@ -395,4 +395,119 @@ class AuthController extends Controller
 
         return view('frontend.pages.my_profile', compact('candidate', 'age'));
     }
+    // Candidate Profile Update via AJAX
+    public function updateProfile(Request $request)
+    {
+        $candidate = Auth::user();
+        
+        $section = $request->input('section');
+        $rules = [];
+        
+        switch ($section) {
+            case 'basic':
+                $rules = [
+                    'first_name' => 'required|string',
+                    'last_name' => 'required|string',
+                    'marital_status' => 'required|string',
+                    'height' => 'required|string',
+                    'diet' => 'required|string',
+                    'about_yourself' => 'nullable|string',
+                ];
+                break;
+            case 'location':
+                $rules = [
+                    'country' => 'required|string',
+                    'state' => 'required|string',
+                    'city' => 'required|string',
+                    'full_address' => 'required|string',
+                ];
+                break;
+            case 'education_career':
+                $rules = [
+                    'highest_qualification' => 'required|string',
+                    'college_name' => 'nullable|string',
+                    'college_address' => 'nullable|string',
+                    'income_type' => 'required|string',
+                    'profession' => 'required|string',
+                    'designation' => 'required|string',
+                    'company_name' => 'nullable|string',
+                    'company_address' => 'nullable|string',
+                ];
+                break;
+            case 'astro':
+                $rules = [
+                    'manglik' => 'nullable|string',
+                    'star' => 'nullable|string',
+                    'moon_sign' => 'nullable|string',
+                    'horoscope_match' => 'nullable|boolean',
+                    'birth_place' => 'nullable|string',
+                    'birth_time' => 'nullable|string',
+                ];
+                break;
+            case 'family':
+                $rules = [
+                    'family_status' => 'nullable|string',
+                    'family_type' => 'nullable|string',
+                    'family_values' => 'nullable|string',
+                    'fathers_status' => 'nullable|string',
+                    'mothers_status' => 'nullable|string',
+                    'brothers' => 'nullable|string',
+                    'sisters' => 'nullable|string',
+                ];
+                break;
+            case 'contact':
+                $rules = [
+                    // To prevent changing critical auth info without verification, 
+                    // we might skip email/mobile here or require special handling.
+                    // For now, we allow updating alternate contact or display options.
+                    // But wait, the schema doesn't have alt_mobile. We will allow updating email and mobile.
+                    'email' => 'required|email|unique:candidates,email,'.$candidate->id,
+                    'mobile' => 'required|digits:10|unique:candidates,mobile,'.$candidate->id,
+                ];
+                break;
+            default:
+                return response()->json(['success' => false, 'message' => 'Invalid section.'], 400);
+        }
+
+        $validated = $request->validate($rules);
+        $candidate->update($validated);
+
+        return response()->json(['success' => true, 'message' => 'Profile updated successfully.']);
+    }
+
+    // Upload Profile Picture via AJAX
+    public function uploadProfilePicture(Request $request)
+    {
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,webp|max:15360',
+        ]);
+
+        $candidate = Auth::user();
+        
+        $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+        
+        $file = $request->file('profile_picture');
+        $filename = uniqid('profile_') . '.webp';
+        $path = 'profiles/' . $filename;
+        
+        $image = $manager->read($file->getRealPath());
+        if ($image->width() > 1200) {
+            $image->scale(width: 1200);
+        }
+        $encoded = $image->toWebp(70);
+        \Illuminate\Support\Facades\Storage::disk('public')->put($path, $encoded->toString());
+        
+        // Delete old profile picture if exists
+        if ($candidate->profile_picture && \Illuminate\Support\Facades\Storage::disk('public')->exists($candidate->profile_picture)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($candidate->profile_picture);
+        }
+
+        $candidate->update(['profile_picture' => $path]);
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Profile picture updated.',
+            'image_url' => asset('storage/' . $path)
+        ]);
+    }
 }

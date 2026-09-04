@@ -3,7 +3,7 @@
 @section('title', 'My Profile | Ranimatrimonial')
 
 @section('content')
-<div class="relative pt-8 pb-20">
+<div class="relative pt-8 pb-20" x-data="profileEditor()">
     <!-- Background Image -->
     <div class="fixed inset-0 z-0 bg-cover bg-top bg-no-repeat" style="background-image: url('{{ asset('img/hero.png') }}');"></div>
     
@@ -33,9 +33,14 @@
             <!-- Avatar -->
             <div class="relative shrink-0 group">
                 <div class="absolute inset-0 bg-rani-gold rounded-full blur-md opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
-                <img src="{{ $candidate->profile_picture ? asset('storage/' . $candidate->profile_picture) : 'https://ui-avatars.com/api/?name='.urlencode($candidate->first_name).'&background=D4AF37&color=fff' }}" 
+                <img :src="profileImageUrl" 
                      alt="{{ $candidate->first_name }}" 
                      class="w-36 h-36 md:w-44 md:h-44 rounded-full border-[6px] border-white shadow-xl object-cover bg-white relative z-10 transform group-hover:scale-[1.02] transition-transform duration-300">
+                <!-- Add Photo Icon -->
+                <label for="profile_upload" class="absolute bottom-0 right-2 md:bottom-2 md:right-2 bg-gradient-to-r from-rani-gold to-rani-primary text-white p-2.5 md:p-3 rounded-full shadow-xl border-4 border-white cursor-pointer hover:scale-110 transition-transform z-30 flex items-center justify-center" title="Change Profile Picture">
+                    <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <input type="file" id="profile_upload" class="hidden" accept="image/*" @change="uploadProfilePicture">
+                </label>
                 @if($candidate->selfie_verified)
                     <div class="absolute bottom-3 right-3 bg-green-500 text-white rounded-full p-2 border-2 border-white shadow-lg z-20" title="Selfie Verified">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
@@ -70,10 +75,7 @@
                     </div>
                 </div>
                 
-                <div class="flex gap-4 items-stretch h-full mt-6 md:mt-0 w-full md:w-auto shrink-0 justify-center">
-                    <button class="bg-white border border-gray-200 text-gray-700 px-6 py-6 md:py-10 rounded-xl text-sm font-bold hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm w-36 flex items-center justify-center text-center">Manage Photos</button>
-                    <button class="bg-gradient-to-br from-rani-primary-dark to-rani-primary text-white px-6 py-6 md:py-10 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg hover:scale-[1.02] w-36 flex items-center justify-center text-center border border-rani-primary-dark/50">Edit Profile</button>
-                </div>
+
             </div>
         </div>
     </div>
@@ -92,7 +94,7 @@
                         </div>
                         <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">Personality & About</h3>
                     </div>
-                    <button class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
+                    <button @click="openModal('basic')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         Edit
                     </button>
@@ -115,7 +117,7 @@
                         </div>
                         <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">Basics & Lifestyle</h3>
                     </div>
-                    <button class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
+                    <button @click="openModal('basic')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         Edit
                     </button>
@@ -127,7 +129,7 @@
                             'Age' => $age ?: 'Not Specified',
                             'Diet' => $candidate->diet ?: 'Not Specified',
                             'Date of Birth' => $candidate->dob ? \Carbon\Carbon::parse($candidate->dob)->format('d-M-Y') : 'Not Specified',
-                            'Blood Group' => $candidate->blood_group ?: '<a href="#" class="text-rani-primary hover:underline">Add Now</a>',
+                            'Blood Group' => $candidate->blood_group ?: '<a href="#" @click.prevent="openModal(\'basic\')" class="text-rani-primary font-semibold hover:text-rani-primary-dark hover:underline flex items-center gap-1 inline-flex"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</a>',
                             'Marital Status' => $candidate->marital_status ?: 'Not Specified',
                             'Health Info' => $candidate->health_info ?: 'Not Specified',
                             'Height' => $candidate->height ?: 'Not Specified',
@@ -154,7 +156,7 @@
                         </div>
                         <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">Religious Background</h3>
                     </div>
-                    <button class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
+                    <button @click="openModal('basic')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         Edit
                     </button>
@@ -165,7 +167,7 @@
                             'Religion' => $candidate->religion ?: 'Not Specified',
                             'Community' => $candidate->community ?: 'Not Specified',
                             'Sub Community' => $candidate->sub_community ?: 'Not Specified',
-                            'Gothra / Gotram' => $candidate->gothra ?: '<a href="#" class="text-rani-primary hover:underline">Add Now</a>',
+                            'Gothra / Gotram' => $candidate->gothra ?: '<a href="#" @click.prevent="openModal(\'basic\')" class="text-rani-primary font-semibold hover:text-rani-primary-dark hover:underline flex items-center gap-1 inline-flex"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</a>',
                             'Mother Tongue' => $candidate->mother_tongue ?: 'Not Specified'
                         ];
                     @endphp
@@ -188,7 +190,7 @@
                         </div>
                         <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">Astro Details</h3>
                     </div>
-                    <button class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
+                    <button @click="openModal('astro')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         Edit
                     </button>
@@ -197,8 +199,8 @@
                     @php
                         $astro = [
                             'Manglik' => $candidate->manglik ?: "Don't Know",
-                            'Time of Birth' => $candidate->time_of_birth ?: '<a href="#" class="text-rani-primary hover:underline">Add Now</a>',
-                            'City of Birth' => $candidate->city_of_birth ?: '<a href="#" class="text-rani-primary hover:underline">Add Now</a>'
+                            'Time of Birth' => $candidate->time_of_birth ?: '<a href="#" @click.prevent="openModal(\'basic\')" class="text-rani-primary font-semibold hover:text-rani-primary-dark hover:underline flex items-center gap-1 inline-flex"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</a>',
+                            'City of Birth' => $candidate->city_of_birth ?: '<a href="#" @click.prevent="openModal(\'basic\')" class="text-rani-primary font-semibold hover:text-rani-primary-dark hover:underline flex items-center gap-1 inline-flex"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</a>'
                         ];
                     @endphp
                     @foreach($astro as $label => $val)
@@ -220,7 +222,7 @@
                         </div>
                         <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">Family Details</h3>
                     </div>
-                    <button class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
+                    <button @click="openModal('family')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         Edit
                     </button>
@@ -228,12 +230,12 @@
                 <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
                     @php
                         $family = [
-                            'Father\'s Details' => $candidate->father_profession ?: '<a href="#" class="text-rani-primary hover:underline">Add Now</a>',
-                            'Mother\'s Details' => $candidate->mother_profession ?: '<a href="#" class="text-rani-primary hover:underline">Add Now</a>',
-                            'Family Location' => $candidate->family_location ?: '<a href="#" class="text-rani-primary hover:underline">Add Now</a>',
-                            'No. of Brothers' => $candidate->brothers_count !== null ? $candidate->brothers_count : '<a href="#" class="text-rani-primary hover:underline">Add Now</a>',
-                            'No. of Sisters' => $candidate->sisters_count !== null ? $candidate->sisters_count : '<a href="#" class="text-rani-primary hover:underline">Add Now</a>',
-                            'Financial Status' => $candidate->family_financial_status ?: '<a href="#" class="text-rani-primary hover:underline">Add Now</a>'
+                            'Father\'s Details' => $candidate->father_profession ?: '<a href="#" @click.prevent="openModal(\'basic\')" class="text-rani-primary font-semibold hover:text-rani-primary-dark hover:underline flex items-center gap-1 inline-flex"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</a>',
+                            'Mother\'s Details' => $candidate->mother_profession ?: '<a href="#" @click.prevent="openModal(\'basic\')" class="text-rani-primary font-semibold hover:text-rani-primary-dark hover:underline flex items-center gap-1 inline-flex"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</a>',
+                            'Family Location' => $candidate->family_location ?: '<a href="#" @click.prevent="openModal(\'basic\')" class="text-rani-primary font-semibold hover:text-rani-primary-dark hover:underline flex items-center gap-1 inline-flex"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</a>',
+                            'No. of Brothers' => $candidate->brothers_count !== null ? $candidate->brothers_count : '<a href="#" @click.prevent="openModal(\'basic\')" class="text-rani-primary font-semibold hover:text-rani-primary-dark hover:underline flex items-center gap-1 inline-flex"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</a>',
+                            'No. of Sisters' => $candidate->sisters_count !== null ? $candidate->sisters_count : '<a href="#" @click.prevent="openModal(\'basic\')" class="text-rani-primary font-semibold hover:text-rani-primary-dark hover:underline flex items-center gap-1 inline-flex"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</a>',
+                            'Financial Status' => $candidate->family_financial_status ?: '<a href="#" @click.prevent="openModal(\'basic\')" class="text-rani-primary font-semibold hover:text-rani-primary-dark hover:underline flex items-center gap-1 inline-flex"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</a>'
                         ];
                     @endphp
                     @foreach($family as $label => $val)
@@ -255,7 +257,7 @@
                         </div>
                         <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">Education & Career</h3>
                     </div>
-                    <button class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
+                    <button @click="openModal('education_career')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         Edit
                     </button>
@@ -290,7 +292,7 @@
                         </div>
                         <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">Location</h3>
                     </div>
-                    <button class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
+                    <button @click="openModal('location')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         Edit
                     </button>
@@ -324,7 +326,7 @@
                         </div>
                         <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">My Contact Detail</h3>
                     </div>
-                    <button class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
+                    <button @click="openModal('contact')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         Edit
                     </button>
@@ -351,5 +353,6 @@
 
     </div>
 </div>
+@include("frontend.includes.profile_modals")
 </div>
 @endsection

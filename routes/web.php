@@ -27,4 +27,8 @@ Route::post('/api/register/final', [AuthController::class, 'registerFinal'])->na
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::get('/my-profile', [AuthController::class, 'myProfile'])->name('my-profile');
+    
+    // Profile Updates
+    Route::post('/api/my-profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/api/my-profile/upload-photo', [AuthController::class, 'uploadProfilePicture'])->name('profile.upload-photo');
 });
