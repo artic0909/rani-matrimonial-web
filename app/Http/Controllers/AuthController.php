@@ -269,7 +269,7 @@ class AuthController extends Controller
             'about_yourself' => 'nullable|string',
             'hobbies_interests' => 'nullable|array',
             'profile_picture' => 'nullable|image|max:2048', // Allow images up to 2MB
-            'selfie_image' => 'nullable|file|mimes:jpeg,png,jpg|max:5120', // From webcam
+            'selfie_image' => 'required|file|mimes:jpeg,png,jpg|max:5120', // From webcam, mandatory
         ]);
 
         $candidateData = $validated;

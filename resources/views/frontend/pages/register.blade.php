@@ -984,6 +984,12 @@
             },
             submitForm(e) {
                 if(this.isSubmitting) return;
+
+                if (!this.isSelfieVerified) {
+                    this.showError("Please complete the Live Selfie Verification to register.");
+                    return;
+                }
+
                 this.isSubmitting = true;
                 
                 const form = document.getElementById('unifiedRegForm');
