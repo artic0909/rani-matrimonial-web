@@ -5,7 +5,7 @@
 @section('content')
 
 <!-- Hero Section -->
-<section class="relative min-h-screen flex flex-col justify-end overflow-hidden pt-32 pb-16 md:pb-24">
+<section class="relative min-h-[100svh] flex flex-col justify-start md:justify-end overflow-x-hidden overflow-y-auto pt-28 md:pt-32 pb-16 md:pb-24">
     <!-- Background Image -->
     <div class="absolute inset-0 z-0 bg-cover bg-top bg-no-repeat" style="background-image: url('{{ asset('img/hero.png') }}');"></div>
     
@@ -29,18 +29,18 @@
     <div class="absolute inset-4 md:inset-8 border-2 border-rani-gold/30 rounded-3xl pointer-events-none z-0"></div>
     
     <!-- Content -->
-    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-auto">
-        <div class="text-center space-y-4 mb-10">
-            <h1 class="text-4xl md:text-6xl font-serif font-bold text-white leading-tight var(--animate-fade-in-up) tracking-wide drop-shadow-lg">
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 md:mt-auto">
+        <div class="text-center space-y-4 mb-8 md:mb-10">
+            <h1 class="text-3xl sm:text-4xl md:text-6xl font-serif font-bold text-white leading-tight var(--animate-fade-in-up) tracking-wide drop-shadow-lg">
                 Choose Your <span class="text-rani-gold">Forever</span>
             </h1>
-            <p class="text-lg md:text-xl text-gray-200 font-light var(--animate-fade-in-up) drop-shadow-md" style="animation-delay: 0.2s;">
+            <p class="text-base sm:text-lg md:text-xl text-gray-200 font-light var(--animate-fade-in-up) drop-shadow-md" style="animation-delay: 0.2s;">
                 Find love on your terms with millions of verified profiles
             </p>
         </div>
 
         <!-- Horizontal Search Widget (Shaadi Style) -->
-        <div class="w-full bg-black/60 backdrop-blur-md p-5 sm:p-6 rounded-xl border border-white/10 shadow-2xl var(--animate-fade-in-up)" style="animation-delay: 0.4s;">
+        <div class="w-full bg-black/60 backdrop-blur-md p-4 sm:p-6 rounded-xl border border-white/10 shadow-2xl var(--animate-fade-in-up)" style="animation-delay: 0.4s;">
             <form action="#" method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-row items-end gap-4 lg:gap-3 justify-center">
                 
                 <!-- Looking for -->
