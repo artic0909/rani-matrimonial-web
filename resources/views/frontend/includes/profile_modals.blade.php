@@ -479,14 +479,33 @@ window.profileEditor = function() {
                 const result = await response.json();
                 if(result.success) {
                     this.editModalOpen = false;
-                    // Reload page cleanly to update all Blade rendered blocks
-                    window.location.reload();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Profile Updated!',
+                        text: result.message || 'Your details have been saved successfully.',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    }).then(() => {
+                        window.location.reload();
+                    });
                 } else {
-                    alert(result.message || (result.errors ? Object.values(result.errors).flat().join('\n') : 'Error updating profile'));
+                    const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat().join('<br>') : 'Error updating profile');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update Failed',
+                        html: errorMsg,
+                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    });
                 }
             } catch (error) {
                 console.error('Fetch Error:', error);
-                alert('An error occurred while saving profile.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Server Error',
+                    text: 'An error occurred while saving profile. Please try again.',
+                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                });
             } finally {
                 this.isSubmitting = false;
             }
@@ -497,7 +516,12 @@ window.profileEditor = function() {
             if (!file) return;
             
             if (file.size > 15 * 1024 * 1024) {
-                alert('Image must be under 15MB');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'File Too Large',
+                    text: 'Profile picture must be under 15MB.',
+                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                });
                 return;
             }
 
@@ -518,12 +542,31 @@ window.profileEditor = function() {
                 const result = await response.json();
                 if(result.success) {
                     this.profileImageUrl = result.image_url;
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Photo Uploaded!',
+                        text: result.message || 'Profile picture updated successfully.',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    });
                 } else {
-                    alert(result.message || (result.errors ? Object.values(result.errors).flat().join('\n') : 'Error uploading picture'));
+                    const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat().join('<br>') : 'Error uploading picture');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Upload Failed',
+                        html: errorMsg,
+                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    });
                 }
             } catch (error) {
                 console.error('Fetch Error:', error);
-                alert('An error occurred while uploading.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Upload Error',
+                    text: 'An error occurred while uploading picture.',
+                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                });
             } finally {
                 this.isUploadingPhoto = false;
             }

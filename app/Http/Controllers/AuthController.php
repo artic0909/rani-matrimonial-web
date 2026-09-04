@@ -311,13 +311,9 @@ class AuthController extends Controller
             $filename = uniqid('profile_') . '.webp';
             $path = 'profiles/' . $filename;
             
-            $image = $manager->read($file->getRealPath());
-            // Scale if it's too large (e.g., max 1200px width)
-            if ($image->width() > 1200) {
-                $image->scale(width: 1200);
-            }
-            $encoded = $image->toWebp(70);
-            \Illuminate\Support\Facades\Storage::disk('public')->put($path, $encoded->toString());
+            $image = $manager->decodePath($file->getRealPath());
+            $encoded = $image->scaleDown(1200)->encodeUsingFileExtension('webp', 70);
+            \Illuminate\Support\Facades\Storage::disk('public')->put($path, (string) $encoded);
             
             $candidateData['profile_picture'] = $path;
         }
@@ -327,12 +323,9 @@ class AuthController extends Controller
             $filename = uniqid('selfie_') . '.webp';
             $path = 'selfies/' . $filename;
             
-            $image = $manager->read($file->getRealPath());
-            if ($image->width() > 1200) {
-                $image->scale(width: 1200);
-            }
-            $encoded = $image->toWebp(70);
-            \Illuminate\Support\Facades\Storage::disk('public')->put($path, $encoded->toString());
+            $image = $manager->decodePath($file->getRealPath());
+            $encoded = $image->scaleDown(1200)->encodeUsingFileExtension('webp', 70);
+            \Illuminate\Support\Facades\Storage::disk('public')->put($path, (string) $encoded);
             
             $candidateData['selfie_verified'] = true;
         }
@@ -499,12 +492,9 @@ class AuthController extends Controller
         $filename = uniqid('profile_') . '.webp';
         $path = 'profiles/' . $filename;
         
-        $image = $manager->read($file->getRealPath());
-        if ($image->width() > 1200) {
-            $image->scale(width: 1200);
-        }
-        $encoded = $image->toWebp(70);
-        \Illuminate\Support\Facades\Storage::disk('public')->put($path, $encoded->toString());
+        $image = $manager->decodePath($file->getRealPath());
+        $encoded = $image->scaleDown(1200)->encodeUsingFileExtension('webp', 70);
+        \Illuminate\Support\Facades\Storage::disk('public')->put($path, (string) $encoded);
         
         // Delete old profile picture if exists
         if ($candidate->profile_picture && \Illuminate\Support\Facades\Storage::disk('public')->exists($candidate->profile_picture)) {
@@ -515,7 +505,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true, 
-            'message' => 'Profile picture updated.',
+            'message' => 'Profile picture updated successfully.',
             'image_url' => asset('storage/' . $path)
         ]);
     }
