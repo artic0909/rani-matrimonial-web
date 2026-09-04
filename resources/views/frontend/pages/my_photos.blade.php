@@ -226,7 +226,7 @@
 
                                 <div class="text-center bg-white rounded-xl p-2.5 border border-emerald-100 shadow-sm w-24 sm:w-28">
                                     <div class="w-full aspect-square bg-gray-100 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center">
-                                        <img src="{{ asset('img/' . $genderFolder . '/correct2.png') }}" alt="Full View" class="w-full h-full object-cover">
+                                        <img src="{{ asset('img/' . $genderFolder . '/correct2.png') }}" alt="Full View" class="w-full h-full object-contain">
                                     </div>
                                     <span class="text-[11px] font-bold text-gray-700 block">Full View</span>
                                 </div>
