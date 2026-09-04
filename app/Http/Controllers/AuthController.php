@@ -345,9 +345,10 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'redirect' => route('dashboard')]);
     }
 
-    // Dummy dashboard
+    // Candidate dashboard
     public function dashboard()
     {
-        return response("Candidate Dashboard (Protected Dummy Text)", 200);
+        $candidate = Auth::user();
+        return view('frontend.pages.dashboard', compact('candidate'));
     }
 }
