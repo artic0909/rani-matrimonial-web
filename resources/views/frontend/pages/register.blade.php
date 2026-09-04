@@ -772,7 +772,11 @@
                     
                     fetch('/api/check-user-exists', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value },
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value 
+                        },
                         body: JSON.stringify({ aadhar_number: this.formData.aadhar_number })
                     })
                     .then(res => {
@@ -804,7 +808,11 @@
                     
                     fetch('/api/check-user-exists', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value },
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value 
+                        },
                         body: JSON.stringify({ email: this.formData.email, mobile: this.formData.mobile })
                     })
                     .then(res => {
