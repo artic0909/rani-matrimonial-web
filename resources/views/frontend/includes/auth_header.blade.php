@@ -78,8 +78,8 @@
     <div class="bg-white shadow-sm hidden md:block">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <nav class="flex space-x-8">
-                <a href="{{ route('dashboard') }}" class="border-b-2 border-rani-primary text-rani-primary font-medium text-sm py-3 px-1 transition-colors">Dashboard</a>
-                <a href="#" class="border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300 font-medium text-sm py-3 px-1 transition-colors">My Profile</a>
+                <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">Dashboard</a>
+                <a href="{{ route('my-profile') }}" class="{{ request()->routeIs('my-profile') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">My Profile</a>
                 <a href="#" class="border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300 font-medium text-sm py-3 px-1 transition-colors">My Photos</a>
                 <a href="#" class="border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300 font-medium text-sm py-3 px-1 transition-colors">Partner Preferences</a>
                 <a href="#" class="border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300 font-medium text-sm py-3 px-1 transition-colors">Settings</a>
@@ -95,7 +95,8 @@
             <a href="#" class="text-xs bg-rani-gold text-rani-dark font-bold px-2 py-1 rounded">UPGRADE</a>
         </div>
         <div class="px-2 pt-2 pb-3 space-y-1">
-            <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-rani-primary bg-rani-primary/10">Dashboard</a>
+            <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('dashboard') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Dashboard</a>
+            <a href="{{ route('my-profile') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('my-profile') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">My Profile</a>
             <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rani-primary hover:bg-gray-50">Matches</a>
             <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rani-primary hover:bg-gray-50">Search</a>
             <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rani-primary hover:bg-gray-50">Inbox</a>

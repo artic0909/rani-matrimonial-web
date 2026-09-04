@@ -23,5 +23,8 @@ Route::get('/api/check-selfie-status', [AuthController::class, 'checkSelfieStatu
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register.page');
 Route::post('/api/register/final', [AuthController::class, 'registerFinal'])->name('register.final');
 
-// Candidate Dashboard
-Route::middleware('auth')->get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+// Candidate Dashboard & Profile
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+    Route::get('/my-profile', [AuthController::class, 'myProfile'])->name('my-profile');
+});

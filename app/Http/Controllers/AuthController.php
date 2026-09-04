@@ -379,4 +379,20 @@ class AuthController extends Controller
         $candidate = Auth::user();
         return view('frontend.pages.dashboard', compact('candidate'));
     }
+
+    // Candidate Profile
+    public function myProfile()
+    {
+        $candidate = Auth::user();
+        
+        // Calculate Age from DOB
+        $age = null;
+        if ($candidate->dob) {
+            $dob = new \DateTime($candidate->dob);
+            $now = new \DateTime();
+            $age = $now->diff($dob)->y;
+        }
+
+        return view('frontend.pages.my_profile', compact('candidate', 'age'));
+    }
 }
