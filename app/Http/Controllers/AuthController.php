@@ -290,6 +290,34 @@ class AuthController extends Controller
         // Auto login after registration
         Auth::login($candidate);
         
+        // Send Welcome WhatsApp Message
+        try {
+            $apiKey = env('TWILIO_SID');
+            $apiSecret = env('TWILIO_AUTH_TOKEN');
+            $accountSid = env('TWILIO_ACCOUNT_SID');
+            $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
+
+            if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
+                $twilio = new Client($apiKey, $apiSecret, $accountSid);
+                $formattedMobile = "whatsapp:+91" . ltrim($candidate->mobile, '0');
+                
+                $templateSid = 'HX05336e99a055aea550db5d5e69e6fbf0';
+                
+                $twilio->messages->create(
+                    $formattedMobile,
+                    [
+                        "from" => $twilioNumber,
+                        "contentSid" => $templateSid,
+                        "contentVariables" => json_encode([
+                            "1" => $candidate->first_name
+                        ])
+                    ]
+                );
+            }
+        } catch (\Exception $e) {
+            \Log::error("Welcome WhatsApp Message Error: " . $e->getMessage());
+        }
+
         return response()->json(['success' => true, 'redirect' => route('dashboard')]);
     }
 
