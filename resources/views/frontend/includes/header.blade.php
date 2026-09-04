@@ -1,6 +1,7 @@
 <header x-data="{ 
     scrolled: false, 
     mobileMenuOpen: false,
+    profileMenuOpen: false,
     showLogin: false,
     loginStep: 1,
     loginMobile: '',
@@ -113,10 +114,32 @@
 
             <!-- Auth Buttons -->
             <div class="hidden md:flex items-center space-x-4">
-                <a href="#" @click.prevent="showLogin = true" class="font-medium text-sm transition-colors" :class="{ 'text-rani-primary hover:text-rani-gold': scrolled, 'text-rani-light hover:text-rani-gold': !scrolled }">Log in</a>
-                <a href="{{ route('register.page') }}" class="px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 border border-rani-gold text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary">
-                    Register Now
-                </a>
+                @auth
+                    <a href="{{ route('dashboard') }}" class="font-medium text-sm transition-colors" :class="{ 'text-rani-primary hover:text-rani-gold': scrolled, 'text-rani-light hover:text-rani-gold': !scrolled }">My Dashboard</a>
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button @click="profileMenuOpen = !profileMenuOpen" @click.away="profileMenuOpen = false" class="flex items-center gap-2 focus:outline-none">
+                            <img src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->first_name).'&background=D4AF37&color=fff' }}" alt="Profile" class="w-10 h-10 rounded-full border-2 border-rani-gold object-cover shadow-sm">
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div x-show="profileMenuOpen" style="display: none;" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-50 text-left">
+                            <div class="px-4 py-2 border-b border-gray-100">
+                                <p class="text-sm font-semibold text-gray-800">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</p>
+                            </div>
+                            <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-rani-primary/5 hover:text-rani-primary">Dashboard</a>
+                            <form method="POST" action="/logout">
+                                @csrf
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</button>
+                            </form>
+                        </div>
+                    </div>
+                @else
+                    <a href="#" @click.prevent="showLogin = true" class="font-medium text-sm transition-colors" :class="{ 'text-rani-primary hover:text-rani-gold': scrolled, 'text-rani-light hover:text-rani-gold': !scrolled }">Log in</a>
+                    <a href="{{ route('register.page') }}" class="px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 border border-rani-gold text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary">
+                        Register Now
+                    </a>
+                @endauth
             </div>
 
             <!-- Mobile menu button -->
@@ -138,8 +161,16 @@
             <a href="#" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">Help</a>
             <a href="#" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">Success Stories</a>
             <div class="mt-4 pt-4 border-t border-rani-gold/30 flex flex-col gap-3">
-                <a href="#" @click.prevent="showLogin = true" class="block w-full text-center px-4 py-2 text-base font-medium text-rani-primary">Log in</a>
-                <a href="{{ route('register.page') }}" class="block w-full text-center px-4 py-2 border border-rani-gold rounded-full shadow-sm text-base font-medium text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark">Register Now</a>
+                @auth
+                    <a href="{{ route('dashboard') }}" class="block w-full text-center px-4 py-2 text-base font-medium text-rani-primary">My Dashboard</a>
+                    <form method="POST" action="/logout">
+                        @csrf
+                        <button type="submit" class="block w-full text-center px-4 py-2 text-base font-medium text-red-600">Logout</button>
+                    </form>
+                @else
+                    <a href="#" @click.prevent="showLogin = true" class="block w-full text-center px-4 py-2 text-base font-medium text-rani-primary">Log in</a>
+                    <a href="{{ route('register.page') }}" class="block w-full text-center px-4 py-2 border border-rani-gold rounded-full shadow-sm text-base font-medium text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark">Register Now</a>
+                @endauth
             </div>
         </div>
     </div>
