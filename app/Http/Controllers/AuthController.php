@@ -404,65 +404,74 @@ class AuthController extends Controller
         $rules = [];
         
         switch ($section) {
+            case 'about':
+                $rules = [
+                    'about_yourself' => 'nullable|string',
+                ];
+                break;
             case 'basic':
                 $rules = [
-                    'first_name' => 'required|string',
-                    'last_name' => 'required|string',
-                    'marital_status' => 'required|string',
-                    'height' => 'required|string',
-                    'diet' => 'required|string',
-                    'about_yourself' => 'nullable|string',
+                    'first_name' => 'nullable|string|max:100',
+                    'last_name' => 'nullable|string|max:100',
+                    'marital_status' => 'nullable|string|max:100',
+                    'height' => 'nullable|string|max:50',
+                    'diet' => 'nullable|string|max:100',
+                    'blood_group' => 'nullable|string|max:20',
+                    'health_info' => 'nullable|string|max:255',
+                    'grew_up_in' => 'nullable|string|max:255',
+                    'disability' => 'nullable|string|max:100',
+                ];
+                break;
+            case 'religious':
+                $rules = [
+                    'religion' => 'nullable|string|max:100',
+                    'community' => 'nullable|string|max:100',
+                    'sub_community' => 'nullable|string|max:100',
+                    'gothra' => 'nullable|string|max:100',
+                    'mother_tongue' => 'nullable|string|max:100',
                 ];
                 break;
             case 'location':
                 $rules = [
-                    'country' => 'required|string',
-                    'state' => 'required|string',
-                    'city' => 'required|string',
-                    'full_address' => 'required|string',
+                    'country' => 'nullable|string|max:100',
+                    'state' => 'nullable|string|max:100',
+                    'city' => 'nullable|string|max:100',
+                    'zip_code' => 'nullable|string|max:30',
+                    'residency_status' => 'nullable|string|max:100',
+                    'full_address' => 'nullable|string|max:500',
                 ];
                 break;
             case 'education_career':
                 $rules = [
-                    'highest_qualification' => 'required|string',
-                    'college_name' => 'nullable|string',
-                    'college_address' => 'nullable|string',
-                    'income_type' => 'required|string',
-                    'profession' => 'required|string',
-                    'designation' => 'required|string',
-                    'company_name' => 'nullable|string',
-                    'company_address' => 'nullable|string',
+                    'highest_qualification' => 'nullable|string|max:150',
+                    'working_with' => 'nullable|string|max:150',
+                    'college_name' => 'nullable|string|max:200',
+                    'profession' => 'nullable|string|max:150',
+                    'designation' => 'nullable|string|max:150',
+                    'annual_income' => 'nullable|string|max:100',
+                    'company_name' => 'nullable|string|max:200',
                 ];
                 break;
             case 'astro':
                 $rules = [
-                    'manglik' => 'nullable|string',
-                    'star' => 'nullable|string',
-                    'moon_sign' => 'nullable|string',
-                    'horoscope_match' => 'nullable|boolean',
-                    'birth_place' => 'nullable|string',
-                    'birth_time' => 'nullable|string',
+                    'manglik' => 'nullable|string|max:50',
+                    'time_of_birth' => 'nullable|string|max:50',
+                    'city_of_birth' => 'nullable|string|max:150',
                 ];
                 break;
             case 'family':
                 $rules = [
-                    'family_status' => 'nullable|string',
-                    'family_type' => 'nullable|string',
-                    'family_values' => 'nullable|string',
-                    'fathers_status' => 'nullable|string',
-                    'mothers_status' => 'nullable|string',
-                    'brothers' => 'nullable|string',
-                    'sisters' => 'nullable|string',
+                    'father_profession' => 'nullable|string|max:150',
+                    'mother_profession' => 'nullable|string|max:150',
+                    'family_location' => 'nullable|string|max:200',
+                    'brothers_count' => 'nullable|integer|min:0|max:20',
+                    'sisters_count' => 'nullable|integer|min:0|max:20',
+                    'family_financial_status' => 'nullable|string|max:100',
                 ];
                 break;
             case 'contact':
                 $rules = [
-                    // To prevent changing critical auth info without verification, 
-                    // we might skip email/mobile here or require special handling.
-                    // For now, we allow updating alternate contact or display options.
-                    // But wait, the schema doesn't have alt_mobile. We will allow updating email and mobile.
-                    'email' => 'required|email|unique:candidates,email,'.$candidate->id,
-                    'mobile' => 'required|digits:10|unique:candidates,mobile,'.$candidate->id,
+                    'contact_display_option' => 'nullable|string|max:255',
                 ];
                 break;
             default:
