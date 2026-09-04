@@ -198,6 +198,9 @@
                 </div>
 
                 <!-- ================= BOTTOM INSTRUCTIONS / GUIDELINES ================= -->
+                @php
+                    $genderFolder = strtolower($candidate->gender ?? 'male') === 'female' ? 'female' : 'male';
+                @endphp
                 <div class="pt-8 border-t border-gray-200 space-y-6">
                     <div class="text-center">
                         <h3 class="text-lg md:text-xl font-bold font-serif text-gray-800">Photo Upload Instructions & Guidelines</h3>
@@ -215,15 +218,15 @@
 
                             <div class="flex items-center gap-3">
                                 <div class="text-center bg-white rounded-xl p-2.5 border border-emerald-100 shadow-sm w-24 sm:w-28">
-                                    <div class="w-full aspect-square bg-emerald-50 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center text-emerald-600">
-                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                    <div class="w-full aspect-square bg-gray-100 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center">
+                                        <img src="{{ asset('img/' . $genderFolder . '/correct1.png') }}" alt="Close Up" class="w-full h-full object-cover">
                                     </div>
                                     <span class="text-[11px] font-bold text-gray-700 block">Close Up</span>
                                 </div>
 
                                 <div class="text-center bg-white rounded-xl p-2.5 border border-emerald-100 shadow-sm w-24 sm:w-28">
-                                    <div class="w-full aspect-square bg-emerald-50 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center text-emerald-600">
-                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                    <div class="w-full aspect-square bg-gray-100 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center">
+                                        <img src="{{ asset('img/' . $genderFolder . '/correct2.png') }}" alt="Full View" class="w-full h-full object-cover">
                                     </div>
                                     <span class="text-[11px] font-bold text-gray-700 block">Full View</span>
                                 </div>
@@ -239,29 +242,29 @@
 
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                 <div class="text-center bg-white rounded-xl p-2.5 border border-red-100 shadow-sm">
-                                    <div class="w-full aspect-square bg-red-50 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center text-red-400">
-                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path></svg>
+                                    <div class="w-full aspect-square bg-gray-100 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center">
+                                        <img src="{{ asset('img/' . $genderFolder . '/side.png') }}" alt="Side Face" class="w-full h-full object-cover">
                                     </div>
                                     <span class="text-[11px] font-bold text-gray-700 block">Side Face</span>
                                 </div>
 
                                 <div class="text-center bg-white rounded-xl p-2.5 border border-red-100 shadow-sm">
-                                    <div class="w-full aspect-square bg-red-50 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center text-red-400">
-                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                    <div class="w-full aspect-square bg-gray-100 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center">
+                                        <img src="{{ asset('img/' . $genderFolder . '/blur.png') }}" alt="Blur" class="w-full h-full object-cover">
                                     </div>
                                     <span class="text-[11px] font-bold text-gray-700 block">Blur</span>
                                 </div>
 
                                 <div class="text-center bg-white rounded-xl p-2.5 border border-red-100 shadow-sm">
-                                    <div class="w-full aspect-square bg-red-50 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center text-red-400">
-                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                    <div class="w-full aspect-square bg-gray-100 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center">
+                                        <img src="{{ asset('img/' . $genderFolder . '/group.png') }}" alt="Group" class="w-full h-full object-cover">
                                     </div>
                                     <span class="text-[11px] font-bold text-gray-700 block">Group</span>
                                 </div>
 
                                 <div class="text-center bg-white rounded-xl p-2.5 border border-red-100 shadow-sm">
-                                    <div class="w-full aspect-square bg-red-50 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center text-red-400">
-                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    <div class="w-full aspect-square bg-gray-100 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center">
+                                        <img src="{{ file_exists(public_path('img/' . $genderFolder . '/stock.png')) ? asset('img/' . $genderFolder . '/stock.png') : asset('img/male/stock.png') }}" alt="Watermark" class="w-full h-full object-cover">
                                     </div>
                                     <span class="text-[11px] font-bold text-gray-700 block">Watermark</span>
                                 </div>
