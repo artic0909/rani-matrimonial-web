@@ -5,7 +5,7 @@
 @section('content')
 
 <!-- Hero Section -->
-<section class="relative min-h-screen flex flex-col justify-end overflow-hidden pb-16 md:pb-24">
+<section class="relative min-h-screen flex flex-col justify-end overflow-hidden pt-32 pb-16 md:pb-24">
     <!-- Background Image -->
     <div class="absolute inset-0 z-0 bg-cover bg-top bg-no-repeat" style="background-image: url('{{ asset('img/hero.png') }}');"></div>
     

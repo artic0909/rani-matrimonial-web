@@ -268,20 +268,44 @@ class AuthController extends Controller
             
             'about_yourself' => 'nullable|string',
             'hobbies_interests' => 'nullable|array',
-            'profile_picture' => 'nullable|image|max:2048', // Allow images up to 2MB
-            'selfie_image' => 'required|file|mimes:jpeg,png,jpg|max:5120', // From webcam, mandatory
+            'profile_picture' => 'nullable|image|max:15360', // Allow images up to 15MB, compressed on server
+            'selfie_image' => 'required|file|mimes:jpeg,png,jpg,webp|max:15360', // Mandatory, compressed on server
         ]);
 
         $candidateData = $validated;
         
-        // Handle file upload
+        // Initialize Intervention Image Manager
+        $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+        
+        // Handle file upload and compression
         if ($request->hasFile('profile_picture')) {
-            $path = $request->file('profile_picture')->store('profiles', 'public');
+            $file = $request->file('profile_picture');
+            $filename = uniqid('profile_') . '.webp';
+            $path = 'profiles/' . $filename;
+            
+            $image = $manager->read($file->getRealPath());
+            // Scale if it's too large (e.g., max 1200px width)
+            if ($image->width() > 1200) {
+                $image->scale(width: 1200);
+            }
+            $encoded = $image->toWebp(70);
+            \Illuminate\Support\Facades\Storage::disk('public')->put($path, $encoded->toString());
+            
             $candidateData['profile_picture'] = $path;
         }
 
         if ($request->hasFile('selfie_image')) {
-            $selfiePath = $request->file('selfie_image')->store('selfies', 'public');
+            $file = $request->file('selfie_image');
+            $filename = uniqid('selfie_') . '.webp';
+            $path = 'selfies/' . $filename;
+            
+            $image = $manager->read($file->getRealPath());
+            if ($image->width() > 1200) {
+                $image->scale(width: 1200);
+            }
+            $encoded = $image->toWebp(70);
+            \Illuminate\Support\Facades\Storage::disk('public')->put($path, $encoded->toString());
+            
             $candidateData['selfie_verified'] = true;
         }
         
