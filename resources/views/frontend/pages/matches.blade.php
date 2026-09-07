@@ -7,7 +7,8 @@
     activeTab: '{{ $tab }}',
     matches: @js($matches),
     candidate: @js($candidate),
-    counts: @js($counts)
+    counts: @js($counts),
+    shortlistedIds: @js($shortlistedIds ?? [])
 })">
     <!-- Background Image -->
     <div class="fixed inset-0 z-0 bg-cover bg-top bg-no-repeat" style="background-image: url('{{ asset('img/hero.png') }}');"></div>
@@ -79,10 +80,10 @@
                         <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $tab === 'todays' ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700' }}">{{ $counts['todays'] }}</span>
                     </a>
 
-                    <a href="{{ route('matches', ['tab' => 'new']) }}" 
-                       class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap {{ $tab === 'new' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md' : 'text-gray-600 hover:text-rani-primary hover:bg-white' }}">
-                        <span>New Matches</span>
-                        <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-rani-gold text-rani-dark font-extrabold">New</span>
+                    <a href="{{ route('matches', ['tab' => 'shortlisted']) }}" 
+                       class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap {{ $tab === 'shortlisted' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md' : 'text-gray-600 hover:text-rani-primary hover:bg-white' }}">
+                        <span>Shortlisted</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $tab === 'shortlisted' ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700' }}" x-text="shortlistedIds.length"></span>
                     </a>
 
                     <a href="{{ route('matches', ['tab' => 'my_matches']) }}" 
@@ -134,7 +135,7 @@
                                     <button type="button" 
                                             @click="toggleShortlist(match)"
                                             class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/80 hover:bg-white backdrop-blur-xs text-gray-700 hover:text-rose-600 shadow-md flex items-center justify-center transition-all hover:scale-110 active:scale-95"
-                                            :class="isShortlisted(match.id) ? 'text-rose-600 bg-white' : ''">
+                                            :class="isShortlisted(match.id) ? 'text-rose-600 bg-white ring-2 ring-rose-300' : ''">
                                         <svg class="w-5 h-5" :fill="isShortlisted(match.id) ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                                     </button>
 
@@ -142,7 +143,7 @@
                                     <div class="absolute bottom-3 left-4 right-4 text-white">
                                         <div class="flex items-center gap-2">
                                             <h3 class="text-xl font-bold font-serif drop-shadow-md truncate" x-text="match.first_name + ' ' + match.last_name"></h3>
-                                            <svg x-show="match.verified" class="w-4 h-4 text-sky-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                            <svg x-show="match.verified" class="w-4 h-4 text-sky-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                                         </div>
                                         <div class="flex items-center gap-2 text-xs text-gray-200 font-mono mt-0.5">
                                             <span x-text="'ID: ' + match.id"></span>
@@ -248,11 +249,20 @@
                     <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto text-gray-400">
                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-800 font-serif">No matches found</h3>
-                    <p class="text-xs text-gray-500 max-w-md mx-auto">No profiles match your current search or location filters. Try clearing your filters or check back tomorrow.</p>
-                    <button @click="searchQuery = ''; selectedCity = ''" type="button" class="px-6 py-2.5 rounded-full bg-rani-primary text-white text-xs font-bold shadow hover:bg-rani-primary-dark transition-all">
-                        Reset Filters
-                    </button>
+                    <h3 class="text-xl font-bold text-gray-800 font-serif" x-text="activeTab === 'shortlisted' ? 'No Shortlisted Profiles Yet' : 'No matches found'"></h3>
+                    <p class="text-xs text-gray-500 max-w-md mx-auto" x-text="activeTab === 'shortlisted' ? 'Click the heart icon on any candidate profile to save them here for quick access.' : 'No profiles match your current search or location filters. Try clearing your filters or check back tomorrow.'"></p>
+                    <div class="pt-2">
+                        <template x-if="activeTab === 'shortlisted'">
+                            <a href="{{ route('matches', ['tab' => 'todays']) }}" class="px-6 py-2.5 rounded-full bg-rani-primary text-white text-xs font-bold shadow hover:bg-rani-primary-dark transition-all inline-block">
+                                Explore Today's Matches
+                            </a>
+                        </template>
+                        <template x-if="activeTab !== 'shortlisted'">
+                            <button @click="searchQuery = ''; selectedCity = ''" type="button" class="px-6 py-2.5 rounded-full bg-rani-primary text-white text-xs font-bold shadow hover:bg-rani-primary-dark transition-all">
+                                Reset Filters
+                            </button>
+                        </template>
+                    </div>
                 </div>
 
             </div>
@@ -342,7 +352,7 @@ function matchesManager(initialData) {
         searchQuery: '',
         selectedCity: '',
         
-        shortlistedIds: [],
+        shortlistedIds: initialData.shortlistedIds || [],
         sentInterestIds: [],
 
         contactModalOpen: false,
@@ -350,7 +360,7 @@ function matchesManager(initialData) {
 
         get tabTitle() {
             switch (this.activeTab) {
-                case 'new': return 'New Matches';
+                case 'shortlisted': return 'Shortlisted Profiles';
                 case 'my_matches': return 'My Matches';
                 case 'near_me': return 'Matches Near Me';
                 default: return "Today's Recommendations";
@@ -359,7 +369,7 @@ function matchesManager(initialData) {
 
         get tabSubtitle() {
             switch (this.activeTab) {
-                case 'new': return 'Profiles registered recently on Rani Matrimonial';
+                case 'shortlisted': return 'Profiles you have shortlisted and saved to your favorites';
                 case 'my_matches': return 'Curated profiles strictly matching your partner preferences';
                 case 'near_me': return 'Verified candidates living in your city and nearby areas';
                 default: return 'Handpicked daily matchmaking recommendations based on high compatibility';
@@ -393,31 +403,48 @@ function matchesManager(initialData) {
             return this.sentInterestIds.includes(id);
         },
 
-        toggleShortlist(match) {
-            if (this.shortlistedIds.includes(match.id)) {
+        async toggleShortlist(match) {
+            const isCurrentlyShortlisted = this.shortlistedIds.includes(match.id);
+
+            // Optimistic UI update
+            if (isCurrentlyShortlisted) {
                 this.shortlistedIds = this.shortlistedIds.filter(i => i !== match.id);
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Removed',
-                    text: match.first_name + ' removed from your shortlist.',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 2000,
-                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title' }
-                });
+                if (this.activeTab === 'shortlisted') {
+                    this.matches = this.matches.filter(m => m.id !== match.id);
+                }
             } else {
                 this.shortlistedIds.push(match.id);
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Shortlisted!',
-                    text: match.first_name + ' saved to your favorites.',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 2000,
-                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title' }
+            }
+
+            try {
+                const res = await fetch('{{ route("matches.shortlist") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        profile_id: match.id
+                    })
                 });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: data.shortlisted ? 'success' : 'info',
+                        title: data.shortlisted ? 'Shortlisted!' : 'Removed',
+                        text: data.message,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title' }
+                    });
+                }
+            } catch (e) {
+                console.error('Shortlist error:', e);
             }
         },
 
@@ -425,6 +452,18 @@ function matchesManager(initialData) {
             if (this.sentInterestIds.includes(match.id)) return;
 
             this.sentInterestIds.push(match.id);
+
+            fetch('{{ route("matches.send-interest") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    profile_id: match.id
+                })
+            }).catch(console.error);
 
             Swal.fire({
                 icon: 'success',

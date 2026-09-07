@@ -101,6 +101,11 @@ class Candidate extends Authenticatable
         return $this->hasOne(Wallet::class, 'candidate_id');
     }
 
+    public function shortlists(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Shortlisted::class, 'candidate_id');
+    }
+
     /**
      * Get existing wallet or initialize a new one with a welcome bonus
      */

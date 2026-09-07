@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Candidate;
+use App\Models\Shortlisted;
 
 class MatchesController extends Controller
 {
@@ -16,19 +17,24 @@ class MatchesController extends Controller
         /** @var Candidate $candidate */
         $candidate = Auth::user();
         $tab = $request->query('tab', 'todays');
-        if (!in_array($tab, ['todays', 'new', 'my_matches', 'near_me'])) {
+        if (!in_array($tab, ['todays', 'shortlisted', 'my_matches', 'near_me'])) {
             $tab = 'todays';
         }
 
         $targetGender = strtolower($candidate->gender ?? 'female') === 'female' ? 'Male' : 'Female';
 
+        // Load shortlisted profile IDs from database
+        $shortlistedIds = Shortlisted::where('candidate_id', $candidate->id)
+            ->pluck('profile_id')
+            ->toArray();
+
         // Sample / DB Matches List
-        $matches = $this->getMatchesData($candidate, $targetGender, $tab);
+        $matches = $this->getMatchesData($candidate, $targetGender, $tab, $shortlistedIds);
 
         // Counts for tabs
         $counts = [
             'todays' => 8,
-            'new' => 14,
+            'shortlisted' => count($shortlistedIds),
             'my_matches' => 26,
             'near_me' => 11,
         ];
@@ -37,7 +43,8 @@ class MatchesController extends Controller
             'candidate',
             'tab',
             'matches',
-            'counts'
+            'counts',
+            'shortlistedIds'
         ));
     }
 
@@ -57,7 +64,7 @@ class MatchesController extends Controller
     }
 
     /**
-     * Shortlist / Favorite match
+     * Shortlist / Favorite match (stores into shortlisted table)
      */
     public function toggleShortlist(Request $request)
     {
@@ -65,16 +72,41 @@ class MatchesController extends Controller
             'profile_id' => 'required|string',
         ]);
 
+        /** @var Candidate $candidate */
+        $candidate = Auth::user();
+        $profileId = $request->profile_id;
+
+        $existing = Shortlisted::where('candidate_id', $candidate->id)
+            ->where('profile_id', $profileId)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+            $shortlisted = false;
+            $message = 'Profile removed from your shortlist.';
+        } else {
+            Shortlisted::create([
+                'candidate_id' => $candidate->id,
+                'profile_id' => $profileId,
+            ]);
+            $shortlisted = true;
+            $message = 'Profile saved to your shortlist.';
+        }
+
+        $shortlistedCount = Shortlisted::where('candidate_id', $candidate->id)->count();
+
         return response()->json([
             'success' => true,
-            'message' => 'Profile saved to your shortlist.',
+            'shortlisted' => $shortlisted,
+            'count' => $shortlistedCount,
+            'message' => $message,
         ]);
     }
 
     /**
      * Generate structured matches list
      */
-    private function getMatchesData(Candidate $candidate, string $targetGender, string $tab): array
+    private function getMatchesData(Candidate $candidate, string $targetGender, string $tab, array $shortlistedIds = []): array
     {
         $isFemaleTarget = strtolower($targetGender) === 'female';
 
@@ -362,8 +394,8 @@ class MatchesController extends Controller
         }
 
         // Filter based on tab if specific category match, or return curated list
-        if ($tab === 'new') {
-            $filtered = array_filter($pool, fn($m) => in_array($m['category'], ['new', 'todays']));
+        if ($tab === 'shortlisted') {
+            $filtered = array_filter($pool, fn($m) => in_array($m['id'], $shortlistedIds));
         } elseif ($tab === 'near_me') {
             $filtered = array_filter($pool, fn($m) => in_array($m['category'], ['near_me', 'todays']));
         } elseif ($tab === 'my_matches') {
