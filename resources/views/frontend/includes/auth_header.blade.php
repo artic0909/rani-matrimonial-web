@@ -21,7 +21,7 @@
 
                     <!-- Desktop Top Nav -->
                     <nav class="hidden md:flex space-x-6">
-                        <a href="{{ route('dashboard') }}" class="text-white hover:text-rani-gold font-medium text-sm transition-colors border-b-2 border-rani-gold pb-[21px] pt-[22px]">My Rani</a>
+                        <a href="{{ route('dashboard') }}" class="text-white hover:text-rani-gold font-medium text-sm transition-colors border-b-2 border-rani-gold pb-[21px] pt-[22px]">Profile</a>
                         <a href="#" class="text-gray-300 hover:text-rani-gold font-medium text-sm transition-colors py-[22px] flex items-center gap-1">Matches <span class="bg-rani-gold text-rani-dark text-[10px] font-bold px-1.5 rounded-full">New</span></a>
                         <a href="#" class="text-gray-300 hover:text-rani-gold font-medium text-sm transition-colors py-[22px]">Search</a>
                         <a href="#" class="text-gray-300 hover:text-rani-gold font-medium text-sm transition-colors py-[22px] flex items-center gap-1">Inbox <span class="bg-white text-rani-dark text-[10px] font-bold px-1.5 rounded-full">0</span></a>
