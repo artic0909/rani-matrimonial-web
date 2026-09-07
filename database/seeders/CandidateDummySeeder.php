@@ -1501,18 +1501,48 @@ class CandidateDummySeeder extends Seeder
             // Ensure Candidate has a Wallet
             $candidate->getOrCreateWallet();
 
-            // Ensure Candidate has photo records in candidate_photos
-            $photoPath = $data['profile_picture'] ?? 'img/female/correct1.png';
+            // Ensure Candidate has multiple photo records in candidate_photos
+            $genderDir = strtolower($candidate->gender) === 'female' ? 'female' : 'male';
+            $availableImages = [
+                "img/{$genderDir}/correct1.png",
+                "img/{$genderDir}/correct2.png",
+                "img/{$genderDir}/side.png",
+                "img/{$genderDir}/stock.png",
+                "img/{$genderDir}/group.png",
+            ];
+
+            // Primary photo first
+            $primaryPhoto = $data['profile_picture'] ?? $availableImages[0];
             CandidatePhoto::updateOrCreate(
                 [
                     'candidate_id' => $candidate->id,
-                    'photo_path' => $photoPath,
+                    'photo_path' => $primaryPhoto,
                 ],
                 [
                     'is_profile_picture' => true,
+                    'caption' => 'Profile Picture',
                     'sort_order' => 1,
                 ]
             );
+
+            // Add 3 more additional gallery photos
+            $counter = 2;
+            foreach ($availableImages as $img) {
+                if ($img !== $primaryPhoto && $counter <= 4) {
+                    CandidatePhoto::updateOrCreate(
+                        [
+                            'candidate_id' => $candidate->id,
+                            'photo_path' => $img,
+                        ],
+                        [
+                            'is_profile_picture' => false,
+                            'caption' => 'Photo ' . $counter,
+                            'sort_order' => $counter,
+                        ]
+                    );
+                    $counter++;
+                }
+            }
         }
 
         $this->command->info('Successfully seeded 10 Male & 10 Female Candidates with full profiles, wallets, and photos!');

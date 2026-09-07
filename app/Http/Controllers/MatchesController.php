@@ -117,7 +117,8 @@ class MatchesController extends Controller
      */
     private function getMatchesData(Candidate $candidate, string $targetGender, string $tab, array $shortlistedIds = []): array
     {
-        $dbCandidates = Candidate::where('gender', $targetGender)
+        $dbCandidates = Candidate::with('photos')
+            ->where('gender', $targetGender)
             ->where('id', '!=', $candidate->id)
             ->get();
 
@@ -127,7 +128,7 @@ class MatchesController extends Controller
             $age = $c->dob ? \Carbon\Carbon::parse($c->dob)->age : (24 + ($c->id % 8));
             $profileCode = $c->profile_id ?? $c->candidate_code ?? ('RM' . str_pad($c->id, 5, '0', STR_PAD_LEFT));
 
-            // Determine image url
+            // Determine primary image url
             $photo = asset('img/' . (strtolower($targetGender) === 'female' ? 'female' : 'male') . '/correct' . (($index % 2) + 1) . '.png');
             if (!empty($c->profile_picture)) {
                 if (str_starts_with($c->profile_picture, 'http')) {
@@ -136,6 +137,35 @@ class MatchesController extends Controller
                     $photo = asset($c->profile_picture);
                 } else {
                     $photo = asset('storage/' . $c->profile_picture);
+                }
+            }
+
+            // Build list of all related photos for gallery
+            $allPhotos = [$photo];
+            if ($c->photos && $c->photos->isNotEmpty()) {
+                foreach ($c->photos as $p) {
+                    $pUrl = $p->photo_path;
+                    if (str_starts_with($pUrl, 'http')) {
+                        $fullUrl = $pUrl;
+                    } elseif (str_starts_with($pUrl, 'img/')) {
+                        $fullUrl = asset($pUrl);
+                    } else {
+                        $fullUrl = asset('storage/' . $pUrl);
+                    }
+                    if (!in_array($fullUrl, $allPhotos)) {
+                        $allPhotos[] = $fullUrl;
+                    }
+                }
+            }
+
+            // Guarantee 3-4 gallery photos if candidate has few
+            if (count($allPhotos) < 3) {
+                $genderDir = strtolower($targetGender) === 'female' ? 'female' : 'male';
+                foreach (['correct1.png', 'correct2.png', 'side.png', 'stock.png', 'group.png'] as $imgName) {
+                    $fallbackUrl = asset("img/{$genderDir}/{$imgName}");
+                    if (!in_array($fallbackUrl, $allPhotos)) {
+                        $allPhotos[] = $fallbackUrl;
+                    }
                 }
             }
 
@@ -173,6 +203,7 @@ class MatchesController extends Controller
                 'state' => $c->state ?? 'Maharashtra',
                 'diet' => $c->diet ?? 'Vegetarian',
                 'photo' => $photo,
+                'photos' => $allPhotos,
                 'match_score' => $matchScore,
                 'match_reasons' => array_slice($matchReasons, 0, 3),
                 'badge' => $badge,
