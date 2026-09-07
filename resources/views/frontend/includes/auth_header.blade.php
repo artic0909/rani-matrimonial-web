@@ -21,8 +21,8 @@
 
                     <!-- Desktop Top Nav -->
                     <nav class="hidden md:flex space-x-6">
-                        <a href="{{ route('dashboard') }}" class="text-white hover:text-rani-gold font-medium text-sm transition-colors border-b-2 border-rani-gold pb-[21px] pt-[22px]">Profile</a>
-                        <a href="#" class="text-gray-300 hover:text-rani-gold font-medium text-sm transition-colors py-[22px] flex items-center gap-1">Matches <span class="bg-rani-gold text-rani-dark text-[10px] font-bold px-1.5 rounded-full">New</span></a>
+                        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard', 'my-profile', 'my-photos', 'wallet') ? 'text-white border-b-2 border-rani-gold pb-[21px] pt-[22px]' : 'text-gray-300 hover:text-rani-gold py-[22px]' }} font-medium text-sm transition-colors">Profile</a>
+                        <a href="{{ route('matches') }}" class="{{ request()->routeIs('matches*') ? 'text-white border-b-2 border-rani-gold pb-[21px] pt-[22px]' : 'text-gray-300 hover:text-rani-gold py-[22px]' }} font-medium text-sm transition-colors flex items-center gap-1">Matches <span class="bg-rani-gold text-rani-dark text-[10px] font-bold px-1.5 rounded-full">New</span></a>
                         <a href="#" class="text-gray-300 hover:text-rani-gold font-medium text-sm transition-colors py-[22px]">Search</a>
                         <a href="#" class="text-gray-300 hover:text-rani-gold font-medium text-sm transition-colors py-[22px] flex items-center gap-1">Inbox <span class="bg-white text-rani-dark text-[10px] font-bold px-1.5 rounded-full">0</span></a>
                     </nav>
@@ -53,8 +53,8 @@
                                 <p class="text-sm font-semibold text-gray-800">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</p>
                                 <p class="text-xs text-gray-500 truncate">{{ Auth::user()->email }}</p>
                             </div>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-rani-primary/5 hover:text-rani-primary">My Profile</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-rani-primary/5 hover:text-rani-primary">Account Settings</a>
+                            <a href="{{ route('my-profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-rani-primary/5 hover:text-rani-primary">My Profile</a>
+                            <a href="{{ route('wallet') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-rani-primary/5 hover:text-rani-primary">My Wallet</a>
                             <form method="POST" action="/logout">
                                 @csrf
                                 <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</button>
@@ -77,14 +77,33 @@
     <!-- Sub Header (Nav Tabs) -->
     <div class="bg-white shadow-sm hidden md:block">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <nav class="flex space-x-8">
-                <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">Dashboard</a>
-                <a href="{{ route('my-profile') }}" class="{{ request()->routeIs('my-profile') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">My Profile</a>
-                <a href="{{ route('my-photos') }}" class="{{ request()->routeIs('my-photos') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">My Photos</a>
-                <a href="{{ route('wallet') }}" class="{{ request()->routeIs('wallet') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">Wallet</a>
-                <!-- <a href="#" class="border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300 font-medium text-sm py-3 px-1 transition-colors">Settings</a> -->
-                <!-- <a href="#" class="border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300 font-medium text-sm py-3 px-1 transition-colors">More</a> -->
-            </nav>
+            @if(request()->routeIs('matches*'))
+                <!-- Matches Sub Header Navigation -->
+                <nav class="flex space-x-8">
+                    @php $currentTab = request()->query('tab', 'todays'); @endphp
+                    <a href="{{ route('matches', ['tab' => 'todays']) }}" class="{{ $currentTab === 'todays' ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors flex items-center gap-1.5">
+                        Today's
+                    </a>
+                    <a href="{{ route('matches', ['tab' => 'new']) }}" class="{{ $currentTab === 'new' ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors flex items-center gap-1.5">
+                        New
+                        <span class="bg-rani-gold text-rani-dark text-[10px] font-bold px-1.5 py-0.2 rounded-full">New</span>
+                    </a>
+                    <a href="{{ route('matches', ['tab' => 'my_matches']) }}" class="{{ $currentTab === 'my_matches' ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors flex items-center gap-1.5">
+                        My Matches
+                    </a>
+                    <a href="{{ route('matches', ['tab' => 'near_me']) }}" class="{{ $currentTab === 'near_me' ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors flex items-center gap-1.5">
+                        Near me
+                    </a>
+                </nav>
+            @else
+                <!-- Profile / Dashboard Sub Header Navigation -->
+                <nav class="flex space-x-8">
+                    <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">Dashboard</a>
+                    <a href="{{ route('my-profile') }}" class="{{ request()->routeIs('my-profile') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">My Profile</a>
+                    <a href="{{ route('my-photos') }}" class="{{ request()->routeIs('my-photos') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">My Photos</a>
+                    <a href="{{ route('wallet') }}" class="{{ request()->routeIs('wallet') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">Wallet</a>
+                </nav>
+            @endif
         </div>
     </div>
 
@@ -94,18 +113,30 @@
             <span class="text-sm font-semibold text-gray-800">Hi, {{ Auth::user()->first_name }}</span>
             <a href="#" class="text-xs bg-rani-gold text-rani-dark font-bold px-2 py-1 rounded">UPGRADE</a>
         </div>
-        <div class="px-2 pt-2 pb-3 space-y-1">
-            <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('dashboard') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Dashboard</a>
-            <a href="{{ route('my-profile') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('my-profile') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">My Profile</a>
-            <a href="{{ route('my-photos') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('my-photos') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">My Photos</a>
-            <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rani-primary hover:bg-gray-50">Matches</a>
-            <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rani-primary hover:bg-gray-50">Search</a>
-            <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-rani-primary hover:bg-gray-50">Inbox</a>
-            <a href="{{ route('wallet') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('wallet') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Wallet</a>
-            <div class="border-t border-gray-200 my-2"></div>
+        
+        <!-- Mobile Profile Links -->
+        <div class="px-2 pt-2 pb-1 space-y-1">
+            <p class="px-3 pt-1 text-[11px] font-bold uppercase tracking-wider text-gray-400">Profile</p>
+            <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('dashboard') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Dashboard</a>
+            <a href="{{ route('my-profile') }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('my-profile') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">My Profile</a>
+            <a href="{{ route('my-photos') }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('my-photos') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">My Photos</a>
+            <a href="{{ route('wallet') }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('wallet') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Wallet</a>
+        </div>
+
+        <!-- Mobile Matches Links -->
+        <div class="px-2 pt-1 pb-2 space-y-1 border-t border-gray-100">
+            <p class="px-3 pt-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">Matches</p>
+            <a href="{{ route('matches', ['tab' => 'todays']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && request('tab', 'todays') === 'todays') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Today's</a>
+            <a href="{{ route('matches', ['tab' => 'new']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && request('tab') === 'new') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">New Matches</a>
+            <a href="{{ route('matches', ['tab' => 'my_matches']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && request('tab') === 'my_matches') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">My Matches</a>
+            <a href="{{ route('matches', ['tab' => 'near_me']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && request('tab') === 'near_me') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Near me</a>
+        </div>
+
+        <div class="border-t border-gray-200 my-1"></div>
+        <div class="px-2 pb-2">
             <form method="POST" action="/logout">
                 @csrf
-                <button type="submit" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50">Logout</button>
+                <button type="submit" class="block w-full text-left px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50">Logout</button>
             </form>
         </div>
     </div>

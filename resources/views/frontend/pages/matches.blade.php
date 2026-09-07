@@ -1,0 +1,454 @@
+@extends('frontend.layouts.auth_app')
+
+@section('title', 'Matches | Ranimatrimonial')
+
+@section('content')
+<div class="relative pt-6 pb-20" x-data="matchesManager({
+    activeTab: '{{ $tab }}',
+    matches: @js($matches),
+    candidate: @js($candidate),
+    counts: @js($counts)
+})">
+    <!-- Background Image -->
+    <div class="fixed inset-0 z-0 bg-cover bg-top bg-no-repeat" style="background-image: url('{{ asset('img/hero.png') }}');"></div>
+    
+    <!-- Maroon/Gold Gradient Overlay -->
+    <div class="fixed inset-0 z-0 bg-gradient-to-t from-rani-dark/85 via-rani-primary-dark/45 to-rani-primary-dark/25"></div>
+    
+    <!-- Floating Sweet Gestures (Hearts) -->
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none heart-container opacity-40">
+        <div class="heart-floating delay-1"></div>
+        <div class="heart-floating heart-maroon delay-2"></div>
+        <div class="heart-floating delay-3"></div>
+        <div class="heart-floating heart-maroon delay-4"></div>
+        <div class="heart-floating delay-5"></div>
+        <div class="heart-floating heart-maroon delay-1" style="left: 20%; animation-delay: 7s;"></div>
+        <div class="heart-floating delay-3" style="left: 70%; animation-delay: 4s;"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Main Container Card -->
+        <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/60 mb-10 overflow-hidden relative z-10">
+            
+            <!-- Royal accent top bar -->
+            <div class="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold opacity-95"></div>
+            
+            <!-- Page Header & Filter Toolbar -->
+            <div class="px-6 md:px-10 pt-8 pb-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-rani-primary to-rani-primary-dark flex items-center justify-center text-rani-gold shadow-md">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl md:text-3xl font-bold font-serif text-rani-primary-dark tracking-wide" x-text="tabTitle"></h1>
+                            <p class="text-xs text-gray-500 font-sans mt-0.5" x-text="tabSubtitle"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search & Quick Filters -->
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <div class="relative flex-1 md:w-64">
+                        <input type="text" 
+                               x-model="searchQuery" 
+                               placeholder="Search name, city, job..." 
+                               class="w-full pl-9 pr-4 py-2 text-xs md:text-sm rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-rani-gold focus:border-transparent bg-white shadow-sm">
+                        <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    
+                    <select x-model="selectedCity" class="py-2 px-3 text-xs md:text-sm rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-rani-gold shadow-sm text-gray-700">
+                        <option value="">All Locations</option>
+                        <option value="Mumbai">Mumbai</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Pune">Pune</option>
+                        <option value="Ahmedabad">Ahmedabad</option>
+                        <option value="Bengaluru">Bengaluru</option>
+                        <option value="Chennai">Chennai</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- In-Page Secondary Sub-Header Tabs (For quick switching + sync with subheader) -->
+            <div class="px-6 md:px-10 pt-4 pb-2 bg-gray-50/70 border-b border-gray-100 flex items-center justify-between overflow-x-auto">
+                <div class="flex items-center space-x-2 py-1">
+                    <a href="{{ route('matches', ['tab' => 'todays']) }}" 
+                       class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap {{ $tab === 'todays' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md' : 'text-gray-600 hover:text-rani-primary hover:bg-white' }}">
+                        <span>Today's Picks</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $tab === 'todays' ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700' }}">{{ $counts['todays'] }}</span>
+                    </a>
+
+                    <a href="{{ route('matches', ['tab' => 'new']) }}" 
+                       class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap {{ $tab === 'new' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md' : 'text-gray-600 hover:text-rani-primary hover:bg-white' }}">
+                        <span>New Matches</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-rani-gold text-rani-dark font-extrabold">New</span>
+                    </a>
+
+                    <a href="{{ route('matches', ['tab' => 'my_matches']) }}" 
+                       class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap {{ $tab === 'my_matches' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md' : 'text-gray-600 hover:text-rani-primary hover:bg-white' }}">
+                        <span>My Matches</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $tab === 'my_matches' ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700' }}">{{ $counts['my_matches'] }}</span>
+                    </a>
+
+                    <a href="{{ route('matches', ['tab' => 'near_me']) }}" 
+                       class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap {{ $tab === 'near_me' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md' : 'text-gray-600 hover:text-rani-primary hover:bg-white' }}">
+                        <span>Near Me</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $tab === 'near_me' ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700' }}">{{ $counts['near_me'] }}</span>
+                    </a>
+                </div>
+
+                <div class="hidden sm:flex items-center gap-2 text-xs text-gray-500 font-medium">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span x-text="filteredMatches.length + ' Profiles Available'"></span>
+                </div>
+            </div>
+
+            <!-- Matches Feed Grid -->
+            <div class="p-6 md:p-10">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <template x-for="match in filteredMatches" :key="match.id">
+                        <div class="bg-white rounded-3xl border border-gray-200/90 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col justify-between group">
+                            
+                            <div>
+                                <!-- Image & Spotlight Badges Container -->
+                                <div class="relative h-64 sm:h-72 w-full overflow-hidden bg-gray-100">
+                                    <img :src="match.photo" 
+                                         :alt="match.first_name" 
+                                         class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105">
+                                    
+                                    <!-- Top Gradient Overlay -->
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
+
+                                    <!-- Top Left: Match Score Badge -->
+                                    <div class="absolute top-3 left-3 flex flex-col gap-1.5">
+                                        <span class="px-3 py-1 rounded-full bg-gradient-to-r from-rani-gold to-yellow-500 text-rani-dark text-xs font-extrabold shadow-md flex items-center gap-1 border border-white/40">
+                                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                            <span x-text="match.match_score + '% Match'"></span>
+                                        </span>
+                                        <span x-show="match.badge" class="px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-xs text-white text-[10px] font-semibold tracking-wide" x-text="match.badge"></span>
+                                    </div>
+
+                                    <!-- Top Right: Shortlist Heart Action -->
+                                    <button type="button" 
+                                            @click="toggleShortlist(match)"
+                                            class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/80 hover:bg-white backdrop-blur-xs text-gray-700 hover:text-rose-600 shadow-md flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                                            :class="isShortlisted(match.id) ? 'text-rose-600 bg-white' : ''">
+                                        <svg class="w-5 h-5" :fill="isShortlisted(match.id) ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                                    </button>
+
+                                    <!-- Bottom Image Overlay Text: Name & ID -->
+                                    <div class="absolute bottom-3 left-4 right-4 text-white">
+                                        <div class="flex items-center gap-2">
+                                            <h3 class="text-xl font-bold font-serif drop-shadow-md truncate" x-text="match.first_name + ' ' + match.last_name"></h3>
+                                            <svg x-show="match.verified" class="w-4 h-4 text-sky-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                        </div>
+                                        <div class="flex items-center gap-2 text-xs text-gray-200 font-mono mt-0.5">
+                                            <span x-text="'ID: ' + match.id"></span>
+                                            <span>•</span>
+                                            <span x-text="match.active_ago"></span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!-- Card Bio & Particulars -->
+                                <div class="p-5 space-y-3.5">
+                                    
+                                    <!-- Basic Specs Grid -->
+                                    <div class="grid grid-cols-2 gap-2 text-xs text-gray-700 bg-gray-50/80 p-3 rounded-2xl border border-gray-100">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-gray-400">Age / Ht:</span>
+                                            <span class="font-bold" x-text="match.age + ' yrs, ' + match.height"></span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-gray-400">Religion:</span>
+                                            <span class="font-bold truncate" x-text="match.religion + ', ' + match.community"></span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-gray-400">Tongue:</span>
+                                            <span class="font-bold truncate" x-text="match.mother_tongue"></span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-gray-400">Diet:</span>
+                                            <span class="font-bold truncate" x-text="match.diet"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Career & Education -->
+                                    <div class="space-y-1.5 text-xs">
+                                        <div class="flex items-start gap-2 text-gray-800">
+                                            <svg class="w-4 h-4 text-rani-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                            <div class="truncate">
+                                                <p class="font-bold text-gray-900 truncate" x-text="match.profession"></p>
+                                                <p class="text-gray-500 text-[11px] truncate" x-text="match.company_name + ' • ' + match.annual_income"></p>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center gap-2 text-gray-600">
+                                            <svg class="w-4 h-4 text-rani-gold shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+                                            <span class="truncate" x-text="match.highest_qualification"></span>
+                                        </div>
+
+                                        <div class="flex items-center gap-2 text-gray-600">
+                                            <svg class="w-4 h-4 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                            <span class="truncate" x-text="match.city + ', ' + match.state + ' (' + match.distance + ')'"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Match Reasons Pill Badges -->
+                                    <div class="flex flex-wrap gap-1.5 pt-1">
+                                        <template x-for="reason in match.match_reasons" :key="reason">
+                                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-rani-light text-rani-primary-dark border border-rani-gold/30" x-text="'✓ ' + reason"></span>
+                                        </template>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Card Action Buttons -->
+                            <div class="p-4 bg-gray-50/90 border-t border-gray-100 flex items-center gap-2">
+                                <!-- Send Interest / Connect CTA -->
+                                <button type="button" 
+                                        @click="sendInterest(match)"
+                                        :disabled="isInterestSent(match.id)"
+                                        class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold shadow transition-all flex items-center justify-center gap-1.5"
+                                        :class="isInterestSent(match.id) ? 'bg-emerald-600 text-white cursor-default' : 'bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white hover:shadow-md active:scale-95'">
+                                    <template x-if="!isInterestSent(match.id)">
+                                        <div class="flex items-center gap-1.5">
+                                            <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                                            <span>Connect</span>
+                                        </div>
+                                    </template>
+                                    <template x-if="isInterestSent(match.id)">
+                                        <div class="flex items-center gap-1.5">
+                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                            <span>Interest Sent</span>
+                                        </div>
+                                    </template>
+                                </button>
+
+                                <!-- View Contact / Unlock Phone CTA -->
+                                <button type="button" 
+                                        @click="openContactModal(match)"
+                                        title="Unlock Contact Number"
+                                        class="py-2.5 px-3 rounded-xl bg-white hover:bg-rani-light text-rani-primary text-xs font-bold border border-rani-gold/40 shadow-xs hover:shadow transition-all flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                    <span>Contact</span>
+                                </button>
+                            </div>
+
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Empty State -->
+                <div x-show="filteredMatches.length === 0" class="p-16 text-center space-y-4">
+                    <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto text-gray-400">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 font-serif">No matches found</h3>
+                    <p class="text-xs text-gray-500 max-w-md mx-auto">No profiles match your current search or location filters. Try clearing your filters or check back tomorrow.</p>
+                    <button @click="searchQuery = ''; selectedCity = ''" type="button" class="px-6 py-2.5 rounded-full bg-rani-primary text-white text-xs font-bold shadow hover:bg-rani-primary-dark transition-all">
+                        Reset Filters
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= MODAL: UNLOCK CONTACT NUMBER ================= -->
+    <div x-show="contactModalOpen" 
+         style="display: none;" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+        
+        <div @click.away="contactModalOpen = false" 
+             class="bg-white rounded-3xl shadow-2xl border border-rani-gold/30 max-w-md w-full p-6 md:p-8 relative overflow-hidden space-y-6">
+            
+            <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-rani-primary/10 text-rani-primary flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold font-serif text-rani-primary-dark">Contact Information</h3>
+                        <p class="text-xs text-gray-500" x-text="selectedMatch ? selectedMatch.first_name + ' ' + selectedMatch.last_name : ''"></p>
+                    </div>
+                </div>
+                <button @click="contactModalOpen = false" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Contact Box Details -->
+            <div class="space-y-4">
+                <div class="p-4 bg-gradient-to-br from-rani-light/60 to-white rounded-2xl border border-rani-gold/30 text-center space-y-2">
+                    <div class="w-16 h-16 rounded-full mx-auto overflow-hidden border-2 border-rani-gold shadow">
+                        <img :src="selectedMatch ? selectedMatch.photo : ''" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="font-serif font-bold text-gray-800 text-base" x-text="selectedMatch ? selectedMatch.first_name + ' ' + selectedMatch.last_name : ''"></h4>
+                    <p class="text-xs text-gray-500 font-mono" x-text="selectedMatch ? 'ID: ' + selectedMatch.id : ''"></p>
+                </div>
+
+                <div class="space-y-2.5 text-xs text-gray-700">
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100">
+                        <span class="font-semibold text-gray-500">Phone Number:</span>
+                        <span class="font-mono font-bold text-gray-800">+91 98•••• ••42</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100">
+                        <span class="font-semibold text-gray-500">WhatsApp:</span>
+                        <span class="font-mono font-bold text-emerald-700">Available</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100">
+                        <span class="font-semibold text-gray-500">Profile Managed By:</span>
+                        <span class="font-semibold text-gray-800">Self / Parents</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <div class="pt-2">
+                <button type="button" 
+                        @click="unlockContactNow()" 
+                        class="w-full py-3.5 rounded-xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    <span>Unlock Full Number & WhatsApp</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- Alpine Matches Manager Script -->
+<script>
+function matchesManager(initialData) {
+    return {
+        activeTab: initialData.activeTab || 'todays',
+        matches: initialData.matches || [],
+        candidate: initialData.candidate || {},
+        counts: initialData.counts || {},
+        searchQuery: '',
+        selectedCity: '',
+        
+        shortlistedIds: [],
+        sentInterestIds: [],
+
+        contactModalOpen: false,
+        selectedMatch: null,
+
+        get tabTitle() {
+            switch (this.activeTab) {
+                case 'new': return 'New Matches';
+                case 'my_matches': return 'My Matches';
+                case 'near_me': return 'Matches Near Me';
+                default: return "Today's Recommendations";
+            }
+        },
+
+        get tabSubtitle() {
+            switch (this.activeTab) {
+                case 'new': return 'Profiles registered recently on Rani Matrimonial';
+                case 'my_matches': return 'Curated profiles strictly matching your partner preferences';
+                case 'near_me': return 'Verified candidates living in your city and nearby areas';
+                default: return 'Handpicked daily matchmaking recommendations based on high compatibility';
+            }
+        },
+
+        get filteredMatches() {
+            const query = this.searchQuery.toLowerCase().trim();
+            const city = this.selectedCity;
+
+            return this.matches.filter(m => {
+                if (city && m.city !== city) return false;
+                if (!query) return true;
+
+                const name = (m.first_name + ' ' + m.last_name).toLowerCase();
+                const profession = (m.profession || '').toLowerCase();
+                const community = (m.community || '').toLowerCase();
+                const religion = (m.religion || '').toLowerCase();
+                const location = (m.city + ' ' + m.state).toLowerCase();
+                const id = (m.id || '').toLowerCase();
+
+                return name.includes(query) || profession.includes(query) || community.includes(query) || religion.includes(query) || location.includes(query) || id.includes(query);
+            });
+        },
+
+        isShortlisted(id) {
+            return this.shortlistedIds.includes(id);
+        },
+
+        isInterestSent(id) {
+            return this.sentInterestIds.includes(id);
+        },
+
+        toggleShortlist(match) {
+            if (this.shortlistedIds.includes(match.id)) {
+                this.shortlistedIds = this.shortlistedIds.filter(i => i !== match.id);
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Removed',
+                    text: match.first_name + ' removed from your shortlist.',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title' }
+                });
+            } else {
+                this.shortlistedIds.push(match.id);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Shortlisted!',
+                    text: match.first_name + ' saved to your favorites.',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title' }
+                });
+            }
+        },
+
+        sendInterest(match) {
+            if (this.sentInterestIds.includes(match.id)) return;
+
+            this.sentInterestIds.push(match.id);
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Interest Sent!',
+                text: 'Your connection request has been sent to ' + match.first_name + '. We will notify you once accepted.',
+                customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+            });
+        },
+
+        openContactModal(match) {
+            this.selectedMatch = match;
+            this.contactModalOpen = true;
+        },
+
+        unlockContactNow() {
+            this.contactModalOpen = false;
+            Swal.fire({
+                icon: 'success',
+                title: 'Contact Unlocked!',
+                html: '<p class="text-sm">Mobile: <strong>+91 98201 49842</strong><br>Email: <strong>' + (this.selectedMatch.first_name).toLowerCase() + '@example.com</strong></p>',
+                customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+            });
+        }
+    };
+}
+</script>
+@endsection

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\WalletController;
+use App\Http\Controllers\MatchesController;
 
 Route::get('/', function () {
     return view('frontend.pages.index');
@@ -24,12 +25,17 @@ Route::get('/api/check-selfie-status', [AuthController::class, 'checkSelfieStatu
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register.page');
 Route::post('/api/register/final', [AuthController::class, 'registerFinal'])->name('register.final');
 
-// Candidate Dashboard, Profile, Photos & Wallet
+// Candidate Dashboard, Profile, Photos, Wallet & Matches
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::get('/my-profile', [AuthController::class, 'myProfile'])->name('my-profile');
     Route::get('/my-photos', [AuthController::class, 'myPhotos'])->name('my-photos');
     
+    // Matches Routes
+    Route::get('/matches', [MatchesController::class, 'index'])->name('matches');
+    Route::post('/api/matches/send-interest', [MatchesController::class, 'sendInterest'])->name('matches.send-interest');
+    Route::post('/api/matches/shortlist', [MatchesController::class, 'toggleShortlist'])->name('matches.shortlist');
+
     // Wallet Routes
     Route::get('/wallet', [WalletController::class, 'index'])->name('wallet');
     Route::post('/api/wallet/add-money', [WalletController::class, 'addMoney'])->name('wallet.add-money');
