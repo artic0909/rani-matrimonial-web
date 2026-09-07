@@ -82,7 +82,7 @@
                 <a href="{{ route('my-profile') }}" class="{{ request()->routeIs('my-profile') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">My Profile</a>
                 <a href="{{ route('my-photos') }}" class="{{ request()->routeIs('my-photos') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">My Photos</a>
                 <a href="{{ route('wallet') }}" class="{{ request()->routeIs('wallet') ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors">Wallet</a>
-                <a href="#" class="border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300 font-medium text-sm py-3 px-1 transition-colors">Settings</a>
+                <!-- <a href="#" class="border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300 font-medium text-sm py-3 px-1 transition-colors">Settings</a> -->
                 <!-- <a href="#" class="border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300 font-medium text-sm py-3 px-1 transition-colors">More</a> -->
             </nav>
         </div>
