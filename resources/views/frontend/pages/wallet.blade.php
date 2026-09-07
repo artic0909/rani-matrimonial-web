@@ -47,22 +47,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Top Right Action Buttons -->
-                <div class="flex items-center gap-2 self-start sm:self-auto">
-                    <button @click="openAddMoneyModal = true" 
-                            type="button" 
-                            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white text-xs md:text-sm font-bold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2 border border-rani-gold/40">
-                        <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                        Add Money
-                    </button>
-                    <button @click="openSpendModal = true" 
-                            type="button" 
-                            class="px-4 py-2.5 rounded-xl bg-white hover:bg-gray-50 text-gray-700 text-xs md:text-sm font-semibold border border-gray-200 shadow-sm hover:shadow transition-all flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-rani-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        Use Credits
-                    </button>
-                </div>
             </div>
 
             <div class="p-6 md:p-10 space-y-10">
