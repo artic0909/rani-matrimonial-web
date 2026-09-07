@@ -351,7 +351,7 @@
         </div>
     </div>
 
-    <!-- ================= MODAL: FULL PROFILE PHOTO GALLERY (NON-CLOSABLE EXCEPT CROSS BUTTON) ================= -->
+    <!-- ================= MODAL: FULL PROFILE PHOTO GALLERY (CLEAR PREMIUM CANVAS WITH GOLD ACCENTS) ================= -->
     <div x-show="photoGalleryOpen" 
          style="display: none;" 
          x-transition:enter="transition ease-out duration-300"
@@ -360,21 +360,24 @@
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 scale-100"
          x-transition:leave-end="opacity-0 scale-95"
-         class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md">
+         class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md">
         
-        <!-- Non-closable Modal Container (Must use the Cross button to close) -->
-        <div class="bg-gray-900 border border-rani-gold/40 rounded-3xl shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col relative max-h-[92vh]">
+        <!-- Non-closable Modal Container (Clear Deep Charcoal with Gold Trim) -->
+        <div class="bg-[#12141a] border-2 border-rani-gold/80 rounded-3xl shadow-[0_0_40px_rgba(0,0,0,0.8)] max-w-4xl w-full overflow-hidden flex flex-col relative max-h-[92vh]">
             
+            <!-- Top Royal Gold Shine Accent Bar -->
+            <div class="h-1.5 w-full bg-gradient-to-r from-rani-gold via-yellow-300 to-rani-gold"></div>
+
             <!-- Modal Header -->
-            <div class="px-5 py-3.5 bg-gray-950/90 border-b border-white/10 flex items-center justify-between z-10 shrink-0">
+            <div class="px-5 py-3.5 bg-[#0b0d12] border-b border-rani-gold/30 flex items-center justify-between z-10 shrink-0">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-rani-primary to-rani-primary-dark flex items-center justify-center text-rani-gold shadow-md">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-rani-gold to-yellow-500 flex items-center justify-center text-rani-dark shadow-md shadow-rani-gold/20">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h3 class="text-white font-serif font-bold text-base md:text-lg tracking-wide" x-text="galleryCandidate ? galleryCandidate.first_name + ' ' + galleryCandidate.last_name : 'Profile Photos'"></h3>
-                            <span class="text-[11px] text-rani-gold font-mono px-2 py-0.5 rounded-full bg-rani-gold/10 border border-rani-gold/30" x-text="galleryCandidate ? 'ID: ' + galleryCandidate.id : ''"></span>
+                            <h3 class="text-white font-serif font-bold text-base md:text-xl tracking-wide drop-shadow" x-text="galleryCandidate ? galleryCandidate.first_name + ' ' + galleryCandidate.last_name : 'Profile Photos'"></h3>
+                            <span class="text-[11px] text-rani-gold font-mono font-bold px-2.5 py-0.5 rounded-full bg-rani-gold/15 border border-rani-gold/40 shadow-xs" x-text="galleryCandidate ? 'ID: ' + galleryCandidate.id : ''"></span>
                         </div>
                         <p class="text-xs text-gray-400 font-sans" x-text="'Photo ' + (activePhotoIndex + 1) + ' of ' + (galleryPhotos.length || 1) + ' • ' + (galleryCandidate ? galleryCandidate.profession : '')"></p>
                     </div>
@@ -383,25 +386,25 @@
                 <!-- REQUIRED EXPLICIT CROSS BUTTON (Only way to close) -->
                 <button type="button" 
                         @click="closePhotoGallery()" 
-                        class="w-9 h-9 rounded-full bg-white/10 hover:bg-rose-600 text-gray-200 hover:text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-md border border-white/20"
+                        class="w-10 h-10 rounded-full bg-white/10 hover:bg-rose-600 text-gray-200 hover:text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-lg border border-white/20 hover:border-transparent"
                         title="Close Gallery">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
-            <!-- Main Image Viewport with Left/Right Nav Arrows -->
-            <div class="relative flex-1 bg-black/95 flex items-center justify-center min-h-[260px] sm:min-h-[400px] max-h-[58vh] overflow-hidden p-2 sm:p-4 group/viewport">
+            <!-- Main Image Viewport with Clean Neutral Canvas -->
+            <div class="relative flex-1 bg-[#07080b] flex items-center justify-center min-h-[260px] sm:min-h-[400px] max-h-[58vh] overflow-hidden p-3 sm:p-5 group/viewport">
                 
-                <!-- Main Active Photo -->
+                <!-- Main Active Photo with Clean Subtle Border -->
                 <img :src="currentGalleryPhoto" 
                      :alt="galleryCandidate ? galleryCandidate.first_name : 'Candidate Photo'" 
-                     class="max-h-[54vh] w-auto max-w-full object-contain rounded-xl shadow-2xl transition-all duration-300 select-none">
+                     class="max-h-[54vh] w-auto max-w-full object-contain rounded-2xl border border-white/15 shadow-[0_10px_35px_rgba(0,0,0,0.9)] transition-all duration-300 select-none">
 
                 <!-- Previous Photo Button -->
                 <button type="button" 
                         x-show="galleryPhotos.length > 1" 
                         @click="prevPhoto()" 
-                        class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-rani-primary text-white border border-white/20 hover:border-rani-gold flex items-center justify-center transition-all shadow-xl hover:scale-110 active:scale-95 z-20"
+                        class="absolute left-3.5 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/70 hover:bg-gradient-to-r hover:from-rani-gold hover:to-yellow-500 text-white hover:text-rani-dark border border-white/30 hover:border-rani-gold flex items-center justify-center transition-all shadow-xl hover:scale-110 active:scale-95 z-20 backdrop-blur-xs"
                         title="Previous Photo">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
                 </button>
@@ -410,54 +413,56 @@
                 <button type="button" 
                         x-show="galleryPhotos.length > 1" 
                         @click="nextPhoto()" 
-                        class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-rani-primary text-white border border-white/20 hover:border-rani-gold flex items-center justify-center transition-all shadow-xl hover:scale-110 active:scale-95 z-20"
+                        class="absolute right-3.5 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/70 hover:bg-gradient-to-r hover:from-rani-gold hover:to-yellow-500 text-white hover:text-rani-dark border border-white/30 hover:border-rani-gold flex items-center justify-center transition-all shadow-xl hover:scale-110 active:scale-95 z-20 backdrop-blur-xs"
                         title="Next Photo">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                 </button>
 
                 <!-- Dot Indicator Pills -->
-                <div x-show="galleryPhotos.length > 1" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/70 backdrop-blur-xs border border-white/10 z-10">
+                <div x-show="galleryPhotos.length > 1" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/80 backdrop-blur-xs border border-white/20 z-10 shadow-md">
                     <template x-for="(p, idx) in galleryPhotos" :key="idx">
                         <span class="h-2 rounded-full transition-all duration-300 cursor-pointer"
                               @click="activePhotoIndex = idx"
-                              :class="activePhotoIndex === idx ? 'bg-rani-gold w-6' : 'bg-white/40 w-2 hover:bg-white/70'"></span>
+                              :class="activePhotoIndex === idx ? 'bg-gradient-to-r from-rani-gold to-yellow-400 w-6 shadow-[0_0_8px_rgba(212,175,55,0.8)]' : 'bg-white/40 w-2 hover:bg-white/70'"></span>
                     </template>
                 </div>
             </div>
 
-            <!-- Thumbnails Gallery Strip (Click any to view) -->
-            <div class="px-4 py-3 bg-gray-950 border-t border-white/10 flex items-center justify-center gap-2.5 overflow-x-auto shrink-0">
+            <!-- Clear Thumbnails Gallery Strip -->
+            <div class="px-4 py-3 bg-[#0b0d12] border-t border-white/10 flex items-center justify-center gap-3 overflow-x-auto shrink-0">
                 <template x-for="(photoUrl, pIdx) in galleryPhotos" :key="pIdx">
                     <button type="button" 
                             @click="activePhotoIndex = pIdx" 
                             class="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer hover:opacity-100"
-                            :class="activePhotoIndex === pIdx ? 'border-rani-gold scale-105 shadow-md shadow-rani-gold/30 opacity-100 ring-2 ring-rani-gold/50' : 'border-white/20 opacity-50 hover:border-white/50'">
+                            :class="activePhotoIndex === pIdx ? 'border-rani-gold scale-105 shadow-[0_0_15px_rgba(212,175,55,0.6)] opacity-100 ring-2 ring-rani-gold/60' : 'border-white/20 opacity-50 hover:border-rani-gold/50 hover:opacity-85'">
                         <img :src="photoUrl" class="w-full h-full object-cover">
                     </button>
                 </template>
             </div>
 
-            <!-- Modal Bottom Action Bar -->
-            <div class="px-5 py-3 bg-gray-900/95 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-300 shrink-0">
+            <!-- Modal Bottom Clean Action Bar -->
+            <div class="px-5 py-3.5 bg-[#0e1017] border-t border-rani-gold/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white shrink-0">
                 <div class="flex items-center gap-2 text-center sm:text-left">
                     <span class="text-gray-300 font-medium" x-text="galleryCandidate ? galleryCandidate.age + ' yrs, ' + galleryCandidate.height + ' • ' + galleryCandidate.city + ', ' + galleryCandidate.state : ''"></span>
                 </div>
                 
                 <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <!-- Shortlist Button -->
                     <button type="button" 
                             @click="toggleShortlist(galleryCandidate)" 
-                            class="flex-1 sm:flex-initial px-4 py-2 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
-                            :class="galleryCandidate && isShortlisted(galleryCandidate.id) ? 'text-rose-400 border-rose-500 bg-rose-500/15' : 'border-white/20 hover:border-rose-400 text-white hover:bg-white/5'">
+                            class="flex-1 sm:flex-initial px-4 py-2 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm"
+                            :class="galleryCandidate && isShortlisted(galleryCandidate.id) ? 'text-rose-300 border-rose-400 bg-rose-900/30' : 'border-rani-gold/60 text-rani-gold hover:bg-rani-gold/15 hover:border-rani-gold'">
                         <svg class="w-4 h-4" :fill="galleryCandidate && isShortlisted(galleryCandidate.id) ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                         <span x-text="galleryCandidate && isShortlisted(galleryCandidate.id) ? 'Shortlisted' : 'Shortlist'"></span>
                     </button>
 
+                    <!-- Connect CTA Button (Royal Gold) -->
                     <button type="button" 
                             @click="sendInterest(galleryCandidate)" 
                             :disabled="galleryCandidate && isInterestSent(galleryCandidate.id)"
-                            class="flex-1 sm:flex-initial px-5 py-2 rounded-xl text-white font-bold text-xs shadow transition-all flex items-center justify-center gap-1.5"
-                            :class="galleryCandidate && isInterestSent(galleryCandidate.id) ? 'bg-emerald-600 text-white' : 'bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary hover:shadow-md'">
-                        <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                            class="flex-1 sm:flex-initial px-6 py-2 rounded-xl font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+                            :class="galleryCandidate && isInterestSent(galleryCandidate.id) ? 'bg-emerald-600 text-white shadow-emerald-900/40' : 'bg-gradient-to-r from-rani-gold via-yellow-400 to-rani-gold text-rani-dark hover:from-yellow-400 hover:to-rani-gold hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] active:scale-95'">
+                        <svg class="w-4 h-4" :class="galleryCandidate && isInterestSent(galleryCandidate.id) ? 'text-white' : 'text-rani-dark'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                         <span x-text="galleryCandidate && isInterestSent(galleryCandidate.id) ? 'Interest Sent' : 'Connect'"></span>
                     </button>
                 </div>
