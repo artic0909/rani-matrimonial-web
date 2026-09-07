@@ -45,26 +45,42 @@ class Candidate extends Authenticatable
     protected static function booted(): void
     {
         static::creating(function ($candidate) {
-            if (empty($candidate->candidate_code)) {
-                $candidate->candidate_code = static::generateCandidateCode();
+            if (empty($candidate->candidate_code) && empty($candidate->profile_id)) {
+                $uniqueCode = static::generateUniqueProfileId();
+                $candidate->candidate_code = $uniqueCode;
+                $candidate->profile_id = $uniqueCode;
+            } elseif (empty($candidate->candidate_code)) {
+                $candidate->candidate_code = $candidate->profile_id;
+            } elseif (empty($candidate->profile_id)) {
                 $candidate->profile_id = $candidate->candidate_code;
             }
         });
     }
 
-    public static function generateCandidateCode(): string
+    /**
+     * Generate a guaranteed unique Profile ID / Candidate Code (RM00001 format)
+     */
+    public static function generateUniqueProfileId(): string
     {
+        $lastId = static::max('id') ?? 0;
+        $attempt = 1;
+
         do {
-            // Generates format: RM + 5 digits (e.g. RM00001 or RM followed by sequential / random digits)
-            $last = static::max('id') ?? 0;
-            $nextNum = $last + 1;
-            $code = 'RM' . str_pad($nextNum, 5, '0', STR_PAD_LEFT);
-            if (static::where('candidate_code', $code)->exists()) {
+            if ($attempt === 1) {
+                $code = 'RM' . str_pad($lastId + 1, 5, '0', STR_PAD_LEFT);
+            } else {
                 $code = 'RM' . str_pad(mt_rand(10000, 99999), 5, '0', STR_PAD_LEFT);
             }
-        } while (static::where('candidate_code', $code)->exists());
+            $exists = static::where('candidate_code', $code)->orWhere('profile_id', $code)->exists();
+            $attempt++;
+        } while ($exists);
 
         return $code;
+    }
+
+    public static function generateCandidateCode(): string
+    {
+        return static::generateUniqueProfileId();
     }
 
     protected function casts(): array
