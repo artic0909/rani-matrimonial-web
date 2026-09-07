@@ -84,7 +84,7 @@
                             </div>
 
                             <h3 class="font-serif font-bold text-gray-800 text-lg mt-2">{{ $candidate->first_name }}{{ $candidate->middle_name ? ' ' . $candidate->middle_name : '' }} {{ $candidate->last_name }}</h3>
-                            <p class="text-xs text-gray-500 font-sans">ID: RANI{{ str_pad($candidate->id, 6, '0', STR_PAD_LEFT) }}</p>
+                            <p class="text-xs text-gray-500 font-sans">ID: {{ $candidate->candidate_code ?? ('RM' . str_pad($candidate->id, 5, '0', STR_PAD_LEFT)) }}</p>
 
                             <!-- Change Profile Photo Button -->
                             <label for="direct_profile_input" class="mt-3 cursor-pointer text-xs font-bold text-rani-primary hover:text-rani-primary-dark hover:underline flex items-center gap-1.5 transition-colors">
@@ -192,7 +192,7 @@
                     <div>
                         <h4 class="text-xs font-bold text-amber-900 uppercase tracking-wide">Other ways to upload your photos</h4>
                         <p class="text-xs text-amber-800 mt-0.5">
-                            Send your photos through post or courier to our registered office. Please mention your <strong>Profile ID (RANI{{ str_pad($candidate->id, 6, '0', STR_PAD_LEFT) }})</strong> and Name on the back of the physical photographs.
+                            Send your photos through post or courier to our registered office. Please mention your <strong>Profile ID ({{ $candidate->candidate_code ?? ('RM' . str_pad($candidate->id, 5, '0', STR_PAD_LEFT)) }})</strong> and Name on the back of the physical photographs.
                         </p>
                     </div>
                 </div>

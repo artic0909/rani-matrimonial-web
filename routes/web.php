@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\WalletController;
 
 Route::get('/', function () {
     return view('frontend.pages.index');
@@ -23,12 +24,17 @@ Route::get('/api/check-selfie-status', [AuthController::class, 'checkSelfieStatu
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register.page');
 Route::post('/api/register/final', [AuthController::class, 'registerFinal'])->name('register.final');
 
-// Candidate Dashboard & Profile
+// Candidate Dashboard, Profile, Photos & Wallet
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::get('/my-profile', [AuthController::class, 'myProfile'])->name('my-profile');
     Route::get('/my-photos', [AuthController::class, 'myPhotos'])->name('my-photos');
     
+    // Wallet Routes
+    Route::get('/wallet', [WalletController::class, 'index'])->name('wallet');
+    Route::post('/api/wallet/add-money', [WalletController::class, 'addMoney'])->name('wallet.add-money');
+    Route::post('/api/wallet/spend-money', [WalletController::class, 'spendMoney'])->name('wallet.spend-money');
+
     // Profile Updates
     Route::post('/api/my-profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
     Route::post('/api/my-profile/upload-photo', [AuthController::class, 'uploadProfilePicture'])->name('profile.upload-photo');

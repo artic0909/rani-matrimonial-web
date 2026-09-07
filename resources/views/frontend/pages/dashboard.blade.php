@@ -48,7 +48,7 @@
                     </div>
                     
                     <h2 class="text-xl font-bold text-gray-800 font-serif">{{ $candidate->first_name }}{{ $candidate->middle_name ? ' ' . $candidate->middle_name : '' }} {{ $candidate->last_name }}</h2>
-                    <p class="text-sm text-gray-500 mb-2">ID: RANI{{ str_pad($candidate->id, 6, '0', STR_PAD_LEFT) }}</p>
+                    <p class="text-sm text-gray-500 mb-2">ID: {{ $candidate->candidate_code ?? ('RM' . str_pad($candidate->id, 5, '0', STR_PAD_LEFT)) }}</p>
                     <a href="{{ route('my-profile') }}" class="text-rani-primary text-sm font-medium hover:underline">Edit Profile</a>
                 </div>
                 
