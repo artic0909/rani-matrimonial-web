@@ -58,9 +58,16 @@
                     <div class="lg:col-span-7 flex justify-center">
                         <div class="w-full max-w-[480px]">
                             <!-- The Card Container with 3D shadow & subtle tilt -->
-                            <div class="group relative aspect-[1.586/1] w-full rounded-2xl md:rounded-3xl p-6 md:p-7 text-white shadow-2xl overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgba(117,0,0,0.45)] hover:-translate-y-1 border border-rani-gold/60 select-none"
+                            <div class="group relative aspect-[1.586/1] min-h-[220px] sm:min-h-[240px] md:min-h-0 w-full rounded-2xl md:rounded-3xl p-4 sm:p-5 md:p-6 lg:p-7 text-white shadow-2xl overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgba(117,0,0,0.45)] hover:-translate-y-1 border border-rani-gold/60 select-none"
                                  style="background: radial-gradient(circle at 10% 20%, #7d0000 0%, #4a0004 50%, #1d0003 100%);">
                                 
+                                <!-- Background Groom & Bride Royal Artwork Overlay -->
+                                <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30 mix-blend-screen pointer-events-none transition-transform duration-700 group-hover:scale-105"
+                                     style="background-image: url('{{ asset('img/card_couple_bg.jpg') }}');"></div>
+
+                                <!-- Soft Vignette Gradient to ensure high text contrast -->
+                                <div class="absolute inset-0 bg-gradient-to-r from-rani-dark/75 via-transparent to-rani-dark/60 pointer-events-none"></div>
+
                                 <!-- Background Royal Mandala Watermark -->
                                 <div class="absolute -right-16 -bottom-16 w-64 h-64 opacity-15 pointer-events-none rounded-full border-[18px] border-dashed border-rani-gold"></div>
                                 <div class="absolute right-8 bottom-8 w-40 h-40 opacity-10 pointer-events-none rounded-full border-[6px] border-rani-gold"></div>
@@ -73,81 +80,80 @@
                                     
                                     <!-- Card Header (Brand + Contactless Icon) -->
                                     <div class="flex justify-between items-start">
-                                        <div class="flex items-center gap-2">
+                                        <div class="flex items-center gap-1.5 sm:gap-2">
                                             <div>
                                                 <div class="flex items-baseline">
-                                                    <span class="text-base md:text-lg font-serif italic font-bold text-white tracking-wide">Rani</span>
-                                                    <span class="text-[10px] md:text-xs font-serif text-rani-gold tracking-widest ml-1 uppercase">matrimonial</span>
+                                                    <span class="text-sm sm:text-base md:text-lg font-serif italic font-bold text-white tracking-wide">Rani</span>
+                                                    <span class="text-[9px] sm:text-[10px] md:text-xs font-serif text-rani-gold tracking-widest ml-1 uppercase">matrimonial</span>
                                                 </div>
-                                                <p class="text-[8px] md:text-[9px] uppercase tracking-[0.2em] text-rani-gold/90 font-mono font-semibold">Privilege Card</p>
+                                                <p class="text-[7px] sm:text-[8px] md:text-[9px] uppercase tracking-[0.15em] sm:tracking-[0.2em] text-rani-gold/90 font-mono font-semibold">Privilege Card</p>
                                             </div>
                                         </div>
 
                                         <!-- Contactless Wave & Card Tier Badge -->
-                                        <div class="flex items-center gap-2">
-                                            <span class="px-2 py-0.5 rounded-md bg-gradient-to-r from-rani-gold to-yellow-500 text-rani-dark text-[9px] md:text-[10px] font-extrabold uppercase tracking-wider shadow">
-                                             VIP
+                                        <div class="flex items-center gap-1.5 sm:gap-2">
+                                            <span class="px-1.5 sm:px-2 py-0.5 rounded-md bg-gradient-to-r from-rani-gold to-yellow-500 text-rani-dark text-[8px] sm:text-[9px] md:text-[10px] font-extrabold uppercase tracking-wider shadow">
+                                                VIP
                                             </span>
-                                            <svg class="w-5 h-5 md:w-6 md:h-6 text-rani-gold/90 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-rani-gold/90 transform rotate-90 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.393 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
                                             </svg>
                                         </div>
                                     </div>
 
-                                    <!-- Middle Row: Realistic Gold EMV Smart Chip -->
-                                    <div class="my-auto flex items-center justify-between pt-2">
-                                        <div class="relative w-11 h-8 md:w-13 md:h-9 rounded-md bg-gradient-to-br from-amber-200 via-yellow-400 to-amber-600 p-[1.5px] shadow-md border border-yellow-200/80">
+                                    <!-- Middle Row: Realistic Gold EMV Smart Chip & Balance -->
+                                    <div class="my-auto flex items-center justify-between pt-1 sm:pt-2">
+                                        <div class="relative w-9 h-6 sm:w-11 sm:h-8 md:w-13 md:h-9 rounded-md bg-gradient-to-br from-amber-200 via-yellow-400 to-amber-600 p-[1px] sm:p-[1.5px] shadow-md border border-yellow-200/80 shrink-0">
                                             <!-- Chip Grid Circuit Lines -->
-                                            <div class="w-full h-full rounded-[3px] border border-amber-700/40 grid grid-cols-3 grid-rows-2 gap-[2px] p-[2px] opacity-80">
-                                                <div class="border-r border-b border-amber-800/40 rounded-tl-[2px]"></div>
+                                            <div class="w-full h-full rounded-[2px] sm:rounded-[3px] border border-amber-700/40 grid grid-cols-3 grid-rows-2 gap-[1.5px] sm:gap-[2px] p-[1.5px] sm:p-[2px] opacity-80">
+                                                <div class="border-r border-b border-amber-800/40 rounded-tl-[1px]"></div>
                                                 <div class="border-r border-b border-amber-800/40"></div>
-                                                <div class="border-b border-amber-800/40 rounded-tr-[2px]"></div>
-                                                <div class="border-r border-amber-800/40 rounded-bl-[2px]"></div>
+                                                <div class="border-b border-amber-800/40 rounded-tr-[1px]"></div>
+                                                <div class="border-r border-amber-800/40 rounded-bl-[1px]"></div>
                                                 <div class="border-r border-amber-800/40"></div>
-                                                <div class="rounded-br-[2px]"></div>
+                                                <div class="rounded-br-[1px]"></div>
                                             </div>
                                         </div>
 
                                         <!-- Available Balance Tag on Card -->
                                         <div class="text-right">
-                                            <p class="text-[9px] md:text-[10px] uppercase text-gray-300 font-sans tracking-wider">Card Balance</p>
-                                            <p class="text-lg md:text-2xl font-bold font-serif text-white tracking-wide text-shadow" x-text="formatCurrency(avlBalance)"></p>
+                                            <p class="text-[8px] sm:text-[9px] md:text-[10px] uppercase text-gray-300 font-sans tracking-wider">Card Balance</p>
+                                            <p class="text-sm sm:text-lg md:text-2xl font-bold font-serif text-white tracking-wide text-shadow" x-text="formatCurrency(avlBalance)"></p>
                                         </div>
                                     </div>
 
-                                    <!-- Card Number (Embossed Monospace Look) -->
-                                    <div class="mt-2 flex items-center justify-between">
-                                        <div class="flex items-center gap-2">
-                                            <p class="font-mono text-base md:text-xl font-bold tracking-[0.18em] text-white/95 drop-shadow-md">
+                                    <!-- Card Number (Embossed Monospace Look, No Wrap) -->
+                                    <div class="mt-1 sm:mt-2 flex items-center justify-between">
+                                        <div class="flex items-center gap-1.5 sm:gap-2 w-full justify-between">
+                                            <p class="font-mono text-[13px] sm:text-base md:text-xl font-bold tracking-[0.06em] sm:tracking-[0.14em] md:tracking-[0.18em] text-white/95 drop-shadow-md whitespace-nowrap overflow-hidden">
                                                 {{ $wallet->formatted_card_number }}
                                             </p>
                                             <button @click="copyCardNumber('{{ $wallet->wallet_id }}')" 
                                                     type="button" 
                                                     title="Copy Card Number"
-                                                    class="p-1 rounded-md bg-white/10 hover:bg-white/25 text-rani-gold transition-colors">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                                    class="p-1 rounded-md bg-white/10 hover:bg-white/25 text-rani-gold transition-colors shrink-0">
+                                                <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                                             </button>
                                         </div>
                                     </div>
 
-                                    <!-- Card Footer: Cardholder Name, Candidate RM ID, Expiry & Hologram Seal -->
-                                    <div class="flex justify-between items-end pt-2 border-t border-white/15">
-                                        <div>
-                                            <p class="text-[8px] md:text-[9px] uppercase tracking-widest text-rani-gold/80 font-mono">Cardholder / ID</p>
-                                            <p class="text-xs md:text-sm font-bold uppercase tracking-wider text-white truncate max-w-[190px] md:max-w-[220px]">
+                                    <!-- Card Footer: Cardholder Name, Candidate RM ID & Logo Seal -->
+                                    <div class="flex justify-between items-end pt-1 sm:pt-2 border-t border-white/15">
+                                        <div class="min-w-0 pr-2">
+                                            <p class="text-[7px] sm:text-[8px] md:text-[9px] uppercase tracking-wider sm:tracking-widest text-rani-gold/80 font-mono">Cardholder / ID</p>
+                                            <p class="text-[11px] sm:text-xs md:text-sm font-bold uppercase tracking-wide text-white truncate max-w-[140px] sm:max-w-[190px] md:max-w-[220px]">
                                                 {{ $candidate->first_name }} {{ $candidate->last_name }}
                                             </p>
-                                            <p class="text-[10px] md:text-xs font-mono text-gray-300 font-semibold tracking-wide">
+                                            <p class="text-[9px] sm:text-[10px] md:text-xs font-mono text-gray-300 font-semibold tracking-wide">
                                                 ID: {{ $candidate->candidate_code ?? ('RM' . str_pad($candidate->id, 5, '0', STR_PAD_LEFT)) }}
                                             </p>
                                         </div>
 
-                                        <div class="text-right flex items-center gap-3">
-
+                                        <div class="text-right flex items-center shrink-0">
                                             <!-- Holographic Gold Seal Emblem -->
-                                            <div class="w-9 h-9 md:w-11 md:h-11 rounded-full bg-gradient-to-tr from-yellow-600 via-yellow-200 to-amber-500 p-[1.5px] shadow-lg flex items-center justify-center">
-                                                <div class="w-full h-full rounded-full bg-rani-primary-dark/80 flex flex-col items-center justify-center text-[7px] font-bold text-rani-gold tracking-tighter">
-                                                    <img src="{{ asset('logo.png') }}" alt="Rani" class="h-8 md:h-10 w-auto rounded-full border border-rani-gold/80 shadow-md">
+                                            <div class="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-tr from-yellow-600 via-yellow-200 to-amber-500 p-[1px] sm:p-[1.5px] shadow-lg flex items-center justify-center shrink-0">
+                                                <div class="w-full h-full rounded-full bg-rani-primary-dark/90 flex flex-col items-center justify-center p-0.5">
+                                                    <img src="{{ asset('logo.png') }}" alt="Rani" class="h-5 sm:h-6 md:h-8 w-auto rounded-full object-contain">
                                                 </div>
                                             </div>
                                         </div>
