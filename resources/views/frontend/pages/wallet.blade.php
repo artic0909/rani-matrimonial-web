@@ -74,7 +74,6 @@
                                     <!-- Card Header (Brand + Contactless Icon) -->
                                     <div class="flex justify-between items-start">
                                         <div class="flex items-center gap-2">
-                                            <img src="{{ asset('logo.png') }}" alt="Rani" class="h-8 md:h-10 w-auto rounded-full border border-rani-gold/80 shadow-md">
                                             <div>
                                                 <div class="flex items-baseline">
                                                     <span class="text-base md:text-lg font-serif italic font-bold text-white tracking-wide">Rani</span>
@@ -144,16 +143,11 @@
                                         </div>
 
                                         <div class="text-right flex items-center gap-3">
-                                            <div>
-                                                <p class="text-[8px] md:text-[9px] uppercase tracking-widest text-rani-gold/80 font-mono">Valid Thru</p>
-                                                <p class="text-xs md:text-sm font-mono font-bold text-white tracking-wider">12/30</p>
-                                            </div>
 
                                             <!-- Holographic Gold Seal Emblem -->
                                             <div class="w-9 h-9 md:w-11 md:h-11 rounded-full bg-gradient-to-tr from-yellow-600 via-yellow-200 to-amber-500 p-[1.5px] shadow-lg flex items-center justify-center">
                                                 <div class="w-full h-full rounded-full bg-rani-primary-dark/80 flex flex-col items-center justify-center text-[7px] font-bold text-rani-gold tracking-tighter">
-                                                    <span>RANI</span>
-                                                    <span class="text-[5px] text-white">PAY</span>
+                                                    <img src="{{ asset('logo.png') }}" alt="Rani" class="h-8 md:h-10 w-auto rounded-full border border-rani-gold/80 shadow-md">
                                                 </div>
                                             </div>
                                         </div>
