@@ -28,15 +28,24 @@ class MatchesController extends Controller
             ->pluck('profile_id')
             ->toArray();
 
-        // Sample / DB Matches List
-        $matches = $this->getMatchesData($candidate, $targetGender, $tab, $shortlistedIds);
+        // Full pool for dynamic counts
+        $allMatches = $this->getMatchesData($candidate, $targetGender, 'my_matches', $shortlistedIds);
+        $todaysMatches = $this->getMatchesData($candidate, $targetGender, 'todays', $shortlistedIds);
+        $acceptedMatches = $this->getMatchesData($candidate, $targetGender, 'accepted', $shortlistedIds);
+
+        // Filtered matches for the active tab
+        $matches = $tab === 'my_matches' ? $allMatches : (
+            $tab === 'todays' ? $todaysMatches : (
+                $tab === 'accepted' ? $acceptedMatches : $this->getMatchesData($candidate, $targetGender, 'shortlisted', $shortlistedIds)
+            )
+        );
 
         // Counts for tabs
         $counts = [
-            'todays' => 8,
+            'todays' => count($todaysMatches),
             'shortlisted' => count($shortlistedIds),
-            'my_matches' => 26,
-            'accepted' => 7,
+            'my_matches' => count($allMatches),
+            'accepted' => count($acceptedMatches),
         ];
 
         return view('frontend.pages.matches', compact(
@@ -104,292 +113,73 @@ class MatchesController extends Controller
     }
 
     /**
-     * Generate structured matches list
+     * Generate structured matches list from DB candidates
      */
     private function getMatchesData(Candidate $candidate, string $targetGender, string $tab, array $shortlistedIds = []): array
     {
-        $isFemaleTarget = strtolower($targetGender) === 'female';
+        $dbCandidates = Candidate::where('gender', $targetGender)
+            ->where('id', '!=', $candidate->id)
+            ->get();
 
-        if ($isFemaleTarget) {
-            $pool = [
-                [
-                    'id' => 'RM00101',
-                    'first_name' => 'Aanya',
-                    'last_name' => 'Sharma',
-                    'age' => 25,
-                    'height' => "5' 5\"",
-                    'religion' => 'Hindu',
-                    'community' => 'Brahmin',
-                    'mother_tongue' => 'Hindi',
-                    'highest_qualification' => 'B.Tech - Computer Science',
-                    'profession' => 'Senior Software Engineer',
-                    'company_name' => 'Google India',
-                    'annual_income' => '₹ 25 - 35 Lakh',
-                    'city' => 'Mumbai',
-                    'state' => 'Maharashtra',
-                    'diet' => 'Vegetarian',
-                    'photo' => asset('img/female/correct1.png'),
-                    'match_score' => 96,
-                    'match_reasons' => ['Same Community', 'Education Match', 'Diet Match'],
-                    'badge' => 'Top Recommendation',
-                    'verified' => true,
-                    'active_ago' => 'Active 2 hours ago',
-                    'category' => 'todays',
-                    'distance' => '8 km away',
-                ],
-                [
-                    'id' => 'RM00102',
-                    'first_name' => 'Dr. Riya',
-                    'last_name' => 'Patel',
-                    'age' => 26,
-                    'height' => "5' 4\"",
-                    'religion' => 'Hindu',
-                    'community' => 'Gujarati',
-                    'mother_tongue' => 'Gujarati',
-                    'highest_qualification' => 'MBBS, MD (Medicine)',
-                    'profession' => 'Doctor / Consultant',
-                    'company_name' => 'Apollo Hospitals',
-                    'annual_income' => '₹ 20 - 30 Lakh',
-                    'city' => 'Ahmedabad',
-                    'state' => 'Gujarat',
-                    'diet' => 'Vegetarian',
-                    'photo' => asset('img/female/correct2.png'),
-                    'match_score' => 93,
-                    'match_reasons' => ['High Compatibility', 'Professional Match'],
-                    'badge' => 'Newly Joined',
-                    'verified' => true,
-                    'active_ago' => 'Online now',
-                    'category' => 'new',
-                    'distance' => '12 km away',
-                ],
-                [
-                    'id' => 'RM00103',
-                    'first_name' => 'Simran',
-                    'last_name' => 'Kaur',
-                    'age' => 24,
-                    'height' => "5' 6\"",
-                    'religion' => 'Sikh',
-                    'community' => 'Khatri',
-                    'mother_tongue' => 'Punjabi',
-                    'highest_qualification' => 'MBA - Marketing & Finance',
-                    'profession' => 'Brand Manager',
-                    'company_name' => 'Hindustan Unilever',
-                    'annual_income' => '₹ 18 - 25 Lakh',
-                    'city' => 'Delhi',
-                    'state' => 'Delhi NCR',
-                    'diet' => 'Non-Vegetarian',
-                    'photo' => asset('img/female/side.png'),
-                    'match_score' => 89,
-                    'match_reasons' => ['Lifestyle Match', 'Income Match'],
-                    'badge' => 'Verified Profile',
-                    'verified' => true,
-                    'active_ago' => 'Active today',
-                    'category' => 'my_matches',
-                    'distance' => '22 km away',
-                ],
-                [
-                    'id' => 'RM00104',
-                    'first_name' => 'Ananya',
-                    'last_name' => 'Deshmukh',
-                    'age' => 25,
-                    'height' => "5' 3\"",
-                    'religion' => 'Hindu',
-                    'community' => 'Maratha',
-                    'mother_tongue' => 'Marathi',
-                    'highest_qualification' => 'Chartered Accountant (CA)',
-                    'profession' => 'Finance Analyst',
-                    'company_name' => 'Deloitte',
-                    'annual_income' => '₹ 22 - 28 Lakh',
-                    'city' => 'Pune',
-                    'state' => 'Maharashtra',
-                    'diet' => 'Vegetarian',
-                    'photo' => asset('img/female/stock.png'),
-                    'match_score' => 91,
-                    'match_reasons' => ['Mutual Interest', 'Education Match'],
-                    'badge' => 'Interest Accepted',
-                    'verified' => true,
-                    'active_ago' => 'Active 1 hour ago',
-                    'category' => 'accepted',
-                    'distance' => '5 km away',
-                ],
-                [
-                    'id' => 'RM00105',
-                    'first_name' => 'Kavya',
-                    'last_name' => 'Nair',
-                    'age' => 26,
-                    'height' => "5' 5\"",
-                    'religion' => 'Hindu',
-                    'community' => 'Nair',
-                    'mother_tongue' => 'Malayalam',
-                    'highest_qualification' => 'M.S. Data Science',
-                    'profession' => 'AI Research Engineer',
-                    'company_name' => 'Microsoft',
-                    'annual_income' => '₹ 30 - 45 Lakh',
-                    'city' => 'Bengaluru',
-                    'state' => 'Karnataka',
-                    'diet' => 'Eggetarian',
-                    'photo' => asset('img/female/group.png'),
-                    'match_score' => 95,
-                    'match_reasons' => ['Astro Match', 'Profession Match'],
-                    'badge' => 'Premium Pick',
-                    'verified' => true,
-                    'active_ago' => 'Active 3 hours ago',
-                    'category' => 'todays',
-                    'distance' => '15 km away',
-                ],
-                [
-                    'id' => 'RM00106',
-                    'first_name' => 'Pooja',
-                    'last_name' => 'Iyer',
-                    'age' => 25,
-                    'height' => "5' 4\"",
-                    'religion' => 'Hindu',
-                    'community' => 'Tamil Brahmin',
-                    'mother_tongue' => 'Tamil',
-                    'highest_qualification' => 'B.Arch - Architecture',
-                    'profession' => 'Architectural Designer',
-                    'company_name' => 'Hafeez Contractor',
-                    'annual_income' => '₹ 15 - 20 Lakh',
-                    'city' => 'Chennai',
-                    'state' => 'Tamil Nadu',
-                    'diet' => 'Vegetarian',
-                    'photo' => asset('img/female/correct1.png'),
-                    'match_score' => 88,
-                    'match_reasons' => ['Community Match', 'Diet Match'],
-                    'badge' => 'New Joiner',
-                    'verified' => true,
-                    'active_ago' => 'Registered yesterday',
-                    'category' => 'new',
-                    'distance' => '18 km away',
-                ],
-            ];
-        } else {
-            $pool = [
-                [
-                    'id' => 'RM00201',
-                    'first_name' => 'Aarav',
-                    'last_name' => 'Kapoor',
-                    'age' => 28,
-                    'height' => "5' 11\"",
-                    'religion' => 'Hindu',
-                    'community' => 'Punjabi Khatri',
-                    'mother_tongue' => 'Hindi',
-                    'highest_qualification' => 'B.Tech - IIT Bombay',
-                    'profession' => 'Product Manager',
-                    'company_name' => 'Amazon India',
-                    'annual_income' => '₹ 35 - 50 Lakh',
-                    'city' => 'Mumbai',
-                    'state' => 'Maharashtra',
-                    'diet' => 'Vegetarian',
-                    'photo' => asset('img/male/correct1.png'),
-                    'match_score' => 97,
-                    'match_reasons' => ['Education Match', 'Diet Match', 'High Match Score'],
-                    'badge' => 'Top Recommendation',
-                    'verified' => true,
-                    'active_ago' => 'Online now',
-                    'category' => 'todays',
-                    'distance' => '6 km away',
-                ],
-                [
-                    'id' => 'RM00202',
-                    'first_name' => 'Dr. Rohan',
-                    'last_name' => 'Mehta',
-                    'age' => 29,
-                    'height' => "6' 0\"",
-                    'religion' => 'Hindu',
-                    'community' => 'Gujarati',
-                    'mother_tongue' => 'Gujarati',
-                    'highest_qualification' => 'MS - Orthopedic Surgeon',
-                    'profession' => 'Surgeon & Consultant',
-                    'company_name' => 'Lilavati Hospital',
-                    'annual_income' => '₹ 40 - 60 Lakh',
-                    'city' => 'Mumbai',
-                    'state' => 'Maharashtra',
-                    'diet' => 'Vegetarian',
-                    'photo' => asset('img/male/correct2.png'),
-                    'match_score' => 94,
-                    'match_reasons' => ['Career Match', 'Location Match'],
-                    'badge' => 'Newly Registered',
-                    'verified' => true,
-                    'active_ago' => 'Active 30 mins ago',
-                    'category' => 'new',
-                    'distance' => '9 km away',
-                ],
-                [
-                    'id' => 'RM00203',
-                    'first_name' => 'Kabir',
-                    'last_name' => 'Singhania',
-                    'age' => 27,
-                    'height' => "5' 10\"",
-                    'religion' => 'Hindu',
-                    'community' => 'Marwari',
-                    'mother_tongue' => 'Hindi',
-                    'highest_qualification' => 'MBA - IIM Ahmedabad',
-                    'profession' => 'Investment Banker',
-                    'company_name' => 'Goldman Sachs',
-                    'annual_income' => '₹ 45 - 65 Lakh',
-                    'city' => 'Delhi',
-                    'state' => 'Delhi NCR',
-                    'diet' => 'Eggetarian',
-                    'photo' => asset('img/male/side.png'),
-                    'match_score' => 92,
-                    'match_reasons' => ['Lifestyle Match', 'Income Match'],
-                    'badge' => 'Verified Profile',
-                    'verified' => true,
-                    'active_ago' => 'Active 1 hour ago',
-                    'category' => 'my_matches',
-                    'distance' => '25 km away',
-                ],
-                [
-                    'id' => 'RM00204',
-                    'first_name' => 'Aditya',
-                    'last_name' => 'Kulkarni',
-                    'age' => 28,
-                    'height' => "5' 9\"",
-                    'religion' => 'Hindu',
-                    'community' => 'Brahmin',
-                    'mother_tongue' => 'Marathi',
-                    'highest_qualification' => 'M.S. Computer Engineering',
-                    'profession' => 'Lead Cloud Architect',
-                    'company_name' => 'Oracle India',
-                    'annual_income' => '₹ 30 - 40 Lakh',
-                    'city' => 'Pune',
-                    'state' => 'Maharashtra',
-                    'diet' => 'Vegetarian',
-                    'photo' => asset('img/male/stock.png'),
-                    'match_score' => 90,
-                    'match_reasons' => ['Mutual Interest', 'Education Match'],
-                    'badge' => 'Interest Accepted',
-                    'verified' => true,
-                    'active_ago' => 'Active today',
-                    'category' => 'accepted',
-                    'distance' => '4 km away',
-                ],
-                [
-                    'id' => 'RM00205',
-                    'first_name' => 'Vikram',
-                    'last_name' => 'Reddy',
-                    'age' => 29,
-                    'height' => "6' 1\"",
-                    'religion' => 'Hindu',
-                    'community' => 'Reddy',
-                    'mother_tongue' => 'Telugu',
-                    'highest_qualification' => 'B.Tech + MS (USA)',
-                    'profession' => 'Engineering Manager',
-                    'company_name' => 'Adobe',
-                    'annual_income' => '₹ 50 - 70 Lakh',
-                    'city' => 'Bengaluru',
-                    'state' => 'Karnataka',
-                    'diet' => 'Non-Vegetarian',
-                    'photo' => asset('img/male/group.png'),
-                    'match_score' => 95,
-                    'match_reasons' => ['Partner Preference Match', 'Astro Compatibility'],
-                    'badge' => 'Premium Match',
-                    'verified' => true,
-                    'active_ago' => 'Active 2 hours ago',
-                    'category' => 'todays',
-                    'distance' => '14 km away',
-                ],
+        $pool = [];
+
+        foreach ($dbCandidates as $index => $c) {
+            $age = $c->dob ? \Carbon\Carbon::parse($c->dob)->age : (24 + ($c->id % 8));
+            $profileCode = $c->profile_id ?? $c->candidate_code ?? ('RM' . str_pad($c->id, 5, '0', STR_PAD_LEFT));
+
+            // Determine image url
+            $photo = asset('img/' . (strtolower($targetGender) === 'female' ? 'female' : 'male') . '/correct' . (($index % 2) + 1) . '.png');
+            if (!empty($c->profile_picture)) {
+                if (str_starts_with($c->profile_picture, 'http')) {
+                    $photo = $c->profile_picture;
+                } elseif (str_starts_with($c->profile_picture, 'img/')) {
+                    $photo = asset($c->profile_picture);
+                } else {
+                    $photo = asset('storage/' . $c->profile_picture);
+                }
+            }
+
+            // Category assignment for realistic matchmaking feeds
+            $category = 'my_matches';
+            if ($index % 3 === 0) {
+                $category = 'todays';
+            } elseif ($index % 4 === 0) {
+                $category = 'accepted';
+            }
+
+            $matchScore = 88 + (($c->id * 3) % 11);
+            $badge = $matchScore >= 95 ? 'Top Recommendation' : ($c->selfie_verified ? 'Verified Profile' : 'High Compatibility');
+
+            $matchReasons = [];
+            if ($c->community) $matchReasons[] = $c->community . ' Match';
+            if ($c->highest_qualification) $matchReasons[] = 'Education Match';
+            if ($c->diet) $matchReasons[] = $c->diet . ' Diet';
+            if (empty($matchReasons)) $matchReasons = ['High Compatibility', 'Education Match'];
+
+            $pool[] = [
+                'id' => $profileCode,
+                'first_name' => $c->first_name ?? 'Candidate',
+                'last_name' => $c->last_name ?? '',
+                'age' => $age,
+                'height' => $c->height ?? "5' 7\"",
+                'religion' => $c->religion ?? 'Hindu',
+                'community' => $c->community ?? 'General',
+                'mother_tongue' => $c->mother_tongue ?? 'Hindi',
+                'highest_qualification' => $c->highest_qualification ?? 'Graduate',
+                'profession' => $c->profession ?? 'Professional',
+                'company_name' => $c->company_name ?? 'Reputed Company',
+                'annual_income' => $c->annual_income ?? '₹ 20 - 30 Lakh',
+                'city' => $c->city ?? 'Mumbai',
+                'state' => $c->state ?? 'Maharashtra',
+                'diet' => $c->diet ?? 'Vegetarian',
+                'photo' => $photo,
+                'match_score' => $matchScore,
+                'match_reasons' => array_slice($matchReasons, 0, 3),
+                'badge' => $badge,
+                'verified' => (bool)$c->selfie_verified,
+                'active_ago' => ($index % 2 === 0) ? 'Online now' : 'Active ' . (($index % 5) + 1) . ' hours ago',
+                'category' => $category,
+                'distance' => (4 + (($c->id * 2) % 20)) . ' km away',
             ];
         }
 
