@@ -92,10 +92,10 @@
                         <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $tab === 'my_matches' ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700' }}">{{ $counts['my_matches'] }}</span>
                     </a>
 
-                    <a href="{{ route('matches', ['tab' => 'near_me']) }}" 
-                       class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap {{ $tab === 'near_me' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md' : 'text-gray-600 hover:text-rani-primary hover:bg-white' }}">
-                        <span>Near Me</span>
-                        <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $tab === 'near_me' ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700' }}">{{ $counts['near_me'] }}</span>
+                    <a href="{{ route('matches', ['tab' => 'accepted']) }}" 
+                       class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap {{ $tab === 'accepted' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md' : 'text-gray-600 hover:text-rani-primary hover:bg-white' }}">
+                        <span>Accepted</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $tab === 'accepted' ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700' }}">{{ $counts['accepted'] }}</span>
                     </a>
                 </div>
 
@@ -362,7 +362,7 @@ function matchesManager(initialData) {
             switch (this.activeTab) {
                 case 'shortlisted': return 'Shortlisted Profiles';
                 case 'my_matches': return 'My Matches';
-                case 'near_me': return 'Matches Near Me';
+                case 'accepted': return 'Accepted Matches';
                 default: return "Today's Recommendations";
             }
         },
@@ -371,7 +371,7 @@ function matchesManager(initialData) {
             switch (this.activeTab) {
                 case 'shortlisted': return 'Profiles you have shortlisted and saved to your favorites';
                 case 'my_matches': return 'Curated profiles strictly matching your partner preferences';
-                case 'near_me': return 'Verified candidates living in your city and nearby areas';
+                case 'accepted': return 'Matches who have accepted your connection and express mutual interest';
                 default: return 'Handpicked daily matchmaking recommendations based on high compatibility';
             }
         },

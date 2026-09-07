@@ -90,8 +90,8 @@
                     <a href="{{ route('matches', ['tab' => 'my_matches']) }}" class="{{ $currentTab === 'my_matches' ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors flex items-center gap-1.5">
                         My Matches
                     </a>
-                    <a href="{{ route('matches', ['tab' => 'near_me']) }}" class="{{ $currentTab === 'near_me' ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors flex items-center gap-1.5">
-                        Near me
+                    <a href="{{ route('matches', ['tab' => 'accepted']) }}" class="{{ $currentTab === 'accepted' ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors flex items-center gap-1.5">
+                        Accepted
                     </a>
                 </nav>
             @else
@@ -128,7 +128,7 @@
             <a href="{{ route('matches', ['tab' => 'todays']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && request('tab', 'todays') === 'todays') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Today's</a>
             <a href="{{ route('matches', ['tab' => 'shortlisted']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && request('tab') === 'shortlisted') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Shortlisted</a>
             <a href="{{ route('matches', ['tab' => 'my_matches']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && request('tab') === 'my_matches') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">My Matches</a>
-            <a href="{{ route('matches', ['tab' => 'near_me']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && request('tab') === 'near_me') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Near me</a>
+            <a href="{{ route('matches', ['tab' => 'accepted']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && request('tab') === 'accepted') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Accepted</a>
         </div>
 
         <div class="border-t border-gray-200 my-1"></div>

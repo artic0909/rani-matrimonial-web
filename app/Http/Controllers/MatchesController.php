@@ -17,7 +17,7 @@ class MatchesController extends Controller
         /** @var Candidate $candidate */
         $candidate = Auth::user();
         $tab = $request->query('tab', 'todays');
-        if (!in_array($tab, ['todays', 'shortlisted', 'my_matches', 'near_me'])) {
+        if (!in_array($tab, ['todays', 'shortlisted', 'my_matches', 'accepted'])) {
             $tab = 'todays';
         }
 
@@ -36,7 +36,7 @@ class MatchesController extends Controller
             'todays' => 8,
             'shortlisted' => count($shortlistedIds),
             'my_matches' => 26,
-            'near_me' => 11,
+            'accepted' => 7,
         ];
 
         return view('frontend.pages.matches', compact(
@@ -205,11 +205,11 @@ class MatchesController extends Controller
                     'diet' => 'Vegetarian',
                     'photo' => asset('img/female/stock.png'),
                     'match_score' => 91,
-                    'match_reasons' => ['Nearby Location', 'Education Match'],
-                    'badge' => 'Near You',
+                    'match_reasons' => ['Mutual Interest', 'Education Match'],
+                    'badge' => 'Interest Accepted',
                     'verified' => true,
                     'active_ago' => 'Active 1 hour ago',
-                    'category' => 'near_me',
+                    'category' => 'accepted',
                     'distance' => '5 km away',
                 ],
                 [
@@ -358,11 +358,11 @@ class MatchesController extends Controller
                     'diet' => 'Vegetarian',
                     'photo' => asset('img/male/stock.png'),
                     'match_score' => 90,
-                    'match_reasons' => ['Nearby Location', 'Education Match'],
-                    'badge' => 'Near You',
+                    'match_reasons' => ['Mutual Interest', 'Education Match'],
+                    'badge' => 'Interest Accepted',
                     'verified' => true,
                     'active_ago' => 'Active today',
-                    'category' => 'near_me',
+                    'category' => 'accepted',
                     'distance' => '4 km away',
                 ],
                 [
@@ -396,8 +396,8 @@ class MatchesController extends Controller
         // Filter based on tab if specific category match, or return curated list
         if ($tab === 'shortlisted') {
             $filtered = array_filter($pool, fn($m) => in_array($m['id'], $shortlistedIds));
-        } elseif ($tab === 'near_me') {
-            $filtered = array_filter($pool, fn($m) => in_array($m['category'], ['near_me', 'todays']));
+        } elseif ($tab === 'accepted') {
+            $filtered = array_filter($pool, fn($m) => in_array($m['category'], ['accepted', 'todays']));
         } elseif ($tab === 'my_matches') {
             $filtered = $pool;
         } else {
