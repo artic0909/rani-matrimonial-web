@@ -61,12 +61,9 @@
                     
                     <select x-model="selectedCity" class="py-2 px-3 text-xs md:text-sm rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-rani-gold shadow-sm text-gray-700">
                         <option value="">All Locations</option>
-                        <option value="Mumbai">Mumbai</option>
-                        <option value="Delhi">Delhi</option>
-                        <option value="Pune">Pune</option>
-                        <option value="Ahmedabad">Ahmedabad</option>
-                        <option value="Bengaluru">Bengaluru</option>
-                        <option value="Chennai">Chennai</option>
+                        <template x-for="c in availableCities" :key="c">
+                            <option :value="c" x-text="c"></option>
+                        </template>
                     </select>
                 </div>
             </div>
@@ -542,6 +539,11 @@ function matchesManager(initialData) {
                 case 'accepted': return 'Matches who have accepted your connection and express mutual interest';
                 default: return 'Handpicked daily matchmaking recommendations based on high compatibility';
             }
+        },
+
+        get availableCities() {
+            const cities = (this.matches || []).map(m => m.city).filter(Boolean);
+            return [...new Set(cities)].sort();
         },
 
         get filteredMatches() {

@@ -22,7 +22,9 @@ class MatchesController extends Controller
             $tab = 'todays';
         }
 
-        $targetGender = strtolower($candidate->gender ?? 'female') === 'female' ? 'Male' : 'Female';
+        // Robust opposite gender detection
+        $userGender = strtolower(trim($candidate->gender ?? ''));
+        $targetGender = ($userGender === 'male' || $userGender === 'man') ? 'Female' : 'Male';
 
         // Load shortlisted profile IDs from database
         $shortlistedIds = Shortlisted::where('candidate_id', $candidate->id)
@@ -35,11 +37,12 @@ class MatchesController extends Controller
         $acceptedMatches = $this->getMatchesData($candidate, $targetGender, 'accepted', $shortlistedIds);
 
         // Filtered matches for the active tab
-        $matches = $tab === 'my_matches' ? $allMatches : (
-            $tab === 'todays' ? $todaysMatches : (
-                $tab === 'accepted' ? $acceptedMatches : $this->getMatchesData($candidate, $targetGender, 'shortlisted', $shortlistedIds)
-            )
-        );
+        $matches = match ($tab) {
+            'my_matches' => $allMatches,
+            'todays' => $todaysMatches,
+            'accepted' => $acceptedMatches,
+            default => $this->getMatchesData($candidate, $targetGender, 'shortlisted', $shortlistedIds),
+        };
 
         // Counts for tabs
         $counts = [
@@ -114,7 +117,7 @@ class MatchesController extends Controller
     }
 
     /**
-     * Generate structured matches list from DB candidates
+     * Generate structured matches list from DB candidates with real dynamic data-wise match percentage
      */
     private function getMatchesData(Candidate $candidate, string $targetGender, string $tab, array $shortlistedIds = []): array
     {
@@ -178,22 +181,16 @@ class MatchesController extends Controller
                 $category = 'accepted';
             }
 
-            $matchScore = 88 + (($c->id * 3) % 11);
-            $badge = $matchScore >= 95 ? 'Top Recommendation' : ($c->selfie_verified ? 'Verified Profile' : 'High Compatibility');
+            // Calculate dynamic data-wise match percentage & reasons
+            $matchResult = $this->calculateMatchScore($candidate, $c);
+            $matchScore = $matchResult['score'];
+            $matchReasons = $matchResult['reasons'];
 
-            $matchReasons = [];
-            if ($c->community) {
-                $matchReasons[] = $c->community.' Match';
-            }
-            if ($c->highest_qualification) {
-                $matchReasons[] = 'Education Match';
-            }
-            if ($c->diet) {
-                $matchReasons[] = $c->diet.' Diet';
-            }
-            if (empty($matchReasons)) {
-                $matchReasons = ['High Compatibility', 'Education Match'];
-            }
+            $badge = $matchScore >= 95 ? 'Top Recommendation' : (
+                $matchScore >= 90 ? 'High Compatibility' : (
+                    $c->selfie_verified ? 'Verified Profile' : 'Compatible Match'
+                )
+            );
 
             $pool[] = [
                 'id' => $profileCode,
@@ -223,18 +220,181 @@ class MatchesController extends Controller
             ];
         }
 
+        // Sort pool by match_score descending so top matching profiles show first
+        usort($pool, fn ($a, $b) => $b['match_score'] <=> $a['match_score']);
+
         // Filter based on tab if specific category match, or return curated list
         if ($tab === 'shortlisted') {
             $filtered = array_filter($pool, fn ($m) => in_array($m['id'], $shortlistedIds));
         } elseif ($tab === 'accepted') {
-            $filtered = array_filter($pool, fn ($m) => in_array($m['category'], ['accepted', 'todays']));
-        } elseif ($tab === 'my_matches') {
-            $filtered = $pool;
+            $filtered = array_filter($pool, fn ($m) => $m['verified'] || $m['match_score'] >= 85);
+        } elseif ($tab === 'todays') {
+            // Today's Picks: Top highest compatibility recommendations
+            $filtered = array_slice($pool, 0, 6);
         } else {
-            // 'todays'
-            $filtered = array_filter($pool, fn ($m) => in_array($m['category'], ['todays', 'my_matches']));
+            // 'my_matches' - All opposite gender matches
+            $filtered = $pool;
         }
 
         return array_values($filtered);
+    }
+
+    /**
+     * Calculate comprehensive data-wise match percentage and reasons
+     * Compares Religion, Community, Location, Diet, Education, Career, Age, Height, Hobbies, Mother Tongue, and Astrological compatibility.
+     */
+    private function calculateMatchScore(Candidate $me, Candidate $other): array
+    {
+        $score = 50; // Base score for opposite gender compatibility
+        $matchReasons = [];
+
+        // 1. Religion & Community (Max 18 points)
+        $relMatched = false;
+        if (! empty($other->religion)) {
+            if ((! empty($me->religion) && strcasecmp($me->religion, $other->religion) === 0) ||
+                (! empty($me->pref_religion) && strcasecmp($me->pref_religion, $other->religion) === 0)) {
+                $score += 10;
+                $relMatched = true;
+                $matchReasons[] = $other->religion.' Religion';
+            }
+        }
+        if (! empty($other->community)) {
+            if ((! empty($me->community) && strcasecmp($me->community, $other->community) === 0) ||
+                (! empty($me->pref_community) && strcasecmp($me->pref_community, $other->community) === 0)) {
+                $score += 8;
+                $matchReasons[] = $other->community.' Community';
+            }
+        }
+
+        // 2. Location Compatibility (Max 12 points)
+        if (! empty($other->city) && (
+            (! empty($me->city) && strcasecmp($me->city, $other->city) === 0) ||
+            (! empty($me->pref_city) && strcasecmp($me->pref_city, $other->city) === 0)
+        )) {
+            $score += 12;
+            $matchReasons[] = $other->city.' Resident';
+        } elseif (! empty($other->state) && (
+            (! empty($me->state) && strcasecmp($me->state, $other->state) === 0) ||
+            (! empty($me->pref_state) && strcasecmp($me->pref_state, $other->state) === 0)
+        )) {
+            $score += 8;
+            $matchReasons[] = $other->state.' State';
+        } elseif (! empty($other->country) && (
+            (! empty($me->country) && strcasecmp($me->country, $other->country) === 0) ||
+            (! empty($me->pref_country) && strcasecmp($me->pref_country, $other->country) === 0)
+        )) {
+            $score += 4;
+        }
+
+        // 3. Diet & Lifestyle (Max 10 points)
+        if (! empty($other->diet) && (
+            (! empty($me->diet) && strcasecmp($me->diet, $other->diet) === 0) ||
+            (! empty($me->pref_diet) && strcasecmp($me->pref_diet, $other->diet) === 0)
+        )) {
+            $score += 10;
+            $matchReasons[] = $other->diet.' Diet';
+        }
+
+        // 4. Mother Tongue (Max 8 points)
+        if (! empty($other->mother_tongue) && (
+            (! empty($me->mother_tongue) && strcasecmp($me->mother_tongue, $other->mother_tongue) === 0) ||
+            (! empty($me->pref_mother_tongue) && strcasecmp($me->pref_mother_tongue, $other->mother_tongue) === 0)
+        )) {
+            $score += 8;
+            $matchReasons[] = $other->mother_tongue.' Tongue';
+        }
+
+        // 5. Marital Status (Max 8 points)
+        if (! empty($other->marital_status)) {
+            if ((! empty($me->marital_status) && strcasecmp($me->marital_status, $other->marital_status) === 0) ||
+                (! empty($me->pref_marital_status) && strcasecmp($me->pref_marital_status, $other->marital_status) === 0) ||
+                (strtolower($other->marital_status) === 'never married' && empty($me->marital_status))) {
+                $score += 8;
+            }
+        }
+
+        // 6. Education Compatibility (Max 8 points)
+        if (! empty($other->highest_qualification)) {
+            if ((! empty($me->highest_qualification) && strcasecmp($me->highest_qualification, $other->highest_qualification) === 0) ||
+                (! empty($me->pref_education) && strcasecmp($me->pref_education, $other->highest_qualification) === 0)) {
+                $score += 8;
+                $matchReasons[] = 'Education Match';
+            } else {
+                $score += 4;
+            }
+        }
+
+        // 7. Career & Profession (Max 6 points)
+        if (! empty($other->working_with) && (
+            (! empty($me->working_with) && strcasecmp($me->working_with, $other->working_with) === 0) ||
+            (! empty($me->pref_working_with) && strcasecmp($me->pref_working_with, $other->working_with) === 0)
+        )) {
+            $score += 4;
+            $matchReasons[] = 'Profession Match';
+        }
+        if (! empty($other->annual_income)) {
+            $score += 2;
+        }
+
+        // 8. Shared Hobbies & Interests (Max 10 points)
+        $myHobbies = is_array($me->hobbies_interests) ? $me->hobbies_interests : [];
+        $otherHobbies = is_array($other->hobbies_interests) ? $other->hobbies_interests : [];
+        if (! empty($myHobbies) && ! empty($otherHobbies)) {
+            $sharedHobbies = array_intersect(
+                array_map('strtolower', array_map('trim', $myHobbies)),
+                array_map('strtolower', array_map('trim', $otherHobbies))
+            );
+            $sharedCount = count($sharedHobbies);
+            if ($sharedCount > 0) {
+                $score += min(10, $sharedCount * 4);
+                $matchReasons[] = $sharedCount.' Mutual '.($sharedCount === 1 ? 'Hobby' : 'Hobbies');
+            }
+        }
+
+        // 9. Age Compatibility (Max 8 points)
+        $myAge = $me->dob ? Carbon::parse($me->dob)->age : null;
+        $otherAge = $other->dob ? Carbon::parse($other->dob)->age : null;
+        if ($otherAge) {
+            if (! empty($me->pref_age_min) && ! empty($me->pref_age_max)) {
+                if ($otherAge >= $me->pref_age_min && $otherAge <= $me->pref_age_max) {
+                    $score += 8;
+                    $matchReasons[] = 'Age Preference Match';
+                }
+            } elseif ($myAge) {
+                $ageDiff = abs($myAge - $otherAge);
+                if ($ageDiff <= 3) {
+                    $score += 8;
+                    $matchReasons[] = 'Ideal Age Match';
+                } elseif ($ageDiff <= 6) {
+                    $score += 5;
+                }
+            }
+        }
+
+        // 10. Profile Verification Bonus (Max 4 points)
+        if ($other->selfie_verified) {
+            $score += 4;
+            $matchReasons[] = 'Verified Profile';
+        }
+
+        // 11. Astro / Manglik (Max 4 points)
+        if (! empty($me->manglik) && ! empty($other->manglik)) {
+            if ($me->manglik === $other->manglik || $me->manglik === 'Non-Manglik' || $other->manglik === 'Non-Manglik') {
+                $score += 4;
+            }
+        }
+
+        // Clamp final score between 65% and 99%
+        $finalScore = min(99, max(65, (int) round($score)));
+
+        // Fallbacks if match reasons list is empty
+        if (empty($matchReasons)) {
+            $matchReasons = ['High Compatibility', 'Personality Match'];
+        }
+
+        return [
+            'score' => $finalScore,
+            'reasons' => array_values(array_unique($matchReasons)),
+        ];
     }
 }
