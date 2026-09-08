@@ -33,8 +33,8 @@ return new class extends Migration
     {
         Schema::table('candidates', function (Blueprint $table) {
             $table->dropColumn([
-                'email', 'community', 'sub_community', 'country', 'state', 'city', 
-                'marital_status', 'height', 'diet', 'highest_qualification', 'college_name'
+                'email', 'community', 'sub_community', 'country', 'state', 'city',
+                'marital_status', 'height', 'diet', 'highest_qualification', 'college_name',
             ]);
         });
     }

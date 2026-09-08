@@ -36,7 +36,7 @@ return new class extends Migration
             $table->dropColumn([
                 'middle_name', 'living_in', 'college_address', 'income_type',
                 'profession', 'designation', 'company_name', 'company_address',
-                'about_yourself', 'profile_picture', 'hobbies_interests', 'selfie_verified'
+                'about_yourself', 'profile_picture', 'hobbies_interests', 'selfie_verified',
             ]);
         });
     }

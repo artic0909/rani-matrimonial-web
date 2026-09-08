@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Candidate;
 use App\Models\Shortlisted;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MatchesController extends Controller
 {
@@ -17,7 +18,7 @@ class MatchesController extends Controller
         /** @var Candidate $candidate */
         $candidate = Auth::user();
         $tab = $request->query('tab', 'todays');
-        if (!in_array($tab, ['todays', 'shortlisted', 'my_matches', 'accepted'])) {
+        if (! in_array($tab, ['todays', 'shortlisted', 'my_matches', 'accepted'])) {
             $tab = 'todays';
         }
 
@@ -125,18 +126,18 @@ class MatchesController extends Controller
         $pool = [];
 
         foreach ($dbCandidates as $index => $c) {
-            $age = $c->dob ? \Carbon\Carbon::parse($c->dob)->age : (24 + ($c->id % 8));
-            $profileCode = $c->profile_id ?? $c->candidate_code ?? ('RM' . str_pad($c->id, 5, '0', STR_PAD_LEFT));
+            $age = $c->dob ? Carbon::parse($c->dob)->age : (24 + ($c->id % 8));
+            $profileCode = $c->profile_id ?? $c->candidate_code ?? ('RM'.str_pad($c->id, 5, '0', STR_PAD_LEFT));
 
             // Determine primary image url
-            $photo = asset('img/' . (strtolower($targetGender) === 'female' ? 'female' : 'male') . '/correct' . (($index % 2) + 1) . '.png');
-            if (!empty($c->profile_picture)) {
+            $photo = asset('img/'.(strtolower($targetGender) === 'female' ? 'female' : 'male').'/correct'.(($index % 2) + 1).'.png');
+            if (! empty($c->profile_picture)) {
                 if (str_starts_with($c->profile_picture, 'http')) {
                     $photo = $c->profile_picture;
                 } elseif (str_starts_with($c->profile_picture, 'img/')) {
                     $photo = asset($c->profile_picture);
                 } else {
-                    $photo = asset('storage/' . $c->profile_picture);
+                    $photo = asset('storage/'.$c->profile_picture);
                 }
             }
 
@@ -150,9 +151,9 @@ class MatchesController extends Controller
                     } elseif (str_starts_with($pUrl, 'img/')) {
                         $fullUrl = asset($pUrl);
                     } else {
-                        $fullUrl = asset('storage/' . $pUrl);
+                        $fullUrl = asset('storage/'.$pUrl);
                     }
-                    if (!in_array($fullUrl, $allPhotos)) {
+                    if (! in_array($fullUrl, $allPhotos)) {
                         $allPhotos[] = $fullUrl;
                     }
                 }
@@ -163,7 +164,7 @@ class MatchesController extends Controller
                 $genderDir = strtolower($targetGender) === 'female' ? 'female' : 'male';
                 foreach (['correct1.png', 'correct2.png', 'side.png', 'stock.png', 'group.png'] as $imgName) {
                     $fallbackUrl = asset("img/{$genderDir}/{$imgName}");
-                    if (!in_array($fallbackUrl, $allPhotos)) {
+                    if (! in_array($fallbackUrl, $allPhotos)) {
                         $allPhotos[] = $fallbackUrl;
                     }
                 }
@@ -181,10 +182,18 @@ class MatchesController extends Controller
             $badge = $matchScore >= 95 ? 'Top Recommendation' : ($c->selfie_verified ? 'Verified Profile' : 'High Compatibility');
 
             $matchReasons = [];
-            if ($c->community) $matchReasons[] = $c->community . ' Match';
-            if ($c->highest_qualification) $matchReasons[] = 'Education Match';
-            if ($c->diet) $matchReasons[] = $c->diet . ' Diet';
-            if (empty($matchReasons)) $matchReasons = ['High Compatibility', 'Education Match'];
+            if ($c->community) {
+                $matchReasons[] = $c->community.' Match';
+            }
+            if ($c->highest_qualification) {
+                $matchReasons[] = 'Education Match';
+            }
+            if ($c->diet) {
+                $matchReasons[] = $c->diet.' Diet';
+            }
+            if (empty($matchReasons)) {
+                $matchReasons = ['High Compatibility', 'Education Match'];
+            }
 
             $pool[] = [
                 'id' => $profileCode,
@@ -207,23 +216,23 @@ class MatchesController extends Controller
                 'match_score' => $matchScore,
                 'match_reasons' => array_slice($matchReasons, 0, 3),
                 'badge' => $badge,
-                'verified' => (bool)$c->selfie_verified,
-                'active_ago' => ($index % 2 === 0) ? 'Online now' : 'Active ' . (($index % 5) + 1) . ' hours ago',
+                'verified' => (bool) $c->selfie_verified,
+                'active_ago' => ($index % 2 === 0) ? 'Online now' : 'Active '.(($index % 5) + 1).' hours ago',
                 'category' => $category,
-                'distance' => (4 + (($c->id * 2) % 20)) . ' km away',
+                'distance' => (4 + (($c->id * 2) % 20)).' km away',
             ];
         }
 
         // Filter based on tab if specific category match, or return curated list
         if ($tab === 'shortlisted') {
-            $filtered = array_filter($pool, fn($m) => in_array($m['id'], $shortlistedIds));
+            $filtered = array_filter($pool, fn ($m) => in_array($m['id'], $shortlistedIds));
         } elseif ($tab === 'accepted') {
-            $filtered = array_filter($pool, fn($m) => in_array($m['category'], ['accepted', 'todays']));
+            $filtered = array_filter($pool, fn ($m) => in_array($m['category'], ['accepted', 'todays']));
         } elseif ($tab === 'my_matches') {
             $filtered = $pool;
         } else {
             // 'todays'
-            $filtered = array_filter($pool, fn($m) => in_array($m['category'], ['todays', 'my_matches']));
+            $filtered = array_filter($pool, fn ($m) => in_array($m['category'], ['todays', 'my_matches']));
         }
 
         return array_values($filtered);

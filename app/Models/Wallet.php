@@ -49,7 +49,7 @@ class Wallet extends Model
 
             return $this->transactions()->create([
                 'candidate_id' => $this->candidate_id,
-                'transaction_id' => 'TXN-' . strtoupper(Str::random(10)),
+                'transaction_id' => 'TXN-'.strtoupper(Str::random(10)),
                 'type' => 'credit',
                 'amount' => $amount,
                 'balance_after' => $this->avl_balance,
@@ -77,7 +77,7 @@ class Wallet extends Model
 
             return $this->transactions()->create([
                 'candidate_id' => $this->candidate_id,
-                'transaction_id' => 'TXN-' . strtoupper(Str::random(10)),
+                'transaction_id' => 'TXN-'.strtoupper(Str::random(10)),
                 'type' => 'debit',
                 'amount' => $amount,
                 'balance_after' => $this->avl_balance,
@@ -96,6 +96,7 @@ class Wallet extends Model
     public function getFormattedCardNumberAttribute(): string
     {
         $clean = preg_replace('/[^A-Za-z0-9]/', '', $this->wallet_id ?? '');
+
         return trim(chunk_split($clean, 4, ' '));
     }
 }

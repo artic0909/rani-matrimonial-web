@@ -82,7 +82,7 @@ return new class extends Migration
                 'pref_marital_status', 'pref_religion', 'pref_community', 'pref_mother_tongue',
                 'pref_country', 'pref_state', 'pref_city', 'pref_education',
                 'pref_working_with', 'pref_profession', 'pref_annual_income', 'pref_diet',
-                'pref_profile_managed_by', 'contact_display_option'
+                'pref_profile_managed_by', 'contact_display_option',
             ]);
         });
     }

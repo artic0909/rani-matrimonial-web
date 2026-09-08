@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -20,10 +20,10 @@ return new class extends Migration
         // Backfill existing candidates if any
         $candidates = DB::table('candidates')->whereNull('candidate_code')->get();
         foreach ($candidates as $candidate) {
-            $code = 'RM' . str_pad($candidate->id, 5, '0', STR_PAD_LEFT);
+            $code = 'RM'.str_pad($candidate->id, 5, '0', STR_PAD_LEFT);
             DB::table('candidates')->where('id', $candidate->id)->update([
                 'candidate_code' => $code,
-                'profile_id' => $code
+                'profile_id' => $code,
             ]);
         }
     }

@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Candidate;
 use App\Models\CandidatePhoto;
 use App\Models\Wallet;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Seeder;
 
 class CandidateDummySeeder extends Seeder
 {
@@ -745,7 +744,7 @@ class CandidateDummySeeder extends Seeder
                 'contact_display_option' => 'Only on Request',
                 'photo_privacy' => 'All Members',
                 'album_privacy' => 'All Members',
-            ]
+            ],
         ];
 
         $femaleCandidates = [
@@ -1478,17 +1477,17 @@ class CandidateDummySeeder extends Seeder
                 'contact_display_option' => 'Only on Request',
                 'photo_privacy' => 'All Members',
                 'album_privacy' => 'All Members',
-            ]
+            ],
         ];
 
         $allData = array_merge($maleCandidates, $femaleCandidates);
 
         foreach ($allData as $data) {
             $mobile = $data['mobile'];
-            if (!empty($data['aadhar_number'])) {
+            if (! empty($data['aadhar_number'])) {
                 $data['aadhar_number'] = str_replace(' ', '', $data['aadhar_number']);
             }
-            
+
             // Check if already exists by mobile
             $existing = Candidate::where('mobile', $mobile)->first();
             if ($existing) {
@@ -1536,7 +1535,7 @@ class CandidateDummySeeder extends Seeder
                         ],
                         [
                             'is_profile_picture' => false,
-                            'caption' => 'Photo ' . $counter,
+                            'caption' => 'Photo '.$counter,
                             'sort_order' => $counter,
                         ]
                     );

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Candidate extends Authenticatable
@@ -11,7 +13,7 @@ class Candidate extends Authenticatable
         'mobile', 'profile_for', 'gender', 'first_name', 'last_name', 'dob', 'religion',
         'email', 'community', 'sub_community', 'country', 'state', 'city',
         'marital_status', 'height', 'diet', 'highest_qualification', 'college_name',
-        
+
         'middle_name', 'living_in', 'college_address', 'income_type',
         'profession', 'designation', 'company_name', 'company_address',
         'about_yourself', 'profile_picture', 'hobbies_interests', 'selfie_verified',
@@ -39,7 +41,7 @@ class Candidate extends Authenticatable
         'contact_display_option',
         // Photo Settings
         'photo_privacy',
-        'album_privacy'
+        'album_privacy',
     ];
 
     protected static function booted(): void
@@ -67,9 +69,9 @@ class Candidate extends Authenticatable
 
         do {
             if ($attempt === 1) {
-                $code = 'RM' . str_pad($lastId + 1, 5, '0', STR_PAD_LEFT);
+                $code = 'RM'.str_pad($lastId + 1, 5, '0', STR_PAD_LEFT);
             } else {
-                $code = 'RM' . str_pad(mt_rand(10000, 99999), 5, '0', STR_PAD_LEFT);
+                $code = 'RM'.str_pad(mt_rand(10000, 99999), 5, '0', STR_PAD_LEFT);
             }
             $exists = static::where('candidate_code', $code)->orWhere('profile_id', $code)->exists();
             $attempt++;
@@ -91,17 +93,17 @@ class Candidate extends Authenticatable
         ];
     }
 
-    public function photos(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function photos(): HasMany
     {
         return $this->hasMany(CandidatePhoto::class, 'candidate_id')->orderBy('sort_order')->orderByDesc('id');
     }
 
-    public function wallet(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function wallet(): HasOne
     {
         return $this->hasOne(Wallet::class, 'candidate_id');
     }
 
-    public function shortlists(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function shortlists(): HasMany
     {
         return $this->hasMany(Shortlisted::class, 'candidate_id');
     }
@@ -114,13 +116,14 @@ class Candidate extends Authenticatable
         $wallet = Wallet::where('candidate_id', $this->id)->first();
         if ($wallet) {
             $this->setRelation('wallet', $wallet);
+
             return $wallet;
         }
 
         // Generate 16-character card-style wallet id: RM + 14 digits e.g. RM88492018390001
-        $walletNumber = 'RM' . str_pad((string)$this->id, 2, '0', STR_PAD_LEFT) . rand(1000, 9999) . rand(1000, 9999) . rand(1000, 9999);
+        $walletNumber = 'RM'.str_pad((string) $this->id, 2, '0', STR_PAD_LEFT).rand(1000, 9999).rand(1000, 9999).rand(1000, 9999);
         while (Wallet::where('wallet_id', $walletNumber)->exists()) {
-            $walletNumber = 'RM' . rand(10, 99) . rand(1000, 9999) . rand(1000, 9999) . rand(1000, 9999);
+            $walletNumber = 'RM'.rand(10, 99).rand(1000, 9999).rand(1000, 9999).rand(1000, 9999);
         }
 
         $wallet = Wallet::create([
@@ -141,6 +144,6 @@ class Candidate extends Authenticatable
 
     public function getDisplayCodeAttribute(): string
     {
-        return $this->candidate_code ?? $this->profile_id ?? ('RM' . str_pad($this->id, 5, '0', STR_PAD_LEFT));
+        return $this->candidate_code ?? $this->profile_id ?? ('RM'.str_pad($this->id, 5, '0', STR_PAD_LEFT));
     }
 }

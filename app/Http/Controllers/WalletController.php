@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Candidate;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Wallet;
-use App\Models\WalletTransaction;
 
 class WalletController extends Controller
 {
@@ -14,7 +14,7 @@ class WalletController extends Controller
      */
     public function index()
     {
-        /** @var \App\Models\Candidate $candidate */
+        /** @var Candidate $candidate */
         $candidate = Auth::user();
         $wallet = $candidate->getOrCreateWallet();
 
@@ -56,14 +56,14 @@ class WalletController extends Controller
             'custom_note' => 'nullable|string|max:255',
         ]);
 
-        /** @var \App\Models\Candidate $candidate */
+        /** @var Candidate $candidate */
         $candidate = Auth::user();
         $wallet = $candidate->getOrCreateWallet();
 
         $amount = (float) $request->amount;
         $method = $request->payment_method ?? 'UPI';
         $title = 'Wallet Top-up';
-        $desc = $request->custom_note ?? ('Recharge via ' . $method);
+        $desc = $request->custom_note ?? ('Recharge via '.$method);
 
         $transaction = $wallet->credit(
             amount: $amount,
@@ -85,11 +85,11 @@ class WalletController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => '₹' . number_format($amount, 2) . ' successfully added to your wallet!',
+            'message' => '₹'.number_format($amount, 2).' successfully added to your wallet!',
             'wallet' => [
                 'id' => $wallet->wallet_id,
                 'avl_balance' => (float) $wallet->avl_balance,
-                'formatted_balance' => '₹ ' . number_format($wallet->avl_balance, 2),
+                'formatted_balance' => '₹ '.number_format($wallet->avl_balance, 2),
                 'total_credit' => $totalCredit,
                 'total_debit' => $totalDebit,
             ],
@@ -105,7 +105,7 @@ class WalletController extends Controller
                 'status' => $transaction->status,
                 'payment_method' => $transaction->payment_method,
                 'created_at_formatted' => $transaction->created_at->format('d M Y, h:i A'),
-            ]
+            ],
         ]);
     }
 
@@ -120,7 +120,7 @@ class WalletController extends Controller
             'category' => 'nullable|string|max:50',
         ]);
 
-        /** @var \App\Models\Candidate $candidate */
+        /** @var Candidate $candidate */
         $candidate = Auth::user();
         $wallet = $candidate->getOrCreateWallet();
 
@@ -129,7 +129,7 @@ class WalletController extends Controller
         if ($wallet->avl_balance < $amount) {
             return response()->json([
                 'success' => false,
-                'message' => 'Insufficient wallet balance. Please recharge your wallet.'
+                'message' => 'Insufficient wallet balance. Please recharge your wallet.',
             ], 422);
         }
 
@@ -153,11 +153,11 @@ class WalletController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => '₹' . number_format($amount, 2) . ' debited successfully.',
+            'message' => '₹'.number_format($amount, 2).' debited successfully.',
             'wallet' => [
                 'id' => $wallet->wallet_id,
                 'avl_balance' => (float) $wallet->avl_balance,
-                'formatted_balance' => '₹ ' . number_format($wallet->avl_balance, 2),
+                'formatted_balance' => '₹ '.number_format($wallet->avl_balance, 2),
                 'total_credit' => $totalCredit,
                 'total_debit' => $totalDebit,
             ],
@@ -173,7 +173,7 @@ class WalletController extends Controller
                 'status' => $transaction->status,
                 'payment_method' => $transaction->payment_method,
                 'created_at_formatted' => $transaction->created_at->format('d M Y, h:i A'),
-            ]
+            ],
         ]);
     }
 }

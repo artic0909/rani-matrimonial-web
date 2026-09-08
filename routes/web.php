@@ -1,10 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\WalletController;
 use App\Http\Controllers\MatchesController;
+use App\Http\Controllers\WalletController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('frontend.pages.index');
@@ -30,7 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::get('/my-profile', [AuthController::class, 'myProfile'])->name('my-profile');
     Route::get('/my-photos', [AuthController::class, 'myPhotos'])->name('my-photos');
-    
+
     // Matches Routes
     Route::get('/matches', [MatchesController::class, 'index'])->name('matches');
     Route::post('/api/matches/send-interest', [MatchesController::class, 'sendInterest'])->name('matches.send-interest');
