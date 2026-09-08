@@ -36,12 +36,34 @@
             <div class="p-6 max-h-[75vh] overflow-y-auto">
                 <form @submit.prevent="submitForm">
                     
-                    <!-- 1. About Yourself -->
-                    <div x-show="currentSection === 'about'" class="space-y-4">
+                    <!-- 1. About Yourself & Hobbies -->
+                    <div x-show="currentSection === 'about'" class="space-y-6">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1.5">About Yourself</label>
-                            <p class="text-xs text-gray-500 mb-2">Write a brief introduction describing your background, family values, and lifestyle.</p>
-                            <textarea x-model="formData.about_yourself" rows="6" placeholder="Describe your personality, hobbies, background..." class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all"></textarea>
+                            <p class="text-xs text-gray-500 mb-2">Write a brief introduction describing your background, personality, lifestyle, and what you look for in a partner.</p>
+                            <textarea x-model="formData.about_yourself" rows="5" placeholder="Describe your personality, passions, family background..." class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all"></textarea>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-sm font-semibold text-gray-700">Hobbies & Interests</label>
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-rani-primary/10 text-rani-primary-dark" x-text="(formData.hobbies_interests || []).length + ' Selected'"></span>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-3">Select your favorite activities, hobbies, and passions to help matches connect with you.</p>
+                            
+                            <div class="flex flex-wrap gap-2 max-h-56 overflow-y-auto p-3 bg-gray-50/80 rounded-2xl border border-gray-200">
+                                <template x-for="h in masterData.hobbies" :key="h.id">
+                                    <button type="button" 
+                                            @click="toggleHobby(h.name)" 
+                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer select-none"
+                                            :class="(formData.hobbies_interests || []).includes(h.name) 
+                                                ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md shadow-rani-primary/20 ring-2 ring-rani-gold/50 font-semibold' 
+                                                : 'bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-900 border border-gray-200 shadow-sm'">
+                                        <span x-show="(formData.hobbies_interests || []).includes(h.name)" class="text-rani-gold font-bold">✓</span>
+                                        <span x-text="h.name"></span>
+                                    </button>
+                                </template>
+                            </div>
                         </div>
                     </div>
 
@@ -421,9 +443,22 @@ window.profileEditor = function(config = {}) {
             return s ? s.cities : [];
         },
         
+        toggleHobby(name) {
+            if (!Array.isArray(this.formData.hobbies_interests)) {
+                this.formData.hobbies_interests = [];
+            }
+            const index = this.formData.hobbies_interests.indexOf(name);
+            if (index > -1) {
+                this.formData.hobbies_interests.splice(index, 1);
+            } else {
+                this.formData.hobbies_interests.push(name);
+            }
+        },
+
         formData: {
-            // Personality
+            // Personality & Hobbies
             about_yourself: @json($candidate->about_yourself ?? ''),
+            hobbies_interests: @json($candidate->hobbies_interests ?? []),
             
             // Basics
             gender: @json($candidate->gender ?? ''),

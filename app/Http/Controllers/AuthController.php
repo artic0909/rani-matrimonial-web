@@ -452,6 +452,8 @@ class AuthController extends Controller
             case 'about':
                 $rules = [
                     'about_yourself' => 'nullable|string',
+                    'hobbies_interests' => 'nullable|array',
+                    'hobbies_interests.*' => 'nullable|string|max:100',
                 ];
                 break;
             case 'basic':

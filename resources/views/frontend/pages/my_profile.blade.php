@@ -114,7 +114,7 @@
                         Edit
                     </button>
                 </div>
-                <div class="p-6 md:p-8">
+                <div class="p-6 md:p-8 space-y-6">
                     @if($candidate->about_yourself)
                         <p class="text-gray-700 leading-relaxed text-base whitespace-pre-line">
                             {{ $candidate->about_yourself }}
@@ -128,6 +128,38 @@
                             </button>
                         </div>
                     @endif
+
+                    <!-- Hobbies & Interests Display -->
+                    <div class="pt-5 border-t border-gray-100/80">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-xs uppercase tracking-wider font-bold text-gray-500 flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-rani-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Hobbies & Interests
+                            </h4>
+                            <button type="button" @click="openModal('about')" class="text-xs font-semibold text-rani-primary hover:text-rani-primary-dark transition-colors inline-flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                Manage Hobbies
+                            </button>
+                        </div>
+                        @if(!empty($candidate->hobbies_interests) && count($candidate->hobbies_interests) > 0)
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($candidate->hobbies_interests as $hobby)
+                                    <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-rani-light/70 to-rani-light text-rani-primary-dark border border-rani-gold/30 shadow-sm">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-rani-gold mr-1.5"></span>
+                                        {{ $hobby }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="flex items-center gap-2 text-sm text-gray-400">
+                                <span>No hobbies selected yet.</span>
+                                <button type="button" @click="openModal('about')" class="text-rani-primary font-medium hover:underline inline-flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                    Add Hobbies
+                                </button>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
 
