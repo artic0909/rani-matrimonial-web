@@ -356,6 +356,16 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Police Station</label>
+                                <input type="text" x-model="formData.police_st" placeholder="e.g. Park Street Police Station" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Pincode</label>
+                                <input type="text" x-model="formData.pincode" placeholder="e.g. 700016" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                            </div>
+                        </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Full Address</label>
                             <textarea x-model="formData.full_address" rows="3" placeholder="Enter residential address" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all"></textarea>
@@ -452,6 +462,8 @@ window.profileEditor = function() {
             country: @json($candidate->country ?? 'India'),
             state: @json($candidate->state ?? ''),
             city: @json($candidate->city ?? ''),
+            police_st: @json($candidate->police_st ?? ''),
+            pincode: @json($candidate->pincode ?? ''),
             zip_code: @json($candidate->zip_code ?? ''),
             residency_status: @json($candidate->residency_status ?? 'Citizen'),
             full_address: @json($candidate->full_address ?? ''),

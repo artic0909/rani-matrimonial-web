@@ -432,6 +432,22 @@
                             </div>
                         </div>
 
+                        <!-- Police Station & Pincode Row -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                            <div>
+                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Police Station</label>
+                                <input type="text" name="police_st" x-model="formData.police_st" placeholder="e.g. Park Street Police Station"
+                                    class="w-full px-5 py-3.5 rounded-xl theme-input">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Pincode</label>
+                                <input type="text" name="pincode" x-model="formData.pincode" placeholder="e.g. 700016" maxlength="10"
+                                    class="w-full px-5 py-3.5 rounded-xl theme-input"
+                                    @input="formData.pincode = $event.target.value.replace(/[^0-9]/g, '')">
+                            </div>
+                        </div>
+
                         <!-- Full Address -->
                         <div class="mb-5">
                             <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Full Address</label>
@@ -734,7 +750,7 @@
                 profile_for: '', gender: '', first_name: '', middle_name: '', last_name: '', 
                 dob_day: '', dob_month: '', dob_year: '', religion: '', community: '',
                 email: '', mobile: '',
-                country: '', state: '', city: '', sub_community: '', full_address: '',
+                country: '', state: '', city: '', police_st: '', pincode: '', sub_community: '', full_address: '',
                 marital_status: '', height: '', diet: '',
                 highest_qualification: '', college_name: '', college_address: '',
                 income_type: '',

@@ -12,6 +12,7 @@ class Candidate extends Authenticatable
         'candidate_code', 'profile_id',
         'mobile', 'profile_for', 'gender', 'first_name', 'last_name', 'dob', 'religion',
         'email', 'community', 'sub_community', 'country', 'state', 'city',
+        'police_st', 'pincode',
         'marital_status', 'height', 'diet', 'highest_qualification', 'college_name',
 
         'middle_name', 'living_in', 'college_address', 'income_type',
