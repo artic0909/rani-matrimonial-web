@@ -2,6 +2,7 @@
 
 @section('title', 'My Profile | Ranimatrimonial')
 
+@section('content')
 <div class="relative pt-8 pb-20" 
      x-data="profileEditor({
         religions: {{ Js::from($religions) }},
