@@ -9,6 +9,15 @@ Route::get('/', function () {
     return view('frontend.pages.index');
 })->name('login');
 
+// Legal & Compliance Pages (SUmatra Sales Private Limited / Rani Matrimonial)
+Route::get('/privacy-policy', function () {
+    return view('frontend.pages.privacy_policy');
+})->name('privacy.policy');
+
+Route::get('/terms-and-conditions', function () {
+    return view('frontend.pages.terms_conditions');
+})->name('terms.conditions');
+
 // Candidate Auth Routes
 Route::post('/api/send-otp', [AuthController::class, 'sendOtp'])->name('send.otp');
 Route::post('/api/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.otp');

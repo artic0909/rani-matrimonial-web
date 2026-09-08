@@ -25,9 +25,8 @@
             <div>
                 <h3 class="text-lg font-serif font-bold mb-4 text-rani-gold">Legal</h3>
                 <ul class="space-y-2 text-rani-gold-light/70">
-                    <li><a href="#" class="hover:text-rani-gold transition-colors">Privacy Policy</a></li>
-                    <li><a href="#" class="hover:text-rani-gold transition-colors">Terms of Service</a></li>
-                    <li><a href="#" class="hover:text-rani-gold transition-colors">Safety Tips</a></li>
+                    <li><a href="{{ route('privacy.policy') }}" class="hover:text-rani-gold transition-colors">Privacy Policy</a></li>
+                    <li><a href="{{ route('terms.conditions') }}" class="hover:text-rani-gold transition-colors">Terms & Conditions</a></li>
                 </ul>
             </div>
             <div>
@@ -42,8 +41,9 @@
                 </div>
             </div>
         </div>
-        <div class="pt-8 border-t border-rani-gold/30 text-center text-sm text-rani-gold-light/60">
-            &copy; {{ date('Y') }} Ranimatrimonial. All rights reserved. Made with ❤️ in India.
+        <div class="pt-8 border-t border-rani-gold/30 text-center text-sm text-rani-gold-light/70 space-y-1">
+            <p>&copy; {{ date('Y') }} <strong>Rani Matrimonial</strong>. All rights reserved. A brand owned & operated by <strong>SUmatra Sales Private Limited</strong>.</p>
+            <p class="text-xs text-rani-gold-light/50">Made with ❤️ in India.</p>
         </div>
     </div>
 </footer>
