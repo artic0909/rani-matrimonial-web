@@ -419,7 +419,25 @@ class AuthController extends Controller
             $age = $now->diff($dob)->y;
         }
 
-        return view('frontend.pages.my_profile', compact('candidate', 'age'));
+        $religions = Religion::with('communities')->get();
+        $countries = Country::with(['states.cities'])->get();
+        $maritalStatuses = MaritalStatus::all();
+        $heights = Height::all();
+        $diets = Diet::all();
+        $incomes = Income::all();
+        $hobbies = Hobby::all();
+
+        return view('frontend.pages.my_profile', compact(
+            'candidate',
+            'age',
+            'religions',
+            'countries',
+            'maritalStatuses',
+            'heights',
+            'diets',
+            'incomes',
+            'hobbies'
+        ));
     }
 
     // Candidate Profile Update via AJAX

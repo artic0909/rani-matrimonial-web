@@ -78,11 +78,9 @@
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Marital Status</label>
                                 <select x-model="formData.marital_status" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
                                     <option value="">Select Marital Status</option>
-                                    <option value="Never Married">Never Married</option>
-                                    <option value="Divorced">Divorced</option>
-                                    <option value="Widowed">Widowed</option>
-                                    <option value="Awaiting Divorce">Awaiting Divorce</option>
-                                    <option value="Annulled">Annulled</option>
+                                    <template x-for="ms in masterData.maritalStatuses" :key="ms.id">
+                                        <option :value="ms.name" x-text="ms.name"></option>
+                                    </template>
                                 </select>
                             </div>
                         </div>
@@ -91,42 +89,18 @@
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Height</label>
                                 <select x-model="formData.height" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
                                     <option value="">Select Height</option>
-                                    <option value="4ft 6in / 137 cm">4ft 6in / 137 cm</option>
-                                    <option value="4ft 7in / 139 cm">4ft 7in / 139 cm</option>
-                                    <option value="4ft 8in / 142 cm">4ft 8in / 142 cm</option>
-                                    <option value="4ft 9in / 144 cm">4ft 9in / 144 cm</option>
-                                    <option value="4ft 10in / 147 cm">4ft 10in / 147 cm</option>
-                                    <option value="4ft 11in / 149 cm">4ft 11in / 149 cm</option>
-                                    <option value="5ft 0in / 152 cm">5ft 0in / 152 cm</option>
-                                    <option value="5ft 1in / 154 cm">5ft 1in / 154 cm</option>
-                                    <option value="5ft 2in / 157 cm">5ft 2in / 157 cm</option>
-                                    <option value="5ft 3in / 160 cm">5ft 3in / 160 cm</option>
-                                    <option value="5ft 4in / 162 cm">5ft 4in / 162 cm</option>
-                                    <option value="5ft 5in / 165 cm">5ft 5in / 165 cm</option>
-                                    <option value="5ft 6in / 167 cm">5ft 6in / 167 cm</option>
-                                    <option value="5ft 7in / 170 cm">5ft 7in / 170 cm</option>
-                                    <option value="5ft 8in / 172 cm">5ft 8in / 172 cm</option>
-                                    <option value="5ft 9in / 175 cm">5ft 9in / 175 cm</option>
-                                    <option value="5ft 10in / 177 cm">5ft 10in / 177 cm</option>
-                                    <option value="5ft 11in / 180 cm">5ft 11in / 180 cm</option>
-                                    <option value="6ft 0in / 182 cm">6ft 0in / 182 cm</option>
-                                    <option value="6ft 1in / 185 cm">6ft 1in / 185 cm</option>
-                                    <option value="6ft 2in / 187 cm">6ft 2in / 187 cm</option>
-                                    <option value="6ft 3in / 190 cm">6ft 3in / 190 cm</option>
-                                    <option value="6ft 4in / 193 cm">6ft 4in / 193 cm</option>
-                                    <option value="6ft 5in / 195 cm">6ft 5in / 195 cm</option>
+                                    <template x-for="h in masterData.heights" :key="h.id">
+                                        <option :value="h.name" x-text="h.name"></option>
+                                    </template>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Diet</label>
                                 <select x-model="formData.diet" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
                                     <option value="">Select Diet</option>
-                                    <option value="Veg">Veg</option>
-                                    <option value="Non-Veg">Non-Veg</option>
-                                    <option value="Occasionally Non-Veg">Occasionally Non-Veg</option>
-                                    <option value="Eggetarian">Eggetarian</option>
-                                    <option value="Jain">Jain</option>
-                                    <option value="Vegan">Vegan</option>
+                                    <template x-for="d in masterData.diets" :key="d.id">
+                                        <option :value="d.name" x-text="d.name"></option>
+                                    </template>
                                 </select>
                             </div>
                         </div>
@@ -172,22 +146,21 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Religion</label>
-                                <select x-model="formData.religion" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                                <select x-model="formData.religion" @change="onReligionChange" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
                                     <option value="">Select Religion</option>
-                                    <option value="Hindu">Hindu</option>
-                                    <option value="Muslim">Muslim</option>
-                                    <option value="Christian">Christian</option>
-                                    <option value="Sikh">Sikh</option>
-                                    <option value="Jain">Jain</option>
-                                    <option value="Buddhist">Buddhist</option>
-                                    <option value="Parsi">Parsi</option>
-                                    <option value="Jewish">Jewish</option>
-                                    <option value="Other">Other</option>
+                                    <template x-for="r in masterData.religions" :key="r.id">
+                                        <option :value="r.name" x-text="r.name"></option>
+                                    </template>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Community / Caste</label>
-                                <input type="text" x-model="formData.community" placeholder="e.g. Brahmin, Agarwal, Rajput" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                                <select x-model="formData.community" :disabled="!formData.religion" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                                    <option value="">Select Community</option>
+                                    <template x-for="comm in availableCommunities()" :key="comm.id">
+                                        <option :value="comm.name" x-text="comm.name"></option>
+                                    </template>
+                                </select>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -311,16 +284,9 @@
                             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Annual Income</label>
                             <select x-model="formData.annual_income" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
                                 <option value="">Select Annual Income</option>
-                                <option value="Below 2 Lakhs">Below 2 Lakhs</option>
-                                <option value="2 - 4 Lakhs">2 - 4 Lakhs</option>
-                                <option value="4 - 7 Lakhs">4 - 7 Lakhs</option>
-                                <option value="7 - 10 Lakhs">7 - 10 Lakhs</option>
-                                <option value="10 - 15 Lakhs">10 - 15 Lakhs</option>
-                                <option value="15 - 20 Lakhs">15 - 20 Lakhs</option>
-                                <option value="20 - 30 Lakhs">20 - 30 Lakhs</option>
-                                <option value="30 - 50 Lakhs">30 - 50 Lakhs</option>
-                                <option value="50 Lakhs - 1 Crore">50 Lakhs - 1 Crore</option>
-                                <option value="Above 1 Crore">Above 1 Crore</option>
+                                <template x-for="inc in masterData.incomes" :key="inc.id">
+                                    <option :value="inc.name" x-text="inc.name"></option>
+                                </template>
                             </select>
                         </div>
                     </div>
@@ -330,21 +296,32 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Country</label>
-                                <input type="text" x-model="formData.country" placeholder="e.g. India" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                                <select x-model="formData.country" @change="onCountryChange" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                                    <option value="">Select Country</option>
+                                    <template x-for="c in masterData.countries" :key="c.id">
+                                        <option :value="c.name" x-text="c.name"></option>
+                                    </template>
+                                </select>
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">State</label>
-                                <input type="text" x-model="formData.state" placeholder="e.g. West Bengal" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                                <select x-model="formData.state" @change="onStateChange" :disabled="!formData.country" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                                    <option value="">Select State</option>
+                                    <template x-for="s in availableStates()" :key="s.id">
+                                        <option :value="s.name" x-text="s.name"></option>
+                                    </template>
+                                </select>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">City</label>
-                                <input type="text" x-model="formData.city" placeholder="e.g. Kolkata" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Zip / Pin Code</label>
-                                <input type="text" x-model="formData.zip_code" placeholder="e.g. 700001" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                                <select x-model="formData.city" :disabled="!formData.state" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                                    <option value="">Select City</option>
+                                    <template x-for="ct in availableCities()" :key="ct.id">
+                                        <option :value="ct.name" x-text="ct.name"></option>
+                                    </template>
+                                </select>
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Residency Status</label>
@@ -363,7 +340,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Pincode</label>
-                                <input type="text" x-model="formData.pincode" placeholder="e.g. 700016" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                                <input type="text" x-model="formData.pincode" placeholder="e.g. 700016" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all" @input="formData.pincode = $event.target.value.replace(/[^0-9]/g, '')">
                             </div>
                         </div>
                         <div>
@@ -403,13 +380,46 @@
 </div>
 
 <script>
-window.profileEditor = function() {
+window.profileEditor = function(config = {}) {
     return {
+        masterData: {
+            religions: config.religions || [],
+            countries: config.countries || [],
+            maritalStatuses: config.maritalStatuses || [],
+            heights: config.heights || [],
+            diets: config.diets || [],
+            incomes: config.incomes || [],
+            hobbies: config.hobbies || []
+        },
         editModalOpen: false,
         currentSection: '',
         isSubmitting: false,
         isUploadingPhoto: false,
         profileImageUrl: '{{ $candidate->profile_picture ? asset('storage/' . $candidate->profile_picture) : "https://ui-avatars.com/api/?name=".urlencode($candidate->first_name)."&background=D4AF37&color=fff" }}',
+
+        onReligionChange() {
+            this.formData.community = '';
+        },
+        availableCommunities() {
+            const rel = this.masterData.religions.find(r => r.name === this.formData.religion);
+            return rel ? rel.communities : [];
+        },
+        onCountryChange() {
+            this.formData.state = '';
+            this.formData.city = '';
+        },
+        availableStates() {
+            const c = this.masterData.countries.find(item => item.name === this.formData.country);
+            return c ? c.states : [];
+        },
+        onStateChange() {
+            this.formData.city = '';
+        },
+        availableCities() {
+            const states = this.availableStates();
+            const s = states.find(item => item.name === this.formData.state);
+            return s ? s.cities : [];
+        },
         
         formData: {
             // Personality

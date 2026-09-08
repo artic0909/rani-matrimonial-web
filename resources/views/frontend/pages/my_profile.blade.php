@@ -2,8 +2,16 @@
 
 @section('title', 'My Profile | Ranimatrimonial')
 
-@section('content')
-<div class="relative pt-8 pb-20" x-data="profileEditor()">
+<div class="relative pt-8 pb-20" 
+     x-data="profileEditor({
+        religions: {{ Js::from($religions) }},
+        countries: {{ Js::from($countries) }},
+        maritalStatuses: {{ Js::from($maritalStatuses) }},
+        heights: {{ Js::from($heights) }},
+        diets: {{ Js::from($diets) }},
+        incomes: {{ Js::from($incomes) }},
+        hobbies: {{ Js::from($hobbies) }}
+     })">
     <!-- Background Image -->
     <div class="fixed inset-0 z-0 bg-cover bg-top bg-no-repeat" style="background-image: url('{{ asset('img/hero.png') }}');"></div>
     
@@ -317,11 +325,13 @@
                 <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
                     @php
                         $loc = [
-                            'Current City' => $candidate->city ?: '<button type="button" @click="openModal(\'location\')" class="text-rani-primary font-semibold hover:underline inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</button>',
-                            'Residency Status' => $candidate->residency_status ?: 'Citizen',
+                            'Country' => $candidate->country ?: 'India',
                             'State' => $candidate->state ?: '<button type="button" @click="openModal(\'location\')" class="text-rani-primary font-semibold hover:underline inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</button>',
-                            'Zip / Pin code' => $candidate->zip_code ?: '<button type="button" @click="openModal(\'location\')" class="text-rani-primary font-semibold hover:underline inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</button>',
-                            'Country' => $candidate->country ?: 'India'
+                            'Current City' => $candidate->city ?: '<button type="button" @click="openModal(\'location\')" class="text-rani-primary font-semibold hover:underline inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</button>',
+                            'Police Station' => $candidate->police_st ?: '<button type="button" @click="openModal(\'location\')" class="text-rani-primary font-semibold hover:underline inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</button>',
+                            'Pincode' => $candidate->pincode ?: ($candidate->zip_code ?: '<button type="button" @click="openModal(\'location\')" class="text-rani-primary font-semibold hover:underline inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</button>'),
+                            'Residency Status' => $candidate->residency_status ?: 'Citizen',
+                            'Full Address' => $candidate->full_address ?: '<button type="button" @click="openModal(\'location\')" class="text-rani-primary font-semibold hover:underline inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</button>',
                         ];
                     @endphp
                     @foreach($loc as $label => $val)
