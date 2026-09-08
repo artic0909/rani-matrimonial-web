@@ -293,29 +293,42 @@
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                          
-                          
                          >
                         
                         <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Date of Birth</h4>
                         <div class="mb-8">
-                            <div class="flex justify-center gap-3">
-                                <div class="w-20">
-                                    <input type="tel" x-model="formData.dob_day" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="DD" maxlength="2" class="w-full px-2 py-4 rounded-xl theme-input font-bold text-center text-xl">
-                                </div>
-                                <div class="text-white/80 text-3xl font-light self-center">/</div>
-                                <div class="w-20">
-                                    <input type="tel" x-model="formData.dob_month" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="MM" maxlength="2" class="w-full px-2 py-4 rounded-xl theme-input font-bold text-center text-xl">
-                                </div>
-                                <div class="text-white/80 text-3xl font-light self-center">/</div>
+                            <div class="flex justify-center items-center gap-3">
                                 <div class="w-24">
-                                    <input type="tel" x-model="formData.dob_year" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="YYYY" maxlength="4" class="w-full px-2 py-4 rounded-xl theme-input font-bold text-center text-xl">
+                                    <label class="block text-xs font-bold text-rani-gold uppercase tracking-wider text-center mb-2">Day (DD)</label>
+                                    <input type="tel" x-ref="dobDay" x-model="formData.dob_day" 
+                                           @input="handleDobDay($event)" 
+                                           @keydown="handleDobKeydown($event, 'day')"
+                                           placeholder="DD" maxlength="2" 
+                                           class="w-full px-2 py-4 rounded-xl theme-input font-bold text-center text-xl">
+                                </div>
+                                <div class="text-rani-gold text-3xl font-light self-end pb-3">/</div>
+                                <div class="w-24">
+                                    <label class="block text-xs font-bold text-rani-gold uppercase tracking-wider text-center mb-2">Month (MM)</label>
+                                    <input type="tel" x-ref="dobMonth" x-model="formData.dob_month" 
+                                           @input="handleDobMonth($event)" 
+                                           @keydown="handleDobKeydown($event, 'month')"
+                                           placeholder="MM" maxlength="2" 
+                                           class="w-full px-2 py-4 rounded-xl theme-input font-bold text-center text-xl">
+                                </div>
+                                <div class="text-rani-gold text-3xl font-light self-end pb-3">/</div>
+                                <div class="w-28">
+                                    <label class="block text-xs font-bold text-rani-gold uppercase tracking-wider text-center mb-2">Year (YYYY)</label>
+                                    <input type="tel" x-ref="dobYear" x-model="formData.dob_year" 
+                                           @input="handleDobYear($event)" 
+                                           @keydown="handleDobKeydown($event, 'year')"
+                                           placeholder="YYYY" maxlength="4" 
+                                           class="w-full px-2 py-4 rounded-xl theme-input font-bold text-center text-xl">
                                 </div>
                             </div>
                             <input type="hidden" name="dob" :value="formData.dob_year + '-' + formData.dob_month + '-' + formData.dob_day">
                         </div>
                         <div class="mt-4">
-                            <button type="button" @click="nextStep" :disabled="!(formData.dob_day && formData.dob_month && formData.dob_year)" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                            <button type="button" @click="nextStep" :disabled="!(formData.dob_day && formData.dob_month && formData.dob_year && formData.dob_year.length === 4)" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
                         </div>
                     </div>
 
@@ -798,6 +811,74 @@
                 this.formData.gender = val;
                 setTimeout(() => this.nextStep(), 300);
             },
+
+            handleDobDay(e) {
+                let val = e.target.value.replace(/[^0-9]/g, '');
+                if (val.length === 1 && parseInt(val, 10) >= 4) {
+                    val = '0' + val;
+                    this.formData.dob_day = val;
+                    this.$nextTick(() => {
+                        if (this.$refs.dobMonth) this.$refs.dobMonth.focus();
+                    });
+                    return;
+                }
+                if (val.length >= 2) {
+                    val = val.slice(0, 2);
+                    let num = parseInt(val, 10);
+                    if (num > 31) val = '31';
+                    if (num === 0) val = '01';
+                    this.formData.dob_day = val;
+                    this.$nextTick(() => {
+                        if (this.$refs.dobMonth) this.$refs.dobMonth.focus();
+                    });
+                    return;
+                }
+                this.formData.dob_day = val;
+            },
+
+            handleDobMonth(e) {
+                let val = e.target.value.replace(/[^0-9]/g, '');
+                if (val.length === 1 && parseInt(val, 10) >= 2) {
+                    val = '0' + val;
+                    this.formData.dob_month = val;
+                    this.$nextTick(() => {
+                        if (this.$refs.dobYear) this.$refs.dobYear.focus();
+                    });
+                    return;
+                }
+                if (val.length >= 2) {
+                    val = val.slice(0, 2);
+                    let num = parseInt(val, 10);
+                    if (num > 12) val = '12';
+                    if (num === 0) val = '01';
+                    this.formData.dob_month = val;
+                    this.$nextTick(() => {
+                        if (this.$refs.dobYear) this.$refs.dobYear.focus();
+                    });
+                    return;
+                }
+                this.formData.dob_month = val;
+            },
+
+            handleDobYear(e) {
+                let val = e.target.value.replace(/[^0-9]/g, '');
+                if (val.length > 4) val = val.slice(0, 4);
+                this.formData.dob_year = val;
+            },
+
+            handleDobKeydown(e, field) {
+                if (e.key === 'Backspace' && (!e.target.value || e.target.value === '')) {
+                    if (field === 'month') {
+                        this.$nextTick(() => {
+                            if (this.$refs.dobDay) this.$refs.dobDay.focus();
+                        });
+                    } else if (field === 'year') {
+                        this.$nextTick(() => {
+                            if (this.$refs.dobMonth) this.$refs.dobMonth.focus();
+                        });
+                    }
+                }
+            },
             showError(msg, title = 'Missing Information') {
                 Swal.fire({
                     icon: 'error',
@@ -854,7 +935,33 @@
                     return; // Prevent normal advancement
                 }
 
-                if (this.step === 4 && (!this.formData.dob_day || !this.formData.dob_month || !this.formData.dob_year)) return this.showError("Date of Birth is required.");
+                if (this.step === 4) {
+                    if (!this.formData.dob_day || !this.formData.dob_month || !this.formData.dob_year || this.formData.dob_year.length !== 4) {
+                        return this.showError("Please enter a complete Date of Birth (DD / MM / YYYY).");
+                    }
+                    const d = parseInt(this.formData.dob_day, 10);
+                    const m = parseInt(this.formData.dob_month, 10);
+                    const y = parseInt(this.formData.dob_year, 10);
+                    const currentYear = new Date().getFullYear();
+
+                    if (isNaN(d) || isNaN(m) || isNaN(y)) {
+                        return this.showError("Please enter a valid numeric Date of Birth.");
+                    }
+                    if (m < 1 || m > 12) {
+                        return this.showError("Month must be between 01 and 12.");
+                    }
+                    const daysInMonth = new Date(y, m, 0).getDate();
+                    if (d < 1 || d > daysInMonth) {
+                        return this.showError(`Invalid day. Month ${m} in year ${y} has ${daysInMonth} days.`);
+                    }
+                    if (y < 1940 || y > currentYear - 18) {
+                        return this.showError(`Candidate must be at least 18 years old (Year between 1940 and ${currentYear - 18}).`);
+                    }
+
+                    this.formData.dob_day = d.toString().padStart(2, '0');
+                    this.formData.dob_month = m.toString().padStart(2, '0');
+                    this.formData.dob_year = y.toString();
+                }
                 if (this.step === 5 && (!this.formData.religion || !this.formData.community)) return this.showError("Religion and Community are required.");
                 if (this.step === 6) {
                     if (!this.formData.email || !this.formData.mobile) return this.showError("Email and Mobile number are required.");
