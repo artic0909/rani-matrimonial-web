@@ -4,6 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Candidate;
 use App\Models\CandidatePhoto;
+use App\Models\Country;
+use App\Models\Diet;
+use App\Models\Height;
+use App\Models\Hobby;
+use App\Models\Income;
+use App\Models\MaritalStatus;
+use App\Models\Religion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -264,7 +271,23 @@ class AuthController extends Controller
     // Register Step 1 (Modal form submission)
     public function showRegister()
     {
-        return view('frontend.pages.register');
+        $religions = Religion::with('communities')->get();
+        $countries = Country::with(['states.cities'])->get();
+        $maritalStatuses = MaritalStatus::all();
+        $heights = Height::all();
+        $diets = Diet::all();
+        $incomes = Income::all();
+        $hobbies = Hobby::all();
+
+        return view('frontend.pages.register', compact(
+            'religions',
+            'countries',
+            'maritalStatuses',
+            'heights',
+            'diets',
+            'incomes',
+            'hobbies'
+        ));
     }
 
     // Process Final Registration

@@ -113,7 +113,16 @@
     }
 </style>
 
-<div class="min-h-screen py-12 relative flex items-center justify-center overflow-hidden" x-data="registrationForm()">
+<div class="min-h-screen py-12 relative flex items-center justify-center overflow-hidden" 
+     x-data="registrationForm({
+        religions: {{ Js::from($religions) }},
+        countries: {{ Js::from($countries) }},
+        maritalStatuses: {{ Js::from($maritalStatuses) }},
+        heights: {{ Js::from($heights) }},
+        diets: {{ Js::from($diets) }},
+        incomes: {{ Js::from($incomes) }},
+        hobbies: {{ Js::from($hobbies) }}
+     })">
     
     <!-- Background with blur -->
     <div class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat" style="background-image: url('{{ asset('img/hero.png') }}'); filter: blur(8px) brightness(0.7);"></div>
@@ -323,23 +332,20 @@
                         <div class="space-y-5 mb-8">
                             <div>
                                 <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Religion</label>
-                                <select name="religion" x-model="formData.religion" class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <select name="religion" x-model="formData.religion" @change="onReligionChange" class="w-full px-5 py-3.5 rounded-xl theme-input">
                                     <option value="" disabled>Select Religion</option>
-                                    <option value="Hindu">Hindu</option>
-                                    <option value="Muslim">Muslim</option>
-                                    <option value="Christian">Christian</option>
-                                    <option value="Sikh">Sikh</option>
-                                    <option value="Jain">Jain</option>
+                                    <template x-for="item in masterData.religions" :key="item.id">
+                                        <option :value="item.name" x-text="item.name"></option>
+                                    </template>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Community</label>
-                                <select name="community" x-model="formData.community" class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <select name="community" x-model="formData.community" :disabled="!formData.religion" class="w-full px-5 py-3.5 rounded-xl theme-input">
                                     <option value="" disabled>Select Community</option>
-                                    <option value="Brahmin">Brahmin</option>
-                                    <option value="Rajput">Rajput</option>
-                                    <option value="Baniya">Baniya</option>
-                                    <option value="Other">Other</option>
+                                    <template x-for="comm in availableCommunities()" :key="comm.id">
+                                        <option :value="comm.name" x-text="comm.name"></option>
+                                    </template>
                                 </select>
                             </div>
                             <div>
@@ -394,16 +400,12 @@
                         <!-- Country Row -->
                         <div class="mb-5">
                             <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Country (Living In)</label>
-                            <select x-model="formData.country" 
+                            <select x-model="formData.country" @change="onCountryChange"
                                 class="w-full px-5 py-3.5 rounded-xl theme-input appearance-none">
-                                <option value="">Select Country</option>
-                                <option value="India">India</option>
-                                <option value="USA">USA</option>
-                                <option value="UK">UK</option>
-                                <option value="Canada">Canada</option>
-                                <option value="Australia">Australia</option>
-                                <option value="UAE">UAE</option>
-                                <option value="Other">Other</option>
+                                <option value="" disabled>Select Country</option>
+                                <template x-for="c in masterData.countries" :key="c.id">
+                                    <option :value="c.name" x-text="c.name"></option>
+                                </template>
                             </select>
                         </div>
 
@@ -411,18 +413,22 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                             <div>
                                 <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">State</label>
-                                <select x-model="formData.state" class="w-full px-5 py-3.5 rounded-xl theme-input appearance-none">
-                                    <option value="">Select State</option>
-                                    <option value="West Bengal">West Bengal</option>
-                                    <option value="Maharashtra">Maharashtra</option>
-                                    <option value="Delhi">Delhi</option>
+                                <select x-model="formData.state" @change="onStateChange" :disabled="!formData.country" class="w-full px-5 py-3.5 rounded-xl theme-input appearance-none">
+                                    <option value="" disabled>Select State</option>
+                                    <template x-for="s in availableStates()" :key="s.id">
+                                        <option :value="s.name" x-text="s.name"></option>
+                                    </template>
                                 </select>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">City</label>
-                                <input type="text" x-model="formData.city" placeholder="e.g. Kolkata" 
-                                    class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <select x-model="formData.city" :disabled="!formData.state" class="w-full px-5 py-3.5 rounded-xl theme-input appearance-none">
+                                    <option value="" disabled>Select City</option>
+                                    <template x-for="ct in availableCities()" :key="ct.id">
+                                        <option :value="ct.name" x-text="ct.name"></option>
+                                    </template>
+                                </select>
                             </div>
                         </div>
 
@@ -455,30 +461,27 @@
                                 <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Marital Status</label>
                                 <select name="marital_status" x-model="formData.marital_status" required class="w-full px-5 py-3.5 rounded-xl theme-input">
                                     <option value="" disabled>Select Status</option>
-                                    <option value="Never Married">Never Married</option>
-                                    <option value="Divorced">Divorced</option>
-                                    <option value="Widowed">Widowed</option>
+                                    <template x-for="ms in masterData.maritalStatuses" :key="ms.id">
+                                        <option :value="ms.name" x-text="ms.name"></option>
+                                    </template>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Height</label>
                                 <select name="height" x-model="formData.height" required class="w-full px-5 py-3.5 rounded-xl theme-input">
                                     <option value="" disabled>Select Height</option>
-                                    <option value="5ft 0in">5ft 0in</option>
-                                    <option value="5ft 2in">5ft 2in</option>
-                                    <option value="5ft 4in">5ft 4in</option>
-                                    <option value="5ft 6in">5ft 6in</option>
-                                    <option value="5ft 8in">5ft 8in</option>
-                                    <option value="5ft 10in">5ft 10in</option>
+                                    <template x-for="h in masterData.heights" :key="h.id">
+                                        <option :value="h.name" x-text="h.name"></option>
+                                    </template>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Diet</label>
                                 <select name="diet" x-model="formData.diet" required class="w-full px-5 py-3.5 rounded-xl theme-input">
                                     <option value="" disabled>Select Diet</option>
-                                    <option value="Veg">Vegetarian</option>
-                                    <option value="Non-Veg">Non-Vegetarian</option>
-                                    <option value="Eggetarian">Eggetarian</option>
+                                    <template x-for="d in masterData.diets" :key="d.id">
+                                        <option :value="d.name" x-text="d.name"></option>
+                                    </template>
                                 </select>
                             </div>
                         </div>
@@ -538,10 +541,9 @@
                                 <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Income</label>
                                 <select name="income_type" x-model="formData.income_type" required class="w-full px-5 py-3.5 rounded-xl theme-input">
                                     <option value="" disabled>Select Income Range</option>
-                                    <option value="Monthly: Under 20k">Monthly: Under 20k</option>
-                                    <option value="Monthly: 20k - 50k">Monthly: 20k - 50k</option>
-                                    <option value="Yearly: 5L - 10L">Yearly: 5L - 10L</option>
-                                    <option value="Yearly: 10L+">Yearly: 10L+</option>
+                                    <template x-for="inc in masterData.incomes" :key="inc.id">
+                                        <option :value="inc.name" x-text="inc.name"></option>
+                                    </template>
                                 </select>
                             </div>
                         </div>
@@ -601,11 +603,11 @@
                             
                             <div>
                                 <label class="block text-sm font-medium text-white/90 mb-3 ml-1">Hobbies & Interests</label>
-                                <div class="flex flex-wrap gap-2">
-                                    <template x-for="hobby in ['Creative', 'Fun', 'Fitness', 'Music', 'Travel', 'Reading', 'Cooking', 'Photography', 'Sports', 'Art']">
-                                        <label class="px-5 py-2.5 rounded-full cursor-pointer transition-all duration-300 shadow-sm" :class="formData.hobbies.includes(hobby) ? 'selected option-btn' : 'option-btn'">
-                                            <input type="checkbox" name="hobbies_interests[]" :value="hobby" x-model="formData.hobbies" class="hidden">
-                                            <span class="text-sm font-medium" x-text="hobby"></span>
+                                <div class="flex flex-wrap gap-2 max-h-56 overflow-y-auto pr-1">
+                                    <template x-for="hobby in masterData.hobbies" :key="hobby.id">
+                                        <label class="px-4 py-2 rounded-full cursor-pointer transition-all duration-300 shadow-sm" :class="formData.hobbies.includes(hobby.name) ? 'selected option-btn' : 'option-btn'">
+                                            <input type="checkbox" name="hobbies_interests[]" :value="hobby.name" x-model="formData.hobbies" class="hidden">
+                                            <span class="text-sm font-medium" x-text="hobby.name"></span>
                                         </label>
                                     </template>
                                 </div>
@@ -716,8 +718,17 @@
 </div>
 
 <script>
-    function registrationForm() {
+    function registrationForm(config = {}) {
         return {
+            masterData: {
+                religions: config.religions || [],
+                countries: config.countries || [],
+                maritalStatuses: config.maritalStatuses || [],
+                heights: config.heights || [],
+                diets: config.diets || [],
+                incomes: config.incomes || [],
+                hobbies: config.hobbies || []
+            },
             step: 1,
             formData: {
                 profile_for: '', gender: '', first_name: '', middle_name: '', last_name: '', 
@@ -737,6 +748,32 @@
             isVerifyingOtp: false,
             isSelfieVerified: false,
             isSubmitting: false,
+
+            onReligionChange() {
+                this.formData.community = '';
+            },
+            availableCommunities() {
+                const rel = this.masterData.religions.find(r => r.name === this.formData.religion);
+                return rel ? rel.communities : [];
+            },
+
+            onCountryChange() {
+                this.formData.state = '';
+                this.formData.city = '';
+            },
+            availableStates() {
+                const c = this.masterData.countries.find(item => item.name === this.formData.country);
+                return c ? c.states : [];
+            },
+
+            onStateChange() {
+                this.formData.city = '';
+            },
+            availableCities() {
+                const states = this.availableStates();
+                const s = states.find(item => item.name === this.formData.state);
+                return s ? s.cities : [];
+            },
             
             setProfileFor(val) {
                 this.formData.profile_for = val;
@@ -997,9 +1034,14 @@
                 // Construct FormData properly from Alpine state
                 const fd = new FormData();
                 for (const key in this.formData) {
-                    if (key !== 'profile_image') {
+                    if (key === 'hobbies') {
+                        this.formData.hobbies.forEach(h => fd.append('hobbies_interests[]', h));
+                    } else if (key !== 'profile_image') {
                         fd.append(key, this.formData[key]);
                     }
+                }
+                if (this.$refs.fileInput && this.$refs.fileInput.files[0]) {
+                    fd.append('profile_picture', this.$refs.fileInput.files[0]);
                 }
                 // Construct dob field as expected by backend
                 fd.append('dob', `${this.formData.dob_year}-${this.formData.dob_month}-${this.formData.dob_day}`);
