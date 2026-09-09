@@ -46,6 +46,18 @@ class MatchesController extends Controller
         }
         $sentInterestIds = array_values(array_unique($sentInterestIds));
 
+        // Load received connection requests
+        $receivedRequests = ConnectionRequest::where('receiver_id', $candidate->id)->get();
+        $receivedInterestIds = [];
+        foreach ($receivedRequests as $rr) {
+            $sender = Candidate::find($rr->sender_id);
+            if ($sender) {
+                $receivedInterestIds[] = $sender->getDisplayCodeAttribute();
+                $receivedInterestIds[] = (string) $sender->id;
+            }
+        }
+        $receivedInterestIds = array_values(array_unique($receivedInterestIds));
+
         // Load accepted connection requests (where candidate is either sender or receiver)
         $acceptedConnections = ConnectionRequest::accepted()
             ->where(function ($q) use ($candidate) {
@@ -68,10 +80,10 @@ class MatchesController extends Controller
         $acceptedProfileCodes = array_values(array_unique($acceptedProfileCodes));
 
         // Full pool for dynamic counts
-        $allMatches = $this->getMatchesData($candidate, $targetGender, 'my_matches', $shortlistedIds, $sentInterestIds, $acceptedCandidateIds);
-        $todaysMatches = $this->getMatchesData($candidate, $targetGender, 'todays', $shortlistedIds, $sentInterestIds, $acceptedCandidateIds);
-        $acceptedMatches = $this->getMatchesData($candidate, $targetGender, 'accepted', $shortlistedIds, $sentInterestIds, $acceptedCandidateIds);
-        $shortlistedMatches = $this->getMatchesData($candidate, $targetGender, 'shortlisted', $shortlistedIds, $sentInterestIds, $acceptedCandidateIds);
+        $allMatches = $this->getMatchesData($candidate, $targetGender, 'my_matches', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds);
+        $todaysMatches = $this->getMatchesData($candidate, $targetGender, 'todays', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds);
+        $acceptedMatches = $this->getMatchesData($candidate, $targetGender, 'accepted', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds);
+        $shortlistedMatches = $this->getMatchesData($candidate, $targetGender, 'shortlisted', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds);
 
         // Filtered matches for the active tab
         $matches = match ($tab) {
@@ -96,6 +108,7 @@ class MatchesController extends Controller
             'counts',
             'shortlistedIds',
             'sentInterestIds',
+            'receivedInterestIds',
             'acceptedProfileCodes'
         ));
     }
@@ -402,6 +415,7 @@ class MatchesController extends Controller
         string $tab,
         array $shortlistedIds = [],
         array $sentInterestIds = [],
+        array $receivedInterestIds = [],
         array $acceptedCandidateIds = []
     ): array {
         $dbCandidates = Candidate::with('photos')
@@ -461,13 +475,20 @@ class MatchesController extends Controller
             $matchScore = $matchResult['score'];
             $matchReasons = $matchResult['reasons'];
 
-            $isAccepted = in_array($c->id, $acceptedCandidateIds) || in_array($profileCode, $acceptedCandidateIds);
-            $isInterestSent = in_array($profileCode, $sentInterestIds) || in_array((string) $c->id, $sentInterestIds) || $isAccepted;
+            $isAccepted = in_array($c->id, $acceptedCandidateIds) || in_array($profileCode, $acceptedCandidateIds) || in_array((string)$c->id, $acceptedCandidateIds);
+            $isReceived = in_array($c->id, $receivedInterestIds) || in_array($profileCode, $receivedInterestIds) || in_array((string)$c->id, $receivedInterestIds);
+            $isSent = in_array($profileCode, $sentInterestIds) || in_array((string) $c->id, $sentInterestIds) || in_array($c->id, $sentInterestIds);
 
-            $badge = $isAccepted ? 'Accepted Match' : (
-                $matchScore >= 95 ? 'Top Recommendation' : (
-                    $matchScore >= 90 ? 'High Compatibility' : (
-                        $c->selfie_verified ? 'Verified Profile' : 'Compatible Match'
+            $requestType = $isAccepted ? 'accepted' : ($isReceived ? 'received' : ($isSent ? 'sent' : 'none'));
+
+            $badge = $isAccepted ? 'Accepted Connection' : (
+                $isReceived ? '📥 Interest Received' : (
+                    $isSent ? '📤 Request Sent' : (
+                        $matchScore >= 95 ? 'Top Recommendation' : (
+                            $matchScore >= 90 ? 'High Compatibility' : (
+                                $c->selfie_verified ? 'Verified Profile' : 'Compatible Match'
+                            )
+                        )
                     )
                 )
             );
@@ -525,7 +546,9 @@ class MatchesController extends Controller
                 'active_ago' => ($index % 2 === 0) ? 'Online now' : 'Active '.(($index % 5) + 1).' hours ago',
                 'distance' => (4 + (($c->id * 2) % 20)).' km away',
                 'is_accepted' => $isAccepted,
-                'is_interest_sent' => $isInterestSent,
+                'is_interest_sent' => $isSent,
+                'is_interest_received' => $isReceived,
+                'request_type' => $requestType,
                 'details' => $fullDetails,
             ];
         }
@@ -533,30 +556,31 @@ class MatchesController extends Controller
         // Sort pool by match_score descending so top matching profiles show first
         usort($pool, fn ($a, $b) => $b['match_score'] <=> $a['match_score']);
 
-        // Filter based on tab if specific category match, or return curated list
+        // Filter based on tab
         if ($tab === 'shortlisted') {
             $filtered = array_filter($pool, fn ($m) => in_array($m['id'], $shortlistedIds));
         } elseif ($tab === 'accepted') {
             $acceptedOnly = array_filter($pool, fn ($m) => $m['is_accepted']);
             if (empty($acceptedOnly)) {
-                // If no accepted connections yet, seed first 2 high compatibility verified matches with accepted status for rich UX
+                // If no accepted connections yet in database, sample first 2 for rich preview
                 $filtered = array_map(function ($m, $k) {
                     if ($k < 2) {
                         $m['is_accepted'] = true;
-                        $m['is_interest_sent'] = true;
-                        $m['badge'] = 'Accepted Match';
+                        $m['request_type'] = 'accepted';
+                        $m['badge'] = 'Accepted Connection';
                     }
                     return $m;
                 }, array_slice($pool, 0, 2), [0, 1]);
             } else {
                 $filtered = $acceptedOnly;
             }
-        } elseif ($tab === 'todays') {
-            // Today's Picks: Top highest compatibility recommendations
-            $filtered = array_slice($pool, 0, 6);
+        } elseif ($tab === 'my_matches') {
+            // 'my_matches' ONLY contains candidates if user sent interest OR if candidate received interest
+            $connectionOnly = array_filter($pool, fn ($m) => $m['request_type'] === 'received' || $m['request_type'] === 'sent' || $m['is_accepted']);
+            $filtered = $connectionOnly;
         } else {
-            // 'my_matches' - All opposite gender matches
-            $filtered = $pool;
+            // Today's Picks: Top recommendations
+            $filtered = array_slice($pool, 0, 6);
         }
 
         return array_values($filtered);

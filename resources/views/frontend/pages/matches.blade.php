@@ -10,6 +10,7 @@
     counts: @js($counts),
     shortlistedIds: @js($shortlistedIds ?? []),
     sentInterestIds: @js($sentInterestIds ?? []),
+    receivedInterestIds: @js($receivedInterestIds ?? []),
     acceptedProfileCodes: @js($acceptedProfileCodes ?? [])
 })">
     <!-- Background Image -->
@@ -107,18 +108,56 @@
                 </div>
             </div>
 
+            <!-- My Matches Sub-Categories Pill Filter (Received vs Sent) -->
+            <div x-show="activeTab === 'my_matches'" class="px-6 md:px-10 py-2.5 bg-gradient-to-r from-rani-primary/5 via-amber-500/10 to-transparent border-b border-gray-100 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2 text-xs">
+                    <span class="text-gray-500 font-semibold">Filter:</span>
+                    <button type="button" 
+                            @click="myMatchesFilter = 'all'" 
+                            :class="myMatchesFilter === 'all' ? 'bg-rani-primary text-white font-bold shadow-xs' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'"
+                            class="px-3 py-1 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                        <span>All Requests</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px]" :class="myMatchesFilter === 'all' ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700'" x-text="myMatchesCounts.all"></span>
+                    </button>
+                    
+                    <button type="button" 
+                            @click="myMatchesFilter = 'received'" 
+                            :class="myMatchesFilter === 'received' ? 'bg-gradient-to-r from-rani-gold to-yellow-500 text-rani-dark font-bold shadow-xs' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'"
+                            class="px-3 py-1 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                        <span>📥 Received Interests</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px]" :class="myMatchesFilter === 'received' ? 'bg-black/20 text-rani-dark font-bold' : 'bg-amber-100 text-amber-800 font-bold'" x-text="myMatchesCounts.received"></span>
+                    </button>
+
+                    <button type="button" 
+                            @click="myMatchesFilter = 'sent'" 
+                            :class="myMatchesFilter === 'sent' ? 'bg-emerald-700 text-white font-bold shadow-xs' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'"
+                            class="px-3 py-1 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                        <span>📤 Sent by Me</span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px]" :class="myMatchesFilter === 'sent' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800'" x-text="myMatchesCounts.sent"></span>
+                    </button>
+                </div>
+
+                <div class="text-[11px] text-gray-500 italic">
+                    <span x-show="myMatchesFilter === 'received'">Candidates who sent you a connection request</span>
+                    <span x-show="myMatchesFilter === 'sent'">Candidates you reached out to</span>
+                    <span x-show="myMatchesFilter === 'all'">Sent & Received matchmaking connections</span>
+                </div>
+            </div>
+
             <!-- Matches Feed Grid -->
             <div class="p-6 md:p-10">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <template x-for="match in filteredMatches" :key="match.id">
-                        <div class="bg-white rounded-3xl border border-gray-200/90 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col justify-between group">
+                        <div class="bg-white rounded-3xl border border-gray-200/90 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col justify-between group"
+                             :class="(match.request_type === 'received' || isInterestReceived(match.id)) ? 'ring-2 ring-rani-gold/60 border-rani-gold/40' : ''">
                             
                             <div>
                                 <!-- Image & Spotlight Badges Container (Click to open Photo Gallery Modal) -->
                                 <div class="relative h-64 sm:h-72 w-full overflow-hidden bg-gray-100 cursor-pointer group/photo select-none"
                                      @click="match.is_accepted ? openFullProfile(match) : openPhotoGallery(match, 0)"
                                      :title="match.is_accepted ? 'Click to view complete unlocked profile' : 'Click to view profile photos'">
+                                     
                                     <img :src="match.photo" 
                                          :alt="match.first_name" 
                                          class="w-full h-full object-cover object-top transition-transform duration-700 group-hover/photo:scale-105">
@@ -126,21 +165,41 @@
                                     <!-- Top Gradient Overlay -->
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
 
-                                    <!-- Top Left: Match Score Badge & Accepted Tag -->
+                                    <!-- Top Left: Dynamic Context Badges -->
                                     <div class="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
-                                        <template x-if="match.is_accepted">
+                                        <!-- Case 1: Mutual Accepted Connection -->
+                                        <template x-if="match.is_accepted || isAccepted(match.id)">
                                             <span class="px-3 py-1 rounded-full bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-xs font-extrabold shadow-md flex items-center gap-1 border border-emerald-300/40">
                                                 <svg class="w-3.5 h-3.5 text-emerald-200" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                                                 <span>Accepted Connection</span>
                                             </span>
                                         </template>
-                                        <template x-if="!match.is_accepted">
+
+                                        <!-- Case 2: Received Interest (from another candidate) -->
+                                        <template x-if="!match.is_accepted && !isAccepted(match.id) && (match.request_type === 'received' || isInterestReceived(match.id))">
+                                            <span class="px-3 py-1 rounded-full bg-gradient-to-r from-rani-gold via-yellow-400 to-rani-gold text-rani-dark text-xs font-extrabold shadow-md flex items-center gap-1 border border-white/60 animate-pulse-slow">
+                                                <svg class="w-3.5 h-3.5 text-rani-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                                                <span>📥 Received Interest</span>
+                                            </span>
+                                        </template>
+
+                                        <!-- Case 3: Request Sent by current candidate -->
+                                        <template x-if="!match.is_accepted && !isAccepted(match.id) && match.request_type !== 'received' && !isInterestReceived(match.id) && (match.request_type === 'sent' || isInterestSent(match.id))">
+                                            <span class="px-3 py-1 rounded-full bg-gradient-to-r from-sky-600 to-teal-700 text-white text-xs font-bold shadow-md flex items-center gap-1 border border-white/30">
+                                                <svg class="w-3.5 h-3.5 text-sky-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                                                <span>📤 Request Sent</span>
+                                            </span>
+                                        </template>
+
+                                        <!-- Case 4: Default Match Compatibility Score -->
+                                        <template x-if="!match.is_accepted && !isAccepted(match.id) && match.request_type !== 'received' && match.request_type !== 'sent' && !isInterestSent(match.id) && !isInterestReceived(match.id)">
                                             <span class="px-3 py-1 rounded-full bg-gradient-to-r from-rani-gold to-yellow-500 text-rani-dark text-xs font-extrabold shadow-md flex items-center gap-1 border border-white/40">
                                                 <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
                                                 <span x-text="match.match_score + '% Match'"></span>
                                             </span>
                                         </template>
-                                        <span x-show="match.badge && !match.is_accepted" class="px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-xs text-white text-[10px] font-semibold tracking-wide" x-text="match.badge"></span>
+
+                                        <span x-show="match.badge && !match.is_accepted && match.request_type !== 'received' && match.request_type !== 'sent'" class="px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-xs text-white text-[10px] font-semibold tracking-wide" x-text="match.badge"></span>
                                     </div>
 
                                     <!-- Top Right: Shortlist Heart Action -->
@@ -230,7 +289,7 @@
                                 </div>
                             </div>
 
-                            <!-- Single Card Action Button (Only One Connect Button) -->
+                            <!-- Single / Differentiated Card Action Button -->
                             <div class="p-4 bg-gray-50/90 border-t border-gray-100">
                                 
                                 <!-- State 1: Mutual Accepted Match (Opens Unlocked Full Profile Details) -->
@@ -243,18 +302,37 @@
                                     </button>
                                 </template>
 
-                                <!-- State 2: Request Pending / Already Sent -->
-                                <template x-if="!match.is_accepted && !isAccepted(match.id) && isInterestSent(match.id)">
+                                <!-- State 2: Received Interest (Another Candidate Sent Request -> Accept or Decline) -->
+                                <template x-if="!match.is_accepted && !isAccepted(match.id) && (match.request_type === 'received' || isInterestReceived(match.id))">
+                                    <div class="flex items-center gap-2">
+                                        <button type="button" 
+                                                @click="respondInterest(match, 'accept')"
+                                                class="flex-1 py-3 px-3 rounded-xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-700 text-white active:scale-95 cursor-pointer">
+                                            <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                            <span>Accept Connection</span>
+                                        </button>
+                                        
+                                        <button type="button" 
+                                                @click="respondInterest(match, 'decline')"
+                                                class="px-3.5 py-3 rounded-xl text-xs font-bold text-gray-500 hover:text-rose-600 bg-gray-100 hover:bg-rose-50 border border-gray-200 transition-all active:scale-95 cursor-pointer"
+                                                title="Decline Connection Request">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        </button>
+                                    </div>
+                                </template>
+
+                                <!-- State 3: Request Sent by current candidate (Pending Response) -->
+                                <template x-if="!match.is_accepted && !isAccepted(match.id) && match.request_type !== 'received' && !isInterestReceived(match.id) && (match.request_type === 'sent' || isInterestSent(match.id))">
                                     <button type="button" 
                                             disabled
                                             class="w-full py-3 px-4 rounded-xl text-xs font-bold shadow transition-all flex items-center justify-center gap-2 bg-emerald-700 text-white cursor-default">
                                         <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-                                        <span>Interest Sent</span>
+                                        <span>Interest Sent • Pending Response</span>
                                     </button>
                                 </template>
 
-                                <!-- State 3: Ready to Connect (Single Action Button) -->
-                                <template x-if="!match.is_accepted && !isAccepted(match.id) && !isInterestSent(match.id)">
+                                <!-- State 4: Ready to Connect (Default Connect Button) -->
+                                <template x-if="!match.is_accepted && !isAccepted(match.id) && match.request_type !== 'received' && match.request_type !== 'sent' && !isInterestSent(match.id) && !isInterestReceived(match.id)">
                                     <button type="button" 
                                             @click="sendInterest(match)"
                                             class="w-full py-3 px-4 rounded-xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white hover:shadow-lg active:scale-95 cursor-pointer group-hover:border-rani-gold">
@@ -274,8 +352,8 @@
                     <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto text-gray-400">
                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-800 font-serif" x-text="activeTab === 'shortlisted' ? 'No Shortlisted Profiles Yet' : (activeTab === 'accepted' ? 'No Accepted Connections Yet' : 'No matches found')"></h3>
-                    <p class="text-xs text-gray-500 max-w-md mx-auto" x-text="activeTab === 'shortlisted' ? 'Click the heart icon on any candidate profile to save them here for quick access.' : (activeTab === 'accepted' ? 'When candidate requests are accepted, they will show up here with full contact and profile access.' : 'No profiles match your current search or location filters.')"></p>
+                    <h3 class="text-xl font-bold text-gray-800 font-serif" x-text="activeTab === 'shortlisted' ? 'No Shortlisted Profiles Yet' : (activeTab === 'accepted' ? 'No Accepted Connections Yet' : (activeTab === 'my_matches' ? 'No Connection Requests' : 'No matches found'))"></h3>
+                    <p class="text-xs text-gray-500 max-w-md mx-auto" x-text="activeTab === 'shortlisted' ? 'Click the heart icon on any candidate profile to save them here for quick access.' : (activeTab === 'accepted' ? 'When candidate requests are accepted, they will show up here with full contact and profile access.' : (activeTab === 'my_matches' ? 'When you send an interest to candidates, or when matches reach out to connect with you, they will appear here.' : 'No profiles match your current search or location filters.'))"></p>
                     <div class="pt-2">
                         <a href="{{ route('matches', ['tab' => 'todays']) }}" class="px-6 py-2.5 rounded-full bg-rani-primary text-white text-xs font-bold shadow hover:bg-rani-primary-dark transition-all inline-block">
                             Explore Today's Recommendations
@@ -673,6 +751,7 @@
 function matchesManager(initialData) {
     return {
         activeTab: initialData.activeTab || 'todays',
+        myMatchesFilter: 'all',
         matches: initialData.matches || [],
         candidate: initialData.candidate || {},
         counts: initialData.counts || {},
@@ -681,6 +760,7 @@ function matchesManager(initialData) {
         
         shortlistedIds: initialData.shortlistedIds || [],
         sentInterestIds: initialData.sentInterestIds || [],
+        receivedInterestIds: initialData.receivedInterestIds || [],
         acceptedProfileCodes: initialData.acceptedProfileCodes || [],
 
         // Full Profile Modal State
@@ -746,10 +826,19 @@ function matchesManager(initialData) {
         get tabSubtitle() {
             switch (this.activeTab) {
                 case 'shortlisted': return 'Profiles you have shortlisted and saved to your favorites';
-                case 'my_matches': return 'Curated profiles strictly matching your partner preferences';
+                case 'my_matches': return 'Active connection requests — candidates who sent you an interest or whom you connected with';
                 case 'accepted': return 'Matches who have accepted your connection — all contact & personal details unlocked';
                 default: return 'Handpicked daily matchmaking recommendations based on high compatibility';
             }
+        },
+
+        get myMatchesCounts() {
+            const list = this.matches || [];
+            return {
+                all: list.length,
+                received: list.filter(m => m.request_type === 'received' || this.isInterestReceived(m.id)).length,
+                sent: list.filter(m => m.request_type === 'sent' || (this.isInterestSent(m.id) && !m.is_accepted)).length,
+            };
         },
 
         get availableCities() {
@@ -763,6 +852,16 @@ function matchesManager(initialData) {
 
             return this.matches.filter(m => {
                 if (city && m.city !== city) return false;
+
+                // Sub-filter for my_matches tab
+                if (this.activeTab === 'my_matches') {
+                    if (this.myMatchesFilter === 'received') {
+                        if (m.request_type !== 'received' && !this.isInterestReceived(m.id)) return false;
+                    } else if (this.myMatchesFilter === 'sent') {
+                        if (m.request_type !== 'sent' && (!this.isInterestSent(m.id) || m.is_accepted)) return false;
+                    }
+                }
+
                 if (!query) return true;
 
                 const name = (m.first_name + ' ' + m.last_name).toLowerCase();
@@ -782,6 +881,10 @@ function matchesManager(initialData) {
 
         isInterestSent(id) {
             return this.sentInterestIds.includes(id) || this.sentInterestIds.includes(String(id));
+        },
+
+        isInterestReceived(id) {
+            return this.receivedInterestIds.includes(id) || this.receivedInterestIds.includes(String(id));
         },
 
         isAccepted(id) {
@@ -840,6 +943,8 @@ function matchesManager(initialData) {
 
             // Optimistic update
             this.sentInterestIds.push(match.id);
+            match.is_interest_sent = true;
+            match.request_type = 'sent';
 
             try {
                 const res = await fetch('{{ route("matches.send-interest") }}', {
@@ -867,6 +972,71 @@ function matchesManager(initialData) {
                 }
             } catch (e) {
                 console.error('Send Interest error:', e);
+            }
+        },
+
+        async respondInterest(match, action) {
+            if (!match) return;
+
+            if (action === 'accept') {
+                // Optimistic UI update
+                match.is_accepted = true;
+                match.request_type = 'accepted';
+                match.badge = 'Accepted Connection';
+                if (!this.acceptedProfileCodes.includes(match.id)) {
+                    this.acceptedProfileCodes.push(match.id);
+                }
+            } else {
+                // Declined -> remove from list
+                this.matches = this.matches.filter(m => m.id !== match.id);
+            }
+
+            try {
+                const res = await fetch('{{ route("matches.respond-interest") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        profile_id: match.id,
+                        action: action
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    if (action === 'accept') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Connection Accepted!',
+                            html: '<p class="text-sm">You are now connected with <strong>' + match.first_name + '</strong>.<br><span class="text-xs text-gray-300 mt-1 block">WhatsApp notification dispatched. All contact & personal details unlocked in your Accepted tab.</span></p>',
+                            confirmButtonText: 'View Full Profile',
+                            showCancelButton: true,
+                            cancelButtonText: 'Great',
+                            customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm', cancelButton: 'rani-swal-cancel' }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                this.openFullProfile(match);
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Request Declined',
+                            text: data.message,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title' }
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error('Respond Interest error:', e);
             }
         }
     };
