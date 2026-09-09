@@ -109,6 +109,16 @@ class Candidate extends Authenticatable
         return $this->hasMany(Shortlisted::class, 'candidate_id');
     }
 
+    public function sentConnectionRequests(): HasMany
+    {
+        return $this->hasMany(ConnectionRequest::class, 'sender_id');
+    }
+
+    public function receivedConnectionRequests(): HasMany
+    {
+        return $this->hasMany(ConnectionRequest::class, 'receiver_id');
+    }
+
     /**
      * Get existing wallet or initialize a new one with a welcome bonus
      */

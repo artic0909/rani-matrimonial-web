@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
     // Matches Routes
     Route::get('/matches', [MatchesController::class, 'index'])->name('matches');
     Route::post('/api/matches/send-interest', [MatchesController::class, 'sendInterest'])->name('matches.send-interest');
+    Route::post('/api/matches/respond-interest', [MatchesController::class, 'respondInterest'])->name('matches.respond-interest');
     Route::post('/api/matches/shortlist', [MatchesController::class, 'toggleShortlist'])->name('matches.shortlist');
 
     // Wallet Routes
