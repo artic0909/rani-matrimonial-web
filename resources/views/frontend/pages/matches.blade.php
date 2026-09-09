@@ -1,6 +1,6 @@
 @extends('frontend.layouts.auth_app')
 
-@section('title', 'Matches | Ranimatrimonial')
+@section('title', 'Matches | Rani Matrimonial')
 
 @section('content')
 <div class="relative pt-6 pb-20" x-data="matchesManager({

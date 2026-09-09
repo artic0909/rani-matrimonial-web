@@ -1,6 +1,6 @@
 @extends('frontend.layouts.auth_app')
 
-@section('title', 'My Wallet & Royal Privilege Card | Ranimatrimonial')
+@section('title', 'My Wallet & Royal Privilege Card | Rani Matrimonial')
 
 @section('content')
 <div class="relative pt-6 pb-20" x-data="walletManager({

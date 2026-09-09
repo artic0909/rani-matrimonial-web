@@ -1,6 +1,6 @@
 @extends('frontend.layouts.auth_app')
 
-@section('title', 'My Photos | Ranimatrimonial')
+@section('title', 'My Photos | Rani Matrimonial')
 
 @section('content')
 <div class="relative pt-8 pb-20" x-data="galleryManager()">

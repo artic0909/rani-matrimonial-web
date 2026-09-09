@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Register - Ranimatrimonial')
+@section('title', 'Register - Rani Matrimonial')
 
 @section('content')
 

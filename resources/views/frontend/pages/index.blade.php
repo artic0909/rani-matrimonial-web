@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Ranimatrimonial - Find Your Perfect Match')
+@section('title', 'Rani Matrimonial - Find Your Perfect Match')
 
 @section('content')
 

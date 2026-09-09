@@ -1,6 +1,6 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Terms & Conditions | Rani Matrimonial - Sumatra Sales Private Limited')
+@section('title', 'Terms & Conditions | Rani Matrimonial')
 
 @section('content')
 <div class="relative min-h-[100svh] pt-28 md:pt-36 pb-20 overflow-x-hidden">

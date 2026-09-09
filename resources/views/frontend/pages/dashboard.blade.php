@@ -1,6 +1,6 @@
 @extends('frontend.layouts.auth_app')
 
-@section('title', 'Dashboard | Ranimatrimonial')
+@section('title', 'Dashboard | Rani Matrimonial')
 
 @section('content')
 <div class="relative pt-8 pb-20">
