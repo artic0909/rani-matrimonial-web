@@ -30,9 +30,19 @@ class MatchesController extends Controller
         $targetGender = ($userGender === 'male' || $userGender === 'man') ? 'Female' : 'Male';
 
         // Load shortlisted profile IDs from database
-        $shortlistedIds = Shortlisted::where('candidate_id', $candidate->id)
+        $rawShortlisted = Shortlisted::where('candidate_id', $candidate->id)
             ->pluck('profile_id')
             ->toArray();
+        $shortlistedIds = [];
+        foreach ($rawShortlisted as $sid) {
+            $shortlistedIds[] = (string) $sid;
+            $sc = Candidate::where('profile_id', $sid)->orWhere('candidate_code', $sid)->orWhere('id', is_numeric($sid) ? $sid : 0)->first();
+            if ($sc) {
+                $shortlistedIds[] = $sc->getDisplayCodeAttribute();
+                $shortlistedIds[] = (string) $sc->id;
+            }
+        }
+        $shortlistedIds = array_values(array_unique($shortlistedIds));
 
         // Load sent connection requests
         $sentRequests = ConnectionRequest::where('sender_id', $candidate->id)->get();
@@ -96,7 +106,7 @@ class MatchesController extends Controller
         // Counts for tabs
         $counts = [
             'todays' => count($todaysMatches),
-            'shortlisted' => count($shortlistedIds),
+            'shortlisted' => count($shortlistedMatches),
             'my_matches' => count($allMatches),
             'accepted' => count($acceptedMatches),
         ];
@@ -379,8 +389,22 @@ class MatchesController extends Controller
         $candidate = Auth::user();
         $profileId = $request->profile_id;
 
+        $targetCandidate = Candidate::where('profile_id', $profileId)
+            ->orWhere('candidate_code', $profileId)
+            ->orWhere('id', is_numeric($profileId) ? $profileId : 0)
+            ->first();
+
+        $searchIds = [$profileId];
+        if ($targetCandidate) {
+            $searchIds[] = (string) $targetCandidate->id;
+            $searchIds[] = $targetCandidate->getDisplayCodeAttribute();
+            $searchIds[] = $targetCandidate->profile_id ?? '';
+            $searchIds[] = $targetCandidate->candidate_code ?? '';
+        }
+        $searchIds = array_values(array_filter(array_unique($searchIds)));
+
         $existing = Shortlisted::where('candidate_id', $candidate->id)
-            ->where('profile_id', $profileId)
+            ->whereIn('profile_id', $searchIds)
             ->first();
 
         if ($existing) {
@@ -390,7 +414,7 @@ class MatchesController extends Controller
         } else {
             Shortlisted::create([
                 'candidate_id' => $candidate->id,
-                'profile_id' => $profileId,
+                'profile_id' => $targetCandidate ? $targetCandidate->getDisplayCodeAttribute() : $profileId,
             ]);
             $shortlisted = true;
             $message = 'Profile saved to your shortlist.';
@@ -558,7 +582,7 @@ class MatchesController extends Controller
 
         // Filter based on tab
         if ($tab === 'shortlisted') {
-            $filtered = array_filter($pool, fn ($m) => in_array($m['id'], $shortlistedIds));
+            $filtered = array_filter($pool, fn ($m) => in_array($m['id'], $shortlistedIds) || in_array((string)$m['db_id'], $shortlistedIds) || in_array($m['db_id'], $shortlistedIds));
         } elseif ($tab === 'accepted') {
             $filtered = array_filter($pool, fn ($m) => $m['is_accepted'] || $m['request_type'] === 'accepted');
         } elseif ($tab === 'my_matches') {

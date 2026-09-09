@@ -83,7 +83,7 @@
                     <a href="{{ route('matches', ['tab' => 'shortlisted']) }}" 
                        class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap {{ $tab === 'shortlisted' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md' : 'text-gray-600 hover:text-rani-primary hover:bg-white' }}">
                         <span>Shortlisted</span>
-                        <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $tab === 'shortlisted' ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700' }}" x-text="shortlistedIds.length"></span>
+                        <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $tab === 'shortlisted' ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700' }}" x-text="counts.shortlisted !== undefined ? counts.shortlisted : shortlistedIds.length"></span>
                     </a>
 
                     <a href="{{ route('matches', ['tab' => 'my_matches']) }}" 
@@ -161,9 +161,10 @@
                                     <!-- Top Right: Shortlist Heart Action -->
                                     <button type="button" 
                                             @click.stop="toggleShortlist(match)"
-                                            class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/80 hover:bg-white backdrop-blur-xs text-gray-700 hover:text-rose-600 shadow-md flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-20"
-                                            :class="isShortlisted(match.id) ? 'text-rose-600 bg-white ring-2 ring-rose-300' : ''">
-                                        <svg class="w-5 h-5" :fill="isShortlisted(match.id) ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                                            class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/80 hover:bg-white backdrop-blur-xs text-gray-700 hover:text-rose-600 shadow-md flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-20 cursor-pointer"
+                                            :class="isShortlisted(match) ? 'text-rose-600 bg-white ring-2 ring-rose-300' : ''"
+                                            :title="isShortlisted(match) ? 'Remove from Shortlist' : 'Add to Shortlist'">
+                                        <svg class="w-5 h-5" :fill="isShortlisted(match) ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                                     </button>
 
                                     <!-- Bottom Image Overlay Text: Name & ID -->
@@ -794,8 +795,13 @@ function matchesManager(initialData) {
             });
         },
 
-        isShortlisted(id) {
-            return this.shortlistedIds.includes(id);
+        isShortlisted(match) {
+            if (!match) return false;
+            const id = (typeof match === 'object' && match.id) ? match.id : match;
+            const dbId = (typeof match === 'object' && match.db_id) ? match.db_id : null;
+            return this.shortlistedIds.includes(id) || 
+                   this.shortlistedIds.includes(String(id)) || 
+                   (dbId && (this.shortlistedIds.includes(dbId) || this.shortlistedIds.includes(String(dbId))));
         },
 
         isInterestSent(id) {
@@ -812,16 +818,19 @@ function matchesManager(initialData) {
 
         async toggleShortlist(match) {
             if (!match) return;
-            const isCurrentlyShortlisted = this.shortlistedIds.includes(match.id);
+            const isCurrentlyShortlisted = this.isShortlisted(match);
 
             // Optimistic UI update
             if (isCurrentlyShortlisted) {
-                this.shortlistedIds = this.shortlistedIds.filter(i => i !== match.id);
+                this.shortlistedIds = this.shortlistedIds.filter(i => i !== match.id && String(i) !== String(match.id) && i !== match.db_id && String(i) !== String(match.db_id));
                 if (this.activeTab === 'shortlisted') {
                     this.matches = this.matches.filter(m => m.id !== match.id);
                 }
+                this.counts.shortlisted = Math.max(0, (this.counts.shortlisted || 1) - 1);
             } else {
                 this.shortlistedIds.push(match.id);
+                if (match.db_id) this.shortlistedIds.push(String(match.db_id));
+                this.counts.shortlisted = (this.counts.shortlisted || 0) + 1;
             }
 
             try {
@@ -840,6 +849,9 @@ function matchesManager(initialData) {
                 const data = await res.json();
 
                 if (data.success) {
+                    if (data.count !== undefined) {
+                        this.counts.shortlisted = data.count;
+                    }
                     Swal.fire({
                         icon: data.shortlisted ? 'success' : 'info',
                         title: data.shortlisted ? 'Shortlisted!' : 'Removed',
