@@ -53,6 +53,9 @@
             color: #D4AF37 !important;
             transform: scale(1.02) !important;
         }
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 
     <!-- AlpineJS for interactivity -->

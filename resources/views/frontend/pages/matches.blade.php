@@ -292,20 +292,22 @@
     <!-- ================= MODAL: UNLOCKED CANDIDATE COMPLETE PROFILE (ACCEPTED CONNECTION) ================= -->
     <template x-teleport="body">
         <div x-show="fullProfileModalOpen" 
-             style="display: none;" 
+             x-cloak
+             style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 99999999 !important; background-color: rgba(0, 0, 0, 0.85) !important; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);" 
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0"
              x-transition:enter-end="opacity-100"
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0"
-             class="fixed inset-0 z-[999999] overflow-y-auto flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-sm">
+             class="flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
             
             <div @click.away="closeFullProfile()"
                  x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="opacity-0 scale-95"
                  x-transition:enter-end="opacity-100 scale-100"
-                 class="bg-white rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.6)] border-2 border-rani-gold/70 max-w-2xl w-full overflow-hidden flex flex-col relative max-h-[88vh] my-auto">
+                 style="position: relative !important; z-index: 100000000 !important; max-height: 88vh !important; background-color: #ffffff !important;"
+                 class="bg-white rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.8)] border-2 border-rani-gold max-w-2xl w-full overflow-hidden flex flex-col my-auto text-gray-800">
                 
                 <!-- Top Royal Gold Shine Bar -->
                 <div class="h-1.5 w-full bg-gradient-to-r from-emerald-500 via-rani-gold to-emerald-500"></div>
@@ -544,20 +546,22 @@
     <!-- ================= MODAL: FULL PROFILE PHOTO GALLERY ================= -->
     <template x-teleport="body">
         <div x-show="photoGalleryOpen" 
-             style="display: none;" 
+             x-cloak
+             style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 99999999 !important; background-color: rgba(0, 0, 0, 0.92) !important; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);" 
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0"
              x-transition:enter-end="opacity-100"
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0"
-             class="fixed inset-0 z-[999999] overflow-y-auto flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-sm">
+             class="flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
             
             <div @click.away="closePhotoGallery()"
                  x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="opacity-0 scale-95"
                  x-transition:enter-end="opacity-100 scale-100"
-                 class="bg-[#12141a] border-2 border-rani-gold/80 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] max-w-3xl w-full overflow-hidden flex flex-col relative max-h-[88vh] my-auto">
+                 style="position: relative !important; z-index: 100000000 !important; max-height: 90vh !important; background-color: #12141a !important;"
+                 class="bg-[#12141a] border-2 border-rani-gold/80 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.9)] max-w-3xl w-full overflow-hidden flex flex-col my-auto text-white">
                 
                 <!-- Top Royal Gold Shine Accent Bar -->
                 <div class="h-1.5 w-full bg-gradient-to-r from-rani-gold via-yellow-300 to-rani-gold"></div>
