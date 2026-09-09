@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\InboxController;
 use App\Http\Controllers\MatchesController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
@@ -44,6 +45,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/matches/send-interest', [MatchesController::class, 'sendInterest'])->name('matches.send-interest');
     Route::post('/api/matches/respond-interest', [MatchesController::class, 'respondInterest'])->name('matches.respond-interest');
     Route::post('/api/matches/shortlist', [MatchesController::class, 'toggleShortlist'])->name('matches.shortlist');
+
+    // Inbox Routes (Received Connection Requests)
+    Route::get('/inbox', [InboxController::class, 'index'])->name('inbox');
 
     // Wallet Routes
     Route::get('/wallet', [WalletController::class, 'index'])->name('wallet');

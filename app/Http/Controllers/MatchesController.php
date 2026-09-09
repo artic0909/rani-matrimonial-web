@@ -575,9 +575,8 @@ class MatchesController extends Controller
                 $filtered = $acceptedOnly;
             }
         } elseif ($tab === 'my_matches') {
-            // 'my_matches' ONLY contains candidates if user sent interest OR if candidate received interest
-            $connectionOnly = array_filter($pool, fn ($m) => $m['request_type'] === 'received' || $m['request_type'] === 'sent' || $m['is_accepted']);
-            $filtered = $connectionOnly;
+            // 'my_matches' ONLY contains candidates if user sent interest (Sent by me)
+            $filtered = array_filter($pool, fn ($m) => $m['request_type'] === 'sent');
         } else {
             // Today's Picks: Top recommendations
             $filtered = array_slice($pool, 0, 6);
