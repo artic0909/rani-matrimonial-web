@@ -65,13 +65,13 @@
                 <div class="flex items-center space-x-2 py-1">
                     <a href="{{ route('inbox', ['tab' => 'received']) }}" 
                        class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap {{ $subTab === 'received' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md' : 'text-gray-600 hover:text-rani-primary hover:bg-white' }}">
-                        <span>📥 Received Interests</span>
+                        <span>Received Interests</span>
                         <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $subTab === 'received' ? 'bg-rani-gold text-rani-dark font-extrabold' : 'bg-amber-100 text-amber-800 font-bold' }}">{{ $counts['pending'] }}</span>
                     </a>
 
                     <a href="{{ route('inbox', ['tab' => 'accepted']) }}" 
                        class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap {{ $subTab === 'accepted' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md' : 'text-gray-600 hover:text-rani-primary hover:bg-white' }}">
-                        <span>✓ Accepted</span>
+                        <span>Accepted</span>
                         <span class="px-1.5 py-0.2 rounded-full text-[10px] {{ $subTab === 'accepted' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800 font-bold' }}">{{ $counts['accepted'] }}</span>
                     </a>
 
@@ -111,16 +111,16 @@
                                     <!-- Top Left: Received Interest Badge -->
                                     <div class="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
                                         <template x-if="match.is_accepted">
-                                            <span class="px-3 py-1 rounded-full bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-xs font-extrabold shadow-md flex items-center gap-1 border border-emerald-300/40">
+                                            <span class="px-3 py-1 rounded-full bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-xs font-bold shadow-md flex items-center gap-1.5 border border-emerald-300/40">
                                                 <svg class="w-3.5 h-3.5 text-emerald-200" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                                                 <span>Accepted Connection</span>
                                             </span>
                                         </template>
 
                                         <template x-if="!match.is_accepted && match.status !== 'declined'">
-                                            <span class="px-3 py-1 rounded-full bg-gradient-to-r from-rani-gold via-yellow-400 to-rani-gold text-rani-dark text-xs font-extrabold shadow-md flex items-center gap-1 border border-white/60 animate-pulse-slow">
+                                            <span class="px-3 py-1 rounded-full bg-gradient-to-r from-rani-gold via-yellow-400 to-rani-gold text-rani-dark text-xs font-bold shadow-md flex items-center gap-1.5 border border-white/60 animate-pulse-slow">
                                                 <svg class="w-3.5 h-3.5 text-rani-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-                                                <span>📥 Received Interest</span>
+                                                <span>Received Interest</span>
                                             </span>
                                         </template>
 

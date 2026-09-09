@@ -560,26 +560,13 @@ class MatchesController extends Controller
         if ($tab === 'shortlisted') {
             $filtered = array_filter($pool, fn ($m) => in_array($m['id'], $shortlistedIds));
         } elseif ($tab === 'accepted') {
-            $acceptedOnly = array_filter($pool, fn ($m) => $m['is_accepted']);
-            if (empty($acceptedOnly)) {
-                // If no accepted connections yet in database, sample first 2 for rich preview
-                $filtered = array_map(function ($m, $k) {
-                    if ($k < 2) {
-                        $m['is_accepted'] = true;
-                        $m['request_type'] = 'accepted';
-                        $m['badge'] = 'Accepted Connection';
-                    }
-                    return $m;
-                }, array_slice($pool, 0, 2), [0, 1]);
-            } else {
-                $filtered = $acceptedOnly;
-            }
+            $filtered = array_filter($pool, fn ($m) => $m['is_accepted'] || $m['request_type'] === 'accepted');
         } elseif ($tab === 'my_matches') {
-            // 'my_matches' ONLY contains candidates if user sent interest (Sent by me)
-            $filtered = array_filter($pool, fn ($m) => $m['request_type'] === 'sent');
+            // 'my_matches' ONLY contains candidates user sent interest to and not yet accepted
+            $filtered = array_filter($pool, fn ($m) => $m['request_type'] === 'sent' && ! $m['is_accepted']);
         } else {
-            // Today's Picks: Top recommendations
-            $filtered = array_slice($pool, 0, 6);
+            // Today's Picks: ONLY fresh recommendations that haven't been contacted or accepted
+            $filtered = array_filter($pool, fn ($m) => ! $m['is_accepted'] && $m['request_type'] === 'none');
         }
 
         return array_values($filtered);
