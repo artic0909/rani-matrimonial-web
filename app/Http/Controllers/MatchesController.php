@@ -442,10 +442,39 @@ class MatchesController extends Controller
         array $receivedInterestIds = [],
         array $acceptedCandidateIds = []
     ): array {
-        $dbCandidates = Candidate::with('photos')
+        $query = Candidate::with('photos')
             ->where('gender', $targetGender)
-            ->where('id', '!=', $candidate->id)
-            ->get();
+            ->where('id', '!=', $candidate->id);
+
+        // Determine candidate's religion matching criteria
+        $userReligion = trim($candidate->religion ?? '');
+        $prefReligion = trim($candidate->pref_religion ?? '');
+
+        $targetReligions = [];
+        if (! empty($prefReligion)) {
+            $targetReligions = array_values(array_filter(array_map('trim', preg_split('/[\/,|]+/', $prefReligion))));
+        } elseif (! empty($userReligion)) {
+            $targetReligions = [$userReligion];
+        }
+
+        if (! empty($targetReligions)) {
+            $query->where(function ($q) use ($targetReligions, $tab, $acceptedCandidateIds, $shortlistedIds) {
+                $q->where(function ($sub) use ($targetReligions) {
+                    foreach ($targetReligions as $r) {
+                        $sub->orWhere('religion', 'LIKE', '%'.$r.'%');
+                    }
+                });
+
+                // Preserve explicitly connected or shortlisted profiles in respective tabs
+                if ($tab === 'accepted' && ! empty($acceptedCandidateIds)) {
+                    $q->orWhereIn('id', $acceptedCandidateIds);
+                } elseif ($tab === 'shortlisted' && ! empty($shortlistedIds)) {
+                    $q->orWhereIn('id', $shortlistedIds);
+                }
+            });
+        }
+
+        $dbCandidates = $query->get();
 
         $pool = [];
 
