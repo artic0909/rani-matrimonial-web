@@ -145,9 +145,6 @@ class Candidate extends Authenticatable
             'status' => 'active',
         ]);
 
-        // Add welcome bonus of ₹500
-        $wallet->credit(500.00, 'Welcome Bonus Credits', 'Special joining bonus credited to your Rani Matrimonial Royal Wallet', 'Bonus', 'System');
-
         $this->setRelation('wallet', $wallet);
 
         return $wallet;

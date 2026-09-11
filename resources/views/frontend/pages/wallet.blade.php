@@ -406,7 +406,7 @@
 
     </div>
 
-    <!-- ================= MODAL 1: ADD MONEY (TOP UP) ================= -->
+    <!-- ================= MODAL 1: ADD MONEY (TOP UP VIA RAZORPAY) ================= -->
     <div x-show="openAddMoneyModal" 
          style="display: none;" 
          x-transition:enter="transition ease-out duration-300"
@@ -417,20 +417,21 @@
          x-transition:leave-end="opacity-0"
          class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
         
-        <div @click.away="openAddMoneyModal = false" 
+        <div @click.away="!isProcessingRecharge && (openAddMoneyModal = false)" 
              class="bg-white rounded-3xl shadow-2xl border border-rani-gold/30 max-w-md w-full p-6 md:p-8 relative overflow-hidden space-y-6">
             
             <!-- Modal Header -->
             <div class="flex items-center justify-between pb-4 border-b border-gray-100">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-rani-primary/10 text-rani-primary flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rani-primary to-rani-primary-dark text-rani-gold flex items-center justify-center shadow-md">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                     </div>
                     <div>
                         <h3 class="text-lg font-bold font-serif text-rani-primary-dark">Add Money to Wallet</h3>
+                        <p class="text-[11px] text-gray-500">Fast & 100% Secure via Razorpay Gateway</p>
                     </div>
                 </div>
-                <button @click="openAddMoneyModal = false" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                <button @click="openAddMoneyModal = false" :disabled="isProcessingRecharge" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-30">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
@@ -439,10 +440,10 @@
             <div class="space-y-2">
                 <label class="text-xs font-bold text-gray-700 uppercase tracking-wider">Select Amount (INR)</label>
                 <div class="grid grid-cols-4 gap-2">
-                    <button type="button" @click="rechargeAmount = 500" :class="rechargeAmount === 500 ? 'bg-rani-primary text-white font-bold border-rani-primary' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 500</button>
-                    <button type="button" @click="rechargeAmount = 1000" :class="rechargeAmount === 1000 ? 'bg-rani-primary text-white font-bold border-rani-primary' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 1,000</button>
-                    <button type="button" @click="rechargeAmount = 2500" :class="rechargeAmount === 2500 ? 'bg-rani-primary text-white font-bold border-rani-primary' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 2,500</button>
-                    <button type="button" @click="rechargeAmount = 5000" :class="rechargeAmount === 5000 ? 'bg-rani-primary text-white font-bold border-rani-primary' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 5,000</button>
+                    <button type="button" @click="rechargeAmount = 200" :class="rechargeAmount === 200 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 200</button>
+                    <button type="button" @click="rechargeAmount = 500" :class="rechargeAmount === 500 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 500</button>
+                    <button type="button" @click="rechargeAmount = 1000" :class="rechargeAmount === 1000 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 1,000</button>
+                    <button type="button" @click="rechargeAmount = 2500" :class="rechargeAmount === 2500 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 2,500</button>
                 </div>
             </div>
 
@@ -452,48 +453,44 @@
                 <div class="relative">
                     <span class="absolute left-3.5 top-2.5 font-serif font-bold text-gray-500 text-lg">₹</span>
                     <input type="number" 
-                           x-model="rechargeAmount" 
-                           min="10" 
+                           x-model.number="rechargeAmount" 
+                           min="1" 
                            max="100000" 
                            placeholder="500" 
                            class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rani-gold text-base font-bold text-gray-800">
                 </div>
+                <p class="text-[11px] text-gray-400">Min: ₹ 1 | Max: ₹ 1,00,000</p>
             </div>
 
-            <!-- Payment Method Selector -->
-            <div class="space-y-2">
-                <label class="text-xs font-bold text-gray-700 uppercase tracking-wider">Payment Method</label>
-                <div class="space-y-2">
-                    <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-rani-gold cursor-pointer transition-all bg-gray-50/50">
-                        <input type="radio" value="UPI / QR (Instant)" x-model="paymentMethod" class="w-4 h-4 text-rani-primary focus:ring-rani-primary">
-                        <div class="flex-1 flex justify-between items-center">
-                            <span class="text-xs font-bold text-gray-800">UPI / QR Code (GPay, PhonePe, Paytm)</span>
-                            <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">Fastest</span>
-                        </div>
-                    </label>
-
-                    <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-rani-gold cursor-pointer transition-all bg-gray-50/50">
-                        <input type="radio" value="Debit / Credit Card" x-model="paymentMethod" class="w-4 h-4 text-rani-primary focus:ring-rani-primary">
-                        <span class="text-xs font-bold text-gray-800">Debit / Credit Card (Visa, MasterCard, RuPay)</span>
-                    </label>
-
-                    <label class="flex items-center gap-3 p-3 rounded-xl border border-gray-200 hover:border-rani-gold cursor-pointer transition-all bg-gray-50/50">
-                        <input type="radio" value="Net Banking" x-model="paymentMethod" class="w-4 h-4 text-rani-primary focus:ring-rani-primary">
-                        <span class="text-xs font-bold text-gray-800">Net Banking / All Indian Banks</span>
-                    </label>
+            <!-- Razorpay Gateway Info Banner -->
+            <div class="p-3.5 rounded-2xl bg-gradient-to-br from-amber-50/70 via-gray-50 to-white border border-amber-200/70 space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="text-xs font-bold text-gray-800">Razorpay Secure Checkout</span>
+                    </div>
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider bg-rani-gold/20 text-rani-primary-dark px-2 py-0.5 rounded">256-Bit SSL</span>
                 </div>
+                <p class="text-[11px] text-gray-600 leading-relaxed">
+                    Supports <strong>UPI</strong> (Google Pay, PhonePe, Paytm, BHIM), <strong>Credit & Debit Cards</strong> (Visa, MasterCard, RuPay), and <strong>Net Banking</strong> (50+ Banks).
+                </p>
             </div>
 
             <!-- Action Button -->
             <div class="pt-2">
                 <button type="button" 
                         @click="submitRecharge()" 
-                        :disabled="isProcessingRecharge"
+                        :disabled="isProcessingRecharge || !rechargeAmount || rechargeAmount <= 0"
                         class="w-full py-3.5 rounded-xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50">
-                    <span x-show="!isProcessingRecharge">Proceed to Pay <span x-text="'₹ ' + (rechargeAmount || 0)"></span></span>
+                    <span x-show="!isProcessingRecharge" class="flex items-center gap-2">
+                        <span>Pay</span>
+                        <span x-text="'₹ ' + Number(rechargeAmount || 0).toLocaleString('en-IN')"></span>
+                        <span>via Razorpay</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </span>
                     <span x-show="isProcessingRecharge" class="flex items-center gap-2">
                         <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        Processing Payment...
+                        Initializing Razorpay Gateway...
                     </span>
                 </button>
             </div>
@@ -587,6 +584,9 @@
 
 </div>
 
+<!-- Razorpay Checkout Official SDK -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 <!-- Alpine Wallet Manager JS Component -->
 <script>
 function walletManager(initialData) {
@@ -676,16 +676,16 @@ function walletManager(initialData) {
 
         quickAdd(amount) {
             this.rechargeAmount = amount;
-            this.submitRecharge();
+            this.openAddMoneyModal = true;
         },
 
         async submitRecharge() {
             const amount = parseFloat(this.rechargeAmount);
-            if (isNaN(amount) || amount <= 0) {
+            if (isNaN(amount) || amount < 1) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Invalid Amount',
-                    text: 'Please enter a valid recharge amount.',
+                    text: 'Please enter a valid recharge amount of at least ₹1.',
                     customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                 });
                 return;
@@ -694,7 +694,8 @@ function walletManager(initialData) {
             this.isProcessingRecharge = true;
 
             try {
-                const res = await fetch('{{ route("wallet.add-money") }}', {
+                // Step 1: Create Order on backend via Razorpay Orders API
+                const res = await fetch('{{ route("wallet.razorpay.create-order") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -702,45 +703,122 @@ function walletManager(initialData) {
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        amount: amount,
-                        payment_method: this.paymentMethod,
-                        custom_note: 'Online Top-up via ' + this.paymentMethod
+                        amount: amount
                     })
                 });
 
-                const data = await res.json();
+                const orderData = await res.json();
 
-                if (data.success) {
-                    this.avlBalance = data.wallet.avl_balance;
-                    this.totalCredit = data.wallet.total_credit;
-                    this.totalDebit = data.wallet.total_debit;
-                    this.transactions.unshift(data.transaction);
-                    this.openAddMoneyModal = false;
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Payment Successful!',
-                        text: data.message,
-                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
-                    });
-                } else {
+                if (!orderData.success) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Recharge Failed',
-                        text: data.message || 'Unable to process recharge. Please try again.',
+                        title: 'Order Creation Failed',
+                        text: orderData.message || 'Unable to initialize Razorpay payment. Please try again.',
                         customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                     });
+                    this.isProcessingRecharge = false;
+                    return;
                 }
+
+                // Step 2: Configure & Open Razorpay Standard Checkout Popup
+                const self = this;
+                const options = {
+                    key: orderData.key,
+                    amount: orderData.amount,
+                    currency: orderData.currency || 'INR',
+                    name: orderData.name || 'Rani Matrimonial',
+                    description: orderData.description || ('Wallet Top-up - ₹' + amount),
+                    image: '{{ asset("logo.png") }}',
+                    order_id: orderData.order_id,
+                    prefill: {
+                        name: orderData.prefill?.name || '',
+                        email: orderData.prefill?.email || '',
+                        contact: orderData.prefill?.contact || ''
+                    },
+                    theme: {
+                        color: orderData.theme?.color || '#750000'
+                    },
+                    modal: {
+                        ondismiss: function () {
+                            self.isProcessingRecharge = false;
+                        }
+                    },
+                    handler: async function (response) {
+                        // Step 3: Verify Payment Signature on server & credit wallet
+                        try {
+                            const verifyRes = await fetch('{{ route("wallet.razorpay.verify-payment") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                    amount: amount
+                                })
+                            });
+
+                            const verifyData = await verifyRes.json();
+
+                            if (verifyData.success) {
+                                self.avlBalance = verifyData.wallet.avl_balance;
+                                self.totalCredit = verifyData.wallet.total_credit;
+                                self.totalDebit = verifyData.wallet.total_debit;
+                                self.transactions.unshift(verifyData.transaction);
+                                self.openAddMoneyModal = false;
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Payment Successful!',
+                                    text: verifyData.message,
+                                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Verification Failed',
+                                    text: verifyData.message || 'Payment verification failed. Please reach out to support.',
+                                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                                });
+                            }
+                        } catch (vErr) {
+                            console.error(vErr);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Verification Error',
+                                text: 'Failed to verify transaction. If your account was debited, it will be automatically credited.',
+                                customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                            });
+                        } finally {
+                            self.isProcessingRecharge = false;
+                        }
+                    }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.on('payment.failed', function (failResp) {
+                    self.isProcessingRecharge = false;
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Payment Failed',
+                        text: failResp.error?.description || 'Your payment was not completed.',
+                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    });
+                });
+                rzp.open();
+
             } catch (err) {
                 console.error(err);
+                this.isProcessingRecharge = false;
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'A network error occurred. Please try again.',
+                    text: 'A network error occurred. Please check your connection and try again.',
                     customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                 });
-            } finally {
-                this.isProcessingRecharge = false;
             }
         },
 
