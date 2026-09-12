@@ -290,14 +290,22 @@ class MatchesController extends Controller
 
             if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
                 $twilio = new Client($apiKey, $apiSecret, $accountSid);
-                $formattedMobile = 'whatsapp:+91'.ltrim($requester->mobile, '0');
 
-                // WhatsApp Meta template: rm_request_accept
-                $templateSid = env('TWILIO_WHATSAPP_REQUEST_ACCEPTED_TEMPLATE_SID', 'HX43b53a132cb7e4fc3b0e0e8d153c60f4');
+                $cleanMobile = preg_replace('/[^0-9]/', '', $requester->mobile);
+                if (strlen($cleanMobile) === 10) {
+                    $formattedMobile = 'whatsapp:+91'.$cleanMobile;
+                } elseif (strlen($cleanMobile) === 12 && str_starts_with($cleanMobile, '91')) {
+                    $formattedMobile = 'whatsapp:+'.$cleanMobile;
+                } else {
+                    $formattedMobile = 'whatsapp:+91'.ltrim($cleanMobile, '0');
+                }
+
+                // WhatsApp Meta template for connection request accept
+                $templateSid = 'HXd6d0204ec25374a29cc5f3b818eccd69';
 
                 $accepterName = trim(($accepter->first_name ?? 'Candidate').' '.($accepter->last_name ?? ''));
-                $accepterProfession = $accepter->profession ?? ($accepter->highest_qualification ?? 'Professional');
-                $accepterCity = $accepter->city ?? ($accepter->state ?? 'India');
+                $accepterProfession = $accepter->profession ?: ($accepter->highest_qualification ?: 'Professional');
+                $accepterCity = $accepter->city ?: ($accepter->state ?: 'India');
                 $accepterCode = $accepter->getDisplayCodeAttribute();
 
                 $contentVariables = json_encode([
