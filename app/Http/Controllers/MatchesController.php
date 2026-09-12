@@ -830,8 +830,14 @@ class MatchesController extends Controller
         $dbCandidates = $query->get();
 
         $pool = [];
+        $seenCandidateIds = [];
 
         foreach ($dbCandidates as $index => $c) {
+            if (in_array($c->id, $seenCandidateIds)) {
+                continue;
+            }
+            $seenCandidateIds[] = $c->id;
+
             $age = $c->dob ? Carbon::parse($c->dob)->age : (24 + ($c->id % 8));
             $profileCode = $c->getDisplayCodeAttribute();
 

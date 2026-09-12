@@ -22,14 +22,21 @@ class InboxController extends Controller
             $subTab = 'received';
         }
 
-        // Fetch received connection requests
-        $receivedRequests = ConnectionRequest::where('receiver_id', $candidate->id)->get();
-        $pendingRequests = $receivedRequests->where('status', 'pending');
-        $acceptedRequests = $receivedRequests->where('status', 'accepted');
-        $declinedRequests = $receivedRequests->where('status', 'declined');
+        // Fetch received connection requests ordered by latest updated_at
+        $receivedRequests = ConnectionRequest::where('receiver_id', $candidate->id)
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        // Get the latest single request record per unique sender
+        $latestPerSender = $receivedRequests->groupBy('sender_id')->map(fn ($group) => $group->first());
+
+        $pendingRequests = $latestPerSender->where('status', 'pending');
+        $acceptedRequests = $latestPerSender->where('status', 'accepted');
+        $declinedRequests = $latestPerSender->where('status', 'declined');
 
         // Build list of received match profiles
         $receivedMatches = [];
+        $seenSenderIds = [];
         $targetRequests = match ($subTab) {
             'accepted' => $acceptedRequests,
             'declined' => $declinedRequests,
@@ -37,6 +44,11 @@ class InboxController extends Controller
         };
 
         foreach ($targetRequests as $cr) {
+            if (in_array($cr->sender_id, $seenSenderIds)) {
+                continue;
+            }
+            $seenSenderIds[] = $cr->sender_id;
+
             $sender = Candidate::with('photos')->find($cr->sender_id);
             if (! $sender) {
                 continue;
@@ -146,7 +158,7 @@ class InboxController extends Controller
             'pending' => $pendingRequests->count(),
             'accepted' => $acceptedRequests->count(),
             'declined' => $declinedRequests->count(),
-            'total' => $receivedRequests->count(),
+            'total' => $latestPerSender->count(),
         ];
 
         return view('frontend.pages.inbox', compact(
