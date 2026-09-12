@@ -86,17 +86,32 @@
             @if(request()->routeIs('matches*'))
                 <!-- Matches Sub Header Navigation -->
                 <nav class="flex space-x-8">
-                    @php $currentTab = request()->query('tab', 'todays'); @endphp
-                    <a href="{{ route('matches', ['tab' => 'todays']) }}" class="{{ $currentTab === 'todays' ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors flex items-center gap-1.5">
+                    @php 
+                        $currentTab = request()->query('tab');
+                        if (!$currentTab && request()->routeIs('matches.view-profile')) {
+                            if (isset($isAccepted) && $isAccepted) {
+                                $currentTab = 'accepted';
+                            } elseif (isset($isPending) && $isPending) {
+                                $currentTab = 'my_matches';
+                            } elseif (isset($isShortlisted) && $isShortlisted) {
+                                $currentTab = 'shortlisted';
+                            } else {
+                                $currentTab = 'todays';
+                            }
+                        } else {
+                            $currentTab = $currentTab ?: 'todays';
+                        }
+                    @endphp
+                    <a href="{{ route('matches', ['tab' => 'todays']) }}" class="{{ $currentTab === 'todays' ? 'border-b-2 border-rani-primary text-rani-primary font-bold' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors flex items-center gap-1.5">
                         Today's
                     </a>
-                    <a href="{{ route('matches', ['tab' => 'shortlisted']) }}" class="{{ $currentTab === 'shortlisted' ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors flex items-center gap-1.5">
+                    <a href="{{ route('matches', ['tab' => 'shortlisted']) }}" class="{{ $currentTab === 'shortlisted' ? 'border-b-2 border-rani-primary text-rani-primary font-bold' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors flex items-center gap-1.5">
                         Shortlisted
                     </a>
-                    <a href="{{ route('matches', ['tab' => 'my_matches']) }}" class="{{ $currentTab === 'my_matches' ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors flex items-center gap-1.5">
+                    <a href="{{ route('matches', ['tab' => 'my_matches']) }}" class="{{ $currentTab === 'my_matches' ? 'border-b-2 border-rani-primary text-rani-primary font-bold' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors flex items-center gap-1.5">
                         My Matches
                     </a>
-                    <a href="{{ route('matches', ['tab' => 'accepted']) }}" class="{{ $currentTab === 'accepted' ? 'border-b-2 border-rani-primary text-rani-primary' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors flex items-center gap-1.5">
+                    <a href="{{ route('matches', ['tab' => 'accepted']) }}" class="{{ $currentTab === 'accepted' ? 'border-b-2 border-rani-primary text-rani-primary font-bold' : 'border-b-2 border-transparent text-gray-600 hover:text-rani-primary hover:border-gray-300' }} font-medium text-sm py-3 px-1 transition-colors flex items-center gap-1.5">
                         Accepted
                     </a>
                 </nav>
@@ -145,10 +160,13 @@
         <!-- Mobile Matches Links -->
         <div class="px-2 pt-1 pb-2 space-y-1 border-t border-gray-100">
             <p class="px-3 pt-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">Matches</p>
-            <a href="{{ route('matches', ['tab' => 'todays']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && request('tab', 'todays') === 'todays') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Today's</a>
-            <a href="{{ route('matches', ['tab' => 'shortlisted']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && request('tab', 'shortlisted') === 'shortlisted') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Shortlisted</a>
-            <a href="{{ route('matches', ['tab' => 'my_matches']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && request('tab', 'my_matches') === 'my_matches') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">My Matches</a>
-            <a href="{{ route('matches', ['tab' => 'accepted']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && request('tab', 'accepted') === 'accepted') ? 'text-rani-primary bg-rani-primary/10' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Accepted</a>
+            @php
+                $currentMobileTab = $currentTab ?? 'todays';
+            @endphp
+            <a href="{{ route('matches', ['tab' => 'todays']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && $currentMobileTab === 'todays') ? 'text-rani-primary bg-rani-primary/10 font-bold' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Today's</a>
+            <a href="{{ route('matches', ['tab' => 'shortlisted']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && $currentMobileTab === 'shortlisted') ? 'text-rani-primary bg-rani-primary/10 font-bold' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Shortlisted</a>
+            <a href="{{ route('matches', ['tab' => 'my_matches']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && $currentMobileTab === 'my_matches') ? 'text-rani-primary bg-rani-primary/10 font-bold' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">My Matches</a>
+            <a href="{{ route('matches', ['tab' => 'accepted']) }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ (request()->routeIs('matches*') && $currentMobileTab === 'accepted') ? 'text-rani-primary bg-rani-primary/10 font-bold' : 'text-gray-700 hover:text-rani-primary hover:bg-gray-50' }}">Accepted</a>
         </div>
 
         <!-- Mobile Inbox Links -->
