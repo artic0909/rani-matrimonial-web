@@ -567,8 +567,12 @@ function inboxManager(initialData) {
         },
 
         openFullProfile(match) {
-            const targetId = match.id || match.db_id || match.profile_id;
-            window.location.href = '/profile/' + targetId;
+            if (match.profile_url) {
+                window.location.href = match.profile_url;
+            } else {
+                const targetId = match.id || match.db_id || match.profile_id;
+                window.location.href = '/profile/' + targetId;
+            }
         },
 
         closeFullProfile() {

@@ -8,7 +8,9 @@ use App\Models\Shortlisted;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Twilio\Rest\Client;
 
 class MatchesController extends Controller
@@ -124,6 +126,49 @@ class MatchesController extends Controller
     }
 
     /**
+     * Generate dynamic, freshly randomized, encrypted, url-safe profile token
+     */
+    public static function generateProfileToken($candidate): string
+    {
+        $id = $candidate instanceof Candidate ? $candidate->id : $candidate;
+        $code = $candidate instanceof Candidate ? $candidate->getDisplayCodeAttribute() : (string) $candidate;
+        
+        $payload = json_encode([
+            'id' => $id,
+            'code' => $code,
+            'nonce' => Str::random(16),
+            't' => microtime(true),
+        ]);
+
+        $encrypted = Crypt::encryptString($payload);
+        return rtrim(strtr($encrypted, '+/', '-_'), '=');
+    }
+
+    /**
+     * Decode dynamic profile token back to Candidate model
+     */
+    public static function resolveProfileFromToken(string $token): ?Candidate
+    {
+        try {
+            $padded = str_pad(strtr($token, '-_', '+/'), strlen($token) % 4 ? strlen($token) + (4 - strlen($token) % 4) : strlen($token), '=', STR_PAD_RIGHT);
+            $decrypted = Crypt::decryptString($padded);
+            $data = json_decode($decrypted, true);
+            
+            if (is_array($data) && (! empty($data['id']) || ! empty($data['code']))) {
+                return Candidate::with('photos')
+                    ->where('id', $data['id'] ?? 0)
+                    ->orWhere('candidate_code', $data['code'] ?? '')
+                    ->orWhere('profile_id', $data['code'] ?? '')
+                    ->first();
+            }
+        } catch (\Exception $e) {
+            // Not a valid token or plain text parameter
+        }
+
+        return null;
+    }
+
+    /**
      * Dedicated Full Profile View Page (Stand-alone, fully responsive, shows all data transparently)
      */
     public function showProfile(Request $request, string $id)
@@ -131,12 +176,21 @@ class MatchesController extends Controller
         /** @var Candidate $candidate */
         $candidate = Auth::user();
 
-        // Locate profile
-        $profile = Candidate::with('photos')
-            ->where('candidate_code', $id)
-            ->orWhere('profile_id', $id)
-            ->orWhere('id', is_numeric($id) ? $id : 0)
-            ->firstOrFail();
+        // 1. Try to resolve via dynamic encrypted token
+        $profile = self::resolveProfileFromToken($id);
+
+        // 2. If not a valid encrypted token, locate by plain ID / code and immediately 302 redirect to a fresh newly generated dynamic URL
+        if (! $profile) {
+            $profile = Candidate::with('photos')
+                ->where('candidate_code', $id)
+                ->orWhere('profile_id', $id)
+                ->orWhere('id', is_numeric($id) ? $id : 0)
+                ->firstOrFail();
+
+            return redirect()->route('matches.view-profile', ['id' => self::generateProfileToken($profile)]);
+        }
+
+        $profile->loadMissing('photos');
 
         // Check connection status
         $connection = ConnectionRequest::where(function ($q) use ($candidate, $profile) {
@@ -779,6 +833,7 @@ class MatchesController extends Controller
             $pool[] = [
                 'id' => $profileCode,
                 'db_id' => $c->id,
+                'profile_url' => route('matches.view-profile', ['id' => self::generateProfileToken($c)]),
                 'first_name' => $c->first_name ?? 'Candidate',
                 'last_name' => $c->last_name ?? '',
                 'age' => $age,
