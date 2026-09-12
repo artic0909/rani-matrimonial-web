@@ -282,15 +282,6 @@ class MatchesController extends Controller
             }
         }
 
-        if (count($allPhotos) < 3) {
-            foreach (['correct1.png', 'correct2.png', 'side.png', 'stock.png', 'group.png'] as $imgName) {
-                $fallbackUrl = asset("img/{$genderDir}/{$imgName}");
-                if (! in_array($fallbackUrl, $allPhotos)) {
-                    $allPhotos[] = $fallbackUrl;
-                }
-            }
-        }
-
         // Match Score calculation
         $matchResult = $this->calculateMatchScore($candidate, $profile);
 
@@ -1095,17 +1086,6 @@ class MatchesController extends Controller
                     }
                     if (! in_array($fullUrl, $allPhotos)) {
                         $allPhotos[] = $fullUrl;
-                    }
-                }
-            }
-
-            // Guarantee 3-4 gallery photos if candidate has few
-            if (count($allPhotos) < 3) {
-                $genderDir = strtolower($targetGender) === 'female' ? 'female' : 'male';
-                foreach (['correct1.png', 'correct2.png', 'side.png', 'stock.png', 'group.png'] as $imgName) {
-                    $fallbackUrl = asset("img/{$genderDir}/{$imgName}");
-                    if (! in_array($fallbackUrl, $allPhotos)) {
-                        $allPhotos[] = $fallbackUrl;
                     }
                 }
             }

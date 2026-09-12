@@ -84,15 +84,6 @@ class InboxController extends Controller
                 }
             }
 
-            if (count($allPhotos) < 3) {
-                foreach (['correct1.png', 'correct2.png', 'side.png', 'stock.png', 'group.png'] as $imgName) {
-                    $fallbackUrl = asset("img/{$genderDir}/{$imgName}");
-                    if (! in_array($fallbackUrl, $allPhotos)) {
-                        $allPhotos[] = $fallbackUrl;
-                    }
-                }
-            }
-
             // Compatibility Score
             $matchResult = $this->calculateMatchScore($candidate, $sender);
             $isAccepted = ($cr->status === 'accepted');
