@@ -33,6 +33,7 @@ Route::get('/api/check-selfie-status', [AuthController::class, 'checkSelfieStatu
 
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register.page');
 Route::post('/api/register/final', [AuthController::class, 'registerFinal'])->name('register.final');
+Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Candidate Dashboard, Profile, Photos, Wallet & Matches
 Route::middleware('auth')->group(function () {

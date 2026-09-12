@@ -128,7 +128,7 @@
                                 <p class="text-sm font-semibold text-gray-800">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</p>
                             </div>
                             <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-rani-primary/5 hover:text-rani-primary">Dashboard</a>
-                            <form method="POST" action="/logout">
+                            <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</button>
                             </form>
@@ -163,7 +163,7 @@
             <div class="mt-4 pt-4 border-t border-rani-gold/30 flex flex-col gap-3">
                 @auth
                     <a href="{{ route('dashboard') }}" class="block w-full text-center px-4 py-2 text-base font-medium text-rani-primary">My Dashboard</a>
-                    <form method="POST" action="/logout">
+                    <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="block w-full text-center px-4 py-2 text-base font-medium text-red-600">Logout</button>
                     </form>

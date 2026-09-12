@@ -23,6 +23,16 @@ use Twilio\Rest\Client;
 
 class AuthController extends Controller
 {
+    // Logout candidate
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
+    }
+
     // Login - Accept mobile and send/simulate OTP
     public function sendOtp(Request $request)
     {

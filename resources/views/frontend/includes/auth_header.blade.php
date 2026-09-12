@@ -61,7 +61,7 @@
                             </div>
                             <a href="{{ route('my-profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-rani-primary/5 hover:text-rani-primary">My Profile</a>
                             <a href="{{ route('wallet') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-rani-primary/5 hover:text-rani-primary">My Wallet</a>
-                            <form method="POST" action="/logout">
+                            <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</button>
                             </form>
@@ -164,7 +164,7 @@
 
         <div class="border-t border-gray-200 my-1"></div>
         <div class="px-2 pb-2">
-            <form method="POST" action="/logout">
+            <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="block w-full text-left px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50">Logout</button>
             </form>
