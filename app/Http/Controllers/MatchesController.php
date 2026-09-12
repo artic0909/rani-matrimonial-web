@@ -862,8 +862,8 @@ class MatchesController extends Controller
                     $cleanAccepterMobile = substr($cleanAccepterMobile, 2);
                 }
 
-                // WhatsApp Meta template: chat_accept (SID: HX8c7f6d1ea73558de9f4e1dc1d95c1876)
-                $templateSid = 'HX8c7f6d1ea73558de9f4e1dc1d95c1876';
+                // WhatsApp Meta template: rm_wp_chat_accept (SID: HX795c717c904849c2869c1c5dea6b2d52)
+                $templateSid = 'HX795c717c904849c2869c1c5dea6b2d52';
 
                 $requesterName = $requester->first_name ?? 'Candidate';
                 $accepterName = trim(($accepter->first_name ?? 'Candidate').' '.($accepter->last_name ?? ''));
@@ -873,8 +873,6 @@ class MatchesController extends Controller
                     '1' => $requesterName,
                     '2' => $accepterName,
                     '3' => $accepterCode,
-                    '4' => $cleanAccepterMobile ?: '9820149842',
-                    '5' => '91'.($cleanAccepterMobile ?: '9820149842'),
                 ]);
 
                 $twilio->messages->create(
