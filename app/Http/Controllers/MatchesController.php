@@ -126,22 +126,14 @@ class MatchesController extends Controller
     }
 
     /**
-     * Generate dynamic, freshly randomized, encrypted, url-safe profile token
+     * Generate dynamic, freshly randomized, clean url-safe profile token
      */
     public static function generateProfileToken($candidate): string
     {
-        $id = $candidate instanceof Candidate ? $candidate->id : $candidate;
         $code = $candidate instanceof Candidate ? $candidate->getDisplayCodeAttribute() : (string) $candidate;
+        $nonce = substr(md5(uniqid(mt_rand(), true)), 0, 10);
         
-        $payload = json_encode([
-            'id' => $id,
-            'code' => $code,
-            'nonce' => Str::random(16),
-            't' => microtime(true),
-        ]);
-
-        $encrypted = Crypt::encryptString($payload);
-        return rtrim(strtr($encrypted, '+/', '-_'), '=');
+        return $code . '-' . $nonce;
     }
 
     /**
@@ -149,6 +141,38 @@ class MatchesController extends Controller
      */
     public static function resolveProfileFromToken(string $token): ?Candidate
     {
+        // 1. Try resolving format: code-randomnonce (e.g. RM00004-a8f9c2d1b4 or RM-2024-0012-a8f9c2d1b4)
+        if (str_contains($token, '-')) {
+            $parts = explode('-', $token);
+            if (count($parts) >= 2) {
+                // Drop the trailing random nonce part
+                array_pop($parts);
+                $code = implode('-', $parts);
+
+                $found = Candidate::with('photos')
+                    ->where('candidate_code', $code)
+                    ->orWhere('profile_id', $code)
+                    ->orWhere('id', is_numeric($code) ? $code : 0)
+                    ->first();
+
+                if ($found) {
+                    return $found;
+                }
+            }
+        }
+
+        // 2. Direct lookup by candidate code or ID
+        $found = Candidate::with('photos')
+            ->where('candidate_code', $token)
+            ->orWhere('profile_id', $token)
+            ->orWhere('id', is_numeric($token) ? $token : 0)
+            ->first();
+
+        if ($found) {
+            return $found;
+        }
+
+        // 3. Fallback: try decoding old legacy crypt token if any
         try {
             $padded = str_pad(strtr($token, '-_', '+/'), strlen($token) % 4 ? strlen($token) + (4 - strlen($token) % 4) : strlen($token), '=', STR_PAD_RIGHT);
             $decrypted = Crypt::decryptString($padded);
@@ -162,7 +186,7 @@ class MatchesController extends Controller
                     ->first();
             }
         } catch (\Exception $e) {
-            // Not a valid token or plain text parameter
+            // Not a valid legacy token
         }
 
         return null;

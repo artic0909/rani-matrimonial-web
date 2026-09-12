@@ -950,14 +950,9 @@ function matchesManager(initialData) {
                             icon: 'success',
                             title: 'Connection Accepted!',
                             html: '<p class="text-sm">You are now connected with <strong>' + match.first_name + '</strong>.<br><span class="text-xs text-gray-300 mt-1 block">WhatsApp notification dispatched. All contact & personal details unlocked in your Accepted tab.</span></p>',
-                            confirmButtonText: 'View Full Profile',
-                            showCancelButton: true,
-                            cancelButtonText: 'Great',
-                            customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm', cancelButton: 'rani-swal-cancel' }
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                this.openFullProfile(match);
-                            }
+                            confirmButtonText: 'OK',
+                            showCancelButton: false,
+                            customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                         });
                     } else {
                         Swal.fire({
