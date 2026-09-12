@@ -46,8 +46,8 @@ class MatchesController extends Controller
         }
         $shortlistedIds = array_values(array_unique($shortlistedIds));
 
-        // Load sent connection requests
-        $sentRequests = ConnectionRequest::where('sender_id', $candidate->id)->get();
+        // Load sent connection requests (pending only)
+        $sentRequests = ConnectionRequest::where('sender_id', $candidate->id)->pending()->get();
         $sentInterestIds = [];
         foreach ($sentRequests as $sr) {
             $rec = Candidate::find($sr->receiver_id);
@@ -58,8 +58,8 @@ class MatchesController extends Controller
         }
         $sentInterestIds = array_values(array_unique($sentInterestIds));
 
-        // Load received connection requests
-        $receivedRequests = ConnectionRequest::where('receiver_id', $candidate->id)->get();
+        // Load received connection requests (pending only)
+        $receivedRequests = ConnectionRequest::where('receiver_id', $candidate->id)->pending()->get();
         $receivedInterestIds = [];
         foreach ($receivedRequests as $rr) {
             $sender = Candidate::find($rr->sender_id);
