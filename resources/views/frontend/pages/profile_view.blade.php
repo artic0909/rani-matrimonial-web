@@ -83,18 +83,60 @@
                     Mutual Connection Established
                 </div>
                 <h3 class="text-xl sm:text-2xl font-serif font-bold text-white">Mutual Match & Particulars Unlocked</h3>
-                <p class="text-xs sm:text-sm text-emerald-200 font-light">You and {{ $profile->first_name }} are mutually connected. Send a direct WhatsApp chat request below to connect on WhatsApp.</p>
+                <p class="text-xs sm:text-sm text-emerald-200 font-light" x-show="!isWpChatAccepted && !isWpChatReceivedByMe">You and {{ $profile->first_name }} are mutually connected. Send a direct WhatsApp chat request below to connect on WhatsApp.</p>
+                <p class="text-xs sm:text-sm text-emerald-200 font-light" x-show="isWpChatReceivedByMe"><strong>{{ $profile->first_name }}</strong> has sent you a WhatsApp Chat Request to connect directly on WhatsApp.</p>
+                <p class="text-xs sm:text-sm text-emerald-200 font-light" x-show="isWpChatAccepted">Direct WhatsApp Chat access is unlocked! You can now chat directly with {{ $profile->first_name }}.</p>
             </div>
         </div>
 
         <div class="flex items-center gap-3 w-full md:w-auto relative z-10">
-            <button type="button" 
-                    @click="requestWhatsAppChat()" 
-                    :disabled="chatRequested || chatRequestLoading"
-                    class="w-full md:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#25D366] disabled:opacity-80 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 transform hover:-translate-y-0.5 transition-all cursor-pointer">
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                <span x-text="chatRequested ? 'WhatsApp Request Sent ✓' : (chatRequestLoading ? 'Sending Request...' : 'Request WhatsApp Chat')"></span>
-            </button>
+            <!-- 1. If WhatsApp Chat Accepted -> Direct Chat on WhatsApp Button -->
+            <template x-if="isWpChatAccepted">
+                <a :href="whatsappUrl" 
+                   target="_blank" 
+                   class="w-full md:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#25D366] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 transform hover:-translate-y-0.5 transition-all">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                    <span>Chat on WhatsApp</span>
+                </a>
+            </template>
+
+            <!-- 2. If Received WhatsApp Chat Request -> Accept / Decline Buttons -->
+            <template x-if="!isWpChatAccepted && isWpChatReceivedByMe">
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                    <button type="button" 
+                            @click="respondWhatsAppChat('accept')" 
+                            class="px-5 py-3 rounded-xl bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#25D366] text-white font-bold text-xs shadow-lg flex items-center gap-1.5 cursor-pointer">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                        <span>Accept & Share WhatsApp</span>
+                    </button>
+                    <button type="button" 
+                            @click="respondWhatsAppChat('decline')" 
+                            class="px-4 py-3 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs cursor-pointer">
+                        <span>Decline</span>
+                    </button>
+                </div>
+            </template>
+
+            <!-- 3. If Sent by me or pending -> Status badge -->
+            <template x-if="!isWpChatAccepted && !isWpChatReceivedByMe && (isWpChatSentByMe || chatRequested)">
+                <button type="button" 
+                        disabled
+                        class="w-full md:w-auto px-6 py-3 rounded-xl bg-emerald-800/90 text-emerald-200 font-bold text-sm flex items-center justify-center gap-2 shadow opacity-90 cursor-default">
+                    <svg class="w-4 h-4 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                    <span>WhatsApp Request Sent (Pending)</span>
+                </button>
+            </template>
+
+            <!-- 4. Default -> Request WhatsApp Chat Button -->
+            <template x-if="!isWpChatAccepted && !isWpChatReceivedByMe && !isWpChatSentByMe && !chatRequested">
+                <button type="button" 
+                        @click="requestWhatsAppChat()" 
+                        :disabled="chatRequestLoading"
+                        class="w-full md:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#25D366] disabled:opacity-80 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50 transform hover:-translate-y-0.5 transition-all cursor-pointer">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                    <span x-text="chatRequestLoading ? 'Sending Request...' : 'Request WhatsApp Chat'"></span>
+                </button>
+            </template>
         </div>
     </div>
     @endif
@@ -268,29 +310,65 @@
                         </div>
                         <div>
                             <h2 class="text-xl font-serif font-bold text-gray-900">Verified Contact Particulars</h2>
-                            <p class="text-xs text-emerald-700 font-semibold">Mutual Connection Established • Request Direct WhatsApp Access</p>
+                            <p class="text-xs text-emerald-700 font-semibold" x-show="!isWpChatAccepted">Mutual Connection Established • Request Direct WhatsApp Access</p>
+                            <p class="text-xs text-emerald-700 font-semibold" x-show="isWpChatAccepted">Direct WhatsApp Communication Unlocked ✓</p>
                         </div>
                     </div>
 
-                    <button type="button" 
-                            @click="requestWhatsAppChat()" 
-                            :disabled="chatRequested || chatRequestLoading"
-                            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#25D366] disabled:opacity-80 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer">
-                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-                        <span x-text="chatRequested ? 'WhatsApp Sent ✓' : (chatRequestLoading ? 'Sending...' : 'Request WhatsApp Chat')"></span>
-                    </button>
+                    <!-- Card Header Right Action -->
+                    <template x-if="isWpChatAccepted">
+                        <a :href="whatsappUrl" 
+                           target="_blank" 
+                           class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#25D366] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                            <span>Chat on WhatsApp</span>
+                        </a>
+                    </template>
+
+                    <template x-if="!isWpChatAccepted && isWpChatReceivedByMe">
+                        <div class="flex items-center gap-2">
+                            <button type="button" 
+                                    @click="respondWhatsAppChat('accept')" 
+                                    class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#25D366] text-white font-bold text-xs shadow-md cursor-pointer">
+                                Accept WhatsApp
+                            </button>
+                            <button type="button" 
+                                    @click="respondWhatsAppChat('decline')" 
+                                    class="px-3 py-2.5 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold text-xs cursor-pointer">
+                                Decline
+                            </button>
+                        </div>
+                    </template>
+
+                    <template x-if="!isWpChatAccepted && !isWpChatReceivedByMe">
+                        <button type="button" 
+                                @click="requestWhatsAppChat()" 
+                                :disabled="chatRequested || isWpChatSentByMe || chatRequestLoading"
+                                class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#25D366] to-[#128C7E] hover:from-[#128C7E] hover:to-[#25D366] disabled:opacity-80 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                            <span x-text="(chatRequested || isWpChatSentByMe) ? 'WhatsApp Sent ✓' : (chatRequestLoading ? 'Sending...' : 'Request WhatsApp Chat')"></span>
+                        </button>
+                    </template>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <!-- Mobile Number (Masked / Protected) -->
+                    <!-- Mobile Number (Dynamic Masked / Unmasked) -->
                     <div class="p-4 rounded-2xl bg-white border border-emerald-200 shadow-xs flex items-center justify-between">
                         <div>
                             <span class="text-xs font-bold text-gray-400 block">Mobile Phone / WhatsApp</span>
-                            <span class="text-base font-extrabold text-gray-900 mt-0.5 block tracking-wide">{{ $maskedMobile }}</span>
+                            <span class="text-base font-extrabold text-gray-900 mt-0.5 block tracking-wide" x-text="isWpChatAccepted ? unmaskedMobile : '{{ $maskedMobile }}'"></span>
                         </div>
-                        <span class="px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-bold">
-                            Protected
-                        </span>
+                        <template x-if="isWpChatAccepted">
+                            <span class="px-2.5 py-1 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 text-[11px] font-bold flex items-center gap-1">
+                                <svg class="w-3 h-3 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                Unlocked
+                            </span>
+                        </template>
+                        <template x-if="!isWpChatAccepted">
+                            <span class="px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-bold">
+                                Protected
+                            </span>
+                        </template>
                     </div>
 
                     <!-- Email Address (Masked / Protected) -->
@@ -620,6 +698,12 @@ function profileViewManager() {
         isPending: {{ $isPending ? 'true' : 'false' }},
         isSentByMe: {{ $isSentByMe ? 'true' : 'false' }},
         isReceivedByMe: {{ $isReceivedByMe ? 'true' : 'false' }},
+        isWpChatAccepted: {{ $isWpChatAccepted ? 'true' : 'false' }},
+        isWpChatPending: {{ $isWpChatPending ? 'true' : 'false' }},
+        isWpChatSentByMe: {{ $isWpChatSentByMe ? 'true' : 'false' }},
+        isWpChatReceivedByMe: {{ $isWpChatReceivedByMe ? 'true' : 'false' }},
+        unmaskedMobile: '{{ $cleanMobile ? "+91 " . preg_replace('/(\d{5})(\d{5})/', '$1 $2', $cleanMobile) : "+91 98201 49842" }}',
+        whatsappUrl: 'https://wa.me/91{{ ltrim($cleanMobile, "0") }}',
         chatRequested: false,
         chatRequestLoading: false,
 
@@ -640,6 +724,7 @@ function profileViewManager() {
                 this.chatRequestLoading = false;
                 if (data.success) {
                     this.chatRequested = true;
+                    this.isWpChatSentByMe = true;
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
                             icon: 'success',
@@ -657,6 +742,57 @@ function profileViewManager() {
             } catch (e) {
                 this.chatRequestLoading = false;
                 console.error('WhatsApp chat request error:', e);
+            }
+        },
+
+        async respondWhatsAppChat(action) {
+            try {
+                const res = await fetch('{{ route('matches.respond-whatsapp-chat') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ profile_id: '{{ $profileCode }}', action: action })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    if (action === 'accept') {
+                        this.isWpChatAccepted = true;
+                        this.isWpChatReceivedByMe = false;
+                        this.isWpChatPending = false;
+                        if (data.unmasked_mobile) {
+                            this.unmaskedMobile = data.unmasked_mobile;
+                        }
+                        if (data.whatsapp_url) {
+                            this.whatsappUrl = data.whatsapp_url;
+                        }
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'WhatsApp Request Accepted!',
+                                html: '<p class="text-sm">You have accepted the WhatsApp chat request. Direct WhatsApp chat is now unlocked with <strong>{{ $profile->first_name }}</strong>.</p>',
+                                confirmButtonText: 'OK',
+                                customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                            });
+                        }
+                    } else {
+                        this.isWpChatReceivedByMe = false;
+                        this.isWpChatPending = false;
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Request Declined',
+                                text: data.message,
+                                confirmButtonText: 'OK',
+                                customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                            });
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Respond WhatsApp chat error:', e);
             }
         },
 

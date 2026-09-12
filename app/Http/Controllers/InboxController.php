@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Candidate;
 use App\Models\ConnectionRequest;
+use App\Models\WhatsAppChatRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -96,6 +97,18 @@ class InboxController extends Controller
             $matchResult = $this->calculateMatchScore($candidate, $sender);
             $isAccepted = ($cr->status === 'accepted');
 
+            // Check WhatsApp chat request status
+            $wpChatRequest = WhatsAppChatRequest::where(function ($q) use ($candidate, $sender) {
+                $q->where('sender_id', $candidate->id)->where('receiver_id', $sender->id);
+            })->orWhere(function ($q) use ($candidate, $sender) {
+                $q->where('sender_id', $sender->id)->where('receiver_id', $candidate->id);
+            })->first();
+
+            $wpChatStatus = $wpChatRequest ? $wpChatRequest->status : null;
+            $isWpChatAccepted = $wpChatStatus === 'accepted';
+            $isWpChatReceivedByMe = $wpChatRequest && $wpChatRequest->status === 'pending' && $wpChatRequest->receiver_id === $candidate->id;
+            $isWpChatSentByMe = $wpChatRequest && $wpChatRequest->status === 'pending' && $wpChatRequest->sender_id === $candidate->id;
+
             // Full Details
             $fullDetails = [
                 'mobile' => $sender->mobile ? ('+91 '.preg_replace('/(\d{5})(\d{5})/', '$1 $2', $sender->mobile)) : '+91 98201 49842',
@@ -150,6 +163,10 @@ class InboxController extends Controller
                 'received_ago' => $cr->created_at ? $cr->created_at->diffForHumans() : 'Recently',
                 'status' => $cr->status,
                 'is_accepted' => $isAccepted,
+                'wp_chat_status' => $wpChatStatus,
+                'is_wp_chat_accepted' => $isWpChatAccepted,
+                'is_wp_chat_received_by_me' => $isWpChatReceivedByMe,
+                'is_wp_chat_sent_by_me' => $isWpChatSentByMe,
                 'details' => $fullDetails,
             ];
         }

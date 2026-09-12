@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Candidate;
 use App\Models\ConnectionRequest;
 use App\Models\Shortlisted;
+use App\Models\WhatsAppChatRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -228,6 +229,18 @@ class MatchesController extends Controller
         $isSentByMe = $isPending && $connection->sender_id === $candidate->id;
         $isReceivedByMe = $isPending && $connection->receiver_id === $candidate->id;
 
+        // Check WhatsApp chat request status
+        $wpChatRequest = WhatsAppChatRequest::where(function ($q) use ($candidate, $profile) {
+            $q->where('sender_id', $candidate->id)->where('receiver_id', $profile->id);
+        })->orWhere(function ($q) use ($candidate, $profile) {
+            $q->where('sender_id', $profile->id)->where('receiver_id', $candidate->id);
+        })->first();
+
+        $isWpChatAccepted = $wpChatRequest && $wpChatRequest->status === 'accepted';
+        $isWpChatPending = $wpChatRequest && $wpChatRequest->status === 'pending';
+        $isWpChatSentByMe = $isWpChatPending && $wpChatRequest->sender_id === $candidate->id;
+        $isWpChatReceivedByMe = $isWpChatPending && $wpChatRequest->receiver_id === $candidate->id;
+
         // Check shortlist status
         $searchIds = [$id, (string) $profile->id, $profile->getDisplayCodeAttribute(), $profile->profile_id ?? '', $profile->candidate_code ?? ''];
         $searchIds = array_values(array_filter(array_unique($searchIds)));
@@ -277,6 +290,10 @@ class MatchesController extends Controller
             'isPending',
             'isSentByMe',
             'isReceivedByMe',
+            'isWpChatAccepted',
+            'isWpChatPending',
+            'isWpChatSentByMe',
+            'isWpChatReceivedByMe',
             'isShortlisted',
             'allPhotos',
             'photo',
@@ -685,12 +702,93 @@ class MatchesController extends Controller
             ], 404);
         }
 
+        // Store or update WhatsApp Chat Request record
+        WhatsAppChatRequest::updateOrCreate(
+            [
+                'sender_id' => $candidate->id,
+                'receiver_id' => $targetCandidate->id,
+            ],
+            [
+                'status' => 'pending',
+                'responded_at' => null,
+            ]
+        );
+
         // Dispatch WhatsApp notification via Twilio Meta Template
         $this->dispatchWhatsAppChatRequestNotification($candidate, $targetCandidate);
 
         return response()->json([
             'success' => true,
+            'status' => 'pending',
             'message' => "WhatsApp chat request sent to {$targetCandidate->first_name}! A notification has been delivered to their WhatsApp.",
+        ]);
+    }
+
+    /**
+     * Respond to a WhatsApp Chat Request (Accept or Decline)
+     */
+    public function respondWhatsAppChat(Request $request)
+    {
+        $request->validate([
+            'profile_id' => 'required|string',
+            'action' => 'required|in:accept,decline',
+        ]);
+
+        /** @var Candidate $candidate */
+        $candidate = Auth::user();
+        $profileId = $request->profile_id;
+        $action = $request->action;
+
+        $targetCandidate = self::resolveProfileFromToken($profileId);
+        if (! $targetCandidate) {
+            $targetCandidate = Candidate::where('candidate_code', $profileId)
+                ->orWhere('profile_id', $profileId)
+                ->orWhere('id', is_numeric($profileId) ? $profileId : 0)
+                ->first();
+        }
+
+        if (! $targetCandidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Candidate profile not found.',
+            ], 404);
+        }
+
+        // Locate existing chat request
+        $chatRequest = WhatsAppChatRequest::where(function ($q) use ($candidate, $targetCandidate) {
+            $q->where('sender_id', $targetCandidate->id)->where('receiver_id', $candidate->id);
+        })->orWhere(function ($q) use ($candidate, $targetCandidate) {
+            $q->where('sender_id', $candidate->id)->where('receiver_id', $targetCandidate->id);
+        })->first();
+
+        if (! $chatRequest) {
+            $chatRequest = WhatsAppChatRequest::create([
+                'sender_id' => $targetCandidate->id,
+                'receiver_id' => $candidate->id,
+                'status' => $action === 'accept' ? 'accepted' : 'declined',
+                'responded_at' => now(),
+            ]);
+        } else {
+            $chatRequest->update([
+                'status' => $action === 'accept' ? 'accepted' : 'declined',
+                'responded_at' => now(),
+            ]);
+        }
+
+        $cleanMobile = preg_replace('/[^0-9]/', '', $targetCandidate->mobile ?? '');
+        $unmaskedMobile = '+91 ' . preg_replace('/(\d{5})(\d{5})/', '$1 $2', $cleanMobile);
+
+        return response()->json([
+            'success' => true,
+            'status' => $chatRequest->status,
+            'action' => $action,
+            'profile_id' => $targetCandidate->getDisplayCodeAttribute(),
+            'unmasked_mobile' => $unmaskedMobile,
+            'clean_mobile' => $cleanMobile,
+            'whatsapp_url' => 'https://wa.me/91' . ltrim($cleanMobile, '0'),
+            'message' => $action === 'accept' 
+                ? "You accepted {$targetCandidate->first_name}'s WhatsApp chat request! Direct WhatsApp chat is now unlocked."
+                : "WhatsApp chat request from {$targetCandidate->first_name} was declined.",
         ]);
     }
 
