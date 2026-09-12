@@ -808,7 +808,7 @@ class MatchesController extends Controller
             ]);
         }
 
-        // When accepted, dispatch WhatsApp Chat Acceptance notification (Template: HX40e5a17a8d298491572c44c70abd5af0) to the requester
+        // When accepted, dispatch WhatsApp Chat Acceptance notification (Template: HX795c717c904849c2869c1c5dea6b2d52) to the requester
         if ($action === 'accept') {
             $this->dispatchWhatsAppChatAcceptedNotification($candidate, $targetCandidate);
         }
@@ -831,7 +831,7 @@ class MatchesController extends Controller
     }
 
     /**
-     * Dispatch WhatsApp Notification when a WhatsApp Chat Request is accepted (Template: HX40e5a17a8d298491572c44c70abd5af0)
+     * Dispatch WhatsApp Notification when a WhatsApp Chat Request is accepted (Template: HX795c717c904849c2869c1c5dea6b2d52)
      */
     private function dispatchWhatsAppChatAcceptedNotification(Candidate $accepter, Candidate $requester): void
     {
