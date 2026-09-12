@@ -452,88 +452,87 @@
         </div>
     </template>
 
-    <!-- ================= MODAL: PHOTO GALLERY ================= -->
+    <!-- ================= MODAL: RANI MATRIMONIAL THEMED PHOTO LIGHTBOX ================= -->
     <template x-teleport="body">
         <div x-show="photoGalleryOpen" 
              x-cloak
-             style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 99999999 !important; background-color: rgba(0, 0, 0, 0.92) !important; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);" 
+             style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 99999999 !important; background: radial-gradient(circle at center, rgba(65, 10, 10, 0.95) 0%, rgba(15, 3, 3, 0.98) 100%) !important; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);" 
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0"
              x-transition:enter-end="opacity-100"
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0"
-             class="flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+             @keydown.escape.window="closePhotoGallery()"
+             @keydown.left.window="prevPhoto()"
+             @keydown.right.window="nextPhoto()"
+             class="flex flex-col justify-between items-center p-4 sm:p-6 select-none overflow-hidden">
             
-            <div @click.away="closePhotoGallery()"
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="opacity-0 scale-95"
-                 x-transition:enter-end="opacity-100 scale-100"
-                 style="position: relative !important; z-index: 100000000 !important; max-height: 90vh !important; background-color: #12141a !important;"
-                 class="bg-[#12141a] border-2 border-rani-gold/80 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.9)] max-w-3xl w-full overflow-hidden flex flex-col my-auto text-white">
-                
-                <!-- Top Royal Gold Shine Accent Bar -->
-                <div class="h-1.5 w-full bg-gradient-to-r from-rani-gold via-yellow-300 to-rani-gold"></div>
-
-                <!-- Modal Header -->
-                <div class="px-5 py-3.5 bg-[#0b0d12] border-b border-rani-gold/30 flex items-center justify-between z-10 shrink-0">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-rani-gold to-yellow-500 flex items-center justify-center text-rani-dark shadow-md">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h3 class="text-white font-serif font-bold text-base md:text-lg tracking-wide drop-shadow" x-text="galleryCandidate ? galleryCandidate.first_name + ' ' + galleryCandidate.last_name : 'Profile Photos'"></h3>
-                                <span class="text-[11px] text-rani-gold font-mono font-bold px-2.5 py-0.5 rounded-full bg-rani-gold/15 border border-rani-gold/40 shadow-xs" x-text="galleryCandidate ? 'ID: ' + galleryCandidate.id : ''"></span>
-                            </div>
-                            <p class="text-xs text-gray-400 font-sans" x-text="'Photo ' + (activePhotoIndex + 1) + ' of ' + (galleryPhotos.length || 1) + ' • ' + (galleryCandidate ? galleryCandidate.profession : '')"></p>
-                        </div>
+            <!-- Top Elegant Bar (Profile Name, ID & Close) -->
+            <div class="w-full max-w-5xl flex items-center justify-between z-20 shrink-0 pb-2">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-rani-gold via-yellow-400 to-amber-600 flex items-center justify-center text-rani-dark shadow-md">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg>
                     </div>
-
-                    <button type="button" 
-                            @click="closePhotoGallery()" 
-                            class="w-9 h-9 rounded-full bg-white/10 hover:bg-rose-600 text-gray-200 hover:text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-lg border border-white/20 hover:border-transparent"
-                            title="Close Gallery">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-serif font-bold text-lg sm:text-xl text-white tracking-wide" x-text="galleryCandidate ? galleryCandidate.first_name + ' ' + galleryCandidate.last_name : 'Photo Viewer'"></h3>
+                            <span class="text-xs text-rani-gold font-mono font-bold px-2.5 py-0.5 rounded-full bg-rani-gold/15 border border-rani-gold/40" x-text="galleryCandidate ? 'ID: ' + galleryCandidate.id : ''"></span>
+                        </div>
+                        <p class="text-xs text-amber-200/70" x-text="'Photo ' + (activePhotoIndex + 1) + ' of ' + (galleryPhotos.length || 1)"></p>
+                    </div>
                 </div>
 
-                <!-- Main Image Viewport -->
-                <div class="relative flex-1 bg-[#07080b] flex items-center justify-center min-h-[260px] sm:min-h-[380px] max-h-[52vh] overflow-hidden p-3 sm:p-5">
+                <button type="button" 
+                        @click="closePhotoGallery()" 
+                        class="w-11 h-11 rounded-full bg-white/10 hover:bg-rose-600 text-white/90 hover:text-white flex items-center justify-center transition-all hover:scale-110 active:scale-95 border border-white/20 hover:border-transparent shadow-lg cursor-pointer"
+                        title="Close (Esc)">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Center Image Showcase -->
+            <div class="relative w-full max-w-5xl flex-1 flex items-center justify-center p-2 min-h-0">
+                
+                <!-- Floating Left Arrow -->
+                <button type="button" 
+                        x-show="galleryPhotos.length > 1" 
+                        @click.stop="prevPhoto()" 
+                        class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/70 hover:bg-rani-primary text-rani-gold hover:text-white border border-rani-gold/60 flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-2xl z-30 cursor-pointer backdrop-blur-md"
+                        title="Previous Photo">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+
+                <!-- High-res Centered Image -->
+                <div class="relative max-h-[72vh] sm:max-h-[76vh] flex items-center justify-center">
                     <img :src="currentGalleryPhoto" 
-                         :alt="galleryCandidate ? galleryCandidate.first_name : 'Candidate Photo'" 
-                         class="max-h-[48vh] w-auto max-w-full object-contain rounded-2xl border border-white/15 shadow-[0_10px_35px_rgba(0,0,0,0.9)] transition-all duration-300 select-none">
-
-                    <!-- Prev Button -->
-                    <button type="button" 
-                            x-show="galleryPhotos.length > 1" 
-                            @click="prevPhoto()" 
-                            class="absolute left-3.5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/70 hover:bg-gradient-to-r hover:from-rani-gold hover:to-yellow-500 text-white hover:text-rani-dark border border-white/30 hover:border-rani-gold flex items-center justify-center transition-all shadow-xl hover:scale-110 active:scale-95 z-20 backdrop-blur-xs">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
-                    </button>
-
-                    <!-- Next Button -->
-                    <button type="button" 
-                            x-show="galleryPhotos.length > 1" 
-                            @click="nextPhoto()" 
-                            class="absolute right-3.5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/70 hover:bg-gradient-to-r hover:from-rani-gold hover:to-yellow-500 text-white hover:text-rani-dark border border-white/30 hover:border-rani-gold flex items-center justify-center transition-all shadow-xl hover:scale-110 active:scale-95 z-20 backdrop-blur-xs">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
-                    </button>
+                         :alt="galleryCandidate ? galleryCandidate.first_name : 'Photo'" 
+                         class="max-h-[72vh] sm:max-h-[76vh] max-w-[92vw] sm:max-w-3xl object-contain rounded-2xl border-2 border-rani-gold/50 shadow-[0_25px_60px_rgba(0,0,0,0.9)] transition-transform duration-300">
                 </div>
 
-                <!-- Thumbnails Strip -->
-                <div class="px-4 py-2.5 bg-[#0b0d12] border-t border-white/10 flex items-center justify-center gap-2.5 overflow-x-auto shrink-0">
-                    <template x-for="(photoUrl, pIdx) in galleryPhotos" :key="pIdx">
-                        <button type="button" 
-                                @click="activePhotoIndex = pIdx" 
-                                class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer"
-                                :class="activePhotoIndex === pIdx ? 'border-rani-gold scale-105 shadow-[0_0_15px_rgba(212,175,55,0.6)] opacity-100 ring-2 ring-rani-gold/60' : 'border-white/20 opacity-50 hover:opacity-85'">
-                            <img :src="photoUrl" class="w-full h-full object-cover">
-                        </button>
-                    </template>
-                </div>
+                <!-- Floating Right Arrow -->
+                <button type="button" 
+                        x-show="galleryPhotos.length > 1" 
+                        @click.stop="nextPhoto()" 
+                        class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/70 hover:bg-rani-primary text-rani-gold hover:text-white border border-rani-gold/60 flex items-center justify-center transition-all hover:scale-110 active:scale-95 shadow-2xl z-30 cursor-pointer backdrop-blur-md"
+                        title="Next Photo">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                </button>
 
             </div>
+
+            <!-- Bottom Thumbnails Strip -->
+            <div class="w-full max-w-2xl flex items-center justify-center gap-2.5 py-2 overflow-x-auto shrink-0 z-20" x-show="galleryPhotos.length > 1">
+                <template x-for="(photoUrl, pIdx) in galleryPhotos" :key="pIdx">
+                    <button type="button" 
+                            @click="activePhotoIndex = pIdx" 
+                            class="w-13 h-13 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer bg-black/40"
+                            :class="activePhotoIndex === pIdx ? 'border-rani-gold scale-110 shadow-[0_0_16px_rgba(212,175,55,0.85)] ring-2 ring-rani-gold/70 opacity-100' : 'border-white/25 opacity-50 hover:opacity-90 hover:border-rani-gold/60'">
+                        <img :src="photoUrl" class="w-full h-full object-cover">
+                    </button>
+                </template>
+            </div>
+
         </div>
     </template>
 
