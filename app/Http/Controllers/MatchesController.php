@@ -124,6 +124,89 @@ class MatchesController extends Controller
     }
 
     /**
+     * Dedicated Full Profile View Page (Stand-alone, fully responsive, shows all data transparently)
+     */
+    public function showProfile(Request $request, string $id)
+    {
+        /** @var Candidate $candidate */
+        $candidate = Auth::user();
+
+        // Locate profile
+        $profile = Candidate::with('photos')
+            ->where('candidate_code', $id)
+            ->orWhere('profile_id', $id)
+            ->orWhere('id', is_numeric($id) ? $id : 0)
+            ->firstOrFail();
+
+        // Check connection status
+        $connection = ConnectionRequest::where(function ($q) use ($candidate, $profile) {
+            $q->where('sender_id', $candidate->id)->where('receiver_id', $profile->id);
+        })->orWhere(function ($q) use ($candidate, $profile) {
+            $q->where('sender_id', $profile->id)->where('receiver_id', $candidate->id);
+        })->first();
+
+        $isAccepted = $connection && $connection->status === 'accepted';
+        $isPending = $connection && $connection->status === 'pending';
+        $isSentByMe = $isPending && $connection->sender_id === $candidate->id;
+        $isReceivedByMe = $isPending && $connection->receiver_id === $candidate->id;
+
+        // Check shortlist status
+        $searchIds = [$id, (string) $profile->id, $profile->getDisplayCodeAttribute(), $profile->profile_id ?? '', $profile->candidate_code ?? ''];
+        $searchIds = array_values(array_filter(array_unique($searchIds)));
+        $isShortlisted = Shortlisted::where('candidate_id', $candidate->id)->whereIn('profile_id', $searchIds)->exists();
+
+        // Photos
+        $targetGender = $profile->gender ?? 'Female';
+        $genderDir = strtolower($targetGender) === 'female' ? 'female' : 'male';
+        $photo = asset("img/{$genderDir}/correct1.png");
+        if (! empty($profile->profile_picture)) {
+            if (str_starts_with($profile->profile_picture, 'http')) {
+                $photo = $profile->profile_picture;
+            } elseif (str_starts_with($profile->profile_picture, 'img/')) {
+                $photo = asset($profile->profile_picture);
+            } else {
+                $photo = asset('storage/'.$profile->profile_picture);
+            }
+        }
+
+        $allPhotos = [$photo];
+        if ($profile->photos && $profile->photos->isNotEmpty()) {
+            foreach ($profile->photos as $p) {
+                $pUrl = $p->photo_path;
+                $fullUrl = str_starts_with($pUrl, 'http') ? $pUrl : (str_starts_with($pUrl, 'img/') ? asset($pUrl) : asset('storage/'.$pUrl));
+                if (! in_array($fullUrl, $allPhotos)) {
+                    $allPhotos[] = $fullUrl;
+                }
+            }
+        }
+
+        if (count($allPhotos) < 3) {
+            foreach (['correct1.png', 'correct2.png', 'side.png', 'stock.png', 'group.png'] as $imgName) {
+                $fallbackUrl = asset("img/{$genderDir}/{$imgName}");
+                if (! in_array($fallbackUrl, $allPhotos)) {
+                    $allPhotos[] = $fallbackUrl;
+                }
+            }
+        }
+
+        // Match Score calculation
+        $matchResult = $this->calculateMatchScore($candidate, $profile);
+
+        return view('frontend.pages.profile_view', compact(
+            'candidate',
+            'profile',
+            'isAccepted',
+            'isPending',
+            'isSentByMe',
+            'isReceivedByMe',
+            'isShortlisted',
+            'allPhotos',
+            'photo',
+            'matchResult'
+        ));
+    }
+
+    /**
      * Send interest / Connect with match & dispatch WhatsApp notification to recipient
      */
     public function sendInterest(Request $request)
@@ -150,6 +233,57 @@ class MatchesController extends Controller
                 ], 422);
             }
 
+            // Check if connection request is already pending
+            $existing = ConnectionRequest::where('sender_id', $candidate->id)
+                ->where('receiver_id', $targetCandidate->id)
+                ->where('status', 'pending')
+                ->first();
+
+            if ($existing) {
+                return response()->json([
+                    'success' => true,
+                    'status' => 'pending',
+                    'profile_id' => $targetCandidate->getDisplayCodeAttribute(),
+                    'message' => "Connection request is already pending with {$targetCandidate->first_name}.",
+                ]);
+            }
+
+            // Wallet Balance & Pending Commitment Verification
+            $wallet = $candidate->getOrCreateWallet();
+            $balance = (float) $wallet->avl_balance;
+
+            // Count pending connection requests currently sent by candidate
+            $pendingCount = ConnectionRequest::where('sender_id', $candidate->id)
+                ->where('status', 'pending')
+                ->count();
+
+            $costPerRequest = 100.00;
+            $committedAmount = $pendingCount * $costPerRequest;
+            $usableBalance = $balance - $committedAmount;
+
+            // 1. Overall Balance is less than ₹100
+            if ($balance < $costPerRequest) {
+                return response()->json([
+                    'success' => false,
+                    'insufficient_balance' => true,
+                    'redirect' => route('wallet'),
+                    'title' => 'Insufficient Wallet Balance',
+                    'message' => 'Your current wallet balance is ₹' . number_format($balance, 2) . '. You need at least ₹100 to send a connection request. Please recharge your wallet to continue.',
+                ], 400);
+            }
+
+            // 2. Usable balance exhausted by existing pending requests
+            if ($usableBalance < $costPerRequest) {
+                $requestsWord = $pendingCount === 1 ? 'request' : 'requests';
+                return response()->json([
+                    'success' => false,
+                    'insufficient_balance' => true,
+                    'redirect' => route('wallet'),
+                    'title' => 'Insufficient Usable Balance',
+                    'message' => "You already have {$pendingCount} pending connection {$requestsWord} reserving ₹" . number_format($committedAmount, 0) . " from your total balance of ₹" . number_format($balance, 2) . ". Your remaining usable balance is ₹" . number_format(max(0, $usableBalance), 2) . ", which is insufficient to send another connection request. Please recharge your wallet to continue.",
+                ], 400);
+            }
+
             // Save / Update connection request in database
             $connection = ConnectionRequest::updateOrCreate(
                 [
@@ -174,11 +308,9 @@ class MatchesController extends Controller
         }
 
         return response()->json([
-            'success' => true,
-            'status' => 'pending',
-            'profile_id' => $profileId,
-            'message' => 'Connection request sent successfully! We will notify you once accepted.',
-        ]);
+            'success' => false,
+            'message' => 'Candidate profile not found.',
+        ], 404);
     }
 
     /**

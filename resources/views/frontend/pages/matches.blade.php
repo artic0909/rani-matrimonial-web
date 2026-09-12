@@ -719,9 +719,8 @@ function matchesManager(initialData) {
         },
 
         openFullProfile(match) {
-            this.selectedProfile = match;
-            this.fullProfileModalOpen = true;
-            document.body.style.overflow = 'hidden';
+            const targetId = match.id || match.db_id || match.profile_id;
+            window.location.href = '/profile/' + targetId;
         },
 
         closeFullProfile() {
@@ -872,17 +871,6 @@ function matchesManager(initialData) {
             if (!match) return;
             if (this.isInterestSent(match.id)) return;
 
-            // Optimistic update
-            this.sentInterestIds.push(match.id);
-            match.is_interest_sent = true;
-            match.request_type = 'sent';
-
-            if (this.activeTab === 'todays') {
-                this.matches = this.matches.filter(m => m.id !== match.id);
-                this.counts.todays = Math.max(0, (this.counts.todays || 1) - 1);
-                this.counts.my_matches = (this.counts.my_matches || 0) + 1;
-            }
-
             try {
                 const res = await fetch('{{ route("matches.send-interest") }}', {
                     method: 'POST',
@@ -899,11 +887,51 @@ function matchesManager(initialData) {
                 const data = await res.json();
 
                 if (data.success) {
+                    if (!this.sentInterestIds.includes(match.id)) {
+                        this.sentInterestIds.push(match.id);
+                    }
+                    match.is_interest_sent = true;
+                    match.request_type = 'sent';
+
+                    if (this.activeTab === 'todays') {
+                        this.matches = this.matches.filter(m => m.id !== match.id);
+                        this.counts.todays = Math.max(0, (this.counts.todays || 1) - 1);
+                        this.counts.my_matches = (this.counts.my_matches || 0) + 1;
+                    }
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Connection Request Sent!',
-                        html: '<p class="text-sm">Your connection request was dispatched to <strong>' + match.first_name + '</strong>.<br><span class="text-xs text-gray-500 mt-1 block">A WhatsApp notification with your name and profile summary has been delivered.</span></p>',
+                        html: '<p class="text-sm">Your connection request was dispatched to <strong>' + match.first_name + '</strong>.<br><span class="text-xs text-gray-400 mt-1 block">A WhatsApp notification with your name and profile summary has been delivered.</span></p>',
                         confirmButtonText: 'Great',
+                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    });
+                } else if (data.insufficient_balance) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: data.title || 'Insufficient Wallet Balance',
+                        html: '<div class="text-left bg-black/40 border border-amber-500/30 rounded-xl p-3.5 mt-2">' +
+                              '<p class="text-sm text-amber-200 leading-relaxed font-medium">' + data.message + '</p>' +
+                              '</div>',
+                        showCancelButton: true,
+                        confirmButtonText: '💳 Recharge Wallet Now',
+                        cancelButtonText: 'Maybe Later',
+                        customClass: {
+                            popup: 'rani-swal-popup',
+                            title: 'rani-swal-title',
+                            confirmButton: 'rani-swal-confirm',
+                            cancelButton: 'rani-swal-cancel'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = data.redirect || '{{ route("wallet") }}';
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Notice',
+                        text: data.message || 'Unable to send connection request.',
                         customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                     });
                 }

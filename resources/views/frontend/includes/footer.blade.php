@@ -42,7 +42,7 @@
             </div>
         </div>
         <div class="pt-8 border-t border-rani-gold/30 text-center text-sm text-rani-gold-light/70 space-y-1">
-            <p>&copy; {{ date('Y') }} <strong>Rani Matrimonial</strong>. All rights reserved. A brand owned & operated by <strong>SUmatra Sales Private Limited</strong>.</p>
+            <p>&copy; {{ date('Y') }} <strong>Rani Matrimonial</strong>. All rights reserved. A brand owned & operated by <strong>Sumatra Sales Private Limited</strong>.</p>
             <p class="text-xs text-rani-gold-light/50">Made with ❤️ in India.</p>
         </div>
     </div>

@@ -567,9 +567,8 @@ function inboxManager(initialData) {
         },
 
         openFullProfile(match) {
-            this.selectedProfile = match;
-            this.fullProfileModalOpen = true;
-            document.body.style.overflow = 'hidden';
+            const targetId = match.id || match.db_id || match.profile_id;
+            window.location.href = '/profile/' + targetId;
         },
 
         closeFullProfile() {
