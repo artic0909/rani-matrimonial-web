@@ -12,6 +12,7 @@ use App\Models\Income;
 use App\Models\MaritalStatus;
 use App\Models\Religion;
 use App\Models\State;
+use App\Models\WorkingWith;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -34,6 +35,7 @@ class MasterDataSeeder extends Seeder
         Diet::truncate();
         Income::truncate();
         Hobby::truncate();
+        WorkingWith::truncate();
         Schema::enableForeignKeyConstraints();
 
         $now = now();
@@ -268,5 +270,20 @@ class MasterDataSeeder extends Seeder
                 DB::table('cities')->insert($citiesData);
             }
         }
+
+        // 8. Working With Sectors
+        $workingWithList = [
+            'Private Company',
+            'Government / Public Sector',
+            'Defense / Civil Services',
+            'Business / Self Employed',
+            'Non Working',
+        ];
+        $workingWithData = array_map(fn ($item) => [
+            'name' => $item,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ], $workingWithList);
+        DB::table('working_withs')->insert($workingWithData);
     }
 }

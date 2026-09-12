@@ -280,11 +280,9 @@
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Working With</label>
                                 <select x-model="formData.working_with" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
                                     <option value="">Select Working Sector</option>
-                                    <option value="Private Company">Private Company</option>
-                                    <option value="Government / Public Sector">Government / Public Sector</option>
-                                    <option value="Defense / Civil Services">Defense / Civil Services</option>
-                                    <option value="Business / Self Employed">Business / Self Employed</option>
-                                    <option value="Non Working">Non Working</option>
+                                    <template x-for="w in masterData.workingWiths" :key="w.id">
+                                        <option :value="w.name" x-text="w.name" :selected="formData.working_with === w.name"></option>
+                                    </template>
                                 </select>
                             </div>
                             <div>
@@ -411,6 +409,7 @@ window.profileEditor = function(config = {}) {
             heights: config.heights || [],
             diets: config.diets || [],
             incomes: config.incomes || [],
+            workingWiths: config.workingWiths || [],
             hobbies: config.hobbies || []
         },
         editModalOpen: false,

@@ -11,6 +11,7 @@ use App\Models\Hobby;
 use App\Models\Income;
 use App\Models\MaritalStatus;
 use App\Models\Religion;
+use App\Models\WorkingWith;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -277,6 +278,7 @@ class AuthController extends Controller
         $heights = Height::all();
         $diets = Diet::all();
         $incomes = Income::all();
+        $workingWiths = WorkingWith::all();
         $hobbies = Hobby::all();
 
         return view('frontend.pages.register', compact(
@@ -286,6 +288,7 @@ class AuthController extends Controller
             'heights',
             'diets',
             'incomes',
+            'workingWiths',
             'hobbies'
         ));
     }
@@ -320,7 +323,9 @@ class AuthController extends Controller
             'college_name' => 'nullable|string',
             'college_address' => 'nullable|string',
 
-            'income_type' => 'required|string',
+            'income_type' => 'nullable|string',
+            'annual_income' => 'required|string',
+            'working_with' => 'required|string',
             'profession' => 'required|string',
             'designation' => 'required|string',
             'company_name' => 'nullable|string',
@@ -333,6 +338,9 @@ class AuthController extends Controller
         ]);
 
         $candidateData = $validated;
+        if (empty($candidateData['income_type'])) {
+            $candidateData['income_type'] = $candidateData['annual_income'];
+        }
 
         // Initialize Intervention Image Manager
         $manager = new ImageManager(new Driver);
@@ -425,6 +433,7 @@ class AuthController extends Controller
         $heights = Height::all();
         $diets = Diet::all();
         $incomes = Income::all();
+        $workingWiths = WorkingWith::all();
         $hobbies = Hobby::all();
 
         return view('frontend.pages.my_profile', compact(
@@ -436,6 +445,7 @@ class AuthController extends Controller
             'heights',
             'diets',
             'incomes',
+            'workingWiths',
             'hobbies'
         ));
     }

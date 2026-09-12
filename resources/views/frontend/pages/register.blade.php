@@ -121,6 +121,7 @@
         heights: {{ Js::from($heights) }},
         diets: {{ Js::from($diets) }},
         incomes: {{ Js::from($incomes) }},
+        workingWiths: {{ Js::from($workingWiths) }},
         hobbies: {{ Js::from($hobbies) }}
      })">
     
@@ -553,23 +554,19 @@
                         <div class="mt-4">
                             <button type="button" @click="nextStep" :disabled="!formData.highest_qualification" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
                         </div>
-                    </div>
-
-                    <!-- Step 10: Income -->
+                    </div>                    <!-- Step 10: Income -->
                     <div x-show="step === 10" style="display: none;"
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                          
-                          
                          >
                          
                         <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Income Details</h4>
                         <div class="space-y-5 mb-8">
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Income</label>
-                                <select name="income_type" x-model="formData.income_type" required class="w-full px-5 py-3.5 rounded-xl theme-input">
-                                    <option value="" disabled>Select Income Range</option>
+                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Annual Income</label>
+                                <select name="annual_income" x-model="formData.annual_income" @change="formData.income_type = formData.annual_income" required class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                    <option value="" disabled>Select Annual Income Range</option>
                                     <template x-for="inc in masterData.incomes" :key="inc.id">
                                         <option :value="inc.name" x-text="inc.name"></option>
                                     </template>
@@ -577,7 +574,7 @@
                             </div>
                         </div>
                         <div class="mt-4">
-                            <button type="button" @click="nextStep" :disabled="!formData.income_type" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                            <button type="button" @click="nextStep" :disabled="!formData.annual_income" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
                         </div>
                     </div>
 
@@ -586,23 +583,30 @@
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0" 
-                          
-                          
                          >
                          
                         <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Career Details</h4>
                         <div class="space-y-5 mb-8">
                             <div>
+                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Working With</label>
+                                <select name="working_with" x-model="formData.working_with" required class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                    <option value="" disabled>Select Working Sector</option>
+                                    <template x-for="w in masterData.workingWiths" :key="w.id">
+                                        <option :value="w.name" x-text="w.name"></option>
+                                    </template>
+                                </select>
+                            </div>
+                            <div>
                                 <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Your Profession</label>
-                                <input type="text" name="profession" x-model="formData.profession" required class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <input type="text" name="profession" x-model="formData.profession" placeholder="e.g. Software Engineer, Doctor, Business" required class="w-full px-5 py-3.5 rounded-xl theme-input">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Your Designation</label>
-                                <input type="text" name="designation" x-model="formData.designation" required class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <input type="text" name="designation" x-model="formData.designation" placeholder="e.g. Senior Manager, Consultant" required class="w-full px-5 py-3.5 rounded-xl theme-input">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Company Name</label>
-                                <input type="text" name="company_name" x-model="formData.company_name" class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <input type="text" name="company_name" x-model="formData.company_name" placeholder="e.g. TCS, Infosys, Self Employed" class="w-full px-5 py-3.5 rounded-xl theme-input">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Company Address</label>
@@ -610,7 +614,7 @@
                             </div>
                         </div>
                         <div class="mt-4">
-                            <button type="button" @click="nextStep" :disabled="!(formData.profession && formData.designation)" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                            <button type="button" @click="nextStep" :disabled="!(formData.working_with && formData.profession && formData.designation)" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
                         </div>
                     </div>
 
@@ -756,6 +760,7 @@
                 heights: config.heights || [],
                 diets: config.diets || [],
                 incomes: config.incomes || [],
+                workingWiths: config.workingWiths || [],
                 hobbies: config.hobbies || []
             },
             step: 1,
@@ -766,7 +771,9 @@
                 country: '', state: '', city: '', police_st: '', pincode: '', sub_community: '', full_address: '',
                 marital_status: '', height: '', diet: '',
                 highest_qualification: '', college_name: '', college_address: '',
+                annual_income: '',
                 income_type: '',
+                working_with: '',
                 profession: '', designation: '', company_name: '', company_address: '',
                 about_yourself: '',
                 aadhar_number: '',
@@ -1006,8 +1013,8 @@
                 
                 if (this.step === 8 && (!this.formData.marital_status || !this.formData.height || !this.formData.diet)) return this.showError("Physical & Diet details are required.");
                 if (this.step === 9 && !this.formData.highest_qualification) return this.showError("Highest Qualification is required.");
-                if (this.step === 10 && !this.formData.income_type) return this.showError("Income detail is required.");
-                if (this.step === 11 && (!this.formData.profession || !this.formData.designation)) return this.showError("Career details are required.");
+                if (this.step === 10 && !this.formData.annual_income) return this.showError("Annual Income detail is required.");
+                if (this.step === 11 && (!this.formData.working_with || !this.formData.profession || !this.formData.designation)) return this.showError("Career details (Working With, Profession, Designation) are required.");
                 if (this.step === 12 && !this.formData.about_yourself) return this.showError("Please write a little about yourself.");
 
                 if (this.step === 12) {

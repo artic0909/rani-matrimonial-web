@@ -11,6 +11,7 @@
         heights: {{ Js::from($heights) }},
         diets: {{ Js::from($diets) }},
         incomes: {{ Js::from($incomes) }},
+        workingWiths: {{ Js::from($workingWiths) }},
         hobbies: {{ Js::from($hobbies) }}
      })">
     <!-- Background Image -->
