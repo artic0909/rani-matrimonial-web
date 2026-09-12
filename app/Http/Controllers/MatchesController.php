@@ -634,6 +634,102 @@ class MatchesController extends Controller
     }
 
     /**
+     * Request direct WhatsApp chat with an accepted candidate
+     */
+    public function requestWhatsAppChat(Request $request)
+    {
+        $request->validate([
+            'profile_id' => 'required|string',
+        ]);
+
+        /** @var Candidate $candidate */
+        $candidate = Auth::user();
+        $profileId = $request->profile_id;
+
+        $targetCandidate = self::resolveProfileFromToken($profileId);
+        if (! $targetCandidate) {
+            $targetCandidate = Candidate::where('candidate_code', $profileId)
+                ->orWhere('profile_id', $profileId)
+                ->orWhere('id', is_numeric($profileId) ? $profileId : 0)
+                ->first();
+        }
+
+        if (! $targetCandidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Candidate profile not found.',
+            ], 404);
+        }
+
+        // Dispatch WhatsApp notification via Twilio Meta Template
+        $this->dispatchWhatsAppChatRequestNotification($candidate, $targetCandidate);
+
+        return response()->json([
+            'success' => true,
+            'message' => "WhatsApp chat request sent to {$targetCandidate->first_name}! A notification has been delivered to their WhatsApp.",
+        ]);
+    }
+
+    /**
+     * Dispatch WhatsApp Notification for WhatsApp Chat Request (Template: HX3a8ae54665631a6314a65aa6dded55e8)
+     */
+    private function dispatchWhatsAppChatRequestNotification(Candidate $sender, Candidate $receiver): void
+    {
+        if (empty($receiver->mobile)) {
+            return;
+        }
+
+        try {
+            $apiKey = env('TWILIO_SID');
+            $apiSecret = env('TWILIO_AUTH_TOKEN');
+            $accountSid = env('TWILIO_ACCOUNT_SID');
+            $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
+
+            if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
+                $twilio = new Client($apiKey, $apiSecret, $accountSid);
+
+                $cleanMobile = preg_replace('/[^0-9]/', '', $receiver->mobile);
+                if (strlen($cleanMobile) === 10) {
+                    $formattedMobile = 'whatsapp:+91'.$cleanMobile;
+                } elseif (strlen($cleanMobile) === 12 && str_starts_with($cleanMobile, '91')) {
+                    $formattedMobile = 'whatsapp:+'.$cleanMobile;
+                } else {
+                    $formattedMobile = 'whatsapp:+91'.ltrim($cleanMobile, '0');
+                }
+
+                // WhatsApp Meta template: rm_whatsapp_chat_request
+                $templateSid = 'HX3a8ae54665631a6314a65aa6dded55e8';
+
+                $receiverName = $receiver->first_name ?? 'Candidate';
+                $senderName = trim(($sender->first_name ?? 'Candidate').' '.($sender->last_name ?? ''));
+                $senderProfession = $sender->profession ?: ($sender->highest_qualification ?: 'Professional');
+                $senderCity = $sender->city ?: ($sender->state ?: 'India');
+                $senderCode = $sender->getDisplayCodeAttribute();
+
+                $contentVariables = json_encode([
+                    '1' => $receiverName,
+                    '2' => $senderName,
+                    '3' => $senderCode,
+                    '4' => "{$senderProfession}, {$senderCity}",
+                ]);
+
+                $twilio->messages->create(
+                    $formattedMobile,
+                    [
+                        'from' => $twilioNumber,
+                        'contentSid' => $templateSid,
+                        'contentVariables' => $contentVariables,
+                    ]
+                );
+
+                Log::info("WhatsApp Chat Request notification sent to {$receiver->mobile} for sender {$senderCode}");
+            }
+        } catch (\Exception $e) {
+            Log::error('Twilio WhatsApp Chat Request Error: '.$e->getMessage());
+        }
+    }
+
+    /**
      * Shortlist / Favorite match (stores into shortlisted table)
      */
     public function toggleShortlist(Request $request)

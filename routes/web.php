@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/matches/send-interest', [MatchesController::class, 'sendInterest'])->name('matches.send-interest');
     Route::post('/api/matches/respond-interest', [MatchesController::class, 'respondInterest'])->name('matches.respond-interest');
     Route::post('/api/matches/shortlist', [MatchesController::class, 'toggleShortlist'])->name('matches.shortlist');
+    Route::post('/api/matches/request-whatsapp-chat', [MatchesController::class, 'requestWhatsAppChat'])->name('matches.request-whatsapp-chat');
 
     // Inbox Routes (Received Connection Requests)
     Route::get('/inbox', [InboxController::class, 'index'])->name('inbox');
