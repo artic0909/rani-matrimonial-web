@@ -241,6 +241,17 @@ class MatchesController extends Controller
         $isWpChatSentByMe = $isWpChatPending && $wpChatRequest->sender_id === $candidate->id;
         $isWpChatReceivedByMe = $isWpChatPending && $wpChatRequest->receiver_id === $candidate->id;
 
+        // 6-Hour Cooldown check for sender
+        $isWpChatCooldown = false;
+        $wpChatCooldownHours = 6;
+        if ($wpChatRequest && $wpChatRequest->sender_id === $candidate->id && ! $isWpChatAccepted) {
+            if ($wpChatRequest->updated_at && $wpChatRequest->updated_at->addHours(6)->isFuture()) {
+                $isWpChatCooldown = true;
+                $minutesLeft = (int) ceil(now()->diffInMinutes($wpChatRequest->updated_at->addHours(6)));
+                $wpChatCooldownHours = max(1, ceil($minutesLeft / 60));
+            }
+        }
+
         // Check shortlist status
         $searchIds = [$id, (string) $profile->id, $profile->getDisplayCodeAttribute(), $profile->profile_id ?? '', $profile->candidate_code ?? ''];
         $searchIds = array_values(array_filter(array_unique($searchIds)));
@@ -294,6 +305,8 @@ class MatchesController extends Controller
             'isWpChatPending',
             'isWpChatSentByMe',
             'isWpChatReceivedByMe',
+            'isWpChatCooldown',
+            'wpChatCooldownHours',
             'isShortlisted',
             'allPhotos',
             'photo',
@@ -702,7 +715,25 @@ class MatchesController extends Controller
             ], 404);
         }
 
-        // Store or update WhatsApp Chat Request record
+        // Check 6-hour cooldown if a request was already sent by candidate to this target
+        $existing = WhatsAppChatRequest::where('sender_id', $candidate->id)
+            ->where('receiver_id', $targetCandidate->id)
+            ->first();
+
+        if ($existing && $existing->updated_at && $existing->updated_at->addHours(6)->isFuture()) {
+            $minutesLeft = (int) ceil(now()->diffInMinutes($existing->updated_at->addHours(6)));
+            $hoursLeft = max(1, ceil($minutesLeft / 60));
+            $hoursText = $hoursLeft > 1 ? "{$hoursLeft} hours" : "{$minutesLeft} minutes";
+
+            return response()->json([
+                'success' => false,
+                'cooldown' => true,
+                'retry_after_minutes' => $minutesLeft,
+                'message' => "You have already requested a WhatsApp chat with {$targetCandidate->first_name}. Please wait {$hoursText} before sending another request.",
+            ], 429);
+        }
+
+        // Store or update WhatsApp Chat Request record with updated timestamp
         WhatsAppChatRequest::updateOrCreate(
             [
                 'sender_id' => $candidate->id,
@@ -711,6 +742,7 @@ class MatchesController extends Controller
             [
                 'status' => 'pending',
                 'responded_at' => null,
+                'updated_at' => now(),
             ]
         );
 
@@ -720,6 +752,7 @@ class MatchesController extends Controller
         return response()->json([
             'success' => true,
             'status' => 'pending',
+            'cooldown_hours' => 6,
             'message' => "WhatsApp chat request sent to {$targetCandidate->first_name}! A notification has been delivered to their WhatsApp.",
         ]);
     }
