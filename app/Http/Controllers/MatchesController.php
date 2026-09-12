@@ -231,31 +231,36 @@ class MatchesController extends Controller
 
         if ($action === 'accept') {
             $requester = ($connection->sender_id === $candidate->id) ? $targetCandidate : (Candidate::find($connection->sender_id) ?? $targetCandidate);
+            $requesterWallet = $requester->getOrCreateWallet();
 
-            // Deduct ₹100 from requester's wallet & create debit transaction record
-            try {
-                $requesterWallet = $requester->getOrCreateWallet();
-                $requesterWallet->avl_balance = max(0, $requesterWallet->avl_balance - 100);
-                $requesterWallet->save();
+            if ((float) $requesterWallet->avl_balance >= 100.00) {
+                // Deduct ₹100 from requester's wallet & create debit transaction record
+                try {
+                    $requesterWallet->avl_balance = (float) $requesterWallet->avl_balance - 100.00;
+                    $requesterWallet->save();
 
-                $requesterWallet->transactions()->create([
-                    'candidate_id' => $requester->id,
-                    'transaction_id' => 'TXN-'.strtoupper(\Illuminate\Support\Str::random(10)),
-                    'type' => 'debit',
-                    'amount' => 100.00,
-                    'balance_after' => $requesterWallet->avl_balance,
-                    'title' => 'Match Connection Accepted',
-                    'description' => "Connection request accepted by {$candidate->first_name} ({$candidate->getDisplayCodeAttribute()}). Full profile & contact details unlocked.",
-                    'category' => 'Connection Fee',
-                    'status' => 'completed',
-                    'payment_method' => 'Wallet Balance',
-                ]);
-            } catch (\Exception $e) {
-                Log::error('Wallet debit on accept error: '.$e->getMessage());
+                    $requesterWallet->transactions()->create([
+                        'candidate_id' => $requester->id,
+                        'transaction_id' => 'TXN-'.strtoupper(\Illuminate\Support\Str::random(10)),
+                        'type' => 'debit',
+                        'amount' => 100.00,
+                        'balance_after' => $requesterWallet->avl_balance,
+                        'title' => 'Match Connection Accepted',
+                        'description' => "Connection request accepted by {$candidate->first_name} ({$candidate->getDisplayCodeAttribute()}). Full profile & contact details unlocked.",
+                        'category' => 'Connection Fee',
+                        'status' => 'completed',
+                        'payment_method' => 'Wallet Balance',
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Wallet debit on accept error: '.$e->getMessage());
+                }
+
+                // Send regular WhatsApp accept notification (all details unlocked)
+                $this->dispatchRequestAcceptedWhatsApp($candidate, $requester);
+            } else {
+                // Insufficient balance: Send high-converting urgent recharge notification
+                $this->dispatchUrgentRechargeWhatsApp($candidate, $requester);
             }
-
-            // Send WhatsApp notification to original requester
-            $this->dispatchRequestAcceptedWhatsApp($candidate, $requester);
 
             return response()->json([
                 'success' => true,
@@ -328,6 +333,64 @@ class MatchesController extends Controller
             }
         } catch (\Exception $e) {
             Log::error('Twilio WhatsApp Request Accepted Error: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Dispatch WhatsApp Notification when connection request is accepted but requester has insufficient wallet balance
+     */
+    private function dispatchUrgentRechargeWhatsApp(Candidate $accepter, Candidate $requester): void
+    {
+        if (empty($requester->mobile)) {
+            return;
+        }
+
+        try {
+            $apiKey = env('TWILIO_SID');
+            $apiSecret = env('TWILIO_AUTH_TOKEN');
+            $accountSid = env('TWILIO_ACCOUNT_SID');
+            $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
+
+            if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
+                $twilio = new Client($apiKey, $apiSecret, $accountSid);
+
+                $cleanMobile = preg_replace('/[^0-9]/', '', $requester->mobile);
+                if (strlen($cleanMobile) === 10) {
+                    $formattedMobile = 'whatsapp:+91'.$cleanMobile;
+                } elseif (strlen($cleanMobile) === 12 && str_starts_with($cleanMobile, '91')) {
+                    $formattedMobile = 'whatsapp:+'.$cleanMobile;
+                } else {
+                    $formattedMobile = 'whatsapp:+91'.ltrim($cleanMobile, '0');
+                }
+
+                // WhatsApp Meta template: rm_urgent_match_recharge
+                $templateSid = 'HX6a855e150d09a7ae3b91759d160f1408';
+
+                $accepterName = trim(($accepter->first_name ?? 'Candidate').' '.($accepter->last_name ?? ''));
+                $accepterProfession = $accepter->profession ?: ($accepter->highest_qualification ?: 'Professional');
+                $accepterCity = $accepter->city ?: ($accepter->state ?: 'India');
+                $accepterCode = $accepter->getDisplayCodeAttribute();
+
+                $contentVariables = json_encode([
+                    '1' => $requester->first_name ?? 'Candidate',
+                    '2' => $accepterName,
+                    '3' => $accepterCode,
+                    '4' => "{$accepterProfession}, {$accepterCity}",
+                ]);
+
+                $twilio->messages->create(
+                    $formattedMobile,
+                    [
+                        'from' => $twilioNumber,
+                        'contentSid' => $templateSid,
+                        'contentVariables' => $contentVariables,
+                    ]
+                );
+
+                Log::info("WhatsApp Urgent Recharge notification sent to {$requester->mobile} for accepted match {$accepterCode}");
+            }
+        } catch (\Exception $e) {
+            Log::error('Twilio WhatsApp Urgent Recharge Error: '.$e->getMessage());
         }
     }
 
