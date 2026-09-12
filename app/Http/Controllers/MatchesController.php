@@ -862,8 +862,8 @@ class MatchesController extends Controller
                     $cleanAccepterMobile = substr($cleanAccepterMobile, 2);
                 }
 
-                // WhatsApp Meta template: rm_wp_chat_accepted
-                $templateSid = 'HX40e5a17a8d298491572c44c70abd5af0';
+                // WhatsApp Meta template: chat_accept (SID: HX8c7f6d1ea73558de9f4e1dc1d95c1876)
+                $templateSid = 'HX8c7f6d1ea73558de9f4e1dc1d95c1876';
 
                 $requesterName = $requester->first_name ?? 'Candidate';
                 $accepterName = trim(($accepter->first_name ?? 'Candidate').' '.($accepter->last_name ?? ''));
