@@ -47,16 +47,16 @@ class AuthController extends Controller
         $otp = rand(1000, 9999);
 
         try {
-            $apiKey = env('TWILIO_SID');
-            $apiSecret = env('TWILIO_AUTH_TOKEN');
-            $accountSid = env('TWILIO_ACCOUNT_SID');
-            $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
+            $apiKey = config('services.twilio.sid') ?: env('TWILIO_SID');
+            $apiSecret = config('services.twilio.auth_token') ?: env('TWILIO_AUTH_TOKEN');
+            $accountSid = config('services.twilio.account_sid') ?: env('TWILIO_ACCOUNT_SID');
+            $twilioNumber = config('services.twilio.whatsapp_number') ?: env('TWILIO_WHATSAPP_NUMBER');
 
             if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
                 $twilio = new Client($apiKey, $apiSecret, $accountSid);
                 $formattedMobile = 'whatsapp:+91'.ltrim($request->mobile, '0');
 
-                $templateSid = env('TWILIO_WHATSAPP_TEMPLATE_SID', 'HX669abffc47f8e40515248108fed98ad8');
+                $templateSid = config('services.twilio.otp_template_sid') ?: (env('TWILIO_WHATSAPP_TEMPLATE_SID') ?: 'HX669abffc47f8e40515248108fed98ad8');
 
                 $twilio->messages->create(
                     $formattedMobile,

@@ -519,6 +519,27 @@ class MatchesController extends Controller
     }
 
     /**
+     * Helper to get Twilio Client & credentials from config or env
+     */
+    private function getTwilioConfig(): ?array
+    {
+        $apiKey = config('services.twilio.sid') ?: env('TWILIO_SID');
+        $apiSecret = config('services.twilio.auth_token') ?: env('TWILIO_AUTH_TOKEN');
+        $accountSid = config('services.twilio.account_sid') ?: env('TWILIO_ACCOUNT_SID');
+        $twilioNumber = config('services.twilio.whatsapp_number') ?: env('TWILIO_WHATSAPP_NUMBER');
+
+        if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
+            return [
+                'client' => new Client($apiKey, $apiSecret, $accountSid),
+                'number' => $twilioNumber,
+            ];
+        }
+
+        Log::warning('Twilio credentials missing or unconfigured.');
+        return null;
+    }
+
+    /**
      * Dispatch WhatsApp Notification when a connection request is accepted
      */
     private function dispatchRequestAcceptedWhatsApp(Candidate $accepter, Candidate $requester): void
@@ -528,13 +549,10 @@ class MatchesController extends Controller
         }
 
         try {
-            $apiKey = env('TWILIO_SID');
-            $apiSecret = env('TWILIO_AUTH_TOKEN');
-            $accountSid = env('TWILIO_ACCOUNT_SID');
-            $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
-
-            if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
-                $twilio = new Client($apiKey, $apiSecret, $accountSid);
+            $twilioConfig = $this->getTwilioConfig();
+            if ($twilioConfig) {
+                $twilio = $twilioConfig['client'];
+                $twilioNumber = $twilioConfig['number'];
 
                 $cleanMobile = preg_replace('/[^0-9]/', '', $requester->mobile);
                 if (strlen($cleanMobile) === 10) {
@@ -586,13 +604,10 @@ class MatchesController extends Controller
         }
 
         try {
-            $apiKey = env('TWILIO_SID');
-            $apiSecret = env('TWILIO_AUTH_TOKEN');
-            $accountSid = env('TWILIO_ACCOUNT_SID');
-            $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
-
-            if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
-                $twilio = new Client($apiKey, $apiSecret, $accountSid);
+            $twilioConfig = $this->getTwilioConfig();
+            if ($twilioConfig) {
+                $twilio = $twilioConfig['client'];
+                $twilioNumber = $twilioConfig['number'];
 
                 $cleanMobile = preg_replace('/[^0-9]/', '', $requester->mobile);
                 if (strlen($cleanMobile) === 10) {
@@ -644,17 +659,15 @@ class MatchesController extends Controller
         }
 
         try {
-            $apiKey = env('TWILIO_SID');
-            $apiSecret = env('TWILIO_AUTH_TOKEN');
-            $accountSid = env('TWILIO_ACCOUNT_SID');
-            $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
+            $twilioConfig = $this->getTwilioConfig();
+            if ($twilioConfig) {
+                $twilio = $twilioConfig['client'];
+                $twilioNumber = $twilioConfig['number'];
 
-            if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
-                $twilio = new Client($apiKey, $apiSecret, $accountSid);
                 $formattedMobile = 'whatsapp:+91'.ltrim($receiver->mobile, '0');
 
                 // WhatsApp Meta template: rm_connection_request
-                $templateSid = env('TWILIO_WHATSAPP_CONNECTION_REQUEST_TEMPLATE_SID', 'HX43b53a132cb7e4fc3b0e0e8d153c60f4');
+                $templateSid = config('services.twilio.connection_request_template_sid') ?: (env('TWILIO_WHATSAPP_CONNECTION_REQUEST_TEMPLATE_SID') ?: 'HX43b53a132cb7e4fc3b0e0e8d153c60f4');
 
                 $senderName = trim(($sender->first_name ?? 'Candidate').' '.($sender->last_name ?? ''));
                 $senderAge = $sender->dob ? Carbon::parse($sender->dob)->age : '26';
@@ -840,13 +853,10 @@ class MatchesController extends Controller
         }
 
         try {
-            $apiKey = env('TWILIO_SID');
-            $apiSecret = env('TWILIO_AUTH_TOKEN');
-            $accountSid = env('TWILIO_ACCOUNT_SID');
-            $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
-
-            if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
-                $twilio = new Client($apiKey, $apiSecret, $accountSid);
+            $twilioConfig = $this->getTwilioConfig();
+            if ($twilioConfig) {
+                $twilio = $twilioConfig['client'];
+                $twilioNumber = $twilioConfig['number'];
 
                 $cleanRequesterMobile = preg_replace('/[^0-9]/', '', $requester->mobile);
                 if (strlen($cleanRequesterMobile) === 10) {
@@ -901,13 +911,10 @@ class MatchesController extends Controller
         }
 
         try {
-            $apiKey = env('TWILIO_SID');
-            $apiSecret = env('TWILIO_AUTH_TOKEN');
-            $accountSid = env('TWILIO_ACCOUNT_SID');
-            $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
-
-            if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
-                $twilio = new Client($apiKey, $apiSecret, $accountSid);
+            $twilioConfig = $this->getTwilioConfig();
+            if ($twilioConfig) {
+                $twilio = $twilioConfig['client'];
+                $twilioNumber = $twilioConfig['number'];
 
                 $cleanMobile = preg_replace('/[^0-9]/', '', $receiver->mobile);
                 if (strlen($cleanMobile) === 10) {
