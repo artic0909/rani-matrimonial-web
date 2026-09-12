@@ -808,6 +808,11 @@ class MatchesController extends Controller
             ]);
         }
 
+        // When accepted, dispatch WhatsApp Chat Acceptance notification (Template: HX40e5a17a8d298491572c44c70abd5af0) to the requester
+        if ($action === 'accept') {
+            $this->dispatchWhatsAppChatAcceptedNotification($candidate, $targetCandidate);
+        }
+
         $cleanMobile = preg_replace('/[^0-9]/', '', $targetCandidate->mobile ?? '');
         $unmaskedMobile = '+91 ' . preg_replace('/(\d{5})(\d{5})/', '$1 $2', $cleanMobile);
 
@@ -823,6 +828,69 @@ class MatchesController extends Controller
                 ? "You accepted {$targetCandidate->first_name}'s WhatsApp chat request! Direct WhatsApp chat is now unlocked."
                 : "WhatsApp chat request from {$targetCandidate->first_name} was declined.",
         ]);
+    }
+
+    /**
+     * Dispatch WhatsApp Notification when a WhatsApp Chat Request is accepted (Template: HX40e5a17a8d298491572c44c70abd5af0)
+     */
+    private function dispatchWhatsAppChatAcceptedNotification(Candidate $accepter, Candidate $requester): void
+    {
+        if (empty($requester->mobile)) {
+            return;
+        }
+
+        try {
+            $apiKey = env('TWILIO_SID');
+            $apiSecret = env('TWILIO_AUTH_TOKEN');
+            $accountSid = env('TWILIO_ACCOUNT_SID');
+            $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
+
+            if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
+                $twilio = new Client($apiKey, $apiSecret, $accountSid);
+
+                $cleanRequesterMobile = preg_replace('/[^0-9]/', '', $requester->mobile);
+                if (strlen($cleanRequesterMobile) === 10) {
+                    $formattedMobile = 'whatsapp:+91'.$cleanRequesterMobile;
+                } elseif (strlen($cleanRequesterMobile) === 12 && str_starts_with($cleanRequesterMobile, '91')) {
+                    $formattedMobile = 'whatsapp:+'.$cleanRequesterMobile;
+                } else {
+                    $formattedMobile = 'whatsapp:+91'.ltrim($cleanRequesterMobile, '0');
+                }
+
+                $cleanAccepterMobile = ltrim(preg_replace('/[^0-9]/', '', $accepter->mobile ?? ''), '0');
+                if (strlen($cleanAccepterMobile) > 10 && str_starts_with($cleanAccepterMobile, '91')) {
+                    $cleanAccepterMobile = substr($cleanAccepterMobile, 2);
+                }
+
+                // WhatsApp Meta template: rm_wp_chat_accepted
+                $templateSid = 'HX40e5a17a8d298491572c44c70abd5af0';
+
+                $requesterName = $requester->first_name ?? 'Candidate';
+                $accepterName = trim(($accepter->first_name ?? 'Candidate').' '.($accepter->last_name ?? ''));
+                $accepterCode = $accepter->getDisplayCodeAttribute();
+
+                $contentVariables = json_encode([
+                    '1' => $requesterName,
+                    '2' => $accepterName,
+                    '3' => $accepterCode,
+                    '4' => $cleanAccepterMobile ?: '9820149842',
+                    '5' => '91'.($cleanAccepterMobile ?: '9820149842'),
+                ]);
+
+                $twilio->messages->create(
+                    $formattedMobile,
+                    [
+                        'from' => $twilioNumber,
+                        'contentSid' => $templateSid,
+                        'contentVariables' => $contentVariables,
+                    ]
+                );
+
+                Log::info("WhatsApp Chat Accepted notification sent to {$requester->mobile} for accepter {$accepterCode}");
+            }
+        } catch (\Exception $e) {
+            Log::error('Twilio WhatsApp Chat Accepted Error: '.$e->getMessage());
+        }
     }
 
     /**
