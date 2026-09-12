@@ -382,10 +382,13 @@ class MatchesController extends Controller
         $profileId = $request->profile_id;
         $action = $request->action;
 
-        $targetCandidate = Candidate::where('profile_id', $profileId)
-            ->orWhere('candidate_code', $profileId)
-            ->orWhere('id', is_numeric($profileId) ? $profileId : 0)
-            ->first();
+        $targetCandidate = self::resolveProfileFromToken($profileId);
+        if (! $targetCandidate) {
+            $targetCandidate = Candidate::where('profile_id', $profileId)
+                ->orWhere('candidate_code', $profileId)
+                ->orWhere('id', is_numeric($profileId) ? $profileId : 0)
+                ->first();
+        }
 
         if (! $targetCandidate) {
             return response()->json([
@@ -440,13 +443,10 @@ class MatchesController extends Controller
                 } catch (\Exception $e) {
                     Log::error('Wallet debit on accept error: '.$e->getMessage());
                 }
-
-                // Send regular WhatsApp accept notification (all details unlocked)
-                $this->dispatchRequestAcceptedWhatsApp($candidate, $requester);
-            } else {
-                // Insufficient balance: Send high-converting urgent recharge notification
-                $this->dispatchUrgentRechargeWhatsApp($candidate, $requester);
             }
+
+            // Always dispatch Acceptance WhatsApp Notification (Template: HXd6d0204ec25374a29cc5f3b818eccd69) to the requester
+            $this->dispatchRequestAcceptedWhatsApp($candidate, $requester);
 
             return response()->json([
                 'success' => true,
