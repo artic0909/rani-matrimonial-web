@@ -1014,7 +1014,7 @@ class MatchesController extends Controller
         array $receivedInterestIds = [],
         array $acceptedCandidateIds = []
     ): array {
-        $query = Candidate::with('photos')
+        $query = Candidate::with(['photos', 'bluetick'])
             ->where('gender', $targetGender)
             ->where('id', '!=', $candidate->id);
 
@@ -1163,7 +1163,7 @@ class MatchesController extends Controller
                 'match_score' => $matchScore,
                 'match_reasons' => array_slice($matchReasons, 0, 3),
                 'badge' => $badge,
-                'verified' => (bool) $c->selfie_verified,
+                'verified' => (bool) ($c->selfie_verified || ($c->bluetick && $c->bluetick->is_accept === 1)),
                 'active_ago' => ($index % 2 === 0) ? 'Online now' : 'Active '.(($index % 5) + 1).' hours ago',
                 'distance' => (4 + (($c->id * 2) % 20)).' km away',
                 'is_accepted' => $isAccepted,

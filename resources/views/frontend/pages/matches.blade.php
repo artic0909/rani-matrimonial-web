@@ -129,33 +129,12 @@
                                     <!-- Top Gradient Overlay -->
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
 
-                                    <!-- Top Left: Dynamic Context Badges -->
-                                    <div class="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
-                                        <!-- Case 1: Mutual Accepted Connection -->
-                                        <template x-if="match.is_accepted || isAccepted(match.id)">
-                                            <span class="px-3 py-1 rounded-full bg-gradient-to-r from-emerald-600 to-teal-700 text-white text-xs font-bold shadow-md flex items-center gap-1.5 border border-emerald-300/40">
-                                                <svg class="w-3.5 h-3.5 text-emerald-200" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                                <span>Accepted Connection</span>
-                                            </span>
-                                        </template>
-
-                                        <!-- Case 2: Request Sent by current candidate -->
-                                        <template x-if="!match.is_accepted && !isAccepted(match.id) && (match.request_type === 'sent' || isInterestSent(match.id))">
-                                            <span class="px-3 py-1 rounded-full bg-gradient-to-r from-sky-600 to-teal-700 text-white text-xs font-bold shadow-md flex items-center gap-1.5 border border-white/30">
-                                                <svg class="w-3.5 h-3.5 text-sky-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                                                <span>Request Sent</span>
-                                            </span>
-                                        </template>
-
-                                        <!-- Case 3: Default Match Compatibility Score -->
-                                        <template x-if="!match.is_accepted && !isAccepted(match.id) && match.request_type !== 'sent' && !isInterestSent(match.id)">
-                                            <span class="px-3 py-1 rounded-full bg-gradient-to-r from-rani-gold to-yellow-500 text-rani-dark text-xs font-bold shadow-md flex items-center gap-1 border border-white/40">
-                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                                                <span x-text="match.match_score + '% Match'"></span>
-                                            </span>
-                                        </template>
-
-                                        <span x-show="match.badge && !match.is_accepted && match.request_type !== 'sent'" class="px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-xs text-white text-[10px] font-semibold tracking-wide" x-text="match.badge"></span>
+                                    <!-- Top Left: Match Percentage Badge Only -->
+                                    <div class="absolute top-3 left-3 z-10">
+                                        <span class="px-3 py-1 rounded-full bg-gradient-to-r from-rani-gold to-yellow-500 text-rani-dark text-xs font-bold shadow-md flex items-center gap-1 border border-white/40">
+                                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                            <span x-text="match.match_score + '% Match'"></span>
+                                        </span>
                                     </div>
 
                                     <!-- Top Right: Shortlist Heart Action -->
@@ -170,9 +149,11 @@
                                     <!-- Bottom Image Overlay Text: Name & ID -->
                                     <div class="absolute bottom-3 left-4 right-4 text-white z-10 flex items-end justify-between">
                                         <div class="max-w-[70%]">
-                                            <div class="flex items-center gap-2">
+                                            <div class="flex items-center gap-1.5">
                                                 <h3 class="text-xl font-bold font-serif drop-shadow-md truncate" x-text="match.first_name + ' ' + match.last_name"></h3>
-                                                <svg x-show="match.verified" class="w-4 h-4 text-sky-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                                <span x-show="match.verified" class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-tr from-blue-600 via-sky-500 to-sky-400 text-white shadow shrink-0" title="Blue Tick Verified Profile">
+                                                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                                </span>
                                             </div>
                                             <div class="flex items-center gap-2 text-xs text-gray-200 font-mono mt-0.5">
                                                 <span x-text="'ID: ' + match.id"></span>

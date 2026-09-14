@@ -335,13 +335,18 @@
                                     <div class="relative shrink-0">
                                         <img :src="match.photo" :alt="match.first_name" class="w-16 h-16 rounded-full object-cover border-2 border-rani-gold/40 shadow-xs group-hover:scale-105 transition-transform">
                                         <template x-if="match.verified">
-                                            <span class="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full p-0.5 border border-white" title="Verified">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                            <span class="absolute bottom-0 right-0 bg-gradient-to-tr from-blue-600 via-sky-500 to-sky-400 text-white rounded-full p-0.5 border border-white shadow-xs flex items-center justify-center" title="Blue Tick Verified">
+                                                <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                                             </span>
                                         </template>
                                     </div>
                                     <div class="min-w-0 flex-1">
-                                        <h4 class="font-bold text-gray-800 text-sm font-serif truncate group-hover:text-rani-primary transition-colors" x-text="match.first_name + ' ' + (match.last_name ? match.last_name.charAt(0) + '.' : '')"></h4>
+                                        <div class="flex items-center gap-1.5">
+                                            <h4 class="font-bold text-gray-800 text-sm font-serif truncate group-hover:text-rani-primary transition-colors" x-text="match.first_name + ' ' + (match.last_name ? match.last_name.charAt(0) + '.' : '')"></h4>
+                                            <span x-show="match.verified" class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-gradient-to-tr from-blue-600 via-sky-500 to-sky-400 text-white shadow-xs shrink-0" title="Blue Tick Verified Profile">
+                                                <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                            </span>
+                                        </div>
                                         <p class="text-xs text-gray-600 mt-0.5" x-text="match.age + ' yrs, ' + match.height"></p>
                                         <p class="text-xs text-gray-500 truncate" x-text="(match.profession || match.highest_qualification) + ' • ' + match.city"></p>
                                     </div>
