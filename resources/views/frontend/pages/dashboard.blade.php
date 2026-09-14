@@ -190,53 +190,31 @@
                         <span class="text-xs text-gray-500 font-medium">Recent Visitors</span>
                     </a>
 
-                    <!-- Item 4: Contacts Viewed -->
-                    <a href="{{ route('wallet') }}" class="p-4 flex flex-col items-center justify-center text-center hover:bg-rani-primary/5 cursor-pointer transition-colors group" title="View contact views & transactions">
+                    <!-- Item 4: Wallet Balance -->
+                    <a href="{{ route('wallet') }}" class="p-4 flex flex-col items-center justify-center text-center hover:bg-rani-primary/5 cursor-pointer transition-colors group" title="View Wallet & Recharge Balance">
                         <div class="flex items-center gap-1.5 mb-1">
-                            <span class="text-2xl font-bold text-gray-800 font-serif group-hover:text-rani-primary transition-colors">{{ $contactsViewedCount }}</span>
-                            @if($contactsViewedCount > 0)
-                                <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                            @else
-                                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
-                            @endif
+                            <span class="text-2xl font-bold text-gray-800 font-serif group-hover:text-rani-primary transition-colors">₹{{ number_format($wallet->avl_balance ?? 0, 0) }}</span>
+                            <span class="p-1 rounded-full bg-rani-primary/10 text-rani-primary group-hover:bg-rani-primary group-hover:text-white transition-all">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                </svg>
+                            </span>
                         </div>
-                        <span class="text-xs text-gray-500 font-medium">Contacts Unlocked</span>
+                        <span class="text-xs text-gray-500 font-medium">Wallet</span>
                     </a>
                 </div>
             </div>
 
-            <!-- Improve your Profile Banner (Requirement 4) -->
+            <!-- Improve your Profile Banner (Visible only if not blue tick verified) -->
+            @if(!($candidate->is_bluetick_verified || ($candidateBluetick && (int)$candidateBluetick->is_accept === 1)))
             <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <h3 class="font-bold text-gray-800 font-serif text-lg">Improve your Profile</h3>
                     <span class="text-xs font-semibold text-rani-primary">Trust & Safety</span>
                 </div>
                 
-                @if($candidate->is_bluetick_verified || ($candidateBluetick && (int)$candidateBluetick->is_accept === 1))
-                <!-- 1. Already Verified State (Blue Tick) -->
-                <div class="p-6 flex flex-col sm:flex-row items-center gap-6 bg-gradient-to-r from-blue-50 via-sky-50 to-indigo-50 border-l-4 border-blue-500">
-                    <div class="relative shrink-0">
-                        <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 via-sky-500 to-sky-400 shadow-lg flex items-center justify-center border-4 border-white">
-                            <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                        </div>
-                    </div>
-                    <div class="text-center sm:text-left flex-1">
-                        <div class="flex items-center justify-center sm:justify-start gap-2 mb-1">
-                            <h4 class="font-bold text-gray-800 text-lg flex items-center gap-1.5">
-                                <span>Blue Tick Verified</span>
-                                <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                            </h4>
-                            <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-0.5 rounded-full font-bold border border-blue-200">100% Genuine</span>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-3">Your Aadhaar verification is active. Your profile is prioritized in matchmaking algorithms and receives up to 2x more interests!</p>
-                        <a href="{{ route('my-photos') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 bg-white border border-blue-200 px-4 py-2 rounded-xl hover:bg-blue-50 transition-colors shadow-xs">
-                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                            Manage Gallery Photos
-                        </a>
-                    </div>
-                </div>
-                @elseif($candidateBluetick && $candidateBluetick->is_accept === 0)
-                <!-- 2. Pending Review State (24-48 hours) -->
+                @if($candidateBluetick && (int)$candidateBluetick->is_accept === 0)
+                <!-- 1. Pending Review State (24-48 hours) -->
                 <div class="p-6 flex flex-col sm:flex-row items-center gap-6 bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50">
                     <div class="relative shrink-0">
                         <div class="w-20 h-20 rounded-full bg-white shadow-md flex items-center justify-center border-4 border-amber-200">
@@ -254,8 +232,8 @@
                         </a>
                     </div>
                 </div>
-                @elseif($candidateBluetick && $candidateBluetick->is_accept === 2)
-                <!-- 3. Rejected State -->
+                @elseif($candidateBluetick && (int)$candidateBluetick->is_accept === 2)
+                <!-- 2. Rejected State -->
                 <div class="p-6 flex flex-col sm:flex-row items-center gap-6 bg-gradient-to-r from-red-50 via-pink-50 to-red-50">
                     <div class="relative shrink-0">
                         <div class="w-20 h-20 rounded-full bg-white shadow-md flex items-center justify-center border-4 border-red-200">
@@ -271,7 +249,7 @@
                     </div>
                 </div>
                 @else
-                <!-- 4. Default Not Verified State -->
+                <!-- 3. Default Not Verified State -->
                 <div class="p-6 flex flex-col sm:flex-row items-center gap-6 bg-gradient-to-r from-orange-50 via-pink-50 to-amber-50">
                     <div class="relative shrink-0">
                         <div class="w-20 h-20 rounded-full bg-white shadow-md flex items-center justify-center border-4 border-pink-100">
@@ -292,6 +270,7 @@
                 </div>
                 @endif
             </div>
+            @endif
 
             <!-- Matches Preview Section -->
             <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -408,47 +387,8 @@
 
         </div>
 
-        <!-- Right Column: VIP Rani & Notifications (Requirement 3) -->
+        <!-- Right Column: Notifications Feed -->
         <div class="w-full lg:w-1/4 flex flex-col gap-6">
-            
-            <!-- VIP Banner -->
-            <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-sm border border-rani-gold/60 overflow-hidden relative group transition-all hover:shadow-md">
-                <div class="bg-gradient-to-b from-amber-50/60 to-transparent p-6 flex flex-col items-center text-center border-b border-gray-100">
-                    <div class="flex items-center gap-1.5 mb-1">
-                        <svg class="w-5 h-5 text-rani-gold animate-bounce" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <h3 class="font-serif font-bold text-rani-primary-dark tracking-wide text-lg">VIP RANI</h3>
-                    </div>
-                    <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-4 font-semibold">Matchmaking Service for Elites</p>
-                    
-                    <ul class="text-xs text-gray-600 text-left space-y-2 mb-6 w-full px-2">
-                        <li class="flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-rani-gold"></span>
-                            <span>Top Rated Personal Matchmakers</span>
-                        </li>
-                        <li class="flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-rani-gold"></span>
-                            <span>5X Higher Connection Success Rate</span>
-                        </li>
-                        <li class="flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-rani-gold"></span>
-                            <span>Handpicked Background-Checked Matches</span>
-                        </li>
-                    </ul>
-                    
-                    <button type="button" 
-                            @click="vipModalOpen = true" 
-                            class="bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white w-full py-2.5 rounded-xl font-bold text-xs shadow-sm hover:shadow-md transform hover:-translate-y-0.5 transition-all">
-                        Know More & Consult
-                    </button>
-                </div>
-                
-                <!-- Image of consultant -->
-                <div class="h-28 bg-gray-200 overflow-hidden relative">
-                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400&h=300" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" alt="Consultant">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                    <span class="absolute bottom-2 left-3 text-[10px] font-bold text-white tracking-wide uppercase">Dedicated Relationship Manager</span>
-                </div>
-            </div>
 
             <!-- Dynamic Notifications Feed (Database Driven & Click to Dismiss/Go) -->
             <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -501,72 +441,6 @@
 </div>
 
 <!-- ================= MODALS ================= -->
-
-<!-- 1. VIP Rani Modal -->
-<div x-show="vipModalOpen" 
-     x-cloak 
-     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
-     x-transition:enter="transition ease-out duration-300"
-     x-transition:enter-start="opacity-0"
-     x-transition:enter-end="opacity-100"
-     x-transition:leave="transition ease-in duration-200"
-     x-transition:leave-start="opacity-100"
-     x-transition:leave-end="opacity-0">
-    
-    <div @click.away="vipModalOpen = false" class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-rani-gold relative overflow-hidden">
-        <!-- Top Accent Bar -->
-        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold"></div>
-        
-        <!-- Close Button -->
-        <button @click="vipModalOpen = false" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-
-        <div class="text-center mb-6">
-            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-50 text-rani-gold mb-3 border border-amber-200">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-            </div>
-            <h3 class="text-2xl font-bold font-serif text-rani-primary-dark">VIP Rani Matchmaking</h3>
-            <p class="text-xs text-gray-500 mt-1 uppercase tracking-wider">Exclusive Confidential Elite Service</p>
-        </div>
-
-        <div class="space-y-3.5 mb-6 text-sm text-gray-700">
-            <div class="flex items-start gap-3 p-3 rounded-xl bg-gray-50">
-                <span class="text-rani-gold font-bold text-base mt-0.5">✦</span>
-                <div>
-                    <strong class="text-gray-900 block font-semibold text-xs">Dedicated Relationship Manager</strong>
-                    <span class="text-xs text-gray-600">A personal senior matchmaking advisor handles profile searches, shortlisting, and introduction calls.</span>
-                </div>
-            </div>
-            <div class="flex items-start gap-3 p-3 rounded-xl bg-gray-50">
-                <span class="text-rani-gold font-bold text-base mt-0.5">✦</span>
-                <div>
-                    <strong class="text-gray-900 block font-semibold text-xs">100% Verified Affluent Profiles</strong>
-                    <span class="text-xs text-gray-600">High net-worth individuals, doctors, business families & senior corporate professionals.</span>
-                </div>
-            </div>
-            <div class="flex items-start gap-3 p-3 rounded-xl bg-gray-50">
-                <span class="text-rani-gold font-bold text-base mt-0.5">✦</span>
-                <div>
-                    <strong class="text-gray-900 block font-semibold text-xs">Complete Privacy & Discretion</strong>
-                    <span class="text-xs text-gray-600">Photos & personal contacts are only shared with mutual consent.</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="flex flex-col sm:flex-row gap-3">
-            <a href="https://wa.me/919820149842?text={{ urlencode('Hello Rani Matrimonial VIP Team, I would like to know more about the VIP Elite Matchmaking service for profile ID: ' . ($candidate->candidate_code ?? $candidate->id)) }}" 
-               target="_blank" 
-               class="flex-1 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs text-center flex items-center justify-center gap-2 shadow-sm transition-colors">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
-                Chat on WhatsApp
-            </a>
-            <button @click="vipModalOpen = false" class="py-3 px-5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition-colors">
-                Close
-            </button>
-        </div>
-    </div>
-</div>
 
 <!-- 2. Rani Live Speed Dating Modal -->
 <div x-show="liveModalOpen" 
@@ -661,9 +535,6 @@
                 <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                 Recharge Wallet Balance
             </a>
-            <button @click="upgradeModalOpen = false; vipModalOpen = true;" class="w-full py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold text-xs transition-colors">
-                View VIP Assisted Packages
-            </button>
         </div>
     </div>
 </div>
@@ -683,7 +554,6 @@ function dashboardManager(initialData) {
         receivedInterestIds: initialData.receivedInterestIds || [],
         acceptedProfileCodes: initialData.acceptedProfileCodes || [],
         
-        vipModalOpen: false,
         liveModalOpen: false,
         upgradeModalOpen: false,
 
