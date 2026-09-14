@@ -399,6 +399,9 @@
     </div>
 </div>
 
+<!-- Include WhatsApp / Facebook style Profile Picture Cropper Modal -->
+@include('frontend.includes.profile_cropper_modal')
+
 <script>
 window.profileEditor = function(config = {}) {
     return {
@@ -416,7 +419,14 @@ window.profileEditor = function(config = {}) {
         currentSection: '',
         isSubmitting: false,
         isUploadingPhoto: false,
-        profileImageUrl: '{{ $candidate->profile_picture ? asset('storage/' . $candidate->profile_picture) : "https://ui-avatars.com/api/?name=".urlencode($candidate->first_name)."&background=D4AF37&color=fff" }}',
+        profileImageUrl: '{{ $candidate->profile_picture ? asset('storage/' . $candidate->profile_picture) : asset('img/' . (strtolower($candidate->gender ?? 'male') === 'female' ? 'female' : 'male') . '/correct1.png') }}',
+
+        // Cropper state
+        isCropperOpen: false,
+        isSavingCrop: false,
+        cropShape: 'circle',
+        cropperZoomLevel: 1,
+        cropperInstance: null,
 
         onReligionChange() {
             this.formData.community = '';
@@ -582,34 +592,11 @@ window.profileEditor = function(config = {}) {
                     customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                 });
             } finally {
-<!-- Include WhatsApp / Facebook style Profile Picture Cropper Modal -->
-@include('frontend.includes.profile_cropper_modal')
-
-<script>
-window.profileEditor = function(candidateData, profileCode, initialPhotoUrl) {
-    return {
-        activeModal: null,
-        isSubmitting: false,
-        isUploadingPhoto: false,
-        profileImageUrl: initialPhotoUrl,
-        formData: { ...candidateData },
-
-        // Cropper state
-        isCropperOpen: false,
-        isSavingCrop: false,
-        cropShape: 'circle',
-        cropperZoomLevel: 1,
-        cropperInstance: null,
-
-        openModal(name) {
-            this.activeModal = name;
-            this.formData = { ...candidateData };
+                this.isSubmitting = false;
+            }
         },
 
-        closeModal() {
-            this.activeModal = null;
-        },
-
+        // Cropper methods
         openCropper(event) {
             const file = event.target.files ? event.target.files[0] : null;
             if (!file) return;
@@ -781,7 +768,7 @@ window.profileEditor = function(candidateData, profileCode, initialPhotoUrl) {
                             this.profileImageUrl = newUrl;
                             
                             // Update avatar on page immediately
-                            document.querySelectorAll('.profile-avatar-img, img[alt="' + (candidateData.first_name || 'Candidate') + '"]').forEach(img => {
+                            document.querySelectorAll('.profile-avatar-img').forEach(img => {
                                 img.src = newUrl;
                             });
 
@@ -820,58 +807,6 @@ window.profileEditor = function(candidateData, profileCode, initialPhotoUrl) {
             } catch (err) {
                 console.error('Crop Error:', err);
                 this.isSavingCrop = false;
-            }
-        },
-
-        async saveField(section) {
-            this.isSubmitting = true;
-            try {
-                const payload = {
-                    section: section,
-                    ...this.formData
-                };
-
-                const response = await fetch('{{ route("profile.update") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Saved!',
-                        text: result.message || 'Profile updated successfully.',
-                        timer: 1500,
-                        showConfirmButton: false,
-                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
-                    }).then(() => {
-                        window.location.reload();
-                    });
-                } else {
-                    const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat().join('<br>') : 'Error saving profile');
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Update Failed',
-                        html: errorMsg,
-                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
-                    });
-                }
-            } catch (error) {
-                console.error('Fetch Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Server Error',
-                    text: 'An error occurred while saving profile. Please try again.',
-                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
-                });
-            } finally {
-                this.isSubmitting = false;
             }
         }
     };

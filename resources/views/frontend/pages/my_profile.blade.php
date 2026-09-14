@@ -44,8 +44,9 @@
                 <div class="relative shrink-0 group">
                     <div class="absolute inset-0 bg-rani-gold rounded-full blur-md opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
                     <img :src="profileImageUrl" 
+                         src="{{ $candidate->profile_picture ? asset('storage/' . $candidate->profile_picture) : asset('img/' . (strtolower($candidate->gender ?? 'male') === 'female' ? 'female' : 'male') . '/correct1.png') }}"
                          alt="{{ $candidate->first_name }}" 
-                         class="w-36 h-36 md:w-44 md:h-44 rounded-full border-[6px] border-white shadow-xl object-cover bg-white relative z-10 transform group-hover:scale-[1.02] transition-transform duration-300">
+                         class="profile-avatar-img w-36 h-36 md:w-44 md:h-44 rounded-full border-[6px] border-white shadow-xl object-cover bg-white relative z-10 transform group-hover:scale-[1.02] transition-transform duration-300">
                     
                     <!-- Upload Spinner Overlay -->
                     <div x-show="isUploadingPhoto" style="display: none;" class="absolute inset-0 z-20 rounded-full bg-black/50 flex flex-col items-center justify-center text-white backdrop-blur-xs">
