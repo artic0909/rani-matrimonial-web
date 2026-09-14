@@ -309,10 +309,10 @@
                                     </button>
                                 </div>
 
-                                <!-- Photo & Basic Info -->
-                                <div class="flex items-center gap-3.5 mb-3 cursor-pointer" @click="openProfile(match)">
+                                <!-- Photo & Basic Info (Non-hyperlinked) -->
+                                <div class="flex items-center gap-3.5 mb-3">
                                     <div class="relative shrink-0">
-                                        <img :src="match.photo" :alt="match.first_name" class="w-16 h-16 rounded-full object-cover border-2 border-rani-gold/40 shadow-xs group-hover:scale-105 transition-transform">
+                                        <img :src="match.photo" :alt="match.first_name" class="w-16 h-16 rounded-full object-cover border-2 border-rani-gold/40 shadow-xs">
                                         <template x-if="match.verified">
                                             <span class="absolute bottom-0 right-0 bg-gradient-to-tr from-blue-600 via-sky-500 to-sky-400 text-white rounded-full p-0.5 border border-white shadow-xs flex items-center justify-center" title="Blue Tick Verified">
                                                 <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
@@ -321,7 +321,7 @@
                                     </div>
                                     <div class="min-w-0 flex-1">
                                         <div class="flex items-center gap-1.5">
-                                            <h4 class="font-bold text-gray-800 text-sm font-serif truncate group-hover:text-rani-primary transition-colors" x-text="match.first_name + ' ' + (match.last_name ? match.last_name.charAt(0) + '.' : '')"></h4>
+                                            <h4 class="font-bold text-gray-800 text-sm font-serif truncate" x-text="match.first_name + ' ' + (match.last_name ? match.last_name.charAt(0) + '.' : '')"></h4>
                                             <span x-show="match.verified" class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-gradient-to-tr from-blue-600 via-sky-500 to-sky-400 text-white shadow-xs shrink-0" title="Blue Tick Verified Profile">
                                                 <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                                             </span>
@@ -339,16 +339,10 @@
                                 </div>
 
                                 <!-- Action CTA Buttons -->
-                                <div class="flex items-center gap-2 pt-2 border-t border-gray-100">
-                                    <button type="button" 
-                                            @click="openProfile(match)"
-                                            class="flex-1 py-1.5 px-3 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors text-center">
-                                        View Profile
-                                    </button>
-
+                                <div class="pt-2 border-t border-gray-100">
                                     <!-- Connect Button with dynamic states -->
                                     <template x-if="isInterestSent(match.id)">
-                                        <button type="button" class="flex-1 py-1.5 px-3 text-xs font-bold text-emerald-700 bg-emerald-100 rounded-xl cursor-default flex items-center justify-center gap-1">
+                                        <button type="button" class="w-full py-2 px-3 text-xs font-bold text-emerald-700 bg-emerald-100 rounded-xl cursor-default flex items-center justify-center gap-1.5">
                                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                                             Sent
                                         </button>
@@ -356,7 +350,7 @@
                                     <template x-if="!isInterestSent(match.id)">
                                         <button type="button" 
                                                 @click.stop="sendInterest(match)"
-                                                class="flex-1 py-1.5 px-3 text-xs font-bold text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:shadow-md rounded-xl transition-all flex items-center justify-center gap-1">
+                                                class="w-full py-2 px-3 text-xs font-bold text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary shadow-xs hover:shadow-md rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                             Connect
                                         </button>
