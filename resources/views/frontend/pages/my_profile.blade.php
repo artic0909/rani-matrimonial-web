@@ -56,7 +56,7 @@
                     <!-- Change Photo Camera Button -->
                     <label for="profile_upload" class="absolute bottom-1 right-1 md:bottom-2 md:right-2 bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white p-3 rounded-full shadow-2xl border-2 border-white cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 z-30 flex items-center justify-center group-hover:shadow-rani-gold/50" title="Change Profile Picture">
                         <svg class="w-5 h-5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <input type="file" id="profile_upload" class="hidden" accept="image/*" @change="uploadProfilePicture">
+                        <input type="file" id="profile_upload" class="hidden" accept="image/*" @change="openCropper">
                     </label>
 
                     @if($candidate->is_bluetick_verified || ($candidate->bluetick && (int)$candidate->bluetick->is_accept === 1))

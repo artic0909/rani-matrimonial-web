@@ -58,6 +58,42 @@
         }
     </style>
 
+    <!-- Cropper.js for WhatsApp / Facebook style image cropping -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+
+    <style>
+        /* WhatsApp & Facebook style Cropper styling */
+        .cropper-modal {
+            background-color: rgba(10, 10, 10, 0.85) !important;
+            opacity: 1 !important;
+        }
+        .cropper-circle-mode .cropper-view-box,
+        .cropper-circle-mode .cropper-face {
+            border-radius: 50% !important;
+        }
+        .cropper-circle-mode .cropper-view-box {
+            outline: none !important;
+            box-shadow: 0 0 0 2px #D4AF37, 0 0 0 4000px rgba(0, 0, 0, 0.7) !important;
+        }
+        .cropper-square-mode .cropper-view-box {
+            outline: none !important;
+            box-shadow: 0 0 0 2px #D4AF37, 0 0 0 4000px rgba(0, 0, 0, 0.7) !important;
+        }
+        .cropper-dashed {
+            border-color: rgba(212, 175, 55, 0.4) !important;
+        }
+        .cropper-line {
+            background-color: #D4AF37 !important;
+        }
+        .cropper-point {
+            background-color: #D4AF37 !important;
+            width: 8px !important;
+            height: 8px !important;
+            border-radius: 50% !important;
+        }
+    </style>
+
     <!-- AlpineJS for interactivity -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 

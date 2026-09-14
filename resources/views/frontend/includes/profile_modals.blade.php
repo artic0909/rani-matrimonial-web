@@ -582,54 +582,282 @@ window.profileEditor = function(config = {}) {
                     customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                 });
             } finally {
-                this.isSubmitting = false;
-            }
+<!-- Include WhatsApp / Facebook style Profile Picture Cropper Modal -->
+@include('frontend.includes.profile_cropper_modal')
+
+<script>
+window.profileEditor = function(candidateData, profileCode, initialPhotoUrl) {
+    return {
+        activeModal: null,
+        isSubmitting: false,
+        isUploadingPhoto: false,
+        profileImageUrl: initialPhotoUrl,
+        formData: { ...candidateData },
+
+        // Cropper state
+        isCropperOpen: false,
+        isSavingCrop: false,
+        cropShape: 'circle',
+        cropperZoomLevel: 1,
+        cropperInstance: null,
+
+        openModal(name) {
+            this.activeModal = name;
+            this.formData = { ...candidateData };
         },
 
-        async uploadProfilePicture(event) {
-            const file = event.target.files[0];
+        closeModal() {
+            this.activeModal = null;
+        },
+
+        openCropper(event) {
+            const file = event.target.files ? event.target.files[0] : null;
             if (!file) return;
-            
+
             if (file.size > 15 * 1024 * 1024) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'File Too Large',
-                    text: 'Profile picture must be under 15MB.',
+                    text: 'Please select an image under 15MB.',
                     customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                 });
+                event.target.value = '';
                 return;
             }
 
-            this.isUploadingPhoto = true;
-            const formData = new FormData();
-            formData.append('profile_picture', file);
-            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imageElement = document.getElementById('cropper-target-image');
+                if (!imageElement) return;
+
+                this.isCropperOpen = true;
+                this.cropShape = 'circle';
+                this.cropperZoomLevel = 1;
+
+                if (this.cropperInstance) {
+                    this.cropperInstance.destroy();
+                    this.cropperInstance = null;
+                }
+
+                imageElement.src = e.target.result;
+
+                this.$nextTick(() => {
+                    setTimeout(() => {
+                        this.initCropperInstance();
+                    }, 120);
+                });
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        },
+
+        initCropperInstance() {
+            const imageElement = document.getElementById('cropper-target-image');
+            if (!imageElement) return;
+
+            if (this.cropperInstance) {
+                this.cropperInstance.destroy();
+            }
+
+            this.cropperInstance = new Cropper(imageElement, {
+                aspectRatio: 1,
+                viewMode: 1,
+                dragMode: 'move',
+                autoCropArea: 0.88,
+                restore: false,
+                guides: false,
+                center: true,
+                highlight: false,
+                cropBoxMovable: false,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: false,
+                ready: () => {
+                    this.updateLivePreview();
+                },
+                crop: () => {
+                    this.updateLivePreview();
+                },
+                zoom: (e) => {
+                    if (e.detail && e.detail.ratio) {
+                        this.cropperZoomLevel = Math.max(0.5, Math.min(3, e.detail.ratio));
+                    }
+                }
+            });
+        },
+
+        updateLivePreview() {
+            if (!this.cropperInstance) return;
+            const canvas = document.getElementById('cropper-live-preview');
+            if (!canvas) return;
+
+            const croppedCanvas = this.cropperInstance.getCroppedCanvas({
+                width: 160,
+                height: 160,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high'
+            });
+
+            if (croppedCanvas) {
+                canvas.width = 160;
+                canvas.height = 160;
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, 160, 160);
+                ctx.drawImage(croppedCanvas, 0, 0, 160, 160);
+            }
+        },
+
+        cropperZoom(delta) {
+            if (!this.cropperInstance) return;
+            this.cropperInstance.zoom(delta);
+        },
+
+        cropperZoomTo(val) {
+            if (!this.cropperInstance) return;
+            this.cropperInstance.zoomTo(parseFloat(val));
+        },
+
+        cropperRotate(deg) {
+            if (!this.cropperInstance) return;
+            this.cropperInstance.rotate(deg);
+        },
+
+        cropperReset() {
+            if (!this.cropperInstance) return;
+            this.cropperInstance.reset();
+            this.cropperZoomLevel = 1;
+        },
+
+        setCropShape(shape) {
+            this.cropShape = shape;
+        },
+
+        closeCropper() {
+            this.isCropperOpen = false;
+            if (this.cropperInstance) {
+                this.cropperInstance.destroy();
+                this.cropperInstance = null;
+            }
+        },
+
+        async saveCroppedProfilePicture() {
+            if (!this.cropperInstance) return;
+
+            this.isSavingCrop = true;
+
             try {
-                const response = await fetch('{{ route("profile.upload-photo") }}', {
+                const canvas = this.cropperInstance.getCroppedCanvas({
+                    width: 800,
+                    height: 800,
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high'
+                });
+
+                if (!canvas) {
+                    throw new Error('Canvas export failed');
+                }
+
+                canvas.toBlob(async (blob) => {
+                    if (!blob) {
+                        this.isSavingCrop = false;
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    formData.append('profile_picture', blob, 'profile_' + Date.now() + '.webp');
+
+                    try {
+                        const response = await fetch('{{ route("profile.upload-photo") }}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        });
+
+                        const result = await response.json();
+                        if (result.success) {
+                            const newUrl = result.image_url + '?t=' + Date.now();
+                            this.profileImageUrl = newUrl;
+                            
+                            // Update avatar on page immediately
+                            document.querySelectorAll('.profile-avatar-img, img[alt="' + (candidateData.first_name || 'Candidate') + '"]').forEach(img => {
+                                img.src = newUrl;
+                            });
+
+                            this.closeCropper();
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Profile Photo Updated!',
+                                text: result.message || 'Your new profile picture has been framed and saved.',
+                                timer: 2000,
+                                showConfirmButton: false,
+                                customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                            });
+                        } else {
+                            const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat().join('<br>') : 'Error uploading picture');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Upload Failed',
+                                html: errorMsg,
+                                customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Save Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Upload Error',
+                            text: 'An error occurred while uploading. Please try again.',
+                            customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                        });
+                    } finally {
+                        this.isSavingCrop = false;
+                    }
+                }, 'image/webp', 0.90);
+
+            } catch (err) {
+                console.error('Crop Error:', err);
+                this.isSavingCrop = false;
+            }
+        },
+
+        async saveField(section) {
+            this.isSubmitting = true;
+            try {
+                const payload = {
+                    section: section,
+                    ...this.formData
+                };
+
+                const response = await fetch('{{ route("profile.update") }}', {
                     method: 'POST',
                     headers: {
+                        'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json'
                     },
-                    body: formData
+                    body: JSON.stringify(payload)
                 });
-                
+
                 const result = await response.json();
-                if(result.success) {
-                    this.profileImageUrl = result.image_url;
+                if (result.success) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Photo Uploaded!',
-                        text: result.message || 'Profile picture updated successfully.',
-                        timer: 2000,
+                        title: 'Saved!',
+                        text: result.message || 'Profile updated successfully.',
+                        timer: 1500,
                         showConfirmButton: false,
                         customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    }).then(() => {
+                        window.location.reload();
                     });
                 } else {
-                    const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat().join('<br>') : 'Error uploading picture');
+                    const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat().join('<br>') : 'Error saving profile');
                     Swal.fire({
                         icon: 'error',
-                        title: 'Upload Failed',
+                        title: 'Update Failed',
                         html: errorMsg,
                         customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                     });
@@ -638,18 +866,17 @@ window.profileEditor = function(config = {}) {
                 console.error('Fetch Error:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Upload Error',
-                    text: 'An error occurred while uploading picture.',
+                    title: 'Server Error',
+                    text: 'An error occurred while saving profile. Please try again.',
                     customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                 });
             } finally {
-                this.isUploadingPhoto = false;
+                this.isSubmitting = false;
             }
         }
     };
 };
 
-// Register for Alpine in both cases
 if (window.Alpine) {
     Alpine.data('profileEditor', window.profileEditor);
 } else {

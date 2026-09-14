@@ -90,7 +90,7 @@
                             <label for="direct_profile_input" class="mt-3 cursor-pointer text-xs font-bold text-rani-primary hover:text-rani-primary-dark hover:underline flex items-center gap-1.5 transition-colors">
                                 <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                 Change Profile Photo
-                                <input type="file" id="direct_profile_input" class="hidden" accept="image/*" @change="uploadProfilePhotoDirect">
+                                <input type="file" id="direct_profile_input" class="hidden" accept="image/*" @change="openCropper">
                             </label>
                         </div>
 
@@ -165,16 +165,26 @@
                                 <!-- Actions -->
                                 <div class="p-2.5 bg-gray-50/50 flex items-center justify-between border-t border-gray-100 gap-1">
                                     <template x-if="!photo.is_profile_picture">
-                                        <button type="button" @click="setAsProfile(photo)" class="text-[11px] font-bold text-rani-primary hover:text-rani-primary-dark hover:underline flex items-center gap-1 transition-colors">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                            Set Profile
-                                        </button>
+                                        <div class="flex items-center gap-2">
+                                            <button type="button" @click="setAsProfile(photo)" class="text-[11px] font-bold text-rani-primary hover:text-rani-primary-dark hover:underline flex items-center gap-0.5 transition-colors">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                Set Profile
+                                            </button>
+                                            <button type="button" @click="openCropperWithUrl(photo.url)" class="text-[11px] font-bold text-rani-gold-dark hover:text-rani-gold hover:underline flex items-center gap-0.5 transition-colors" title="Crop and frame this photo for profile picture">
+                                                ✂️ Crop
+                                            </button>
+                                        </div>
                                     </template>
                                     <template x-if="photo.is_profile_picture">
-                                        <span class="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                                            Active
-                                        </span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                                Active
+                                            </span>
+                                            <button type="button" @click="openCropperWithUrl(photo.url)" class="text-[11px] font-bold text-rani-gold-dark hover:text-rani-gold hover:underline flex items-center gap-0.5 transition-colors" title="Re-crop active profile photo">
+                                                ✂️ Re-crop
+                                            </button>
+                                        </div>
                                     </template>
 
                                     <button type="button" @click="deletePhoto(photo)" class="text-gray-400 hover:text-red-600 p-1 rounded hover:bg-red-50 transition-colors" title="Delete Photo">
@@ -356,6 +366,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Include WhatsApp / Facebook style Profile Picture Cropper Modal -->
+    @include('frontend.includes.profile_cropper_modal')
 </div>
 
 <script>
@@ -370,9 +383,249 @@ window.galleryManager = function() {
         previewModalOpen: false,
         activePreviewUrl: '',
 
+        // Cropper state
+        isCropperOpen: false,
+        isSavingCrop: false,
+        cropShape: 'circle',
+        cropperZoomLevel: 1,
+        cropperInstance: null,
+
         settings: {
             photo_privacy: @json($candidate->photo_privacy ?? 'Visible to all Members (Recommended)'),
             album_privacy: @json($candidate->album_privacy ?? 'Visible to Members I like and to all Premium Members')
+        },
+
+        openCropper(event) {
+            const file = event.target.files ? event.target.files[0] : null;
+            if (!file) return;
+
+            if (file.size > 15 * 1024 * 1024) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'File Too Large',
+                    text: 'Please select an image under 15MB.',
+                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                });
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imageElement = document.getElementById('cropper-target-image');
+                if (!imageElement) return;
+
+                this.isCropperOpen = true;
+                this.cropShape = 'circle';
+                this.cropperZoomLevel = 1;
+
+                if (this.cropperInstance) {
+                    this.cropperInstance.destroy();
+                    this.cropperInstance = null;
+                }
+
+                imageElement.src = e.target.result;
+
+                this.$nextTick(() => {
+                    setTimeout(() => {
+                        this.initCropperInstance();
+                    }, 120);
+                });
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        },
+
+        openCropperWithUrl(photoUrl) {
+            const imageElement = document.getElementById('cropper-target-image');
+            if (!imageElement) return;
+
+            this.isCropperOpen = true;
+            this.cropShape = 'circle';
+            this.cropperZoomLevel = 1;
+
+            if (this.cropperInstance) {
+                this.cropperInstance.destroy();
+                this.cropperInstance = null;
+            }
+
+            imageElement.crossOrigin = 'anonymous';
+            imageElement.src = photoUrl;
+
+            this.$nextTick(() => {
+                setTimeout(() => {
+                    this.initCropperInstance();
+                }, 120);
+            });
+        },
+
+        initCropperInstance() {
+            const imageElement = document.getElementById('cropper-target-image');
+            if (!imageElement) return;
+
+            if (this.cropperInstance) {
+                this.cropperInstance.destroy();
+            }
+
+            this.cropperInstance = new Cropper(imageElement, {
+                aspectRatio: 1,
+                viewMode: 1,
+                dragMode: 'move',
+                autoCropArea: 0.88,
+                restore: false,
+                guides: false,
+                center: true,
+                highlight: false,
+                cropBoxMovable: false,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: false,
+                ready: () => {
+                    this.updateLivePreview();
+                },
+                crop: () => {
+                    this.updateLivePreview();
+                },
+                zoom: (e) => {
+                    if (e.detail && e.detail.ratio) {
+                        this.cropperZoomLevel = Math.max(0.5, Math.min(3, e.detail.ratio));
+                    }
+                }
+            });
+        },
+
+        updateLivePreview() {
+            if (!this.cropperInstance) return;
+            const canvas = document.getElementById('cropper-live-preview');
+            if (!canvas) return;
+
+            const croppedCanvas = this.cropperInstance.getCroppedCanvas({
+                width: 160,
+                height: 160,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high'
+            });
+
+            if (croppedCanvas) {
+                canvas.width = 160;
+                canvas.height = 160;
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, 160, 160);
+                ctx.drawImage(croppedCanvas, 0, 0, 160, 160);
+            }
+        },
+
+        cropperZoom(delta) {
+            if (!this.cropperInstance) return;
+            this.cropperInstance.zoom(delta);
+        },
+
+        cropperZoomTo(val) {
+            if (!this.cropperInstance) return;
+            this.cropperInstance.zoomTo(parseFloat(val));
+        },
+
+        cropperRotate(deg) {
+            if (!this.cropperInstance) return;
+            this.cropperInstance.rotate(deg);
+        },
+
+        cropperReset() {
+            if (!this.cropperInstance) return;
+            this.cropperInstance.reset();
+            this.cropperZoomLevel = 1;
+        },
+
+        setCropShape(shape) {
+            this.cropShape = shape;
+        },
+
+        closeCropper() {
+            this.isCropperOpen = false;
+            if (this.cropperInstance) {
+                this.cropperInstance.destroy();
+                this.cropperInstance = null;
+            }
+        },
+
+        async saveCroppedProfilePicture() {
+            if (!this.cropperInstance) return;
+
+            this.isSavingCrop = true;
+
+            try {
+                const canvas = this.cropperInstance.getCroppedCanvas({
+                    width: 800,
+                    height: 800,
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high'
+                });
+
+                if (!canvas) {
+                    throw new Error('Canvas export failed');
+                }
+
+                canvas.toBlob(async (blob) => {
+                    if (!blob) {
+                        this.isSavingCrop = false;
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    formData.append('profile_picture', blob, 'profile_' + Date.now() + '.webp');
+
+                    try {
+                        const response = await fetch('{{ route("profile.upload-photo") }}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        });
+
+                        const result = await response.json();
+                        if (result.success) {
+                            const newUrl = result.image_url + '?t=' + Date.now();
+                            this.profileImageUrl = newUrl;
+
+                            this.closeCropper();
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Profile Photo Updated!',
+                                text: result.message || 'Your new profile picture has been framed and saved.',
+                                timer: 1800,
+                                showConfirmButton: false,
+                                customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat().join('<br>') : 'Error uploading picture');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Upload Failed',
+                                html: errorMsg,
+                                customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Save Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Upload Error',
+                            text: 'An error occurred while uploading. Please try again.',
+                            customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                        });
+                    } finally {
+                        this.isSavingCrop = false;
+                    }
+                }, 'image/webp', 0.90);
+
+            } catch (err) {
+                console.error('Crop Error:', err);
+                this.isSavingCrop = false;
+            }
         },
 
         previewPhoto(photo) {
