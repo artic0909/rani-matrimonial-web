@@ -2,16 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bluetick;
 use App\Models\Candidate;
 use App\Models\CandidatePhoto;
+use App\Models\ConnectionRequest;
 use App\Models\Country;
 use App\Models\Diet;
 use App\Models\Height;
 use App\Models\Hobby;
 use App\Models\Income;
 use App\Models\MaritalStatus;
+use App\Models\Notification;
 use App\Models\Religion;
+use App\Models\Shortlisted;
+use App\Models\Wallet;
+use App\Models\WhatsAppChatRequest;
 use App\Models\WorkingWith;
+use App\Services\NotificationService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -419,9 +427,383 @@ class AuthController extends Controller
     // Candidate dashboard
     public function dashboard()
     {
+        /** @var Candidate $candidate */
+        $candidate = Auth::user();
+        $wallet = $candidate->getOrCreateWallet();
+
+        // 1. Activity Summary Metrics
+        // Pending Invitations: When someone gave me connection request & it is pending
+        $pendingInvitationsCount = ConnectionRequest::where('receiver_id', $candidate->id)
+            ->where('status', 'pending')
+            ->count();
+
+        // Accepted Connections: Connection requests accepted by me or accepted by the receiver
+        $acceptedInvitationsCount = ConnectionRequest::where('status', 'accepted')
+            ->where(function ($q) use ($candidate) {
+                $q->where('sender_id', $candidate->id)
+                    ->orWhere('receiver_id', $candidate->id);
+            })
+            ->count();
+
+        $shortlistedCount = Shortlisted::where('candidate_id', $candidate->id)->count();
+
+        // Visitors: Shortlists received or active opposite-gender count + 3 base
+        $recentVisitorsCount = max(3, $shortlistedCount + ConnectionRequest::where('receiver_id', $candidate->id)->count());
+
+        $contactsViewedCount = WhatsAppChatRequest::where('status', 'accepted')
+            ->where(function ($q) use ($candidate) {
+                $q->where('sender_id', $candidate->id)
+                    ->orWhere('receiver_id', $candidate->id);
+            })
+            ->count();
+
+        // 2. Profile Completeness Calculation
+        $criticalFields = [
+            'first_name', 'last_name', 'dob', 'gender', 'religion', 'community',
+            'city', 'state', 'highest_qualification', 'profession', 'annual_income',
+            'about_yourself', 'profile_picture', 'selfie_verified', 'pref_age_min', 'pref_religion',
+        ];
+        $filledCount = 0;
+        foreach ($criticalFields as $f) {
+            if (! empty($candidate->$f)) {
+                $filledCount++;
+            }
+        }
+        $profileCompleteness = (int) round(($filledCount / count($criticalFields)) * 100);
+
+        // 3. Dynamic Matches for Dashboard
+        $userGender = strtolower(trim($candidate->gender ?? ''));
+        $targetGender = ($userGender === 'male' || $userGender === 'man') ? 'Female' : 'Male';
+
+        $rawShortlisted = Shortlisted::where('candidate_id', $candidate->id)
+            ->pluck('profile_id')
+            ->toArray();
+        $shortlistedIds = [];
+        foreach ($rawShortlisted as $sid) {
+            $shortlistedIds[] = (string) $sid;
+            $sc = Candidate::where('profile_id', $sid)->orWhere('candidate_code', $sid)->orWhere('id', is_numeric($sid) ? $sid : 0)->first();
+            if ($sc) {
+                $shortlistedIds[] = $sc->getDisplayCodeAttribute();
+                $shortlistedIds[] = (string) $sc->id;
+            }
+        }
+        $shortlistedIds = array_values(array_unique($shortlistedIds));
+
+        $sentRequests = ConnectionRequest::where('sender_id', $candidate->id)->pending()->get();
+        $sentInterestIds = [];
+        foreach ($sentRequests as $sr) {
+            $rec = Candidate::find($sr->receiver_id);
+            if ($rec) {
+                $sentInterestIds[] = $rec->getDisplayCodeAttribute();
+                $sentInterestIds[] = (string) $rec->id;
+            }
+        }
+        $sentInterestIds = array_values(array_unique($sentInterestIds));
+
+        $receivedRequests = ConnectionRequest::where('receiver_id', $candidate->id)->pending()->get();
+        $receivedInterestIds = [];
+        foreach ($receivedRequests as $rr) {
+            $sender = Candidate::find($rr->sender_id);
+            if ($sender) {
+                $receivedInterestIds[] = $sender->getDisplayCodeAttribute();
+                $receivedInterestIds[] = (string) $sender->id;
+            }
+        }
+        $receivedInterestIds = array_values(array_unique($receivedInterestIds));
+
+        $acceptedConnections = ConnectionRequest::accepted()
+            ->where(function ($q) use ($candidate) {
+                $q->where('sender_id', $candidate->id)
+                    ->orWhere('receiver_id', $candidate->id);
+            })
+            ->get();
+
+        $acceptedCandidateIds = [];
+        $acceptedProfileCodes = [];
+        foreach ($acceptedConnections as $conn) {
+            $otherId = ($conn->sender_id === $candidate->id) ? $conn->receiver_id : $conn->sender_id;
+            $acceptedCandidateIds[] = $otherId;
+            $other = Candidate::find($otherId);
+            if ($other) {
+                $acceptedProfileCodes[] = $other->getDisplayCodeAttribute();
+                $acceptedProfileCodes[] = (string) $other->id;
+            }
+        }
+        $acceptedProfileCodes = array_values(array_unique($acceptedProfileCodes));
+
+        $matchesController = new MatchesController;
+        $todaysMatches = $matchesController->getMatchesData(
+            $candidate,
+            $targetGender,
+            'todays',
+            $shortlistedIds,
+            $sentInterestIds,
+            $receivedInterestIds,
+            $acceptedCandidateIds
+        );
+
+        // Take top 4 matches for dashboard preview
+        $dashboardMatches = array_slice($todaysMatches, 0, 4);
+
+        // 4. Dynamic Notifications Feed (Synced to database notifications table)
+        NotificationService::syncCandidateNotifications($candidate);
+
+        // Add verification tip notification if not yet verified
+        if (! $candidate->selfie_verified) {
+            $hasNotif = Notification::where('candidate_id', $candidate->id)
+                ->where('type', 'bluetick_verification_tip')
+                ->exists();
+            if (! $hasNotif) {
+                Notification::create([
+                    'candidate_id' => $candidate->id,
+                    'type' => 'bluetick_verification_tip',
+                    'title' => 'Blue Tick Verification',
+                    'message' => 'Boost your profile visibility by completing Selfie & Aadhaar Verification.',
+                    'photo' => asset('logo.png'),
+                    'action_url' => route('bluetick.verify'),
+                    'badge' => 'Action Required',
+                    'is_read' => false,
+                    'is_dismissed' => false,
+                ]);
+            }
+        }
+
+        // Fetch active (non-dismissed) notifications from notifications table
+        $dbNotifications = Notification::where('candidate_id', $candidate->id)
+            ->where('is_dismissed', false)
+            ->orderByDesc('id')
+            ->take(10)
+            ->get();
+
+        $notifications = [];
+        foreach ($dbNotifications as $dn) {
+            $photo = $dn->photo;
+            if (empty($photo)) {
+                $photo = 'https://ui-avatars.com/api/?name=' . urlencode($dn->title ?: 'Rani') . '&background=fdf2f8&color=db2777';
+            }
+
+            $notifications[] = [
+                'id' => $dn->id,
+                'name' => $dn->title,
+                'photo' => $photo,
+                'text' => $dn->message,
+                'time_ago' => $dn->created_at ? $dn->created_at->diffForHumans() : 'Recently',
+                'link' => $dn->action_url ?: route('inbox'),
+                'is_new' => ! $dn->is_read,
+                'badge' => $dn->badge ?: 'Notification',
+            ];
+        }
+
+        $unreadNotificationsCount = Notification::where('candidate_id', $candidate->id)
+            ->where('is_read', false)
+            ->where('is_dismissed', false)
+            ->count();
+
+        // Check latest blue tick record for candidate
+        $candidateBluetick = Bluetick::where('candidate_id', $candidate->id)->latest()->first();
+
+        return view('frontend.pages.dashboard', compact(
+            'candidate',
+            'wallet',
+            'pendingInvitationsCount',
+            'acceptedInvitationsCount',
+            'shortlistedCount',
+            'recentVisitorsCount',
+            'contactsViewedCount',
+            'profileCompleteness',
+            'dashboardMatches',
+            'notifications',
+            'unreadNotificationsCount',
+            'candidateBluetick',
+            'shortlistedIds',
+            'sentInterestIds',
+            'receivedInterestIds',
+            'acceptedProfileCodes'
+        ));
+    }
+
+    /**
+     * Blue Tick Verification Page
+     */
+    public function showBlueTickVerification()
+    {
+        /** @var Candidate $candidate */
+        $candidate = Auth::user();
+        $existingBluetick = Bluetick::where('candidate_id', $candidate->id)->latest()->first();
+
+        return view('frontend.pages.bluetick_verification', compact('candidate', 'existingBluetick'));
+    }
+
+    /**
+     * Validate entered Aadhaar Number against registered profile Aadhaar number
+     */
+    public function validateAadhar(Request $request)
+    {
+        $request->validate([
+            'aadhar_number' => 'required|string',
+        ]);
+
+        /** @var Candidate $candidate */
         $candidate = Auth::user();
 
-        return view('frontend.pages.dashboard', compact('candidate'));
+        $inputAadhar = preg_replace('/[^0-9]/', '', $request->aadhar_number);
+        $registeredAadhar = preg_replace('/[^0-9]/', '', (string) ($candidate->aadhar_number ?? ''));
+
+        if (strlen($inputAadhar) !== 12) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please enter a valid 12-digit Aadhaar number.',
+            ], 422);
+        }
+
+        // Check if candidate has a registered Aadhaar number and it matches
+        if (! empty($registeredAadhar) && $inputAadhar !== $registeredAadhar) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Aadhaar number does not match your registered profile Aadhaar number.',
+            ], 422);
+        }
+
+        // If candidate does not have a registered aadhar_number yet, allow linking it
+        if (empty($registeredAadhar)) {
+            $candidate->aadhar_number = $inputAadhar;
+            $candidate->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Aadhaar number verified successfully.',
+            'clean_aadhar' => $inputAadhar,
+        ]);
+    }
+
+    /**
+     * Submit Blue Tick verification with Front & Back Aadhaar card photos
+     */
+    public function submitBlueTickVerification(Request $request)
+    {
+        try {
+            $request->validate([
+                'aadhar_number' => 'required|string',
+                'aadhar_photo_front' => 'required|image|mimes:jpeg,png,jpg,webp|max:10240',
+                'aadhar_photo_back' => 'required|image|mimes:jpeg,png,jpg,webp|max:10240',
+            ]);
+
+            /** @var Candidate $candidate */
+            $candidate = Auth::user();
+
+            if (! $candidate) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User session expired. Please log in again.',
+                ], 401);
+            }
+
+            $inputAadhar = preg_replace('/[^0-9]/', '', $request->aadhar_number);
+            $registeredAadhar = preg_replace('/[^0-9]/', '', (string) ($candidate->aadhar_number ?? ''));
+
+            if (! empty($registeredAadhar) && $inputAadhar !== $registeredAadhar) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aadhaar number does not match your registered profile Aadhaar number.',
+                ], 422);
+            }
+
+            // If user did not have a registered aadhaar number, store it
+            if (empty($registeredAadhar)) {
+                $candidate->aadhar_number = $inputAadhar;
+                $candidate->save();
+            }
+
+            // Store photos in public/storage
+            $frontFile = $request->file('aadhar_photo_front');
+            $backFile = $request->file('aadhar_photo_back');
+
+            $frontFilename = 'aadhar_front_' . $candidate->id . '_' . time() . '.' . $frontFile->getClientOriginalExtension();
+            $backFilename = 'aadhar_back_' . $candidate->id . '_' . time() . '.' . $backFile->getClientOriginalExtension();
+
+            $frontPath = $frontFile->storeAs('aadhar_cards', $frontFilename, 'public');
+            $backPath = $backFile->storeAs('aadhar_cards', $backFilename, 'public');
+
+            // Create or update Bluetick verification record
+            $bluetick = Bluetick::updateOrCreate(
+                ['candidate_id' => $candidate->id],
+                [
+                    'aadhar_number' => $inputAadhar,
+                    'aadhar_photo_front' => $frontPath,
+                    'aadhar_photo_back' => $backPath,
+                    'is_accept' => 0, // 0 = Pending
+                    'admin_notes' => null,
+                ]
+            );
+
+            // Create in-app notification for candidate
+            try {
+                NotificationService::createNotification(
+                    $candidate->id,
+                    'bluetick_status',
+                    'Blue Tick Verification Submitted',
+                    'Your Aadhaar verification documents have been submitted and are under review. The verification process takes 24-48 hours.',
+                    null,
+                    asset('logo.png'),
+                    route('bluetick.verify'),
+                    'Under Review'
+                );
+            } catch (\Exception $ne) {
+                \Log::warning('Failed to create in-app notification: ' . $ne->getMessage());
+            }
+
+            // Dispatch WhatsApp Meta template notification for Blue Tick request
+            try {
+                NotificationService::dispatchBlueTickSubmittedWhatsApp($candidate);
+            } catch (\Exception $we) {
+                \Log::warning('Failed to send WhatsApp bluetick submission alert: ' . $we->getMessage());
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Verification request submitted successfully! It will take 24-48 hours for our team to complete the verification process.',
+                'redirect' => route('dashboard'),
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $ve) {
+            return response()->json([
+                'success' => false,
+                'message' => $ve->validator->errors()->first() ?: 'Invalid submission data.',
+                'errors' => $ve->validator->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Error submitting Blue Tick verification: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while saving your verification documents. Please try again.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Mark notification as read and dismissed on click
+     */
+    public function markNotificationRead(Request $request, $id)
+    {
+        /** @var Candidate $candidate */
+        $candidate = Auth::user();
+
+        $notification = Notification::where('candidate_id', $candidate->id)->find($id);
+        if ($notification) {
+            $notification->is_read = true;
+            $notification->is_dismissed = true;
+            $notification->save();
+
+            return response()->json([
+                'success' => true,
+                'redirect_url' => $notification->action_url ?: route('inbox'),
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Notification not found.',
+        ], 404);
     }
 
     // Candidate Profile

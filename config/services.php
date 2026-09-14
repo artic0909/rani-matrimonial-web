@@ -46,7 +46,7 @@ return [
         'auth_token' => env('TWILIO_AUTH_TOKEN'),
         'account_sid' => env('TWILIO_ACCOUNT_SID'),
         'whatsapp_number' => env('TWILIO_WHATSAPP_NUMBER'),
-        'messaging_service_sid' => env('TWILIO_MESSAGING_SERVICE_SID'),
+        'bluetick_template_sid' => 'HX50f78c16ddaa58da573eb2f500f18505',
     ],
 
 ];

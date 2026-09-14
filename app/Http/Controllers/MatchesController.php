@@ -1005,7 +1005,7 @@ class MatchesController extends Controller
     /**
      * Generate structured matches list from DB candidates with real dynamic data-wise match percentage
      */
-    private function getMatchesData(
+    public function getMatchesData(
         Candidate $candidate,
         string $targetGender,
         string $tab,
@@ -1196,7 +1196,7 @@ class MatchesController extends Controller
     /**
      * Calculate comprehensive data-wise match percentage and reasons
      */
-    private function calculateMatchScore(Candidate $me, Candidate $other): array
+    public function calculateMatchScore(Candidate $me, Candidate $other): array
     {
         $score = 50; // Base score for opposite gender compatibility
         $matchReasons = [];

@@ -114,9 +114,19 @@ class Candidate extends Authenticatable
         return $this->hasMany(ConnectionRequest::class, 'sender_id');
     }
 
-    public function receivedConnectionRequests(): HasMany
+    public function notifications(): HasMany
     {
-        return $this->hasMany(ConnectionRequest::class, 'receiver_id');
+        return $this->hasMany(Notification::class, 'candidate_id')->orderByDesc('id');
+    }
+
+    public function bluetick(): HasOne
+    {
+        return $this->hasOne(Bluetick::class, 'candidate_id')->latestOfMany();
+    }
+
+    public function blueticks(): HasMany
+    {
+        return $this->hasMany(Bluetick::class, 'candidate_id')->orderByDesc('id');
     }
 
     /**

@@ -69,4 +69,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/my-photos/set-profile', [AuthController::class, 'setProfilePhoto'])->name('photos.set-profile');
     Route::post('/api/my-photos/delete', [AuthController::class, 'deletePhoto'])->name('photos.delete');
     Route::post('/api/my-photos/settings', [AuthController::class, 'updatePhotoSettings'])->name('photos.settings');
+
+    // Blue Tick Verification Routes
+    Route::get('/bluetick-verification', [AuthController::class, 'showBlueTickVerification'])->name('bluetick.verify');
+    Route::post('/api/bluetick/validate-aadhar', [AuthController::class, 'validateAadhar'])->name('bluetick.validate-aadhar');
+    Route::post('/api/bluetick/submit', [AuthController::class, 'submitBlueTickVerification'])->name('bluetick.submit');
+
+    // Notifications API
+    Route::post('/api/notifications/{id}/read', [AuthController::class, 'markNotificationRead'])->name('notifications.read');
 });
