@@ -50,7 +50,7 @@ class InboxController extends Controller
             }
             $seenSenderIds[] = $cr->sender_id;
 
-            $sender = Candidate::with('photos')->find($cr->sender_id);
+            $sender = Candidate::with(['photos', 'bluetick'])->find($cr->sender_id);
             if (! $sender) {
                 continue;
             }
@@ -150,7 +150,7 @@ class InboxController extends Controller
                 'match_score' => $matchResult['score'],
                 'match_reasons' => array_slice($matchResult['reasons'], 0, 3),
                 'badge' => $isAccepted ? 'Accepted Connection' : '📥 Received Interest',
-                'verified' => (bool) $sender->selfie_verified,
+                'verified' => (bool) ($sender->bluetick && (int) $sender->bluetick->is_accept === 1),
                 'received_ago' => $cr->created_at ? $cr->created_at->diffForHumans() : 'Recently',
                 'status' => $cr->status,
                 'is_accepted' => $isAccepted,

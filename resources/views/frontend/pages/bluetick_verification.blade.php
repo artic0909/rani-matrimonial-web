@@ -6,9 +6,9 @@
 <div class="relative pt-6 pb-20" x-data="blueTickManager({
     candidate: @js($candidate),
     existingBluetick: @js($existingBluetick),
-    isVerified: @js((bool) ($candidate->selfie_verified || ($existingBluetick && $existingBluetick->is_accept === 1))),
-    isPending: @js((bool) ($existingBluetick && $existingBluetick->is_accept === 0)),
-    isRejected: @js((bool) ($existingBluetick && $existingBluetick->is_accept === 2)),
+    isVerified: @js((bool) ($candidate->is_bluetick_verified || ($existingBluetick && (int)$existingBluetick->is_accept === 1))),
+    isPending: @js((bool) ($existingBluetick && (int)$existingBluetick->is_accept === 0)),
+    isRejected: @js((bool) ($existingBluetick && (int)$existingBluetick->is_accept === 2)),
     registeredAadhar: @js($candidate->aadhar_number ?? '')
 })">
     <!-- Background Image -->

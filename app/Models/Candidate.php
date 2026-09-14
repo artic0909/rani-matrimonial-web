@@ -129,6 +129,11 @@ class Candidate extends Authenticatable
         return $this->hasMany(Bluetick::class, 'candidate_id')->orderByDesc('id');
     }
 
+    public function getIsBluetickVerifiedAttribute(): bool
+    {
+        return (bool) ($this->bluetick && (int) $this->bluetick->is_accept === 1);
+    }
+
     /**
      * Get existing wallet or initialize a new one with a welcome bonus
      */

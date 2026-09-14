@@ -45,7 +45,7 @@
                              alt="{{ $candidate->first_name }}" 
                              class="w-32 h-32 rounded-full border-4 border-rani-gold/30 object-cover shadow-md">
                         
-                        @if($candidate->selfie_verified || ($candidateBluetick && $candidateBluetick->is_accept === 1))
+                        @if($candidate->is_bluetick_verified || ($candidateBluetick && (int)$candidateBluetick->is_accept === 1))
                             <div class="absolute bottom-1 right-1 bg-gradient-to-tr from-blue-600 via-sky-500 to-sky-400 text-white rounded-full p-1.5 border-2 border-white shadow-md flex items-center justify-center" title="Blue Tick Verified Profile">
                                 <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                             </div>
@@ -95,7 +95,7 @@
                 </div>
                 
                 <!-- Standout with Verification -->
-                @if($candidate->selfie_verified || ($candidateBluetick && $candidateBluetick->is_accept === 1))
+                @if($candidate->is_bluetick_verified || ($candidateBluetick && (int)$candidateBluetick->is_accept === 1))
                 <div class="p-4 flex justify-between items-center bg-blue-50/60 border-t border-blue-100/80">
                     <div>
                         <p class="text-xs font-semibold text-gray-800">Verification Status</p>
@@ -212,7 +212,7 @@
                     <span class="text-xs font-semibold text-rani-primary">Trust & Safety</span>
                 </div>
                 
-                @if($candidate->selfie_verified || ($candidateBluetick && $candidateBluetick->is_accept === 1))
+                @if($candidate->is_bluetick_verified || ($candidateBluetick && (int)$candidateBluetick->is_accept === 1))
                 <!-- 1. Already Verified State (Blue Tick) -->
                 <div class="p-6 flex flex-col sm:flex-row items-center gap-6 bg-gradient-to-r from-blue-50 via-sky-50 to-indigo-50 border-l-4 border-blue-500">
                     <div class="relative shrink-0">

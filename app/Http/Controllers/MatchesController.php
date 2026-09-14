@@ -215,7 +215,7 @@ class MatchesController extends Controller
             return redirect()->route('matches.view-profile', ['id' => self::generateProfileToken($profile)]);
         }
 
-        $profile->loadMissing('photos');
+        $profile->loadMissing(['photos', 'bluetick']);
 
         // Check connection status
         $connection = ConnectionRequest::where(function ($q) use ($candidate, $profile) {
@@ -1101,12 +1101,14 @@ class MatchesController extends Controller
 
             $requestType = $isAccepted ? 'accepted' : ($isReceived ? 'received' : ($isSent ? 'sent' : 'none'));
 
+            $isBluetickVerified = (bool) ($c->bluetick && (int) $c->bluetick->is_accept === 1);
+
             $badge = $isAccepted ? 'Accepted Connection' : (
                 $isReceived ? '📥 Interest Received' : (
                     $isSent ? '📤 Request Sent' : (
                         $matchScore >= 95 ? 'Top Recommendation' : (
                             $matchScore >= 90 ? 'High Compatibility' : (
-                                $c->selfie_verified ? 'Verified Profile' : 'Compatible Match'
+                                $isBluetickVerified ? 'Verified Profile' : 'Compatible Match'
                             )
                         )
                     )
@@ -1163,7 +1165,7 @@ class MatchesController extends Controller
                 'match_score' => $matchScore,
                 'match_reasons' => array_slice($matchReasons, 0, 3),
                 'badge' => $badge,
-                'verified' => (bool) ($c->selfie_verified || ($c->bluetick && $c->bluetick->is_accept === 1)),
+                'verified' => $isBluetickVerified,
                 'active_ago' => ($index % 2 === 0) ? 'Online now' : 'Active '.(($index % 5) + 1).' hours ago',
                 'distance' => (4 + (($c->id * 2) % 20)).' km away',
                 'is_accepted' => $isAccepted,
@@ -1318,7 +1320,7 @@ class MatchesController extends Controller
         }
 
         // 10. Profile Verification Bonus (Max 4 points)
-        if ($other->selfie_verified) {
+        if ($other->bluetick && (int) $other->bluetick->is_accept === 1) {
             $score += 4;
             $matchReasons[] = 'Verified Profile';
         }
