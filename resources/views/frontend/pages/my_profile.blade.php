@@ -33,63 +33,63 @@
         <div class="heart-floating delay-4" style="left: 80%; animation-delay: 14s;"></div>
     </div>
 
-    <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="relative z-10 max-w-6xl mx-auto px-3 sm:px-6 lg:px-8">
         <!-- Top Profile Header Card -->
-        <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/60 mb-10 p-6 md:p-10 relative overflow-hidden z-10 hover:shadow-rani-gold/10 transition-shadow duration-500">
+        <div class="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl shadow-2xl border border-white/60 mb-6 sm:mb-10 p-5 sm:p-8 md:p-10 relative overflow-hidden z-10 hover:shadow-rani-gold/10 transition-shadow duration-500">
             <!-- Subtle royal accent top -->
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold opacity-90"></div>
+            <div class="absolute top-0 left-0 w-full h-1.5 sm:h-2 bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold opacity-90"></div>
             
-            <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            <div class="flex flex-col md:flex-row items-center gap-5 sm:gap-8 md:gap-12">
                 <!-- Avatar with Camera Button & Loading State -->
                 <div class="relative shrink-0 group">
                     <div class="absolute inset-0 bg-rani-gold rounded-full blur-md opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
                     <img :src="profileImageUrl" 
                          src="{{ $candidate->profile_picture ? asset('storage/' . $candidate->profile_picture) : asset('img/' . (strtolower($candidate->gender ?? 'male') === 'female' ? 'female' : 'male') . '/correct1.png') }}"
                          alt="{{ $candidate->first_name }}" 
-                         class="profile-avatar-img w-36 h-36 md:w-44 md:h-44 rounded-full border-[6px] border-white shadow-xl object-cover bg-white relative z-10 transform group-hover:scale-[1.02] transition-transform duration-300">
+                         class="profile-avatar-img w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 rounded-full border-[4px] sm:border-[6px] border-white shadow-xl object-cover bg-white relative z-10 transform group-hover:scale-[1.02] transition-transform duration-300">
                     
                     <!-- Upload Spinner Overlay -->
                     <div x-show="isUploadingPhoto" style="display: none;" class="absolute inset-0 z-20 rounded-full bg-black/50 flex flex-col items-center justify-center text-white backdrop-blur-xs">
-                        <svg class="animate-spin h-8 w-8 text-rani-gold mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        <span class="text-xs font-semibold">Uploading...</span>
+                        <svg class="animate-spin h-7 w-7 sm:h-8 sm:w-8 text-rani-gold mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <span class="text-[11px] sm:text-xs font-semibold">Uploading...</span>
                     </div>
 
                     <!-- Change Photo Camera Button -->
-                    <label for="profile_upload" class="absolute bottom-1 right-1 md:bottom-2 md:right-2 bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white p-3 rounded-full shadow-2xl border-2 border-white cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 z-30 flex items-center justify-center group-hover:shadow-rani-gold/50" title="Change Profile Picture">
-                        <svg class="w-5 h-5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <label for="profile_upload" class="absolute bottom-0.5 right-0.5 sm:bottom-1 sm:right-1 md:bottom-2 md:right-2 bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white p-2 sm:p-2.5 md:p-3 rounded-full shadow-2xl border-2 border-white cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 z-30 flex items-center justify-center group-hover:shadow-rani-gold/50" title="Change Profile Picture">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         <input type="file" id="profile_upload" class="hidden" accept="image/*" @change="openCropper">
                     </label>
 
                     @if($candidate->is_bluetick_verified || ($candidate->bluetick && (int)$candidate->bluetick->is_accept === 1))
-                        <div class="absolute bottom-1 left-1 md:bottom-2 md:left-2 bg-gradient-to-tr from-blue-600 via-sky-500 to-sky-400 text-white rounded-full p-2 border-2 border-white shadow-lg z-20 flex items-center justify-center" title="Blue Tick Verified Profile">
-                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                        <div class="absolute bottom-0.5 left-0.5 sm:bottom-1 sm:left-1 md:bottom-2 md:left-2 bg-gradient-to-tr from-blue-600 via-sky-500 to-sky-400 text-white rounded-full p-1.5 sm:p-2 border-2 border-white shadow-lg z-20 flex items-center justify-center" title="Blue Tick Verified Profile">
+                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                         </div>
                     @endif
                 </div>
                 
                 <!-- Summary Info -->
-                <div class="flex-1 text-center md:text-left flex flex-col md:flex-row items-center md:items-stretch justify-between w-full gap-8">
-                    <div class="flex flex-col justify-center items-center md:items-start space-y-2.5">
-                        <h1 class="text-3xl md:text-4xl font-bold text-rani-primary-dark font-serif tracking-wide drop-shadow-sm">{{ $candidate->first_name }} {{ $candidate->last_name }}</h1>
-                        <div class="text-sm md:text-base text-gray-500 font-semibold font-sans mb-1 uppercase tracking-wider">RANI{{ str_pad($candidate->id, 6, '0', STR_PAD_LEFT) }}</div>
-                        <p class="text-xs text-rani-gold-dark font-bold bg-rani-light/40 px-3.5 py-1 rounded-full mb-4 border border-rani-gold/20">{{ $candidate->profile_for === 'Myself' ? 'Profile created by Self' : 'Profile created by ' . $candidate->profile_for }}</p>
+                <div class="flex-1 text-center md:text-left flex flex-col md:flex-row items-center md:items-stretch justify-between w-full gap-4 sm:gap-6 md:gap-8">
+                    <div class="flex flex-col justify-center items-center md:items-start space-y-2 w-full">
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-rani-primary-dark font-serif tracking-wide drop-shadow-sm">{{ $candidate->first_name }} {{ $candidate->last_name }}</h1>
+                        <div class="text-xs sm:text-sm text-gray-500 font-semibold font-sans uppercase tracking-wider">RANI{{ str_pad($candidate->id, 6, '0', STR_PAD_LEFT) }}</div>
+                        <p class="text-xs text-rani-gold-dark font-bold bg-amber-50 px-3 sm:px-3.5 py-1 rounded-full border border-rani-gold/30">{{ $candidate->profile_for === 'Myself' ? 'Profile created by Self' : 'Profile created by ' . $candidate->profile_for }}</p>
                         
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3.5 text-sm text-gray-700 font-medium w-full max-w-md mt-2">
-                            <div class="flex items-center gap-2.5 justify-center md:justify-start">
-                                <div class="p-1.5 bg-gray-50 rounded-md text-rani-gold border border-gray-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
-                                <span>{{ $age ? $age . ' yrs' : 'Age Not Specified' }}{{ $candidate->height ? ', ' . $candidate->height : '' }}</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5 md:gap-3 text-xs sm:text-sm text-gray-700 font-medium w-full max-w-lg mt-2">
+                            <div class="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-gray-50/80 border border-gray-100 text-left">
+                                <div class="p-1.5 bg-white rounded-lg text-rani-gold shadow-xs shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
+                                <span class="truncate font-semibold">{{ $age ? $age . ' yrs' : 'Age Not Specified' }}{{ $candidate->height ? ', ' . $candidate->height : '' }}</span>
                             </div>
-                            <div class="flex items-center gap-2.5 justify-center md:justify-start">
-                                <div class="p-1.5 bg-gray-50 rounded-md text-rani-gold border border-gray-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg></div>
-                                <span>{{ $candidate->religion ?: 'Religion' }}{{ $candidate->community ? ', ' . $candidate->community : '' }}</span>
+                            <div class="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-gray-50/80 border border-gray-100 text-left">
+                                <div class="p-1.5 bg-white rounded-lg text-rani-gold shadow-xs shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg></div>
+                                <span class="truncate font-semibold">{{ $candidate->religion ?: 'Religion' }}{{ $candidate->community ? ', ' . $candidate->community : '' }}</span>
                             </div>
-                            <div class="flex items-center gap-2.5 justify-center md:justify-start">
-                                <div class="p-1.5 bg-gray-50 rounded-md text-rani-gold border border-gray-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg></div>
-                                <span>{{ $candidate->marital_status ?: 'Not Specified' }}</span>
+                            <div class="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-gray-50/80 border border-gray-100 text-left">
+                                <div class="p-1.5 bg-white rounded-lg text-rani-gold shadow-xs shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg></div>
+                                <span class="truncate font-semibold">{{ $candidate->marital_status ?: 'Not Specified' }}</span>
                             </div>
-                            <div class="flex items-center gap-2.5 justify-center md:justify-start">
-                                <div class="p-1.5 bg-gray-50 rounded-md text-rani-gold border border-gray-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>
-                                <span>{{ $candidate->city ? $candidate->city . ', ' : '' }}{{ $candidate->state ?: 'Location Not Specified' }}</span>
+                            <div class="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-gray-50/80 border border-gray-100 text-left">
+                                <div class="p-1.5 bg-white rounded-lg text-rani-gold shadow-xs shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>
+                                <span class="truncate font-semibold">{{ $candidate->city ? $candidate->city . ', ' : '' }}{{ $candidate->state ?: 'Location Not Specified' }}</span>
                             </div>
                         </div>
                     </div>
@@ -98,33 +98,33 @@
         </div>
 
         <!-- Profile Content Sections -->
-        <div class="space-y-8">
+        <div class="space-y-6 sm:space-y-8">
             
             <!-- 1. Personality & About -->
             <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-white/40 overflow-hidden relative group hover:shadow-2xl transition-all duration-300">
                 <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold opacity-80"></div>
                 
-                <div class="px-6 md:px-8 py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/30">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                <div class="px-4 sm:px-6 md:px-8 py-3.5 sm:py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/40">
+                    <div class="flex items-center gap-2.5 sm:gap-3">
+                        <div class="p-2 sm:p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-xs">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                         </div>
-                        <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">Personality & About</h3>
+                        <h3 class="font-serif font-bold text-gray-800 text-lg sm:text-xl md:text-2xl tracking-wide">Personality & About</h3>
                     </div>
-                    <button type="button" @click="openModal('about')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        Edit
+                    <button type="button" @click="openModal('about')" class="text-rani-primary text-xs sm:text-sm font-bold hover:text-rani-primary-dark flex items-center gap-1.5 transition-all bg-rani-light/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/20 active:scale-95 shadow-xs">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        <span>Edit</span>
                     </button>
                 </div>
-                <div class="p-6 md:p-8 space-y-6">
+                <div class="p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6">
                     @if($candidate->about_yourself)
-                        <p class="text-gray-700 leading-relaxed text-base whitespace-pre-line">
+                        <p class="text-gray-700 leading-relaxed text-sm sm:text-base whitespace-pre-line">
                             {{ $candidate->about_yourself }}
                         </p>
                     @else
-                        <div class="text-center py-6 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
-                            <p class="text-gray-500 mb-3 text-sm">No description provided yet. Write something about yourself to attract better matches!</p>
-                            <button type="button" @click="openModal('about')" class="inline-flex items-center gap-1.5 text-rani-primary font-semibold text-sm hover:underline">
+                        <div class="text-center py-5 sm:py-6 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
+                            <p class="text-gray-500 mb-2 sm:mb-3 text-xs sm:text-sm">No description provided yet. Write something about yourself to attract better matches!</p>
+                            <button type="button" @click="openModal('about')" class="inline-flex items-center gap-1.5 text-rani-primary font-semibold text-xs sm:text-sm hover:underline">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                 Add About Yourself
                             </button>
@@ -132,10 +132,10 @@
                     @endif
 
                     <!-- Hobbies & Interests Display -->
-                    <div class="pt-5 border-t border-gray-100/80">
+                    <div class="pt-4 sm:pt-5 border-t border-gray-100/80">
                         <div class="flex items-center justify-between mb-3">
-                            <h4 class="text-xs uppercase tracking-wider font-bold text-gray-500 flex items-center gap-1.5">
-                                <svg class="w-4 h-4 text-rani-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <h4 class="text-[11px] sm:text-xs uppercase tracking-wider font-bold text-gray-500 flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rani-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 Hobbies & Interests
                             </h4>
                             <button type="button" @click="openModal('about')" class="text-xs font-semibold text-rani-primary hover:text-rani-primary-dark transition-colors inline-flex items-center gap-1">
@@ -144,16 +144,16 @@
                             </button>
                         </div>
                         @if(!empty($candidate->hobbies_interests) && count($candidate->hobbies_interests) > 0)
-                            <div class="flex flex-wrap gap-2">
+                            <div class="flex flex-wrap gap-1.5 sm:gap-2">
                                 @foreach($candidate->hobbies_interests as $hobby)
-                                    <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-rani-light/70 to-rani-light text-rani-primary-dark border border-rani-gold/30 shadow-sm">
+                                    <span class="inline-flex items-center px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-rani-light/70 to-rani-light text-rani-primary-dark border border-rani-gold/30 shadow-xs">
                                         <span class="w-1.5 h-1.5 rounded-full bg-rani-gold mr-1.5"></span>
                                         {{ $hobby }}
                                     </span>
                                 @endforeach
                             </div>
                         @else
-                            <div class="flex items-center gap-2 text-sm text-gray-400">
+                            <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-400">
                                 <span>No hobbies selected yet.</span>
                                 <button type="button" @click="openModal('about')" class="text-rani-primary font-medium hover:underline inline-flex items-center gap-1">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -169,19 +169,19 @@
             <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-white/40 overflow-hidden relative group hover:shadow-2xl transition-all duration-300">
                 <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold opacity-80"></div>
                 
-                <div class="px-6 md:px-8 py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/30">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                <div class="px-4 sm:px-6 md:px-8 py-3.5 sm:py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/40">
+                    <div class="flex items-center gap-2.5 sm:gap-3">
+                        <div class="p-2 sm:p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-xs">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                         </div>
-                        <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">Basics & Lifestyle</h3>
+                        <h3 class="font-serif font-bold text-gray-800 text-lg sm:text-xl md:text-2xl tracking-wide">Basics & Lifestyle</h3>
                     </div>
-                    <button type="button" @click="openModal('basic')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        Edit
+                    <button type="button" @click="openModal('basic')" class="text-rani-primary text-xs sm:text-sm font-bold hover:text-rani-primary-dark flex items-center gap-1.5 transition-all bg-rani-light/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/20 active:scale-95 shadow-xs">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        <span>Edit</span>
                     </button>
                 </div>
-                <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-14 gap-y-1 sm:gap-y-2">
                     @php
                         $basics = [
                             'Gender' => $candidate->gender ?: '<button type="button" @click="openModal(\'basic\')" class="text-rani-primary font-semibold hover:underline inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</button>',
@@ -197,9 +197,9 @@
                         ];
                     @endphp
                     @foreach($basics as $label => $val)
-                    <div class="grid grid-cols-3 gap-2 border-b border-gray-50 pb-2">
-                        <div class="col-span-1 text-sm text-gray-500 font-medium tracking-wide uppercase text-xs flex items-center">{{ $label }}</div>
-                        <div class="col-span-2 text-base text-gray-800 font-medium">{!! $val !!}</div>
+                    <div class="grid grid-cols-12 gap-2 py-2.5 sm:py-2 border-b border-gray-100 items-center">
+                        <div class="col-span-5 sm:col-span-4 text-[11px] sm:text-xs text-gray-500 font-bold uppercase tracking-wider">{{ $label }}</div>
+                        <div class="col-span-7 sm:col-span-8 text-xs sm:text-sm md:text-base text-gray-800 font-medium sm:font-medium break-words">{!! $val !!}</div>
                     </div>
                     @endforeach
                 </div>
@@ -208,19 +208,19 @@
             <!-- 3. Religious Background -->
             <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-white/40 overflow-hidden relative group hover:shadow-2xl transition-all duration-300">
                 <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold opacity-80"></div>
-                <div class="px-6 md:px-8 py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/30">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                <div class="px-4 sm:px-6 md:px-8 py-3.5 sm:py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/40">
+                    <div class="flex items-center gap-2.5 sm:gap-3">
+                        <div class="p-2 sm:p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-xs">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                         </div>
-                        <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">Religious Background</h3>
+                        <h3 class="font-serif font-bold text-gray-800 text-lg sm:text-xl md:text-2xl tracking-wide">Religious Background</h3>
                     </div>
-                    <button type="button" @click="openModal('religious')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        Edit
+                    <button type="button" @click="openModal('religious')" class="text-rani-primary text-xs sm:text-sm font-bold hover:text-rani-primary-dark flex items-center gap-1.5 transition-all bg-rani-light/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/20 active:scale-95 shadow-xs">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        <span>Edit</span>
                     </button>
                 </div>
-                <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-14 gap-y-1 sm:gap-y-2">
                     @php
                         $religious = [
                             'Religion' => $candidate->religion ?: '<button type="button" @click="openModal(\'religious\')" class="text-rani-primary font-semibold hover:underline inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</button>',
@@ -231,9 +231,9 @@
                         ];
                     @endphp
                     @foreach($religious as $label => $val)
-                    <div class="grid grid-cols-3 gap-2 border-b border-gray-50 pb-2">
-                        <div class="col-span-1 text-sm text-gray-500 font-medium tracking-wide uppercase text-xs flex items-center">{{ $label }}</div>
-                        <div class="col-span-2 text-base text-gray-800 font-medium">{!! $val !!}</div>
+                    <div class="grid grid-cols-12 gap-2 py-2.5 sm:py-2 border-b border-gray-100 items-center">
+                        <div class="col-span-5 sm:col-span-4 text-[11px] sm:text-xs text-gray-500 font-bold uppercase tracking-wider">{{ $label }}</div>
+                        <div class="col-span-7 sm:col-span-8 text-xs sm:text-sm md:text-base text-gray-800 font-medium break-words">{!! $val !!}</div>
                     </div>
                     @endforeach
                 </div>
@@ -242,19 +242,19 @@
             <!-- 4. Astro Details -->
             <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-white/40 overflow-hidden relative group hover:shadow-2xl transition-all duration-300">
                 <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold opacity-80"></div>
-                <div class="px-6 md:px-8 py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/30">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <div class="px-4 sm:px-6 md:px-8 py-3.5 sm:py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/40">
+                    <div class="flex items-center gap-2.5 sm:gap-3">
+                        <div class="p-2 sm:p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-xs">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                         </div>
-                        <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">Astro Details</h3>
+                        <h3 class="font-serif font-bold text-gray-800 text-lg sm:text-xl md:text-2xl tracking-wide">Astro Details</h3>
                     </div>
-                    <button type="button" @click="openModal('astro')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        Edit
+                    <button type="button" @click="openModal('astro')" class="text-rani-primary text-xs sm:text-sm font-bold hover:text-rani-primary-dark flex items-center gap-1.5 transition-all bg-rani-light/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/20 active:scale-95 shadow-xs">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        <span>Edit</span>
                     </button>
                 </div>
-                <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-14 gap-y-1 sm:gap-y-2">
                     @php
                         $astro = [
                             'Manglik' => $candidate->manglik ?: "Don't Know",
@@ -263,9 +263,9 @@
                         ];
                     @endphp
                     @foreach($astro as $label => $val)
-                    <div class="grid grid-cols-3 gap-2 border-b border-gray-50 pb-2">
-                        <div class="col-span-1 text-sm text-gray-500 font-medium tracking-wide uppercase text-xs flex items-center">{{ $label }}</div>
-                        <div class="col-span-2 text-base text-gray-800 font-medium">{!! $val !!}</div>
+                    <div class="grid grid-cols-12 gap-2 py-2.5 sm:py-2 border-b border-gray-100 items-center">
+                        <div class="col-span-5 sm:col-span-4 text-[11px] sm:text-xs text-gray-500 font-bold uppercase tracking-wider">{{ $label }}</div>
+                        <div class="col-span-7 sm:col-span-8 text-xs sm:text-sm md:text-base text-gray-800 font-medium break-words">{!! $val !!}</div>
                     </div>
                     @endforeach
                 </div>
@@ -274,19 +274,19 @@
             <!-- 5. Family Details -->
             <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-white/40 overflow-hidden relative group hover:shadow-2xl transition-all duration-300">
                 <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold opacity-80"></div>
-                <div class="px-6 md:px-8 py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/30">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                <div class="px-4 sm:px-6 md:px-8 py-3.5 sm:py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/40">
+                    <div class="flex items-center gap-2.5 sm:gap-3">
+                        <div class="p-2 sm:p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-xs">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                         </div>
-                        <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">Family Details</h3>
+                        <h3 class="font-serif font-bold text-gray-800 text-lg sm:text-xl md:text-2xl tracking-wide">Family Details</h3>
                     </div>
-                    <button type="button" @click="openModal('family')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        Edit
+                    <button type="button" @click="openModal('family')" class="text-rani-primary text-xs sm:text-sm font-bold hover:text-rani-primary-dark flex items-center gap-1.5 transition-all bg-rani-light/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/20 active:scale-95 shadow-xs">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        <span>Edit</span>
                     </button>
                 </div>
-                <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-14 gap-y-1 sm:gap-y-2">
                     @php
                         $family = [
                             'Father\'s Details' => $candidate->father_profession ?: '<button type="button" @click="openModal(\'family\')" class="text-rani-primary font-semibold hover:underline inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</button>',
@@ -298,9 +298,9 @@
                         ];
                     @endphp
                     @foreach($family as $label => $val)
-                    <div class="grid grid-cols-3 gap-2 border-b border-gray-50 pb-2">
-                        <div class="col-span-1 text-sm text-gray-500 font-medium tracking-wide uppercase text-xs flex items-center">{{ $label }}</div>
-                        <div class="col-span-2 text-base text-gray-800 font-medium">{!! $val !!}</div>
+                    <div class="grid grid-cols-12 gap-2 py-2.5 sm:py-2 border-b border-gray-100 items-center">
+                        <div class="col-span-5 sm:col-span-4 text-[11px] sm:text-xs text-gray-500 font-bold uppercase tracking-wider">{{ $label }}</div>
+                        <div class="col-span-7 sm:col-span-8 text-xs sm:text-sm md:text-base text-gray-800 font-medium break-words">{!! $val !!}</div>
                     </div>
                     @endforeach
                 </div>
@@ -309,19 +309,19 @@
             <!-- 6. Education & Career -->
             <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-white/40 overflow-hidden relative group hover:shadow-2xl transition-all duration-300">
                 <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold opacity-80"></div>
-                <div class="px-6 md:px-8 py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/30">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                <div class="px-4 sm:px-6 md:px-8 py-3.5 sm:py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/40">
+                    <div class="flex items-center gap-2.5 sm:gap-3">
+                        <div class="p-2 sm:p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-xs">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
-                        <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">Education & Career</h3>
+                        <h3 class="font-serif font-bold text-gray-800 text-lg sm:text-xl md:text-2xl tracking-wide">Education & Career</h3>
                     </div>
-                    <button type="button" @click="openModal('education_career')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        Edit
+                    <button type="button" @click="openModal('education_career')" class="text-rani-primary text-xs sm:text-sm font-bold hover:text-rani-primary-dark flex items-center gap-1.5 transition-all bg-rani-light/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/20 active:scale-95 shadow-xs">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        <span>Edit</span>
                     </button>
                 </div>
-                <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-14 gap-y-1 sm:gap-y-2">
                     @php
                         $edu = [
                             'Highest Qual.' => $candidate->highest_qualification ?: '<button type="button" @click="openModal(\'education_career\')" class="text-rani-primary font-semibold hover:underline inline-flex items-center gap-1"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Add Now</button>',
@@ -334,9 +334,9 @@
                         ];
                     @endphp
                     @foreach($edu as $label => $val)
-                    <div class="grid grid-cols-3 gap-2 border-b border-gray-50 pb-2">
-                        <div class="col-span-1 text-sm text-gray-500 font-medium tracking-wide uppercase text-xs flex items-center">{{ $label }}</div>
-                        <div class="col-span-2 text-base text-gray-800 font-medium">{!! $val !!}</div>
+                    <div class="grid grid-cols-12 gap-2 py-2.5 sm:py-2 border-b border-gray-100 items-center">
+                        <div class="col-span-5 sm:col-span-4 text-[11px] sm:text-xs text-gray-500 font-bold uppercase tracking-wider">{{ $label }}</div>
+                        <div class="col-span-7 sm:col-span-8 text-xs sm:text-sm md:text-base text-gray-800 font-medium break-words">{!! $val !!}</div>
                     </div>
                     @endforeach
                 </div>
@@ -345,19 +345,19 @@
             <!-- 7. Location -->
             <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-white/40 overflow-hidden relative group hover:shadow-2xl transition-all duration-300">
                 <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold opacity-80"></div>
-                <div class="px-6 md:px-8 py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/30">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <div class="px-4 sm:px-6 md:px-8 py-3.5 sm:py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/40">
+                    <div class="flex items-center gap-2.5 sm:gap-3">
+                        <div class="p-2 sm:p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-xs">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </div>
-                        <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">Location</h3>
+                        <h3 class="font-serif font-bold text-gray-800 text-lg sm:text-xl md:text-2xl tracking-wide">Location</h3>
                     </div>
-                    <button type="button" @click="openModal('location')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        Edit
+                    <button type="button" @click="openModal('location')" class="text-rani-primary text-xs sm:text-sm font-bold hover:text-rani-primary-dark flex items-center gap-1.5 transition-all bg-rani-light/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/20 active:scale-95 shadow-xs">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        <span>Edit</span>
                     </button>
                 </div>
-                <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-14 gap-y-1 sm:gap-y-2">
                     @php
                         $loc = [
                             'Country' => $candidate->country ?: 'India',
@@ -370,9 +370,9 @@
                         ];
                     @endphp
                     @foreach($loc as $label => $val)
-                    <div class="grid grid-cols-3 gap-2 border-b border-gray-50 pb-2">
-                        <div class="col-span-1 text-sm text-gray-500 font-medium tracking-wide uppercase text-xs flex items-center">{{ $label }}</div>
-                        <div class="col-span-2 text-base text-gray-800 font-medium">{!! $val !!}</div>
+                    <div class="grid grid-cols-12 gap-2 py-2.5 sm:py-2 border-b border-gray-100 items-center">
+                        <div class="col-span-5 sm:col-span-4 text-[11px] sm:text-xs text-gray-500 font-bold uppercase tracking-wider">{{ $label }}</div>
+                        <div class="col-span-7 sm:col-span-8 text-xs sm:text-sm md:text-base text-gray-800 font-medium break-words">{!! $val !!}</div>
                     </div>
                     @endforeach
                 </div>
@@ -381,34 +381,34 @@
             <!-- 8. Contact Details Settings -->
             <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-white/40 overflow-hidden relative group hover:shadow-2xl transition-all duration-300">
                 <div class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold opacity-80"></div>
-                <div class="px-6 md:px-8 py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/30">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                <div class="px-4 sm:px-6 md:px-8 py-3.5 sm:py-5 border-b border-gray-100/50 flex justify-between items-center bg-gray-50/40">
+                    <div class="flex items-center gap-2.5 sm:gap-3">
+                        <div class="p-2 sm:p-2.5 bg-rani-light/40 rounded-xl text-rani-primary-dark shadow-xs">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
-                        <h3 class="font-serif font-bold text-gray-800 text-xl md:text-2xl tracking-wide">My Contact Details</h3>
+                        <h3 class="font-serif font-bold text-gray-800 text-lg sm:text-xl md:text-2xl tracking-wide">My Contact Details</h3>
                     </div>
-                    <button type="button" @click="openModal('contact')" class="text-rani-primary text-sm font-semibold hover:text-rani-primary-dark flex items-center gap-1.5 transition-colors bg-rani-light/20 px-4 py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/10">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        Edit
+                    <button type="button" @click="openModal('contact')" class="text-rani-primary text-xs sm:text-sm font-bold hover:text-rani-primary-dark flex items-center gap-1.5 transition-all bg-rani-light/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full hover:bg-rani-light/60 border border-rani-gold/20 active:scale-95 shadow-xs">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        <span>Edit</span>
                     </button>
                 </div>
-                <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
-                    <div class="grid grid-cols-3 gap-2 border-b border-gray-50 pb-2">
-                        <div class="col-span-1 text-sm text-gray-500 font-medium tracking-wide uppercase text-xs flex items-center">Mobile</div>
-                        <div class="col-span-2 text-base text-gray-800 font-bold tracking-wider">+91-{{ $candidate->mobile }}</div>
+                <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-x-10 lg:gap-x-14 gap-y-1 sm:gap-y-2">
+                    <div class="grid grid-cols-12 gap-2 py-2.5 sm:py-2 border-b border-gray-100 items-center">
+                        <div class="col-span-5 sm:col-span-4 text-[11px] sm:text-xs text-gray-500 font-bold uppercase tracking-wider">Mobile</div>
+                        <div class="col-span-7 sm:col-span-8 text-xs sm:text-sm md:text-base text-gray-800 font-bold tracking-wider">+91-{{ $candidate->mobile }}</div>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 border-b border-gray-50 pb-2">
-                        <div class="col-span-1 text-sm text-gray-500 font-medium tracking-wide uppercase text-xs flex items-center">Display Option</div>
-                        <div class="col-span-2 text-base text-gray-800 font-medium">{{ $candidate->contact_display_option ?: 'Visible to all Premium Members' }}</div>
+                    <div class="grid grid-cols-12 gap-2 py-2.5 sm:py-2 border-b border-gray-100 items-center">
+                        <div class="col-span-5 sm:col-span-4 text-[11px] sm:text-xs text-gray-500 font-bold uppercase tracking-wider">Display Option</div>
+                        <div class="col-span-7 sm:col-span-8 text-xs sm:text-sm md:text-base text-gray-800 font-medium">{{ $candidate->contact_display_option ?: 'Visible to all Premium Members' }}</div>
                     </div>
                 </div>
             </div>
             
-            <div class="text-left pt-6">
-                <button type="button" @click="window.scrollTo({ top: 0, behavior: 'smooth' })" class="text-rani-primary-dark text-sm font-bold tracking-wide hover:text-rani-primary flex items-center gap-2 hover:-translate-y-1 transition-all bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border border-white/80 hover:shadow-xl">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-                    Back to Top
+            <div class="text-left pt-4 sm:pt-6">
+                <button type="button" @click="window.scrollTo({ top: 0, behavior: 'smooth' })" class="text-rani-primary-dark text-xs sm:text-sm font-bold tracking-wide hover:text-rani-primary flex items-center gap-2 hover:-translate-y-1 transition-all bg-white/90 backdrop-blur-sm px-5 sm:px-6 py-2.5 sm:py-3 rounded-full shadow-lg border border-white/80 hover:shadow-xl active:scale-95">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                    <span>Back to Top</span>
                 </button>
             </div>
         </div>
