@@ -36,9 +36,56 @@
 
                 <!-- Right Actions -->
                 <div class="flex items-center space-x-4 md:space-x-6">
-                    <a href="#" class="hidden md:inline-flex items-center gap-1 bg-gradient-to-r from-rani-gold to-yellow-500 text-rani-dark px-3 py-1.5 rounded text-xs font-bold uppercase shadow-sm hover:shadow-md transform hover:-translate-y-0.5 transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        Upgrade
+                    @php
+                        $authCandidate = Auth::user();
+                        $headerWallet = $authCandidate ? ($authCandidate->wallet ?? $authCandidate->getOrCreateWallet()) : null;
+                        $walletBalance = $headerWallet ? number_format((float) $headerWallet->avl_balance, 2) : '0.00';
+                    @endphp
+
+                    <!-- Animated Upgrade / Wallet Badge with Golden Animation -->
+                    <a href="{{ route('wallet') }}" 
+                       x-data="{ showWallet: false }" 
+                       x-init="setInterval(() => { showWallet = !showWallet }, 3200)"
+                       class="hidden md:inline-flex relative overflow-hidden items-center justify-center min-w-[118px] h-8 px-3.5 rounded-lg bg-gradient-to-r from-amber-400 via-rani-gold to-yellow-400 text-rani-dark text-xs font-black uppercase tracking-wider border border-amber-200/80 golden-box-animate hover:scale-105 transition-all duration-300 group">
+                        
+                        <!-- Continuous Golden Shine Beam Sweep -->
+                        <div class="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
+                            <div class="w-8 h-full bg-gradient-to-r from-transparent via-white/70 to-transparent golden-shine-beam"></div>
+                        </div>
+
+                        <!-- Sparkle Accent -->
+                        <span class="golden-sparkle-dot absolute -top-1 -right-0.5 text-white font-bold text-[9px] pointer-events-none">✦</span>
+
+                        <!-- 1. UPGRADE State -->
+                        <div x-show="!showWallet" 
+                             x-transition:enter="transition-all ease-out duration-500 transform"
+                             x-transition:enter-start="opacity-0 -translate-y-3 scale-90"
+                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave="transition-all ease-in duration-300 transform absolute"
+                             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave-end="opacity-0 translate-y-3 scale-90"
+                             class="flex items-center gap-1.5 whitespace-nowrap z-10">
+                            <svg class="w-3.5 h-3.5 fill-current text-rani-dark animate-bounce" viewBox="0 0 24 24">
+                                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            <span>Upgrade</span>
+                        </div>
+
+                        <!-- 2. WALLET AMOUNT State -->
+                        <div x-show="showWallet" 
+                             x-cloak
+                             x-transition:enter="transition-all ease-out duration-500 transform"
+                             x-transition:enter-start="opacity-0 -translate-y-3 scale-90"
+                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave="transition-all ease-in duration-300 transform absolute"
+                             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                             x-transition:leave-end="opacity-0 translate-y-3 scale-90"
+                             class="flex items-center gap-1.5 whitespace-nowrap z-10">
+                            <svg class="w-3.5 h-3.5 text-rani-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                            </svg>
+                            <span class="font-black tracking-tight">₹{{ $walletBalance }}</span>
+                        </div>
                     </a>
                     
                     <div class="hidden md:flex items-center gap-1 text-gray-300 hover:text-white cursor-pointer text-sm">
@@ -145,7 +192,42 @@
     <div x-show="mobileMenuOpen" style="display: none;" class="md:hidden absolute w-full bg-white shadow-xl border-t border-gray-100">
         <div class="px-4 py-2 bg-gray-50 flex items-center justify-between">
             <span class="text-sm font-semibold text-gray-800">Hi, {{ Auth::user()->first_name }}</span>
-            <a href="#" class="text-xs bg-rani-gold text-rani-dark font-bold px-2 py-1 rounded">UPGRADE</a>
+            <a href="{{ route('wallet') }}" 
+               x-data="{ showWalletMob: false }" 
+               x-init="setInterval(() => { showWalletMob = !showWalletMob }, 3200)"
+               class="relative overflow-hidden inline-flex items-center justify-center min-w-[95px] h-7 px-2.5 rounded-md bg-gradient-to-r from-amber-400 via-rani-gold to-yellow-400 text-rani-dark text-xs font-black uppercase border border-amber-200/80 golden-box-animate">
+                
+                <!-- Continuous Golden Shine Beam Sweep -->
+                <div class="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
+                    <div class="w-6 h-full bg-gradient-to-r from-transparent via-white/70 to-transparent golden-shine-beam"></div>
+                </div>
+
+                <!-- UPGRADE State -->
+                <div x-show="!showWalletMob" 
+                     x-transition:enter="transition-all ease-out duration-400 transform"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition-all ease-in duration-250 transform absolute"
+                     x-transition:leave-start="opacity-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 translate-y-2"
+                     class="flex items-center gap-1 z-10">
+                    <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <span>Upgrade</span>
+                </div>
+
+                <!-- WALLET AMOUNT State -->
+                <div x-show="showWalletMob" 
+                     x-cloak
+                     x-transition:enter="transition-all ease-out duration-400 transform"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition-all ease-in duration-250 transform absolute"
+                     x-transition:leave-start="opacity-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 translate-y-2"
+                     class="flex items-center gap-1 font-black z-10">
+                    <span>₹{{ $walletBalance }}</span>
+                </div>
+            </a>
         </div>
         
         <!-- Mobile Profile Links -->
