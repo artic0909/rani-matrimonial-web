@@ -253,8 +253,8 @@
                         <a href="{{ route('my-photos') }}" class="{{ request()->routeIs('my-photos') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             My Photos
                         </a>
-                        <a href="{{ route('wallet') }}" class="{{ request()->routeIs('wallet') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
-                            Wallet
+                        <a href="{{ route('matches') }}" class="{{ request()->routeIs('matches*') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
+                            Matches
                         </a>
                     </nav>
                 @endif
