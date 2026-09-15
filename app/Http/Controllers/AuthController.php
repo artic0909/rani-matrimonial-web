@@ -957,20 +957,50 @@ class AuthController extends Controller
         $encoded = $image->scaleDown(1200)->encodeUsingFileExtension('webp', 70);
         Storage::disk('public')->put($path, (string) $encoded);
 
-        // Delete old profile picture if exists
-        if ($candidate->profile_picture && Storage::disk('public')->exists($candidate->profile_picture)) {
-            Storage::disk('public')->delete($candidate->profile_picture);
+        $oldProfilePath = $candidate->profile_picture;
+
+        // Delete old profile picture file if exists and different
+        if ($oldProfilePath && $oldProfilePath !== $path && Storage::disk('public')->exists($oldProfilePath)) {
+            Storage::disk('public')->delete($oldProfilePath);
         }
 
         $candidate->update(['profile_picture' => $path]);
 
-        // Sync with candidate_photos table
+        // Find existing profile photo record if any
+        $existingProfilePhoto = CandidatePhoto::where('candidate_id', $candidate->id)
+            ->where(function ($q) use ($oldProfilePath) {
+                $q->where('is_profile_picture', true);
+                if ($oldProfilePath) {
+                    $q->orWhere('photo_path', $oldProfilePath);
+                }
+            })
+            ->first();
+
+        // Mark all other photos for this candidate as NOT profile picture
         CandidatePhoto::where('candidate_id', $candidate->id)->update(['is_profile_picture' => false]);
-        CandidatePhoto::create([
-            'candidate_id' => $candidate->id,
-            'photo_path' => $path,
-            'is_profile_picture' => true,
-        ]);
+
+        if ($existingProfilePhoto) {
+            // Update in place so no duplicate or extra regenerated photo record is created
+            $existingProfilePhoto->update([
+                'photo_path' => $path,
+                'is_profile_picture' => true,
+            ]);
+        } else {
+            // Create only if no record existed before
+            CandidatePhoto::create([
+                'candidate_id' => $candidate->id,
+                'photo_path' => $path,
+                'is_profile_picture' => true,
+            ]);
+        }
+
+        // Clean up any missing/broken records
+        $candidatePhotos = CandidatePhoto::where('candidate_id', $candidate->id)->get();
+        foreach ($candidatePhotos as $p) {
+            if (! Storage::disk('public')->exists($p->photo_path)) {
+                $p->delete();
+            }
+        }
 
         return response()->json([
             'success' => true,
@@ -983,6 +1013,14 @@ class AuthController extends Controller
     public function myPhotos()
     {
         $candidate = Auth::user();
+
+        // Clean up broken/orphaned photo records whose physical files do not exist
+        $existingPhotos = CandidatePhoto::where('candidate_id', $candidate->id)->get();
+        foreach ($existingPhotos as $photoItem) {
+            if (! Storage::disk('public')->exists($photoItem->photo_path)) {
+                $photoItem->delete();
+            }
+        }
 
         // Auto-sync candidate's active profile picture into candidate_photos if not already present
         if ($candidate->profile_picture && Storage::disk('public')->exists($candidate->profile_picture)) {
@@ -997,9 +1035,20 @@ class AuthController extends Controller
                     'photo_path' => $candidate->profile_picture,
                     'is_profile_picture' => true,
                 ]);
-            } elseif (! $existingProfilePhoto->is_profile_picture) {
-                CandidatePhoto::where('candidate_id', $candidate->id)->update(['is_profile_picture' => false]);
+            } else {
+                CandidatePhoto::where('candidate_id', $candidate->id)
+                    ->where('id', '!=', $existingProfilePhoto->id)
+                    ->update(['is_profile_picture' => false]);
                 $existingProfilePhoto->update(['is_profile_picture' => true]);
+            }
+        } elseif ($candidate->profile_picture && ! Storage::disk('public')->exists($candidate->profile_picture)) {
+            // If the profile picture file doesn't exist, fall back to next photo or null
+            $nextPhoto = CandidatePhoto::where('candidate_id', $candidate->id)->first();
+            if ($nextPhoto) {
+                $candidate->update(['profile_picture' => $nextPhoto->photo_path]);
+                $nextPhoto->update(['is_profile_picture' => true]);
+            } else {
+                $candidate->update(['profile_picture' => null]);
             }
         }
 
