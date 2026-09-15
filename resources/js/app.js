@@ -68,7 +68,8 @@
         }, duration);
     }
 
-    // ================= 1. ABSOLUTE RIGHT-CLICK BLOCK (NO INSPECT ELEMENT) =================
+    // ================= 1. ABSOLUTE RIGHT-CLICK BLOCK (TEMPORARILY COMMENTED FOR TESTING RESPONSIVENESS) =================
+    /*
     function blockContextMenu(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -81,6 +82,7 @@
     document.addEventListener('contextmenu', blockContextMenu, { capture: true, passive: false });
     document.documentElement.addEventListener('contextmenu', blockContextMenu, { capture: true, passive: false });
     document.oncontextmenu = function() { return false; };
+    */
 
     // ================= 2. PREVENT IMAGE / MEDIA DRAGGING =================
     document.addEventListener('dragstart', function(e) {
@@ -192,8 +194,8 @@
     window.addEventListener('keydown', blockInspectKeys, { capture: true, passive: false });
     document.addEventListener('keydown', blockInspectKeys, { capture: true, passive: false });
 
-    // ================= 4. ANTI-DEBUGGER TRAP (FREEZES ANY ATTEMPTED DEVTOOLS SESSION) =================
-    let antiDebugActive = true;
+    // ================= 4. ANTI-DEBUGGER TRAP (TEMPORARILY DISABLED FOR TESTING RESPONSIVENESS) =================
+    let antiDebugActive = false;
     function runAntiDebugger() {
         if (!antiDebugActive) return;
         try {
