@@ -104,7 +104,7 @@
     
     @include('frontend.includes.auth_header')
 
-    <main class="flex-grow pt-[140px] pb-10">
+    <main class="flex-grow pt-[118px] md:pt-[125px] pb-10">
         @yield('content')
     </main>
 

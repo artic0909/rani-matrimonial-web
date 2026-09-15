@@ -71,8 +71,8 @@
                 </div>
             </div>
 
-            <!-- In-Page Secondary Sub-Header Tabs -->
-            <div class="px-6 md:px-10 pt-4 pb-2 bg-gray-50/70 border-b border-gray-100 flex items-center justify-between overflow-x-auto">
+            <!-- In-Page Secondary Sub-Header Tabs (Hidden on mobile responsive, shown on desktop) -->
+            <div class="px-4 sm:px-6 md:px-10 pt-3 pb-2 bg-gray-50/80 border-b border-gray-100 hidden md:flex items-center justify-between overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 <div class="flex items-center space-x-2 py-1">
                     <a href="{{ route('matches', ['tab' => 'todays']) }}" 
                        class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap {{ $tab === 'todays' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md' : 'text-gray-600 hover:text-rani-primary hover:bg-white' }}">
