@@ -43,6 +43,11 @@ class Candidate extends Authenticatable
         // Photo Settings
         'photo_privacy',
         'album_privacy',
+        'is_active',
+    ];
+
+    protected $attributes = [
+        'is_active' => true,
     ];
 
     protected static function booted(): void
@@ -56,6 +61,10 @@ class Candidate extends Authenticatable
                 $candidate->candidate_code = $candidate->profile_id;
             } elseif (empty($candidate->profile_id)) {
                 $candidate->profile_id = $candidate->candidate_code;
+            }
+
+            if (!isset($candidate->is_active)) {
+                $candidate->is_active = true;
             }
         });
     }
@@ -86,11 +95,17 @@ class Candidate extends Authenticatable
         return static::generateUniqueProfileId();
     }
 
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
     protected function casts(): array
     {
         return [
             'hobbies_interests' => 'array',
             'selfie_verified' => 'boolean',
+            'is_active' => 'boolean',
         ];
     }
 

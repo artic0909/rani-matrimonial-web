@@ -71,6 +71,7 @@
                         <th>Location</th>
                         <th>Religion / Community</th>
                         <th>Verification</th>
+                        <th>Visibility</th>
                         <th>Registered Date</th>
                         <th class="text-center pe-4" style="width: 140px;">Actions</th>
                     </tr>
@@ -79,8 +80,9 @@
                     @forelse($candidates as $candidate)
                         @php
                             $phoneNum = $candidate->mobile ?? ($candidate->phone ?? null);
+                            $isActive = (bool) ($candidate->is_active ?? true);
                         @endphp
-                        <tr>
+                        <tr id="candidate-row-{{ $candidate->id }}">
                             <td class="ps-4 text-muted fw-bold font-monospace">
                                 {{ (($candidates->currentPage() - 1) * $candidates->perPage()) + $loop->iteration }}
                             </td>
@@ -92,9 +94,9 @@
                                              class="table-user-avatar"
                                              onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(($candidate->first_name ?? 'C').' '.($candidate->last_name ?? '')) }}&background=0F4A32&color=fff'">
                                         @if($candidate->is_bluetick_verified ?? false)
-                                            <i class="bi bi-patch-check-fill text-warning position-absolute" 
-                                               style="bottom: -3px; right: -3px; font-size: 14px; background: #fff; border-radius: 50%;" 
-                                               title="Aadhaar Verified"></i>
+                                             <i class="bi bi-patch-check-fill text-warning position-absolute" 
+                                                style="bottom: -3px; right: -3px; font-size: 14px; background: #fff; border-radius: 50%;" 
+                                                title="Aadhaar Verified"></i>
                                         @endif
                                     </div>
                                     <div>
@@ -162,6 +164,16 @@
                                 @endif
                             </td>
                             <td>
+                                <button type="button" 
+                                        id="btn-status-{{ $candidate->id }}" 
+                                        onclick="toggleCandidateRowStatus({{ $candidate->id }})" 
+                                        class="badge-table {{ $isActive ? 'success' : 'failed' }} border-0 cursor-pointer shadow-xs d-inline-flex align-items-center gap-1 text-decoration-none"
+                                        title="Click to toggle status (Active / Deactivated)">
+                                    <i class="bi {{ $isActive ? 'bi-check-circle-fill' : 'bi-eye-slash-fill' }}" id="icon-status-{{ $candidate->id }}"></i>
+                                    <span id="text-status-{{ $candidate->id }}">{{ $isActive ? 'Visible (Active)' : 'Hidden (Deactive)' }}</span>
+                                </button>
+                            </td>
+                            <td>
                                 <div class="table-user-sub">{{ $candidate->created_at ? $candidate->created_at->format('d M, Y') : 'N/A' }}</div>
                             </td>
                             <td class="text-center pe-4">
@@ -182,7 +194,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="text-center py-5 text-muted">
+                            <td colspan="10" class="text-center py-5 text-muted">
                                 <i class="bi bi-people fs-2 d-block mb-2 text-muted-green"></i>
                                 <span class="fw-semibold">No candidates match your criteria.</span>
                             </td>
@@ -210,4 +222,60 @@
     <!-- END: Refined Table Container -->
 
 </div>
+
+@push('scripts')
+<script>
+function toggleCandidateRowStatus(id) {
+    const btn = document.getElementById(`btn-status-${id}`);
+    const icon = document.getElementById(`icon-status-${id}`);
+    const text = document.getElementById(`text-status-${id}`);
+
+    if (!btn) return;
+
+    const isCurrentlyActive = btn.classList.contains('success');
+    const promptMsg = isCurrentlyActive 
+        ? 'Deactivate this profile and hide it from public search results?' 
+        : 'Activate this profile and make it publicly visible again?';
+
+    if (!confirm(promptMsg)) {
+        return;
+    }
+
+    const prevHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width:0.75rem;height:0.75rem;"></span>';
+
+    fetch(`{{ url('/admin/candidates') }}/${id}/toggle-status`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        if (data.success) {
+            if (data.is_active) {
+                btn.className = 'badge-table success border-0 cursor-pointer shadow-xs d-inline-flex align-items-center gap-1 text-decoration-none';
+                btn.innerHTML = `<i class="bi bi-check-circle-fill" id="icon-status-${id}"></i> <span id="text-status-${id}">Visible (Active)</span>`;
+            } else {
+                btn.className = 'badge-table failed border-0 cursor-pointer shadow-xs d-inline-flex align-items-center gap-1 text-decoration-none';
+                btn.innerHTML = `<i class="bi bi-eye-slash-fill" id="icon-status-${id}"></i> <span id="text-status-${id}">Hidden (Deactive)</span>`;
+            }
+        } else {
+            btn.innerHTML = prevHtml;
+            alert(data.message || 'Error updating status');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        btn.disabled = false;
+        btn.innerHTML = prevHtml;
+        alert('Could not update status');
+    });
+}
+</script>
+@endpush
 @endsection

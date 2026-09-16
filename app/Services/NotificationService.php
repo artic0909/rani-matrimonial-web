@@ -216,4 +216,58 @@ class NotificationService
             Log::error('Twilio Blue Tick WhatsApp Error: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Dispatch WhatsApp Notification when a Candidate Profile is Deactivated by Admin (Template: HX8d4dbf146474911dcac92ee877300408)
+     */
+    public static function sendProfileDeactivatedWhatsApp(Candidate $candidate): void
+    {
+        try {
+            $apiKey = config('services.twilio.sid') ?: env('TWILIO_SID');
+            $apiSecret = config('services.twilio.auth_token') ?: env('TWILIO_AUTH_TOKEN');
+            $accountSid = config('services.twilio.account_sid') ?: env('TWILIO_ACCOUNT_SID');
+            $twilioNumber = config('services.twilio.whatsapp_number') ?: env('TWILIO_WHATSAPP_NUMBER');
+
+            $mobile = $candidate->mobile ?? ($candidate->phone ?? null);
+
+            if ($apiKey && $apiSecret && $accountSid && $twilioNumber && !empty($mobile)) {
+                $twilio = new Client($apiKey, $apiSecret, $accountSid);
+
+                $cleanMobile = preg_replace('/[^0-9]/', '', $mobile);
+                if (strlen($cleanMobile) === 10) {
+                    $formattedMobile = 'whatsapp:+91' . $cleanMobile;
+                } elseif (strlen($cleanMobile) === 12 && str_starts_with($cleanMobile, '91')) {
+                    $formattedMobile = 'whatsapp:+' . $cleanMobile;
+                } else {
+                    $formattedMobile = 'whatsapp:+91' . ltrim($cleanMobile, '0');
+                }
+
+                // Hardcoded Template SID for Candidate Deactivation
+                $templateSid = 'HX8d4dbf146474911dcac92ee877300408';
+
+                $candidateName = trim(($candidate->first_name ?? '') . ' ' . ($candidate->last_name ?? ''));
+                if (empty($candidateName)) {
+                    $candidateName = $candidate->first_name ?? 'Candidate';
+                }
+
+                $contentVariables = json_encode([
+                    '1' => $candidateName,
+                    'name' => $candidateName,
+                ]);
+
+                $twilio->messages->create(
+                    $formattedMobile,
+                    [
+                        'from' => $twilioNumber,
+                        'contentSid' => $templateSid,
+                        'contentVariables' => $contentVariables,
+                    ]
+                );
+
+                Log::info("WhatsApp Profile Deactivated notification dispatched to {$candidateName} ({$formattedMobile}) using template SID: {$templateSid}");
+            }
+        } catch (\Exception $e) {
+            Log::error('Twilio Profile Deactivated WhatsApp Error: ' . $e->getMessage());
+        }
+    }
 }

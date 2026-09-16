@@ -8,23 +8,21 @@
     <!-- START: Page Header Banner -->
     <div class="page-header d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
         <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
+            <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
                 <h1 class="page-title mb-0">{{ $candidate->first_name }} {{ $candidate->last_name }}</h1>
                 <span class="badge bg-light text-dark border font-monospace px-2.5 py-1">
                     {{ $candidate->candidate_code ?? $candidate->profile_id ?? ('RM' . str_pad($candidate->id, 5, '0', STR_PAD_LEFT)) }}
                 </span>
+                
+                <!-- Visibility Status Badge -->
+                <span id="badgeCandidateVisibility" class="badge-table {{ ($candidate->is_active ?? true) ? 'success' : 'failed' }}">
+                    <i class="bi {{ ($candidate->is_active ?? true) ? 'bi-check-circle-fill' : 'bi-eye-slash-fill' }}" id="iconCandidateVisibility"></i>
+                    <span id="textCandidateVisibility">{{ ($candidate->is_active ?? true) ? 'Publicly Visible (Active)' : 'Hidden (Deactivated)' }}</span>
+                </span>
+
                 @if($candidate->is_bluetick_verified ?? false)
                     <span class="badge-table success ms-1">
                         <i class="bi bi-patch-check-fill"></i> Blue Tick Verified
-                    </span>
-                @elseif($candidate->bluetick && (int)$candidate->bluetick->is_accept === 0)
-                    <span class="badge-table pending ms-1">
-                        <i class="bi bi-clock-history"></i> Blue Tick Pending Review
-                    </span>
-                @endif
-                @if(($stats['matched_connections_total'] ?? 0) > 0)
-                    <span class="badge-table success ms-1">
-                        <i class="bi bi-heart-fill"></i> {{ $stats['matched_connections_total'] }} Matched
                     </span>
                 @endif
             </div>
@@ -36,7 +34,18 @@
                 </ol>
             </nav>
         </div>
-        <div class="d-flex align-items-center gap-2">
+
+        <!-- Action Controls -->
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <!-- Active / Deactivate Toggle Button -->
+            <button type="button" 
+                    id="btnToggleCandidateActive" 
+                    onclick="handleToggleCandidateActive({{ $candidate->id }})" 
+                    class="btn-custom {{ ($candidate->is_active ?? true) ? 'btn-custom-outline-danger' : 'btn-custom-secondary' }} btn-custom-sm shadow-xs">
+                <i class="bi {{ ($candidate->is_active ?? true) ? 'bi-eye-slash-fill' : 'bi-eye-fill' }}" id="iconToggleCandidateActive"></i>
+                <span id="textToggleCandidateActive">{{ ($candidate->is_active ?? true) ? 'Deactivate Profile (Hide Publicly)' : 'Activate Profile (Make Visible)' }}</span>
+            </button>
+
             @php
                 $phoneNum = $candidate->mobile ?? ($candidate->phone ?? null);
             @endphp
@@ -46,7 +55,7 @@
                     <span>WhatsApp</span>
                 </a>
             @endif
-            <a href="{{ url('/candidate/' . ($candidate->candidate_code ?? $candidate->id)) }}" target="_blank" class="btn-custom btn-custom-light btn-custom-sm">
+            <a href="{{ url('/candidate/' . ($candidate->candidate_code ?? $candidate->id)) }}" target="_blank" class="btn-custom btn-custom-light btn-custom-sm" id="linkPublicProfile">
                 <i class="bi bi-box-arrow-up-right"></i>
                 <span>Public Profile</span>
             </a>
@@ -236,85 +245,106 @@
     </div>
     <!-- END: Activity Overview Stats Strip -->
 
-    <!-- START: Tabbed Content Container -->
+    <!-- START: Tabbed Content Container (Highly Polished & Responsive) -->
     <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden" style="border: 1px solid rgba(11, 19, 15, 0.06) !important;">
-        <div class="card-header bg-white border-bottom p-0">
-            <ul class="nav nav-tabs border-0 px-3 pt-2" id="candidateShowTabs" role="tablist">
+        
+        <!-- START: Responsive Custom Horizontal Scroll Tabs Header -->
+        <div class="candidate-tabs-bar p-2 bg-light border-bottom">
+            <ul class="nav nav-pills d-flex flex-nowrap overflow-x-auto gap-2 align-items-center mb-0 px-2 py-1" 
+                id="candidateShowTabs" 
+                role="tablist" 
+                style="scrollbar-width: none; -ms-overflow-style: none;">
+                
                 <!-- Tab 1: Complete Profile Details -->
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active fw-bold text-dark border-bottom border-3" 
-                            style="border-color: var(--brand-forest-medium) !important;"
+                <li class="nav-item flex-shrink-0" role="presentation">
+                    <button class="nav-link active custom-tab-btn" 
                             id="tab-profile-details" data-bs-toggle="tab" data-bs-target="#pane-profile-details" type="button" role="tab">
-                        <i class="bi bi-person-lines-fill me-1.5" style="color: var(--brand-forest-medium);"></i> Profile Details
+                        <i class="bi bi-person-lines-fill"></i>
+                        <span>Profile Details</span>
                     </button>
                 </li>
 
                 <!-- Tab 2: Blue Tick & KYC -->
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-semibold text-muted" 
+                <li class="nav-item flex-shrink-0" role="presentation">
+                    <button class="nav-link custom-tab-btn" 
                             id="tab-bluetick" data-bs-toggle="tab" data-bs-target="#pane-bluetick" type="button" role="tab">
-                        <i class="bi bi-patch-check-fill me-1.5 text-warning"></i> Blue Tick & KYC ({{ $candidate->blueticks->count() }})
+                        <i class="bi bi-patch-check-fill text-warning"></i>
+                        <span>Blue Tick & KYC</span>
+                        <span class="badge rounded-pill ms-1 tab-badge">{{ $candidate->blueticks->count() }}</span>
                     </button>
                 </li>
 
                 <!-- Tab 3: Matched / Accepted Connections -->
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-semibold text-muted" 
+                <li class="nav-item flex-shrink-0" role="presentation">
+                    <button class="nav-link custom-tab-btn" 
                             id="tab-matched-connections" data-bs-toggle="tab" data-bs-target="#pane-matched-connections" type="button" role="tab">
-                        <i class="bi bi-heart-fill me-1.5 text-danger"></i> Matched (Accepted)
-                        <span class="badge bg-success text-white rounded-pill ms-1">{{ $stats['matched_connections_total'] }}</span>
+                        <i class="bi bi-heart-fill text-danger"></i>
+                        <span>Matched (Accepted)</span>
+                        <span class="badge rounded-pill ms-1 tab-badge bg-success text-white">{{ $stats['matched_connections_total'] }}</span>
                     </button>
                 </li>
 
                 <!-- Tab 4: Sent Connection Requests -->
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-semibold text-muted" 
+                <li class="nav-item flex-shrink-0" role="presentation">
+                    <button class="nav-link custom-tab-btn" 
                             id="tab-sent-connections" data-bs-toggle="tab" data-bs-target="#pane-sent-connections" type="button" role="tab">
-                        <i class="bi bi-send-fill me-1.5" style="color: var(--brand-forest-medium);"></i> Sent Requests ({{ $stats['sent_connections_total'] }})
+                        <i class="bi bi-send-fill"></i>
+                        <span>Sent Requests</span>
+                        <span class="badge rounded-pill ms-1 tab-badge">{{ $stats['sent_connections_total'] }}</span>
                     </button>
                 </li>
 
                 <!-- Tab 5: Received Connection Requests -->
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-semibold text-muted" 
+                <li class="nav-item flex-shrink-0" role="presentation">
+                    <button class="nav-link custom-tab-btn" 
                             id="tab-received-connections" data-bs-toggle="tab" data-bs-target="#pane-received-connections" type="button" role="tab">
-                        <i class="bi bi-inbox-fill me-1.5 text-info"></i> Received Requests ({{ $stats['received_connections_total'] }})
+                        <i class="bi bi-inbox-fill text-info"></i>
+                        <span>Received Requests</span>
+                        <span class="badge rounded-pill ms-1 tab-badge">{{ $stats['received_connections_total'] }}</span>
                     </button>
                 </li>
 
                 <!-- Tab 6: Sent WhatsApp Requests -->
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-semibold text-muted" 
+                <li class="nav-item flex-shrink-0" role="presentation">
+                    <button class="nav-link custom-tab-btn" 
                             id="tab-sent-whatsapp" data-bs-toggle="tab" data-bs-target="#pane-sent-whatsapp" type="button" role="tab">
-                        <i class="bi bi-whatsapp me-1.5 text-success"></i> Sent WhatsApp ({{ $stats['sent_whatsapp_total'] }})
+                        <i class="bi bi-whatsapp text-success"></i>
+                        <span>Sent WhatsApp</span>
+                        <span class="badge rounded-pill ms-1 tab-badge">{{ $stats['sent_whatsapp_total'] }}</span>
                     </button>
                 </li>
 
                 <!-- Tab 7: Received WhatsApp Requests -->
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-semibold text-muted" 
+                <li class="nav-item flex-shrink-0" role="presentation">
+                    <button class="nav-link custom-tab-btn" 
                             id="tab-received-whatsapp" data-bs-toggle="tab" data-bs-target="#pane-received-whatsapp" type="button" role="tab">
-                        <i class="bi bi-chat-dots-fill me-1.5 text-success"></i> Received WhatsApp ({{ $stats['received_whatsapp_total'] }})
+                        <i class="bi bi-chat-dots-fill text-success"></i>
+                        <span>Received WhatsApp</span>
+                        <span class="badge rounded-pill ms-1 tab-badge">{{ $stats['received_whatsapp_total'] }}</span>
                     </button>
                 </li>
 
                 <!-- Tab 8: Photo Gallery -->
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-semibold text-muted" 
+                <li class="nav-item flex-shrink-0" role="presentation">
+                    <button class="nav-link custom-tab-btn" 
                             id="tab-photos" data-bs-toggle="tab" data-bs-target="#pane-photos" type="button" role="tab">
-                        <i class="bi bi-images me-1.5 text-warning"></i> Photos ({{ $candidate->photos->count() }})
+                        <i class="bi bi-images text-warning"></i>
+                        <span>Photos</span>
+                        <span class="badge rounded-pill ms-1 tab-badge">{{ $candidate->photos->count() }}</span>
                     </button>
                 </li>
 
                 <!-- Tab 9: Wallet Ledger -->
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link fw-semibold text-muted" 
+                <li class="nav-item flex-shrink-0" role="presentation">
+                    <button class="nav-link custom-tab-btn" 
                             id="tab-wallet" data-bs-toggle="tab" data-bs-target="#pane-wallet" type="button" role="tab">
-                        <i class="bi bi-wallet2 me-1.5 text-secondary"></i> Wallet
+                        <i class="bi bi-wallet2 text-secondary"></i>
+                        <span>Wallet</span>
                     </button>
                 </li>
             </ul>
         </div>
+        <!-- END: Responsive Custom Horizontal Scroll Tabs Header -->
 
         <div class="card-body p-4">
             <div class="tab-content" id="candidateShowTabsContent">
@@ -1504,8 +1534,136 @@
     </div>
 </div>
 
+<style>
+/* Custom Responsive Candidate Tabs Bar */
+.candidate-tabs-bar {
+    background: #F8FAF9 !important;
+    position: relative;
+    border-top-left-radius: calc(var(--radius-xl) - 1px);
+    border-top-right-radius: calc(var(--radius-xl) - 1px);
+}
+.candidate-tabs-bar .nav-pills {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(15, 74, 50, 0.2) transparent;
+}
+.candidate-tabs-bar .nav-pills::-webkit-scrollbar {
+    height: 4px;
+}
+.candidate-tabs-bar .nav-pills::-webkit-scrollbar-thumb {
+    background: rgba(15, 74, 50, 0.2);
+    border-radius: 4px;
+}
+.custom-tab-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.45rem !important;
+    padding: 0.6rem 1.1rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    color: var(--brand-forest-dark) !important;
+    background-color: #FFFFFF !important;
+    border: 1px solid rgba(11, 19, 15, 0.1) !important;
+    border-radius: 50px !important;
+    white-space: nowrap !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+.custom-tab-btn:hover {
+    background-color: #EEF2F0 !important;
+    border-color: rgba(15, 74, 50, 0.35) !important;
+    color: var(--brand-forest-dark) !important;
+    transform: translateY(-1px);
+}
+.custom-tab-btn.active {
+    background-color: var(--brand-forest-medium) !important;
+    color: #FFFFFF !important;
+    border-color: var(--brand-forest-medium) !important;
+    box-shadow: 0 4px 12px rgba(15, 74, 50, 0.25) !important;
+}
+.custom-tab-btn.active i {
+    color: #FFFFFF !important;
+}
+.custom-tab-btn .tab-badge {
+    background-color: rgba(11, 19, 15, 0.08);
+    color: var(--brand-forest-dark);
+    font-size: 0.75rem;
+    padding: 0.2rem 0.55rem;
+    font-weight: 700;
+}
+.custom-tab-btn.active .tab-badge {
+    background-color: rgba(255, 255, 255, 0.25) !important;
+    color: #FFFFFF !important;
+}
+</style>
+
 @push('scripts')
 <script>
+    function handleToggleCandidateActive(id) {
+        const btn = document.getElementById('btnToggleCandidateActive');
+        const icon = document.getElementById('iconToggleCandidateActive');
+        const text = document.getElementById('textToggleCandidateActive');
+        const badge = document.getElementById('badgeCandidateVisibility');
+        const iconBadge = document.getElementById('iconCandidateVisibility');
+        const textBadge = document.getElementById('textCandidateVisibility');
+
+        const isCurrentlyActive = btn.classList.contains('btn-custom-outline-danger');
+        const actionText = isCurrentlyActive ? 'deactivate this profile and hide it from all public search & match results' : 'activate this profile and make it publicly visible again';
+
+        if (!confirm(`Are you sure you want to ${actionText}?`)) {
+            return;
+        }
+
+        btn.disabled = true;
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Updating...';
+
+        fetch(`{{ url('/admin/candidates') }}/${id}/toggle-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            btn.disabled = false;
+            if (data.success) {
+                if (data.is_active) {
+                    // Became Active
+                    btn.className = 'btn-custom btn-custom-outline-danger btn-custom-sm shadow-xs';
+                    btn.innerHTML = '<i class="bi bi-eye-slash-fill" id="iconToggleCandidateActive"></i> <span id="textToggleCandidateActive">Deactivate Profile (Hide Publicly)</span>';
+                    
+                    badge.className = 'badge-table success';
+                    badge.innerHTML = '<i class="bi bi-check-circle-fill"></i> Publicly Visible (Active)';
+                } else {
+                    // Became Deactivated
+                    btn.className = 'btn-custom btn-custom-secondary btn-custom-sm shadow-xs';
+                    btn.innerHTML = '<i class="bi bi-eye-fill" id="iconToggleCandidateActive"></i> <span id="textToggleCandidateActive">Activate Profile (Make Visible)</span>';
+                    
+                    badge.className = 'badge-table failed';
+                    badge.innerHTML = '<i class="bi bi-eye-slash-fill"></i> Hidden (Deactivated)';
+                }
+                alert(data.message || 'Status updated successfully!');
+            } else {
+                btn.innerHTML = originalHtml;
+                alert(data.message || 'Failed to update status.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+            alert('An unexpected error occurred while toggling status.');
+        });
+    }
+
     function handleApproveBluetick(id) {
         if (!confirm('Are you sure you want to approve this Aadhaar document and grant Genuine Blue Tick Verification badge to {{ $candidate->first_name }}?')) {
             return;

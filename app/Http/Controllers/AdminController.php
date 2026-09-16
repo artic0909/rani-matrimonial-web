@@ -338,6 +338,28 @@ class AdminController extends Controller
     }
 
     /**
+     * Toggle Candidate Active / Deactivated Status (Publicly Visible or Hidden)
+     */
+    public function toggleCandidateStatus(Request $request, $id)
+    {
+        $candidate = Candidate::findOrFail($id);
+        $wasActive = (bool)($candidate->is_active ?? true);
+        $candidate->is_active = !$wasActive;
+        $candidate->save();
+
+        // When deactivated by admin, automatically dispatch WhatsApp notification (Template: HX8d4dbf146474911dcac92ee877300408)
+        if (!$candidate->is_active) {
+            NotificationService::sendProfileDeactivatedWhatsApp($candidate);
+        }
+
+        return response()->json([
+            'success' => true,
+            'is_active' => (bool)$candidate->is_active,
+            'message' => "Candidate profile for {$candidate->first_name} is now " . ($candidate->is_active ? 'Active (Publicly Visible)' : 'Deactivated (Hidden from Public)') . '.',
+        ]);
+    }
+
+    /**
      * Wallet Transactions Ledger (Credit, Debit with Search & Summary)
      */
     public function transactions(Request $request)

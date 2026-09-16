@@ -138,7 +138,10 @@ class SearchController extends Controller
     {
         $currentCandidate = Auth::user();
 
-        $query = Candidate::with(['photos', 'bluetick']);
+        $query = Candidate::with(['photos', 'bluetick'])
+            ->where(function ($q) {
+                $q->where('is_active', true)->orWhereNull('is_active');
+            });
 
         // Exclude logged in user
         if ($currentCandidate) {

@@ -1015,6 +1015,9 @@ class MatchesController extends Controller
         array $acceptedCandidateIds = []
     ): array {
         $query = Candidate::with(['photos', 'bluetick'])
+            ->where(function ($q) {
+                $q->where('is_active', true)->orWhereNull('is_active');
+            })
             ->where('gender', $targetGender)
             ->where('id', '!=', $candidate->id);
 
