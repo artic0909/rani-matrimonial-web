@@ -46,28 +46,46 @@
                 <span>Back to Matches</span>
             </a>
             <span class="text-gray-300">/</span>
-            <span class="text-gray-500 font-medium truncate">{{ $profileName }} ({{ $profileCode }})</span>
+            <span class="text-gray-500 font-medium truncate">{{ ($profile->is_active ?? true) ? $profileName : 'Profile Unavailable' }} ({{ $profileCode }})</span>
+        </div>
+    </div>
+
+    @if(!($profile->is_active ?? true))
+    <!-- START: Profile Deactivated Message Card (All details completely hidden) -->
+    <div class="my-8 sm:my-14 max-w-2xl mx-auto bg-white rounded-3xl shadow-xl border border-rose-100 p-6 sm:p-10 text-center relative overflow-hidden">
+        <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-5 rounded-full bg-rose-50 border-2 border-rose-200 flex items-center justify-center text-rose-500 shadow-inner">
+            <svg class="w-10 h-10 sm:w-12 sm:h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+            </svg>
         </div>
 
-        <!-- <div class="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
-            
-            <button type="button" 
-                    @click="toggleShortlist()" 
-                    class="flex-1 sm:flex-initial justify-center px-3.5 sm:px-4 py-2 rounded-full border text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
-                    :class="shortlisted ? 'bg-rose-50 border-rose-300 text-rose-600 hover:bg-rose-100' : 'bg-white border-gray-300 text-gray-700 hover:border-rani-gold hover:text-rani-primary'">
-                <svg class="w-4 h-4 flex-shrink-0" :fill="shortlisted ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                <span x-text="shortlisted ? 'Shortlisted' : 'Shortlist Profile'"></span>
-            </button>
+        <div class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-bold uppercase tracking-wider mb-3.5">
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+            <span>Profile Deactivated</span>
+        </div>
 
- 
-            <button type="button" 
-                    @click="copyToClipboard('{{ route('matches.view-profile', ['id' => \App\Http\Controllers\MatchesController::generateProfileToken($profile)]) }}', 'Profile Link')" 
-                    class="flex-1 sm:flex-initial justify-center px-3.5 sm:px-4 py-2 rounded-full bg-white border border-gray-300 hover:border-rani-gold text-gray-700 hover:text-rani-primary text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer">
-                <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
-                <span>Share</span>
-            </button>
-        </div> -->
+        <h2 class="text-2xl sm:text-3xl font-serif font-bold text-gray-900 mb-3">
+            This Profile is Currently Deactivated
+        </h2>
+
+        <p class="text-sm sm:text-base text-gray-600 leading-relaxed max-w-lg mx-auto mb-6">
+            The profile for <strong class="text-gray-900 font-mono">{{ $profileCode }}</strong> has been deactivated by administration or is temporarily unavailable. All confidential particulars, contact information, match history, and photos are hidden for privacy and security.
+        </p>
+
+        <div class="pt-5 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a href="{{ route('matches') }}" 
+               class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-sm shadow-md transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                <span>Back to Matches</span>
+            </a>
+            <a href="{{ route('search') }}" 
+               class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm transition-colors">
+                <span>Browse Search Directory</span>
+            </a>
+        </div>
     </div>
+    <!-- END: Profile Deactivated Message Card -->
+    @else
 
     <!-- Status Banner for Accepted Match -->
     @if($isAccepted)
@@ -683,6 +701,8 @@
             <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
         </button>
     </div>
+
+    @endif
 
 </div>
 

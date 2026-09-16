@@ -325,6 +325,13 @@ class MatchesController extends Controller
             ->first();
 
         if ($targetCandidate) {
+            if (!($targetCandidate->is_active ?? true)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This profile is currently deactivated and is not accepting connection requests.',
+                ], 422);
+            }
+
             if ($targetCandidate->id === $candidate->id) {
                 return response()->json([
                     'success' => false,
@@ -717,6 +724,13 @@ class MatchesController extends Controller
                 'success' => false,
                 'message' => 'Candidate profile not found.',
             ], 404);
+        }
+
+        if (!($targetCandidate->is_active ?? true)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This profile is currently deactivated and cannot receive WhatsApp chat requests.',
+            ], 422);
         }
 
         // Check 6-hour cooldown if a request was already sent by candidate to this target
