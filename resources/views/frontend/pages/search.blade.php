@@ -3,6 +3,93 @@
 @section('title', 'Search Matrimonial Profiles | Rani Matrimonial')
 
 @section('content')
+<style>
+/* Rani Filter Modern Form Controls */
+.rani-filter-select,
+.rani-filter-input {
+    width: 100%;
+    font-size: 0.75rem; /* 12px */
+    line-height: 1.15rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    background-color: #f8fafc; /* slate-50 */
+    border: 1px solid #cbd5e1; /* slate-300 */
+    border-radius: 0.75rem; /* rounded-xl */
+    color: #1e293b; /* slate-800 */
+    font-weight: 500;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+    outline: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rani-filter-select:hover,
+.rani-filter-input:hover {
+    background-color: #ffffff;
+    border-color: #94a3b8; /* slate-400 */
+}
+
+.rani-filter-select:focus,
+.rani-filter-input:focus {
+    background-color: #ffffff;
+    border-color: #881337 !important; /* rani-primary */
+    box-shadow: 0 0 0 3px rgba(136, 19, 55, 0.12) !important;
+}
+
+.rani-filter-select {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    padding-right: 2rem !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.65rem center !important;
+    background-size: 0.95rem !important;
+    cursor: pointer;
+}
+
+.rani-filter-select:focus {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23881337' stroke-width='2.2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E") !important;
+}
+
+/* Looking For Segmented Pill Switcher */
+.rani-gender-switch {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+    padding: 0.25rem;
+    background-color: #f1f5f9;
+    border-radius: 0.875rem;
+    border: 1px solid #cbd5e1;
+}
+
+.rani-gender-btn {
+    padding-top: 0.45rem;
+    padding-bottom: 0.45rem;
+    font-size: 0.75rem;
+    border-radius: 0.65rem;
+    font-weight: 600;
+    transition: all 0.18s ease;
+    cursor: pointer;
+    text-align: center;
+    border: none;
+    outline: none;
+}
+.rani-gender-btn.active {
+    background-color: #881337;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(136, 19, 55, 0.25);
+}
+.rani-gender-btn:not(.active) {
+    color: #475569;
+    background-color: transparent;
+}
+.rani-gender-btn:not(.active):hover {
+    color: #0f172a;
+    background-color: #ffffff;
+}
+</style>
 <div class="relative pt-6 pb-20 min-h-screen" x-data="searchManager()" x-init="initSearch()">
     
     <!-- Background Image (Exact same as matches & dashboard pages) -->
@@ -72,9 +159,9 @@
                 <div class="relative flex-1 group">
                     <input type="text" 
                            x-model="filters.keyword" 
-                           @input.debounce.300ms="fetchResults()"
+                           @input.debounce.300ms="fetchResults()" 
                            placeholder="Search by Profile ID (e.g. RM00001), Name, City, Profession, Education..." 
-                           class="w-full pl-11 pr-10 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-rani-gold focus:border-transparent bg-white text-xs sm:text-sm text-gray-800 placeholder-gray-400 shadow-xs transition-all">
+                           class="w-full pl-11 pr-10 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-200 hover:border-slate-300 focus:outline-none focus:ring-3 focus:ring-rani-primary/15 focus:border-rani-primary bg-slate-50/70 hover:bg-white focus:bg-white text-xs sm:text-sm text-gray-800 placeholder-gray-400 shadow-2xs transition-all">
                     
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-focus-within:text-rani-primary absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     
@@ -224,18 +311,18 @@
 
                     <!-- Gender Option Buttons -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1.5">Looking For</label>
-                        <div class="grid grid-cols-3 gap-1.5 p-1 bg-gray-100 rounded-xl">
-                            <button type="button" @click="filters.gender = 'all'; fetchResults()" :class="filters.gender === 'all' ? 'bg-white text-rani-primary font-bold shadow-xs' : 'text-gray-600 hover:text-gray-900'" class="py-1.5 px-2 rounded-lg text-xs transition-all cursor-pointer">All</button>
-                            <button type="button" @click="filters.gender = 'Female'; fetchResults()" :class="filters.gender === 'Female' ? 'bg-white text-rani-primary font-bold shadow-xs' : 'text-gray-600 hover:text-gray-900'" class="py-1.5 px-2 rounded-lg text-xs transition-all cursor-pointer">Bride</button>
-                            <button type="button" @click="filters.gender = 'Male'; fetchResults()" :class="filters.gender === 'Male' ? 'bg-white text-rani-primary font-bold shadow-xs' : 'text-gray-600 hover:text-gray-900'" class="py-1.5 px-2 rounded-lg text-xs transition-all cursor-pointer">Groom</button>
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1.5">Looking For</label>
+                        <div class="rani-gender-switch">
+                            <button type="button" @click="filters.gender = 'all'; fetchResults()" :class="filters.gender === 'all' ? 'active' : ''" class="rani-gender-btn">All</button>
+                            <button type="button" @click="filters.gender = 'Female'; fetchResults()" :class="filters.gender === 'Female' ? 'active' : ''" class="rani-gender-btn">Bride</button>
+                            <button type="button" @click="filters.gender = 'Male'; fetchResults()" :class="filters.gender === 'Male' ? 'active' : ''" class="rani-gender-btn">Groom</button>
                         </div>
                     </div>
 
                     <!-- Profile Created For -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Profile Created By</label>
-                        <select x-model="filters.profile_for" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Profile Created By</label>
+                        <select x-model="filters.profile_for" @change="fetchResults()" class="rani-filter-select">
                             <option value="all">All (Created By Anyone)</option>
                             @foreach($profileFors as $pf)
                                 <option value="{{ $pf }}">{{ $pf }}</option>
@@ -245,15 +332,15 @@
 
                     <!-- Age Range -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Age Range</label>
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Age Range</label>
                         <div class="grid grid-cols-2 gap-2">
-                            <select x-model="filters.age_min" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                            <select x-model="filters.age_min" @change="fetchResults()" class="rani-filter-select">
                                 <option value="">Min Age (Any)</option>
                                 @for($a = 18; $a <= 65; $a++)
                                     <option value="{{ $a }}">{{ $a }} Yrs</option>
                                 @endfor
                             </select>
-                            <select x-model="filters.age_max" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                            <select x-model="filters.age_max" @change="fetchResults()" class="rani-filter-select">
                                 <option value="">Max Age (Any)</option>
                                 @for($a = 18; $a <= 70; $a++)
                                     <option value="{{ $a }}">{{ $a }} Yrs</option>
@@ -264,15 +351,15 @@
 
                     <!-- Height Range -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Height Range</label>
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Height Range</label>
                         <div class="grid grid-cols-2 gap-2">
-                            <select x-model="filters.height_min" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                            <select x-model="filters.height_min" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">Min Height (Any)</option>
                                 @foreach($heights as $h)
                                     <option value="{{ $h->name }}">{{ $h->name }}</option>
                                 @endforeach
                             </select>
-                            <select x-model="filters.height_max" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                            <select x-model="filters.height_max" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">Max Height (Any)</option>
                                 @foreach($heights as $h)
                                     <option value="{{ $h->name }}">{{ $h->name }}</option>
@@ -283,8 +370,8 @@
 
                     <!-- Marital Status -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Marital Status</label>
-                        <select x-model="filters.marital_status" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Marital Status</label>
+                        <select x-model="filters.marital_status" @change="fetchResults()" class="rani-filter-select">
                             <option value="all">All Marital Statuses</option>
                             @foreach($maritalStatuses as $ms)
                                 <option value="{{ $ms->name }}">{{ $ms->name }}</option>
@@ -310,8 +397,8 @@
 
                     <!-- Religion -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Religion</label>
-                        <select x-model="filters.religion" @change="onReligionChange()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Religion</label>
+                        <select x-model="filters.religion" @change="onReligionChange()" class="rani-filter-select">
                             <option value="all">All Religions</option>
                             @foreach($religions as $r)
                                 <option value="{{ $r->name }}">{{ $r->name }}</option>
@@ -321,8 +408,8 @@
 
                     <!-- Community / Caste -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Community / Caste</label>
-                        <select x-model="filters.community" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Community / Caste</label>
+                        <select x-model="filters.community" @change="fetchResults()" class="rani-filter-select">
                             <option value="all">All Communities</option>
                             <template x-for="com in availableCommunities" :key="com.id || com.name">
                                 <option :value="com.name" x-text="com.name"></option>
@@ -332,14 +419,14 @@
 
                     <!-- Sub-Community -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Sub-Community / Clan</label>
-                        <input type="text" x-model.debounce.400ms="filters.sub_community" @input="fetchResults()" placeholder="e.g. Kulin, Vaishnav..." class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Sub-Community / Clan</label>
+                        <input type="text" x-model.debounce.400ms="filters.sub_community" @input="fetchResults()" placeholder="e.g. Kulin, Vaishnav..." class="rani-filter-input">
                     </div>
 
                     <!-- Mother Tongue -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Mother Tongue</label>
-                        <select x-model="filters.mother_tongue" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Mother Tongue</label>
+                        <select x-model="filters.mother_tongue" @change="fetchResults()" class="rani-filter-select">
                             <option value="all">All Mother Tongues</option>
                             @foreach($motherTongues as $mt)
                                 <option value="{{ $mt }}">{{ $mt }}</option>
@@ -349,8 +436,8 @@
 
                     <!-- Manglik Status -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Manglik Status</label>
-                        <select x-model="filters.manglik" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Manglik Status</label>
+                        <select x-model="filters.manglik" @change="fetchResults()" class="rani-filter-select">
                             <option value="all">All Manglik Statuses</option>
                             <option value="Non-Manglik">Non-Manglik</option>
                             <option value="Manglik">Manglik</option>
@@ -361,8 +448,8 @@
 
                     <!-- Gothra -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Gothra</label>
-                        <input type="text" x-model.debounce.400ms="filters.gothra" @input="fetchResults()" placeholder="e.g. Kashyap, Shandilya..." class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Gothra</label>
+                        <input type="text" x-model.debounce.400ms="filters.gothra" @input="fetchResults()" placeholder="e.g. Kashyap, Shandilya..." class="rani-filter-input">
                     </div>
                 </div>
 
@@ -378,8 +465,8 @@
 
                     <!-- Country -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Country</label>
-                        <select x-model="filters.country" @change="onCountryChange()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Country</label>
+                        <select x-model="filters.country" @change="onCountryChange()" class="rani-filter-select">
                             <option value="all">All Countries</option>
                             @foreach($countries as $c)
                                 <option value="{{ $c->name }}">{{ $c->name }}</option>
@@ -389,8 +476,8 @@
 
                     <!-- State -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">State</label>
-                        <select x-model="filters.state" @change="onStateChange()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">State</label>
+                        <select x-model="filters.state" @change="onStateChange()" class="rani-filter-select">
                             <option value="all">All States</option>
                             <template x-for="st in availableStates" :key="st.id || st.name">
                                 <option :value="st.name" x-text="st.name"></option>
@@ -400,8 +487,8 @@
 
                     <!-- City -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">City</label>
-                        <select x-model="filters.city" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">City</label>
+                        <select x-model="filters.city" @change="fetchResults()" class="rani-filter-select">
                             <option value="all">All Cities</option>
                             <template x-for="ct in availableCities" :key="ct.id || ct.name">
                                 <option :value="ct.name" x-text="ct.name"></option>
@@ -411,8 +498,8 @@
 
                     <!-- Residency Status -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Residency Status</label>
-                        <select x-model="filters.residency_status" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Residency Status</label>
+                        <select x-model="filters.residency_status" @change="fetchResults()" class="rani-filter-select">
                             <option value="all">All Residency Types</option>
                             @foreach($residencyStatuses as $rs)
                                 <option value="{{ $rs }}">{{ $rs }}</option>
@@ -422,8 +509,8 @@
 
                     <!-- Grew Up In -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Grew Up In (City / Region)</label>
-                        <input type="text" x-model.debounce.400ms="filters.grew_up_in" @input="fetchResults()" placeholder="e.g. Kolkata, Mumbai..." class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Grew Up In (City / Region)</label>
+                        <input type="text" x-model.debounce.400ms="filters.grew_up_in" @input="fetchResults()" placeholder="e.g. Kolkata, Mumbai..." class="rani-filter-input">
                     </div>
                 </div>
 
@@ -439,8 +526,8 @@
 
                     <!-- Highest Qualification -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Highest Qualification</label>
-                        <select x-model="filters.highest_qualification" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Highest Qualification</label>
+                        <select x-model="filters.highest_qualification" @change="fetchResults()" class="rani-filter-select">
                             <option value="all">All Qualifications</option>
                             <option value="Doctorate">Doctorate / PhD</option>
                             <option value="Masters">Masters / Post Graduate</option>
@@ -456,8 +543,8 @@
 
                     <!-- Working Sector -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Working Sector</label>
-                        <select x-model="filters.working_with" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Working Sector</label>
+                        <select x-model="filters.working_with" @change="fetchResults()" class="rani-filter-select">
                             <option value="all">All Sectors</option>
                             @foreach($workingWiths as $ww)
                                 <option value="{{ $ww->name }}">{{ $ww->name }}</option>
@@ -472,14 +559,14 @@
 
                     <!-- Profession / Designation Search -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Profession / Role</label>
-                        <input type="text" x-model.debounce.400ms="filters.profession" @input="fetchResults()" placeholder="e.g. Software Engineer, Doctor, CA..." class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Profession / Role</label>
+                        <input type="text" x-model.debounce.400ms="filters.profession" @input="fetchResults()" placeholder="e.g. Software Engineer, Doctor, CA..." class="rani-filter-input">
                     </div>
 
                     <!-- Annual Income -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Annual Income</label>
-                        <select x-model="filters.annual_income" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Annual Income</label>
+                        <select x-model="filters.annual_income" @change="fetchResults()" class="rani-filter-select">
                             <option value="all">All Income Levels</option>
                             @foreach($incomes as $inc)
                                 <option value="{{ $inc->name }}">{{ $inc->name }}</option>
@@ -508,8 +595,8 @@
 
                     <!-- Diet -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Diet</label>
-                        <select x-model="filters.diet" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Diet</label>
+                        <select x-model="filters.diet" @change="fetchResults()" class="rani-filter-select">
                             <option value="all">All Diets</option>
                             @foreach($diets as $d)
                                 <option value="{{ $d->name }}">{{ $d->name }}</option>
@@ -524,8 +611,8 @@
 
                     <!-- Blood Group -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Blood Group</label>
-                        <select x-model="filters.blood_group" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Blood Group</label>
+                        <select x-model="filters.blood_group" @change="fetchResults()" class="rani-filter-select">
                             <option value="all">All Blood Groups</option>
                             @foreach($bloodGroups as $bg)
                                 <option value="{{ $bg }}">{{ $bg }}</option>
@@ -535,8 +622,8 @@
 
                     <!-- Disability / Special Needs -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Disability / Special Needs</label>
-                        <select x-model="filters.disability" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Disability / Special Needs</label>
+                        <select x-model="filters.disability" @change="fetchResults()" class="rani-filter-select">
                             <option value="all">Doesn't Matter (All)</option>
                             <option value="None">None (Normal)</option>
                             <option value="Physically Challenged">Physically Challenged</option>
@@ -545,8 +632,8 @@
 
                     <!-- Hobbies / Interests -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Hobbies & Interests</label>
-                        <select x-model="filters.hobbies_interests" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Hobbies & Interests</label>
+                        <select x-model="filters.hobbies_interests" @change="fetchResults()" class="rani-filter-select">
                             <option value="all">All Hobbies</option>
                             @foreach($hobbies as $hb)
                                 <option value="{{ $hb->name }}">{{ $hb->name }}</option>
@@ -567,8 +654,8 @@
 
                     <!-- Family Financial Status -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Family Financial Status</label>
-                        <select x-model="filters.family_financial_status" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Family Financial Status</label>
+                        <select x-model="filters.family_financial_status" @change="fetchResults()" class="rani-filter-select">
                             <option value="all">All Family Statuses</option>
                             @foreach($familyFinancialStatuses as $ffs)
                                 <option value="{{ $ffs }}">{{ $ffs }}</option>
@@ -578,14 +665,14 @@
 
                     <!-- Father's Profession -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Father's Profession</label>
-                        <input type="text" x-model.debounce.400ms="filters.father_profession" @input="fetchResults()" placeholder="e.g. Business, Retired, Govt..." class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Father's Profession</label>
+                        <input type="text" x-model.debounce.400ms="filters.father_profession" @input="fetchResults()" placeholder="e.g. Business, Retired, Govt..." class="rani-filter-input">
                     </div>
 
                     <!-- Mother's Profession -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Mother's Profession</label>
-                        <input type="text" x-model.debounce.400ms="filters.mother_profession" @input="fetchResults()" placeholder="e.g. Homemaker, Teacher..." class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                        <label class="text-[11px] font-semibold text-slate-600 block mb-1">Mother's Profession</label>
+                        <input type="text" x-model.debounce.400ms="filters.mother_profession" @input="fetchResults()" placeholder="e.g. Homemaker, Teacher..." class="rani-filter-input">
                     </div>
                 </div>
 
@@ -691,8 +778,8 @@
 
                         <!-- Sort By Selector -->
                         <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
-                            <span class="text-xs text-gray-500 font-medium">Sort By:</span>
-                            <select x-model="filters.sort_by" @change="fetchResults()" class="py-2 px-3 text-xs sm:text-sm rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-rani-gold shadow-xs text-gray-700 cursor-pointer font-bold">
+                            <span class="text-xs text-slate-500 font-semibold">Sort By:</span>
+                            <select x-model="filters.sort_by" @change="fetchResults()" class="rani-filter-select !w-auto !py-1.5 !text-xs font-semibold !rounded-xl !bg-white">
                                 <option value="latest">Newest Registered</option>
                                 <option value="age_asc">Age: Low to High</option>
                                 <option value="age_desc">Age: High to Low</option>
@@ -953,18 +1040,18 @@
                         
                         <!-- Gender -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Looking For</label>
-                            <div class="grid grid-cols-3 gap-1.5">
-                                <button type="button" @click="filters.gender = 'all'; fetchResults()" :class="filters.gender === 'all' ? 'bg-rani-primary text-white font-bold' : 'bg-gray-100 text-gray-700'" class="py-2 px-2 rounded-xl text-xs cursor-pointer">All</button>
-                                <button type="button" @click="filters.gender = 'Female'; fetchResults()" :class="filters.gender === 'Female' ? 'bg-rani-primary text-white font-bold' : 'bg-gray-100 text-gray-700'" class="py-2 px-2 rounded-xl text-xs cursor-pointer">Bride</button>
-                                <button type="button" @click="filters.gender = 'Male'; fetchResults()" :class="filters.gender === 'Male' ? 'bg-rani-primary text-white font-bold' : 'bg-gray-100 text-gray-700'" class="py-2 px-2 rounded-xl text-xs cursor-pointer">Groom</button>
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1.5">Looking For</label>
+                            <div class="rani-gender-switch">
+                                <button type="button" @click="filters.gender = 'all'; fetchResults()" :class="filters.gender === 'all' ? 'active' : ''" class="rani-gender-btn">All</button>
+                                <button type="button" @click="filters.gender = 'Female'; fetchResults()" :class="filters.gender === 'Female' ? 'active' : ''" class="rani-gender-btn">Bride</button>
+                                <button type="button" @click="filters.gender = 'Male'; fetchResults()" :class="filters.gender === 'Male' ? 'active' : ''" class="rani-gender-btn">Groom</button>
                             </div>
                         </div>
 
                         <!-- Profile Created For -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Profile Created By</label>
-                            <select x-model="filters.profile_for" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Profile Created By</label>
+                            <select x-model="filters.profile_for" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">All (Created By Anyone)</option>
                                 @foreach($profileFors as $pf)
                                     <option value="{{ $pf }}">{{ $pf }}</option>
@@ -974,15 +1061,15 @@
 
                         <!-- Age Min/Max -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Age Range</label>
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Age Range</label>
                             <div class="grid grid-cols-2 gap-2">
-                                <select x-model="filters.age_min" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <select x-model="filters.age_min" @change="fetchResults()" class="rani-filter-select">
                                     <option value="">Min Age (Any)</option>
                                     @for($a = 18; $a <= 65; $a++)
                                         <option value="{{ $a }}">{{ $a }} Yrs</option>
                                     @endfor
                                 </select>
-                                <select x-model="filters.age_max" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <select x-model="filters.age_max" @change="fetchResults()" class="rani-filter-select">
                                     <option value="">Max Age (Any)</option>
                                     @for($a = 18; $a <= 70; $a++)
                                         <option value="{{ $a }}">{{ $a }} Yrs</option>
@@ -993,15 +1080,15 @@
 
                         <!-- Height Range -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Height Range</label>
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Height Range</label>
                             <div class="grid grid-cols-2 gap-2">
-                                <select x-model="filters.height_min" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <select x-model="filters.height_min" @change="fetchResults()" class="rani-filter-select">
                                     <option value="all">Min Height (Any)</option>
                                     @foreach($heights as $h)
                                         <option value="{{ $h->name }}">{{ $h->name }}</option>
                                     @endforeach
                                 </select>
-                                <select x-model="filters.height_max" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <select x-model="filters.height_max" @change="fetchResults()" class="rani-filter-select">
                                     <option value="all">Max Height (Any)</option>
                                     @foreach($heights as $h)
                                         <option value="{{ $h->name }}">{{ $h->name }}</option>
@@ -1012,8 +1099,8 @@
 
                         <!-- Marital Status -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Marital Status</label>
-                            <select x-model="filters.marital_status" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Marital Status</label>
+                            <select x-model="filters.marital_status" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">All Marital Statuses</option>
                                 @foreach($maritalStatuses as $ms)
                                     <option value="{{ $ms->name }}">{{ $ms->name }}</option>
@@ -1033,8 +1120,8 @@
 
                         <!-- Religion -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Religion</label>
-                            <select x-model="filters.religion" @change="onReligionChange()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Religion</label>
+                            <select x-model="filters.religion" @change="onReligionChange()" class="rani-filter-select">
                                 <option value="all">All Religions</option>
                                 @foreach($religions as $r)
                                     <option value="{{ $r->name }}">{{ $r->name }}</option>
@@ -1044,8 +1131,8 @@
 
                         <!-- Community -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Community / Caste</label>
-                            <select x-model="filters.community" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Community / Caste</label>
+                            <select x-model="filters.community" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">All Communities</option>
                                 <template x-for="com in availableCommunities" :key="com.id || com.name">
                                     <option :value="com.name" x-text="com.name"></option>
@@ -1055,14 +1142,14 @@
 
                         <!-- Sub-Community -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Sub-Community / Clan</label>
-                            <input type="text" x-model.debounce.400ms="filters.sub_community" @input="fetchResults()" placeholder="e.g. Kulin, Vaishnav..." class="w-full text-xs py-2 px-2.5 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Sub-Community / Clan</label>
+                            <input type="text" x-model.debounce.400ms="filters.sub_community" @input="fetchResults()" placeholder="e.g. Kulin, Vaishnav..." class="rani-filter-input">
                         </div>
 
                         <!-- Mother Tongue -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Mother Tongue</label>
-                            <select x-model="filters.mother_tongue" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Mother Tongue</label>
+                            <select x-model="filters.mother_tongue" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">All Mother Tongues</option>
                                 @foreach($motherTongues as $mt)
                                     <option value="{{ $mt }}">{{ $mt }}</option>
@@ -1072,8 +1159,8 @@
 
                         <!-- Manglik Status -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Manglik Status</label>
-                            <select x-model="filters.manglik" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Manglik Status</label>
+                            <select x-model="filters.manglik" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">All Manglik Statuses</option>
                                 <option value="Non-Manglik">Non-Manglik</option>
                                 <option value="Manglik">Manglik</option>
@@ -1084,8 +1171,8 @@
 
                         <!-- Gothra -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Gothra</label>
-                            <input type="text" x-model.debounce.400ms="filters.gothra" @input="fetchResults()" placeholder="e.g. Kashyap, Shandilya..." class="w-full text-xs py-2 px-2.5 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Gothra</label>
+                            <input type="text" x-model.debounce.400ms="filters.gothra" @input="fetchResults()" placeholder="e.g. Kashyap, Shandilya..." class="rani-filter-input">
                         </div>
                     </div>
 
@@ -1095,8 +1182,8 @@
 
                         <!-- Country -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Country</label>
-                            <select x-model="filters.country" @change="onCountryChange()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Country</label>
+                            <select x-model="filters.country" @change="onCountryChange()" class="rani-filter-select">
                                 <option value="all">All Countries</option>
                                 @foreach($countries as $c)
                                     <option value="{{ $c->name }}">{{ $c->name }}</option>
@@ -1106,8 +1193,8 @@
 
                         <!-- State -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">State</label>
-                            <select x-model="filters.state" @change="onStateChange()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">State</label>
+                            <select x-model="filters.state" @change="onStateChange()" class="rani-filter-select">
                                 <option value="all">All States</option>
                                 <template x-for="st in availableStates" :key="st.id || st.name">
                                     <option :value="st.name" x-text="st.name"></option>
@@ -1117,8 +1204,8 @@
 
                         <!-- City -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">City</label>
-                            <select x-model="filters.city" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">City</label>
+                            <select x-model="filters.city" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">All Cities</option>
                                 <template x-for="ct in availableCities" :key="ct.id || ct.name">
                                     <option :value="ct.name" x-text="ct.name"></option>
@@ -1128,8 +1215,8 @@
 
                         <!-- Residency Status -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Residency Status</label>
-                            <select x-model="filters.residency_status" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Residency Status</label>
+                            <select x-model="filters.residency_status" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">All Residency Types</option>
                                 @foreach($residencyStatuses as $rs)
                                     <option value="{{ $rs }}">{{ $rs }}</option>
@@ -1139,8 +1226,8 @@
 
                         <!-- Grew Up In -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Grew Up In (City / Region)</label>
-                            <input type="text" x-model.debounce.400ms="filters.grew_up_in" @input="fetchResults()" placeholder="e.g. Kolkata, Mumbai..." class="w-full text-xs py-2 px-2.5 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Grew Up In (City / Region)</label>
+                            <input type="text" x-model.debounce.400ms="filters.grew_up_in" @input="fetchResults()" placeholder="e.g. Kolkata, Mumbai..." class="rani-filter-input">
                         </div>
                     </div>
 
@@ -1150,8 +1237,8 @@
 
                         <!-- Highest Qualification -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Education</label>
-                            <select x-model="filters.highest_qualification" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Education</label>
+                            <select x-model="filters.highest_qualification" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">All Education</option>
                                 <option value="Doctorate">Doctorate / PhD</option>
                                 <option value="Masters">Masters / Post Graduate</option>
@@ -1167,8 +1254,8 @@
 
                         <!-- Working Sector -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Working Sector</label>
-                            <select x-model="filters.working_with" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Working Sector</label>
+                            <select x-model="filters.working_with" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">All Sectors</option>
                                 @foreach($workingWiths as $ww)
                                     <option value="{{ $ww->name }}">{{ $ww->name }}</option>
@@ -1183,14 +1270,14 @@
 
                         <!-- Profession / Role -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Profession / Role</label>
-                            <input type="text" x-model.debounce.400ms="filters.profession" @input="fetchResults()" placeholder="e.g. Software Engineer, Doctor..." class="w-full text-xs py-2 px-2.5 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Profession / Role</label>
+                            <input type="text" x-model.debounce.400ms="filters.profession" @input="fetchResults()" placeholder="e.g. Software Engineer, Doctor..." class="rani-filter-input">
                         </div>
 
                         <!-- Annual Income -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Annual Income</label>
-                            <select x-model="filters.annual_income" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Annual Income</label>
+                            <select x-model="filters.annual_income" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">All Income Levels</option>
                                 @foreach($incomes as $inc)
                                     <option value="{{ $inc->name }}">{{ $inc->name }}</option>
@@ -1213,8 +1300,8 @@
 
                         <!-- Diet -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Diet</label>
-                            <select x-model="filters.diet" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Diet</label>
+                            <select x-model="filters.diet" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">All Diets</option>
                                 @foreach($diets as $d)
                                     <option value="{{ $d->name }}">{{ $d->name }}</option>
@@ -1229,8 +1316,8 @@
 
                         <!-- Blood Group -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Blood Group</label>
-                            <select x-model="filters.blood_group" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Blood Group</label>
+                            <select x-model="filters.blood_group" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">All Blood Groups</option>
                                 @foreach($bloodGroups as $bg)
                                     <option value="{{ $bg }}">{{ $bg }}</option>
@@ -1240,8 +1327,8 @@
 
                         <!-- Disability -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Disability / Special Needs</label>
-                            <select x-model="filters.disability" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Disability / Special Needs</label>
+                            <select x-model="filters.disability" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">Doesn't Matter (All)</option>
                                 <option value="None">None (Normal)</option>
                                 <option value="Physically Challenged">Physically Challenged</option>
@@ -1250,8 +1337,8 @@
 
                         <!-- Hobbies & Interests -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Hobbies & Interests</label>
-                            <select x-model="filters.hobbies_interests" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Hobbies & Interests</label>
+                            <select x-model="filters.hobbies_interests" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">All Hobbies</option>
                                 @foreach($hobbies as $hb)
                                     <option value="{{ $hb->name }}">{{ $hb->name }}</option>
@@ -1266,8 +1353,8 @@
 
                         <!-- Family Financial Status -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Family Financial Status</label>
-                            <select x-model="filters.family_financial_status" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Family Financial Status</label>
+                            <select x-model="filters.family_financial_status" @change="fetchResults()" class="rani-filter-select">
                                 <option value="all">All Family Statuses</option>
                                 @foreach($familyFinancialStatuses as $ffs)
                                     <option value="{{ $ffs }}">{{ $ffs }}</option>
@@ -1277,14 +1364,14 @@
 
                         <!-- Father's Profession -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Father's Profession</label>
-                            <input type="text" x-model.debounce.400ms="filters.father_profession" @input="fetchResults()" placeholder="e.g. Business, Retired, Govt..." class="w-full text-xs py-2 px-2.5 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Father's Profession</label>
+                            <input type="text" x-model.debounce.400ms="filters.father_profession" @input="fetchResults()" placeholder="e.g. Business, Retired, Govt..." class="rani-filter-input">
                         </div>
 
                         <!-- Mother's Profession -->
                         <div>
-                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Mother's Profession</label>
-                            <input type="text" x-model.debounce.400ms="filters.mother_profession" @input="fetchResults()" placeholder="e.g. Homemaker, Teacher..." class="w-full text-xs py-2 px-2.5 border rounded-xl">
+                            <label class="text-[11px] font-semibold text-slate-600 block mb-1">Mother's Profession</label>
+                            <input type="text" x-model.debounce.400ms="filters.mother_profession" @input="fetchResults()" placeholder="e.g. Homemaker, Teacher..." class="rani-filter-input">
                         </div>
                     </div>
 
