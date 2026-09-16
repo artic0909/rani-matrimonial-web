@@ -233,9 +233,6 @@
                         <a href="{{ route('matches', ['tab' => 'accepted']) }}" class="{{ $currentTab === 'accepted' ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             <span>Accepted</span>
                         </a>
-                        <a href="{{ route('search') }}" class="{{ request()->routeIs('search*') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
-                            <span>Search Profiles</span>
-                        </a>
                     </nav>
                 @elseif(request()->routeIs('inbox*'))
                     <!-- Inbox Sub Navigation -->
@@ -252,19 +249,12 @@
                         <a href="{{ route('inbox', ['tab' => 'declined']) }}" class="{{ $currentInboxTab === 'declined' ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             <span>Declined</span>
                         </a>
-                        <a href="{{ route('search') }}" class="{{ request()->routeIs('search*') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
-                            <span>Search Profiles</span>
-                        </a>
                     </nav>
                 @else
-                    <!-- Profile, Dashboard & Search Sub Navigation -->
+                    <!-- Profile, Dashboard Sub Navigation -->
                     <nav class="flex space-x-2 sm:space-x-4 min-w-full sm:min-w-0">
                         <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             Dashboard
-                        </a>
-                        <a href="{{ route('search') }}" class="{{ request()->routeIs('search*') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
-                            <svg class="w-3.5 h-3.5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                            Search Profiles
                         </a>
                         <a href="{{ route('my-profile') }}" class="{{ request()->routeIs('my-profile') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             My Profile
