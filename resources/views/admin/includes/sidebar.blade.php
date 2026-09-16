@@ -10,7 +10,7 @@
   </a>
 
   <!-- Navigation Menu -->
-  <div class="flex-grow-1 overflow-y-auto">
+  <div class="flex-grow-1 overflow-y-auto sidebar-scroll-area" id="sidebar-scroll-area">
     <!-- Group: Menu -->
     <div class="sidebar-menu-section">
       <div class="sidebar-menu-title">Main</div>
