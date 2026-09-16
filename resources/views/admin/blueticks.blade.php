@@ -149,28 +149,15 @@
                                 <div class="table-user-sub font-monospace">{{ $req->created_at ? $req->created_at->format('h:i A') : '' }}</div>
                             </td>
                             <td class="text-center pe-4">
-                                <div class="d-flex align-items-center justify-content-center gap-1.5">
-                                    @if($statusVal === 0)
-                                        <button type="button" 
-                                                class="btn-custom btn-custom-secondary btn-custom-sm py-1 px-2" 
-                                                title="Approve Blue Tick Verification" 
-                                                onclick="approveRequest({{ $req->id }}, '{{ addslashes($candidate->first_name ?? 'Candidate') }}')">
-                                            <i class="bi bi-check-lg"></i> Approve
-                                        </button>
-                                        <button type="button" 
-                                                class="btn-custom btn-custom-outline-danger btn-custom-sm py-1 px-2" 
-                                                title="Reject Request" 
-                                                onclick="rejectRequest({{ $req->id }}, '{{ addslashes($candidate->first_name ?? 'Candidate') }}')">
-                                            <i class="bi bi-x-lg"></i>
-                                        </button>
-                                    @else
-                                        @if($candidate)
-                                            <a href="{{ route('admin.candidates.show', $candidate->id) }}" class="table-btn-action" title="View Candidate Profile">
-                                                <i class="bi bi-person-lines-fill"></i>
-                                            </a>
-                                        @endif
-                                    @endif
-                                </div>
+                                @if($candidate)
+                                    <a href="{{ route('admin.candidates.show', $candidate->id) }}" 
+                                       class="btn-custom btn-custom-primary btn-custom-sm py-1 px-2.5" 
+                                       title="View Full Profile & Verification Details">
+                                        <i class="bi bi-person-lines-fill"></i> Details
+                                    </a>
+                                @else
+                                    <span class="text-muted small">N/A</span>
+                                @endif
                             </td>
                         </tr>
                     @empty
