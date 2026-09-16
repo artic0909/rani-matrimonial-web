@@ -1,344 +1,362 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Admin Dashboard | Rani Matrimonial</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        [x-cloak] { display: none !important; }
-    </style>
-</head>
-<body class="bg-gray-950 font-sans text-gray-200 min-h-screen flex flex-col selection:bg-rani-primary selection:text-white"
-      x-data="adminDashboard()">
-    
-    <!-- Top Nav -->
-    <header class="bg-gray-900 border-b border-gray-800 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-3">
-                    <img src="{{ asset('logo.png') }}" class="w-9 h-9 object-contain rounded-full border border-rani-gold/40" alt="Logo">
-                    <span class="text-lg font-serif font-bold text-white tracking-wide">Rani Matrimonial <span class="text-xs font-sans text-rani-gold font-semibold uppercase px-2 py-0.5 rounded-full bg-rani-gold/10 border border-rani-gold/30">Admin</span></span>
-                </div>
+@extends('admin.layouts.app')
 
-                <div class="flex items-center gap-4">
-                    <a href="{{ route('dashboard') }}" target="_blank" class="text-xs font-semibold text-gray-400 hover:text-white flex items-center gap-1">
-                        <span>Candidate View</span>
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                    </a>
-                    <form method="POST" action="{{ route('admin.logout') }}">
-                        @csrf
-                        <button type="submit" class="px-3.5 py-1.5 rounded-lg bg-gray-800 hover:bg-red-950 hover:text-red-300 text-xs font-semibold text-gray-300 transition-colors">
-                            Logout
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </header>
+@section('title', 'Spark Admin - Dashboard')
 
-    <!-- Main Content -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        <!-- Metrics Row -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-            <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-5 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Total Candidates</p>
-                    <p class="text-3xl font-bold font-serif text-white mt-1">{{ $totalCandidates }}</p>
-                </div>
-                <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                </div>
-            </div>
-
-            <div class="bg-gray-900/90 border border-amber-500/30 rounded-2xl p-5 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs uppercase tracking-wider text-amber-400 font-semibold">Pending Blue Ticks</p>
-                    <p class="text-3xl font-bold font-serif text-amber-300 mt-1">{{ count($pendingBlueTicks) }}</p>
-                </div>
-                <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-            </div>
-
-            <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-5 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Approved Blue Ticks</p>
-                    <p class="text-3xl font-bold font-serif text-emerald-400 mt-1">{{ $approvedBlueTicks }}</p>
-                </div>
-                <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-            </div>
-
-            <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-5 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Total Connections</p>
-                    <p class="text-3xl font-bold font-serif text-rani-gold mt-1">{{ $totalConnections }}</p>
-                </div>
-                <div class="w-12 h-12 rounded-xl bg-rani-gold/10 text-rani-gold flex items-center justify-center">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- Blue Tick Verification Requests Table -->
-        <div class="bg-gray-900/90 border border-gray-800 rounded-3xl overflow-hidden shadow-xl mb-8">
-            <div class="px-6 py-5 border-b border-gray-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div>
-                    <h2 class="text-lg font-serif font-bold text-white flex items-center gap-2">
-                        <span>Blue Tick Verification Requests</span>
-                        @if(count($pendingBlueTicks) > 0)
-                            <span class="bg-amber-500 text-gray-950 font-bold text-xs px-2.5 py-0.5 rounded-full">{{ count($pendingBlueTicks) }} Needs Action</span>
-                        @endif
-                    </h2>
-                    <p class="text-xs text-gray-400 mt-0.5">Review Aadhaar card photos and approve/reject genuine candidate profiles.</p>
-                </div>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-gray-300">
-                    <thead class="bg-gray-950/80 uppercase text-[10px] tracking-wider text-gray-400 border-b border-gray-800">
-                        <tr>
-                            <th class="py-3.5 px-5">Candidate</th>
-                            <th class="py-3.5 px-4">Aadhaar No.</th>
-                            <th class="py-3.5 px-4">Front Card</th>
-                            <th class="py-3.5 px-4">Back Card</th>
-                            <th class="py-3.5 px-4">Submitted Date</th>
-                            <th class="py-3.5 px-4">Status</th>
-                            <th class="py-3.5 px-5 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-800/60">
-                        @forelse($recentRequests as $req)
-                            <tr class="hover:bg-gray-800/40 transition-colors" id="row-{{ $req->id }}">
-                                <td class="py-4 px-5">
-                                    <div class="flex items-center gap-3">
-                                        <img src="{{ $req->candidate && $req->candidate->profile_picture ? (str_starts_with($req->candidate->profile_picture, 'http') ? $req->candidate->profile_picture : asset('storage/' . $req->candidate->profile_picture)) : 'https://ui-avatars.com/api/?name=' . urlencode($req->candidate->first_name ?? 'C') . '&background=D4AF37&color=fff' }}" 
-                                             class="w-10 h-10 rounded-full object-cover border border-gray-700">
-                                        <div>
-                                            <p class="font-bold text-white text-sm">{{ $req->candidate->first_name ?? 'Candidate' }} {{ $req->candidate->last_name ?? '' }}</p>
-                                            <p class="text-[11px] text-gray-400 font-mono">{{ $req->candidate->getDisplayCodeAttribute() ?? 'ID' }} • {{ $req->candidate->mobile ?? 'No Mobile' }}</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-4 px-4 font-mono font-bold text-gray-200">
-                                    {{ preg_replace('/(\d{4})(\d{4})(\d{4})/', '$1 $2 $3', $req->aadhar_number) }}
-                                </td>
-                                <td class="py-4 px-4">
-                                    @if($req->aadhar_photo_front)
-                                        <button type="button" @click="openImage('{{ asset('storage/' . $req->aadhar_photo_front) }}', 'Front Side - {{ $req->candidate->first_name ?? '' }}')" class="group relative rounded-xl overflow-hidden border border-gray-700 hover:border-rani-gold transition-all block w-20 h-14 bg-gray-950">
-                                            <img src="{{ asset('storage/' . $req->aadhar_photo_front) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
-                                            <span class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] text-white font-bold transition-opacity">View</span>
-                                        </button>
-                                    @else
-                                        <span class="text-gray-500 italic">No Front</span>
-                                    @endif
-                                </td>
-                                <td class="py-4 px-4">
-                                    @if($req->aadhar_photo_back)
-                                        <button type="button" @click="openImage('{{ asset('storage/' . $req->aadhar_photo_back) }}', 'Back Side - {{ $req->candidate->first_name ?? '' }}')" class="group relative rounded-xl overflow-hidden border border-gray-700 hover:border-rani-gold transition-all block w-20 h-14 bg-gray-950">
-                                            <img src="{{ asset('storage/' . $req->aadhar_photo_back) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
-                                            <span class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] text-white font-bold transition-opacity">View</span>
-                                        </button>
-                                    @else
-                                        <span class="text-gray-500 italic">No Back</span>
-                                    @endif
-                                </td>
-                                <td class="py-4 px-4 text-gray-400">
-                                    <p>{{ $req->created_at ? $req->created_at->format('d M Y') : 'N/A' }}</p>
-                                    <p class="text-[10px] text-gray-500">{{ $req->created_at ? $req->created_at->format('h:i A') : '' }}</p>
-                                </td>
-                                <td class="py-4 px-4" id="status-{{ $req->id }}">
-                                    @if($req->is_accept === 1)
-                                        <span class="inline-flex items-center gap-1 bg-emerald-950 text-emerald-300 border border-emerald-800 text-[11px] font-bold px-2.5 py-1 rounded-full">
-                                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-                                            Verified
-                                        </span>
-                                    @elseif($req->is_accept === 2)
-                                        <span class="inline-flex items-center gap-1 bg-red-950 text-red-300 border border-red-800 text-[11px] font-bold px-2.5 py-1 rounded-full">
-                                            Rejected
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center gap-1 bg-amber-950 text-amber-300 border border-amber-800 text-[11px] font-bold px-2.5 py-1 rounded-full">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-                                            Pending Review
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="py-4 px-5 text-right">
-                                    <div class="inline-flex items-center gap-2" id="actions-{{ $req->id }}">
-                                        @if($req->is_accept === 0)
-                                            <button type="button" @click="approveRequest({{ $req->id }}, '{{ $req->candidate->first_name ?? 'Candidate' }}')" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors">
-                                                Approve
-                                            </button>
-                                            <button type="button" @click="rejectRequest({{ $req->id }}, '{{ $req->candidate->first_name ?? 'Candidate' }}')" class="px-3 py-1.5 rounded-lg bg-red-900/60 hover:bg-red-800 text-red-200 font-bold text-xs transition-colors">
-                                                Reject
-                                            </button>
-                                        @elseif($req->is_accept === 1)
-                                            <span class="text-xs text-emerald-400 font-semibold">Active Blue Tick</span>
-                                        @else
-                                            <button type="button" @click="approveRequest({{ $req->id }}, '{{ $req->candidate->first_name ?? 'Candidate' }}')" class="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-emerald-600 text-gray-300 hover:text-white text-xs font-bold transition-colors">
-                                                Re-Approve
-                                            </button>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="py-12 text-center text-gray-500 text-sm">
-                                    No Blue Tick verification requests submitted yet.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Image Preview Modal -->
-    <div x-show="imageModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md"
-         x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0">
-        
-        <div @click.away="imageModalOpen = false" class="relative max-w-4xl max-h-[90vh] flex flex-col items-center">
-            <button @click="imageModalOpen = false" class="absolute -top-12 right-0 text-white hover:text-gray-300 p-2 text-sm font-bold flex items-center gap-1">
-                <span>Close</span>
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <p class="text-xs text-gray-400 mb-2 font-mono" x-text="modalTitle"></p>
-            <img :src="modalImage" class="max-h-[80vh] max-w-full rounded-2xl border-2 border-rani-gold shadow-2xl object-contain">
-        </div>
+@section('content')
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">An easy way to manage sales with care and precision.</p>
+      </div>
+      <button class="btn-date-picker" type="button" id="date-picker-trigger">
+        <i class="bi bi-calendar4-event"></i>
+        <span id="selected-date-range">January 12, 2026 - January 23, 2026</span>
+        <i class="bi bi-chevron-down ms-1"></i>
+      </button>
     </div>
+    <!-- END: Dashboard Header Banner -->
 
-    <!-- Admin Dashboard Alpine Script -->
-    <script>
-    function adminDashboard() {
-        return {
-            imageModalOpen: false,
-            modalImage: '',
-            modalTitle: '',
+    <!-- START: Main Layout Grid (2 Columns: Dashboard + Performance Pane) -->
+    <div class="row g-4">
 
-            openImage(url, title) {
-                this.modalImage = url;
-                this.modalTitle = title || 'Aadhaar Document';
-                this.imageModalOpen = true;
-            },
+      <!-- TOP AREA: Quick Info Stat Cards Row (Full Width) -->
+      <div class="col-12">
+        <div class="row g-4">
+          <!-- Stat Card 1: Green Alert Banner -->
+          <div class="col-md-4">
+            <div class="card alert-green-card">
+              <div class="position-relative z-index-2">
+                <span class="alert-green-badge">Update</span>
+                <div class="alert-green-date">Feb 14th 2026</div>
+                <div class="alert-green-text">Sales revenue increased 40% in 1 week</div>
+              </div>
+              <a href="#" class="alert-green-link z-index-2" id="alert-link-statistics">
+                <span>See Statistics</span>
+                <i class="bi bi-arrow-right"></i>
+              </a>
 
-            async approveRequest(id, name) {
-                const confirm = await Swal.fire({
-                    title: 'Approve Blue Tick?',
-                    text: 'Verify ' + name + ' and activate the Blue Tick on their profile?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, Approve',
-                    cancelButtonText: 'Cancel',
-                    background: '#111827',
-                    color: '#fff',
-                    confirmButtonColor: '#059669',
-                    cancelButtonColor: '#374151'
-                });
+              <!-- Inline SVG geometric decoration (Lime green 6-pointed star/asterisk with rounded caps) -->
+              <svg class="alert-green-bg-shape" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g transform="translate(50,50)">
+                  <rect x="-6" y="-45" width="12" height="90" rx="6" ry="6" fill="#B4F105" />
+                  <rect x="-6" y="-45" width="12" height="90" rx="6" ry="6" fill="#B4F105" transform="rotate(60)" />
+                  <rect x="-6" y="-45" width="12" height="90" rx="6" ry="6" fill="#B4F105" transform="rotate(120)" />
+                </g>
+              </svg>
+            </div>
+          </div>
 
-                if (!confirm.isConfirmed) return;
+          <!-- Stat Card 2: Net Income -->
+          <div class="col-md-4">
+            <div class="card card-stat d-flex flex-column justify-content-between">
+              <div>
+                <div class="card-header">
+                  <span class="stat-label">Net Income</span>
+                  <div class="dropdown">
+                    <button class="card-more-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                      aria-label="More Options" id="btn-more-income">
+                      <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom">
+                      <li><a class="dropdown-item" href="#"><i class="bi bi-arrow-repeat"></i> Refresh</a></li>
+                      <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-arrow-down"></i> Export
+                          Report</a></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+                      <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-eye-slash"></i> Hide Details</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="stat-value">$196.000</div>
+                <div class="trend-badge trend-up">
+                  <i class="bi bi-arrow-up-right"></i>
+                  <span>+35% from last month</span>
+                </div>
+              </div>
+              <div class="sparkline-container sparkline-card-footer">
+                <div id="income-sparkline"></div>
+              </div>
+            </div>
+          </div>
 
-                try {
-                    const res = await fetch('/admin/bluetick/' + id + '/approve', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'Accept': 'application/json'
-                        }
-                    });
+          <!-- Stat Card 3: Total Return -->
+          <div class="col-md-4">
+            <div class="card card-stat d-flex flex-column justify-content-between">
+              <div>
+                <div class="card-header">
+                  <span class="stat-label">Total Return</span>
+                  <div class="dropdown">
+                    <button class="card-more-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                      aria-label="More Options" id="btn-more-return">
+                      <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom">
+                      <li><a class="dropdown-item" href="#"><i class="bi bi-arrow-repeat"></i> Refresh</a></li>
+                      <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-arrow-down"></i> Export
+                          Report</a></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+                      <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-eye-slash"></i> Hide Details</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="stat-value">$32.000</div>
+                <div class="trend-badge trend-down">
+                  <i class="bi bi-arrow-down-left"></i>
+                  <span>-24% from last month</span>
+                </div>
+              </div>
+              <div class="sparkline-container sparkline-card-footer">
+                <div id="return-sparkline"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END: TOP AREA -->
 
-                    const data = await res.json();
+      <!-- LEFT AREA: Primary Dashboard Stats & Tables -->
+      <div class="col-xl-9 col-lg-8">
 
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Approved!',
-                            text: data.message,
-                            background: '#111827',
-                            color: '#fff',
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
+        <!-- START: Details Area (Transactions + Performance Charts) -->
+        <div class="row g-4">
+          <!-- Column: Revenue Chart (Full Width / Wider) -->
+          <div class="col-12">
+            <div class="card mb-0">
+              <div class="card-header mb-2">
+                <h2 class="card-title">Revenue</h2>
+                <!-- Custom Static Legends -->
+                <div class="d-flex gap-3 align-items-center">
+                  <div class="chart-legend-item">
+                    <span class="legend-dot bg-forest-medium"></span>
+                    <span class="chart-legend-label">Income</span>
+                  </div>
+                  <div class="chart-legend-item">
+                    <span class="legend-dot bg-lime-accent"></span>
+                    <span class="chart-legend-label">Expenses</span>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex align-items-baseline gap-2 mb-3">
+                <span class="stat-value-amount">$196.000</span>
+                <span class="trend-badge trend-up fs-xs">+35% from last month</span>
+              </div>
+              <div id="revenue-chart"></div>
+            </div>
+          </div>
 
-                        document.getElementById('status-' + id).innerHTML = '<span class="inline-flex items-center gap-1 bg-emerald-950 text-emerald-300 border border-emerald-800 text-[11px] font-bold px-2.5 py-1 rounded-full"><svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Verified</span>';
-                        document.getElementById('actions-' + id).innerHTML = '<span class="text-xs text-emerald-400 font-semibold">Active Blue Tick</span>';
-                    }
-                } catch (e) {
-                    console.error(e);
-                }
-            },
+          <!-- Column: Transaction List -->
+          <div class="col-md-7 d-flex flex-column">
+            <div class="card h-100 flex-grow-1">
+              <div class="card-header">
+                <h2 class="card-title">Transaction</h2>
+                <div class="dropdown">
+                  <button class="card-more-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                    aria-label="More Options" id="btn-more-transaction">
+                    <i class="bi bi-three-dots"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom">
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-funnel"></i> Filter Status</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-arrow-down"></i> Export CSV</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
 
-            async rejectRequest(id, name) {
-                const { value: reason } = await Swal.fire({
-                    title: 'Reject Blue Tick Request',
-                    input: 'textarea',
-                    inputLabel: 'Reason for Rejection',
-                    inputPlaceholder: 'Enter reason (e.g. Aadhaar image is blurry or details mismatched)...',
-                    showCancelButton: true,
-                    confirmButtonText: 'Reject Request',
-                    cancelButtonText: 'Cancel',
-                    background: '#111827',
-                    color: '#fff',
-                    confirmButtonColor: '#dc2626',
-                    cancelButtonColor: '#374151',
-                    inputValidator: (value) => {
-                        if (!value) {
-                            return 'Please provide a reason for rejection.';
-                        }
-                    }
-                });
+              <!-- Transaction Items List -->
+              <div class="transaction-list">
+                <div class="transaction-item">
+                  <div class="transaction-icon bg-forest-light text-lime">
+                    <i class="bi bi-spotify"></i>
+                  </div>
+                  <div class="transaction-info">
+                    <div class="transaction-name">Spotify Subscription</div>
+                    <div class="transaction-date">Feb 14, 2026 • 12:40 PM</div>
+                  </div>
+                  <div class="transaction-amount text-main">-$15.00</div>
+                </div>
 
-                if (!reason) return;
+                <div class="transaction-item">
+                  <div class="transaction-icon bg-forest-light text-lime">
+                    <i class="bi bi-paypal"></i>
+                  </div>
+                  <div class="transaction-info">
+                    <div class="transaction-name">Paypal Transfer</div>
+                    <div class="transaction-date">Feb 13, 2026 • 08:15 AM</div>
+                  </div>
+                  <div class="transaction-amount text-success">+$1,250.00</div>
+                </div>
 
-                try {
-                    const res = await fetch('/admin/bluetick/' + id + '/reject', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({ reason: reason })
-                    });
+                <div class="transaction-item">
+                  <div class="transaction-icon bg-forest-light text-lime">
+                    <i class="bi bi-stripe"></i>
+                  </div>
+                  <div class="transaction-info">
+                    <div class="transaction-name">Stripe Payout</div>
+                    <div class="transaction-date">Feb 11, 2026 • 04:30 PM</div>
+                  </div>
+                  <div class="transaction-amount text-success">+$3,400.00</div>
+                </div>
 
-                    const data = await res.json();
+                <div class="transaction-item">
+                  <div class="transaction-icon bg-forest-light text-lime">
+                    <i class="bi bi-slack"></i>
+                  </div>
+                  <div class="transaction-info">
+                    <div class="transaction-name">Slack Pro Workspace</div>
+                    <div class="transaction-date">Feb 09, 2026 • 09:20 AM</div>
+                  </div>
+                  <div class="transaction-amount text-main">-$45.00</div>
+                </div>
+              </div>
 
-                    if (data.success) {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'Rejected',
-                            text: data.message,
-                            background: '#111827',
-                            color: '#fff',
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
+            </div>
+          </div>
 
-                        document.getElementById('status-' + id).innerHTML = '<span class="inline-flex items-center gap-1 bg-red-950 text-red-300 border border-red-800 text-[11px] font-bold px-2.5 py-1 rounded-full">Rejected</span>';
-                        document.getElementById('actions-' + id).innerHTML = '<button type="button" onclick="window.location.reload()" class="px-3 py-1.5 rounded-lg bg-gray-800 text-xs text-gray-300">Refresh</button>';
-                    }
-                } catch (e) {
-                    console.error(e);
-                }
-            }
-        };
-    }
-    </script>
-</body>
-</html>
+          <!-- Column: Product Overview Progress -->
+          <div class="col-md-5 d-flex flex-column">
+            <div class="card h-100 flex-grow-1">
+              <div class="card-header">
+                <h2 class="card-title">Product Overview</h2>
+                <div class="dropdown">
+                  <button class="card-more-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                    aria-label="More Options" id="btn-more-products">
+                    <i class="bi bi-three-dots"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom">
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-plus-lg"></i> Add Product</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Manage</a></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="progress-container">
+                <div class="progress-label-row">
+                  <span class="progress-label">Product Launched</span>
+                  <span class="progress-value">233</span>
+                </div>
+                <div class="progress" role="progressbar" aria-label="Product Launched Progress" aria-valuenow="65"
+                  aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar bg-lime-accent w-65"></div>
+                </div>
+              </div>
+
+              <div class="progress-container">
+                <div class="progress-label-row">
+                  <span class="progress-label">Ongoing Product</span>
+                  <span class="progress-value">23</span>
+                </div>
+                <div class="progress" role="progressbar" aria-label="Ongoing Product Progress" aria-valuenow="20"
+                  aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar bg-lime-accent opacity-50 w-50"></div>
+                </div>
+              </div>
+
+              <div class="progress-container">
+                <div class="progress-label-row">
+                  <span class="progress-label">Product Sold</span>
+                  <span class="progress-value">482</span>
+                </div>
+                <div class="progress" role="progressbar" aria-label="Product Sold Progress" aria-valuenow="85"
+                  aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar bg-lime-accent w-85"></div>
+                </div>
+              </div>
+
+              <div class="progress-container">
+                <div class="progress-label-row">
+                  <span class="progress-label">Product Returned</span>
+                  <span class="progress-value">8</span>
+                </div>
+                <div class="progress" role="progressbar" aria-label="Product Returned Progress" aria-valuenow="10"
+                  aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar bg-brand-orange w-38"></div>
+                </div>
+              </div>
+
+              <div class="progress-container">
+                <div class="progress-label-row">
+                  <span class="progress-label">Product In Stock</span>
+                  <span class="progress-value">1,420</span>
+                </div>
+                <div class="progress" role="progressbar" aria-label="Product In Stock Progress" aria-valuenow="75"
+                  aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar bg-lime-accent w-75"></div>
+                </div>
+              </div>
+
+              <div class="progress-container">
+                <div class="progress-label-row">
+                  <span class="progress-label">Pending Shipment</span>
+                  <span class="progress-value">64</span>
+                </div>
+                <div class="progress" role="progressbar" aria-label="Pending Shipment Progress" aria-valuenow="45"
+                  aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar bg-lime-accent opacity-50 w-45"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!-- END: Details Area -->
+
+      </div>
+
+      <!-- RIGHT AREA: Performance Details Sidebar Panel -->
+      <div class="col-xl-3 col-lg-4">
+        <div class="right-panel-wrapper d-flex flex-column gap-4 h-100">
+
+          <!-- Performance Donut Chart card -->
+          <div class="card flex-grow-1 d-flex flex-column justify-content-between mb-0">
+            <div class="card-header mb-1">
+              <h2 class="card-title">Total View Performance</h2>
+            </div>
+
+            <div id="views-chart"></div>
+
+            <!-- Custom Legends below the chart -->
+            <div class="chart-legends-container">
+              <div class="chart-legend-item">
+                <span class="legend-dot bg-lime-accent"></span>
+                <span class="text-muted-green">View Count</span>
+              </div>
+              <div class="chart-legend-item">
+                <span class="legend-dot bg-forest-medium"></span>
+                <span class="text-muted-green">Percentage</span>
+              </div>
+              <div class="chart-legend-item">
+                <span class="legend-dot bg-brand-orange"></span>
+                <span class="text-muted-green">Sales</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Level Up Promotion CTA banner -->
+          <div class="promo-banner-card">
+            <!-- Inline SVG geometric decoration (Lime green 6-pointed star/asterisk with rounded caps) -->
+            <svg class="promo-banner-bg-shape" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g transform="translate(50,50)">
+                <rect x="-6" y="-45" width="12" height="90" rx="6" ry="6" fill="#B4F105" />
+                <rect x="-6" y="-45" width="12" height="90" rx="6" ry="6" fill="#B4F105" transform="rotate(60)" />
+                <rect x="-6" y="-45" width="12" height="90" rx="6" ry="6" fill="#B4F105" transform="rotate(120)" />
+              </g>
+            </svg>
+
+            <h3 class="promo-title">Level up your sales managing to the next level.</h3>
+            <p class="promo-desc">An easy way to manage sales with care and precision.</p>
+            <button class="btn-promo" id="btn-promo-action">Check the updates now</button>
+          </div>
+        </div>
+      </div>
+      <!-- END: RIGHT AREA -->
+
+    </div>
+    <!-- END: Main Layout Grid -->
+
+
+@endsection
