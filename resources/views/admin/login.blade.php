@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Screen - Spark Admin</title>
+    <title>Admin Login - Rani Matrimonial</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('admin/images/favicon.ico') }}">
@@ -29,12 +29,10 @@
         <div class="login-card">
             
             <!-- Brand Identity -->
-            <a href="{{ route('admin.dashboard') }}" class="login-brand text-decoration-none">
-                <i class="bi bi-asterisk"></i>
-                <span>Spark Admin</span>
+            <a href="{{ url('/') }}" class="login-brand text-decoration-none">
+                <img src="{{ asset('logo.png') }}" alt="Admin Logo" class="navbar-profile-img">
+                <span>Rani Matrimonial</span>
             </a>
-            
-            <p class="login-subtitle">Please sign in to access your dashboard</p>
 
             @if ($errors->any())
                 <div class="alert alert-danger py-2 px-3 mb-3 text-start small">
@@ -52,7 +50,7 @@
                     <label for="email" class="login-form-label">Email Address</label>
                     <div class="login-input-group">
                         <i class="bi bi-envelope input-icon"></i>
-                        <input type="email" name="email" id="email" class="login-input @error('email') is-invalid @enderror" placeholder="admin@ranimatrimonial.com" value="{{ old('email', 'admin@ranimatrimonial.com') }}" required autofocus>
+                        <input type="email" name="email" id="email" class="login-input @error('email') is-invalid @enderror" placeholder="Enter Email" value="{{ old('email') }}" required autofocus>
                     </div>
                 </div>
                 
@@ -68,15 +66,6 @@
                     </div>
                 </div>
                 
-                <!-- Options (Remember me & Forgot Password) -->
-                <div class="login-options">
-                    <label class="custom-control-label">
-                        <input type="checkbox" name="remember" class="custom-checkbox-input" id="rememberMe">
-                        <span>Remember Me</span>
-                    </label>
-                    <a href="#" class="forgot-password-link">Forgot Password?</a>
-                </div>
-                
                 <!-- Submit Button -->
                 <button type="submit" class="btn-login" id="btn-submit">
                     <span>Sign In to Dashboard</span>
@@ -84,27 +73,6 @@
                 </button>
                 
             </form>
-            
-            <!-- Divider -->
-            <div class="login-divider">Or sign in with</div>
-            
-            <!-- Social Logins -->
-            <div class="social-login-grid">
-                <button class="btn-social" type="button" id="btn-google">
-                    <i class="bi bi-google text-danger"></i>
-                    <span>Google</span>
-                </button>
-                <button class="btn-social" type="button" id="btn-github">
-                    <i class="bi bi-github"></i>
-                    <span>GitHub</span>
-                </button>
-            </div>
-            
-            <!-- Footer Link -->
-            <p class="login-footer-text">
-                Don't have an account? <a href="#" id="link-register">Register Now</a>
-            </p>
-            
         </div>
     </div>
     <!-- END: Authentication Container -->

