@@ -92,18 +92,22 @@
     }
     .swal2-confirm {
       background-color: #0F4A32 !important;
+      border-color: #0F4A32 !important;
       border-radius: 50px !important;
       font-weight: 600 !important;
       font-size: 0.875rem !important;
       padding: 0.6rem 1.6rem !important;
       box-shadow: 0 4px 12px rgba(15, 74, 50, 0.25) !important;
+      color: #FFFFFF !important;
     }
     .swal2-confirm:hover {
       background-color: #072F1F !important;
+      border-color: #072F1F !important;
     }
     .swal2-cancel {
       background-color: #EEF2F0 !important;
       color: #33413B !important;
+      border: 1px solid rgba(11, 19, 15, 0.08) !important;
       border-radius: 50px !important;
       font-weight: 600 !important;
       font-size: 0.875rem !important;
@@ -111,6 +115,64 @@
     }
     .swal2-cancel:hover {
       background-color: #E2E8E5 !important;
+      color: #0B130F !important;
+    }
+
+    /* Global Spark Admin Pagination Overrides */
+    .pagination {
+      margin-bottom: 0;
+      gap: 4px;
+    }
+    .pagination .page-item .page-link {
+      border-radius: 8px !important;
+      border: 1px solid rgba(11, 19, 15, 0.08) !important;
+      color: #0F4A32 !important;
+      background-color: #FFFFFF !important;
+      font-weight: 600 !important;
+      font-size: 0.85rem !important;
+      padding: 0.375rem 0.75rem !important;
+      transition: all 0.2s ease-in-out !important;
+      box-shadow: none !important;
+    }
+    .pagination .page-item:hover:not(.disabled) .page-link {
+      background-color: #EEF2F0 !important;
+      border-color: #0F4A32 !important;
+      color: #072F1F !important;
+    }
+    .pagination .page-item.active .page-link {
+      background-color: #0F4A32 !important;
+      border-color: #0F4A32 !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 6px rgba(15, 74, 50, 0.25) !important;
+    }
+    .pagination .page-item.disabled .page-link {
+      opacity: 0.45 !important;
+      background-color: #F8FAF9 !important;
+      border-color: rgba(11, 19, 15, 0.05) !important;
+      color: #879A91 !important;
+      pointer-events: none !important;
+    }
+
+    /* Form & Search Inputs Focused Styles */
+    .table-search-box:focus-within {
+      border-color: #0F4A32 !important;
+      box-shadow: 0 0 0 3px rgba(15, 74, 50, 0.12) !important;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: #0F4A32 !important;
+      box-shadow: 0 0 0 0.2rem rgba(15, 74, 50, 0.12) !important;
+    }
+
+    /* Bootstrap Primary Button fallback to Spark Forest Green */
+    .btn-primary {
+      background-color: #0F4A32 !important;
+      border-color: #0F4A32 !important;
+      color: #FFFFFF !important;
+    }
+    .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+      background-color: #072F1F !important;
+      border-color: #072F1F !important;
+      color: #FFFFFF !important;
     }
   </style>
 
