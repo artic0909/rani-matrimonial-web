@@ -99,16 +99,17 @@
     <div class="dropdown ms-2">
       <button class="navbar-profile-btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
         aria-expanded="false" id="profile-dropdown">
-        <img src="{{ asset('admin/images/avatar.png') }}" alt="Profile Image" class="navbar-profile-img"
-          onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop'">
+        <img src="{{ asset('logo.png') }}" alt="Profile Image" class="navbar-profile-img">
         <span class="navbar-profile-name d-none d-md-inline">{{ auth('admin')->user()->name ?? 'Administrator' }}</span>
         <i class="bi bi-chevron-down navbar-profile-caret"></i>
       </button>
       <ul class="dropdown-menu dropdown-menu-end dropdown-menu-profile" aria-labelledby="profile-dropdown">
         <li class="dropdown-header">Welcome !</li>
-        <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> My Account</a></li>
-        <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a></li>
-        <li><a class="dropdown-item" href="#"><i class="bi bi-lock"></i> Lock Screen</a></li>
+        <li><a class="dropdown-item" href="{{ route('admin.profile') }}"><i class="bi bi-person"></i> My Account</a></li>
+        <li><a class="dropdown-item" href="{{ route('admin.profile') }}"><i class="bi bi-gear"></i> Settings</a></li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
         <li>
           <a class="dropdown-item text-danger" href="{{ route('admin.logout') }}">
             <i class="bi bi-box-arrow-right me-1"></i> Logout

@@ -45,6 +45,12 @@
             <span>Blue Tick Requests</span>
           </a>
         </li>
+        <li class="sidebar-menu-item">
+          <a href="{{ route('admin.profile') }}" class="sidebar-menu-link {{ request()->routeIs('admin.profile*') ? 'active' : '' }}" id="menu-profile" title="Admin Profile & Settings">
+            <i class="bi bi-person-gear"></i>
+            <span>Profile & Settings</span>
+          </a>
+        </li>
       </ul>
     </div>
 
@@ -175,14 +181,14 @@
 
   <!-- Sidebar Profile Card (Dynamic Footer) -->
   <div class="sidebar-profile d-flex align-items-center justify-content-between">
-    <div class="d-flex align-items-center gap-2 overflow-hidden">
+    <a href="{{ route('admin.profile') }}" class="d-flex align-items-center gap-2 overflow-hidden text-decoration-none flex-grow-1" title="View & Edit Profile Settings">
       <img src="{{ asset('admin/images/avatar.png') }}" alt="Administrator" class="sidebar-profile-img flex-shrink-0"
         onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop'">
       <div class="sidebar-profile-info text-truncate">
-        <div class="sidebar-profile-name text-truncate">{{ auth('admin')->user()->name ?? 'Administrator' }}</div>
+        <div class="sidebar-profile-name text-truncate text-white">{{ auth('admin')->user()->name ?? 'Administrator' }}</div>
         <div class="sidebar-profile-email text-truncate">{{ auth('admin')->user()->email ?? 'admin@rm.com' }}</div>
       </div>
-    </div>
+    </a>
     <a href="{{ route('admin.logout') }}" class="text-white-50 text-hover-white p-1 ms-2" title="Sign Out" aria-label="Sign Out">
       <i class="bi bi-box-arrow-right fs-5"></i>
     </a>

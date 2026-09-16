@@ -25,6 +25,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/bluetick/{id}/approve', [AdminController::class, 'approveBluetick'])->name('bluetick.approve');
         Route::post('/bluetick/{id}/reject', [AdminController::class, 'rejectBluetick'])->name('bluetick.reject');
 
+        // Admin Profile & Security Settings
+        Route::get('/profile', [AdminController::class, 'profileSettings'])->name('profile');
+        Route::post('/profile', [AdminController::class, 'updateProfile'])->name('profile.update');
+        Route::post('/profile/password', [AdminController::class, 'updatePassword'])->name('profile.password');
+
         // Dynamic Master Data CRUD Routes (12 Database Master Tables)
         Route::prefix('masters')->name('masters.')->group(function () {
             Route::get('/{type}', [MasterDataController::class, 'index'])->name('index');
