@@ -106,7 +106,11 @@
             </div>
 
             <!-- Desktop Navigation -->
-            <nav class="hidden md:flex space-x-8 items-center">
+            <nav class="hidden md:flex space-x-7 items-center">
+                <a href="{{ route('search') }}" class="font-serif text-base transition-colors hover:text-rani-gold font-medium flex items-center gap-1.5 {{ request()->routeIs('search*') ? 'text-rani-gold font-bold' : '' }}" :class="{ 'text-rani-primary-dark': scrolled && !'{{ request()->routeIs('search*') }}', 'text-rani-light': !scrolled && !'{{ request()->routeIs('search*') }}' }">
+                    <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <span>Search</span>
+                </a>
                 <a href="#" class="font-serif text-base transition-colors hover:text-rani-gold font-medium" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">About</a>
                 <a href="#" class="font-serif text-base transition-colors hover:text-rani-gold font-medium" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">Help</a>
                 <a href="#" class="font-serif text-base transition-colors hover:text-rani-gold font-medium" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">Success Stories</a>
@@ -128,6 +132,7 @@
                                 <p class="text-sm font-semibold text-gray-800">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</p>
                             </div>
                             <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-rani-primary/5 hover:text-rani-primary">Dashboard</a>
+                            <a href="{{ route('search') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-rani-primary/5 hover:text-rani-primary">Search Profiles</a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</button>
@@ -157,6 +162,10 @@
     <!-- Mobile Menu -->
     <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="md:hidden absolute w-full bg-rani-light shadow-2xl border-t border-rani-gold/30" style="display: none;">
         <div class="px-4 pt-2 pb-6 space-y-1">
+            <a href="{{ route('search') }}" class="flex items-center gap-2 px-3 py-3 rounded-md text-base font-serif font-semibold {{ request()->routeIs('search*') ? 'text-rani-primary bg-rani-primary/10' : 'text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary' }}">
+                <svg class="w-5 h-5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <span>Search Profiles</span>
+            </a>
             <a href="#" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">About</a>
             <a href="#" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">Help</a>
             <a href="#" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">Success Stories</a>

@@ -53,6 +53,11 @@
                             <span>Profile</span>
                         </a>
 
+                        <a href="{{ route('search') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5 {{ request()->routeIs('search*') ? 'text-white bg-white/10 font-bold shadow-inner' : 'text-gray-300 hover:text-white hover:bg-white/5' }}">
+                            <svg class="w-4 h-4 text-rani-gold opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <span>Search</span>
+                        </a>
+
                         <a href="{{ route('matches') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5 {{ request()->routeIs('matches*') ? 'text-white bg-white/10 font-bold shadow-inner' : 'text-gray-300 hover:text-white hover:bg-white/5' }}">
                             <svg class="w-4 h-4 text-rani-gold opacity-90" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             <span>Matches</span>
@@ -160,6 +165,10 @@
                                     <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                                     Dashboard
                                 </a>
+                                <a href="{{ route('search') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-rani-primary/5 hover:text-rani-primary rounded-lg transition-colors">
+                                    <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                    Search Profiles
+                                </a>
                                 <a href="{{ route('my-profile') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-rani-primary/5 hover:text-rani-primary rounded-lg transition-colors">
                                     <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                     My Profile
@@ -224,6 +233,9 @@
                         <a href="{{ route('matches', ['tab' => 'accepted']) }}" class="{{ $currentTab === 'accepted' ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             <span>Accepted</span>
                         </a>
+                        <a href="{{ route('search') }}" class="{{ request()->routeIs('search*') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
+                            <span>Search Profiles</span>
+                        </a>
                     </nav>
                 @elseif(request()->routeIs('inbox*'))
                     <!-- Inbox Sub Navigation -->
@@ -240,12 +252,19 @@
                         <a href="{{ route('inbox', ['tab' => 'declined']) }}" class="{{ $currentInboxTab === 'declined' ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             <span>Declined</span>
                         </a>
+                        <a href="{{ route('search') }}" class="{{ request()->routeIs('search*') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
+                            <span>Search Profiles</span>
+                        </a>
                     </nav>
                 @else
-                    <!-- Profile & Dashboard Sub Navigation -->
+                    <!-- Profile, Dashboard & Search Sub Navigation -->
                     <nav class="flex space-x-2 sm:space-x-4 min-w-full sm:min-w-0">
                         <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             Dashboard
+                        </a>
+                        <a href="{{ route('search') }}" class="{{ request()->routeIs('search*') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            Search Profiles
                         </a>
                         <a href="{{ route('my-profile') }}" class="{{ request()->routeIs('my-profile') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             My Profile
@@ -324,10 +343,14 @@
                 <!-- Drawer Links Sections -->
                 <div class="flex-1 px-3 py-4 space-y-4 overflow-y-auto">
                     
-                    <!-- Section 1: Matches -->
+                    <!-- Section 1: Matches & Search -->
                     <div>
-                        <p class="px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1">Matchmaking</p>
+                        <p class="px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1">Matchmaking & Search</p>
                         <div class="space-y-1">
+                            <a href="{{ route('search') }}" @click="mobileMenuOpen = false" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-medium {{ request()->routeIs('search*') ? 'text-rani-primary bg-rani-primary/10 font-bold' : 'text-gray-700 hover:bg-gray-50' }}">
+                                <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                Search Profiles
+                            </a>
                             <a href="{{ route('matches', ['tab' => 'todays']) }}" @click="mobileMenuOpen = false" class="flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium {{ (request()->routeIs('matches*') && $currentTab === 'todays') ? 'text-rani-primary bg-rani-primary/10 font-bold' : 'text-gray-700 hover:bg-gray-50' }}">
                                 <span class="flex items-center gap-2.5">
                                     <svg class="w-4 h-4 text-rani-gold" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>

@@ -3,12 +3,17 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InboxController;
 use App\Http\Controllers\MatchesController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('frontend.pages.index');
 })->name('login');
+
+// Search Routes (Available for both authenticated candidates and visitors)
+Route::get('/search', [SearchController::class, 'index'])->name('search');
+Route::post('/api/search/filter', [SearchController::class, 'filter'])->name('search.filter');
 
 // Legal & Compliance Pages (SUmatra Sales Private Limited / Rani Matrimonial)
 Route::get('/privacy-policy', function () {
