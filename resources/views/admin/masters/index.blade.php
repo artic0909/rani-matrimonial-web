@@ -54,7 +54,7 @@
                 <!-- Parent Filter Dropdown (If Applicable) -->
                 @if(!empty($config['has_parent']))
                 <div class="col-12 col-md-4 col-lg-3">
-                    <select id="filter-parent" class="form-select bg-light" onchange="handleParentFilterChange()">
+                    <select id="filter-parent" class="form-select bg-light select2" data-placeholder="All {{ $config['parent_label'] ?? 'Parents' }} (All)">
                         <option value="">All {{ $config['parent_label'] ?? 'Parents' }} (All)</option>
                         @foreach($parents as $parent)
                             <option value="{{ $parent->id }}">{{ $parent->name }}</option>
@@ -151,7 +151,7 @@
                         <label for="create_parent_id" class="form-label fw-semibold small">
                             Select {{ $config['parent_label'] ?? 'Parent' }} <span class="text-danger">*</span>
                         </label>
-                        <select name="{{ $config['parent_key'] }}" id="create_parent_id" class="form-select" required>
+                        <select name="{{ $config['parent_key'] }}" id="create_parent_id" class="form-select select2 w-100" data-placeholder="-- Choose {{ $config['parent_label'] ?? 'Parent' }} --" required>
                             <option value="">-- Choose {{ $config['parent_label'] ?? 'Parent' }} --</option>
                             @foreach($parents as $parent)
                                 <option value="{{ $parent->id }}">{{ $parent->name }}</option>
@@ -215,7 +215,7 @@
                         <label for="edit_parent_id" class="form-label fw-semibold small">
                             Select {{ $config['parent_label'] ?? 'Parent' }} <span class="text-danger">*</span>
                         </label>
-                        <select name="{{ $config['parent_key'] }}" id="edit_parent_id" class="form-select" required>
+                        <select name="{{ $config['parent_key'] }}" id="edit_parent_id" class="form-select select2 w-100" data-placeholder="-- Choose {{ $config['parent_label'] ?? 'Parent' }} --" required>
                             <option value="">-- Choose {{ $config['parent_label'] ?? 'Parent' }} --</option>
                             @foreach($parents as $parent)
                                 <option value="{{ $parent->id }}">{{ $parent->name }}</option>
@@ -290,6 +290,13 @@
     document.addEventListener('DOMContentLoaded', () => {
         createModalInstance = new bootstrap.Modal(document.getElementById('createMasterModal'));
         editModalInstance = new bootstrap.Modal(document.getElementById('editMasterModal'));
+        
+        // Select2 filter change listener
+        $(document).on('change', '#filter-parent', function() {
+            state.parentId = $(this).val() || '';
+            fetchMasterData(1);
+        });
+
         fetchMasterData();
     });
 
@@ -521,6 +528,9 @@
         input.value = '';
         state.search = '';
         document.getElementById('btn-clear-search').classList.add('d-none');
+        if ($('#filter-parent').length) {
+            $('#filter-parent').val('').trigger('change');
+        }
         fetchMasterData(1);
     }
 
@@ -543,6 +553,9 @@
         const form = document.getElementById('createMasterForm');
         form.reset();
         clearValidationErrors('create');
+        if ($('#create_parent_id').length) {
+            $('#create_parent_id').val('').trigger('change');
+        }
         createModalInstance.show();
         setTimeout(() => document.getElementById('create_name').focus(), 300);
     }
@@ -627,9 +640,9 @@
         document.getElementById('edit_name').value = record.name;
 
         if (MASTER_CONFIG.hasParent) {
-            const parentSelect = document.getElementById('edit_parent_id');
-            if (parentSelect && record[MASTER_CONFIG.parentKey]) {
-                parentSelect.value = record[MASTER_CONFIG.parentKey];
+            const parentSelect = $('#edit_parent_id');
+            if (parentSelect.length && record[MASTER_CONFIG.parentKey]) {
+                parentSelect.val(record[MASTER_CONFIG.parentKey]).trigger('change');
             }
         }
 
