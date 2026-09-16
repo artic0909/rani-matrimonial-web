@@ -26,92 +26,92 @@
             <div class="absolute top-0 left-0 w-full h-2 sm:h-2.5 bg-gradient-to-r from-emerald-500 via-teal-600 to-rani-gold opacity-95"></div>
             
             <!-- Page Header -->
-            <div class="px-4 sm:px-6 md:px-10 pt-6 sm:pt-8 pb-5 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white shadow-md shrink-0">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
+            <div class="px-3 sm:px-6 md:px-10 pt-4 sm:pt-8 pb-3 sm:pb-5 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
+                <div class="flex items-center gap-2.5 sm:gap-3">
+                    <div class="w-8 h-8 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white shadow-xs shrink-0">
+                        <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
                     </div>
                     <div>
-                        <div class="flex items-center gap-2">
-                            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold font-serif text-gray-900 tracking-wide">Credit History</h1>
-                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                                Deposits & Top-ups
+                        <div class="flex items-center gap-1.5 sm:gap-2">
+                            <h1 class="text-base sm:text-2xl md:text-3xl font-bold font-serif text-gray-900 tracking-wide">Credit History</h1>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[11px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                Deposits
                             </span>
                         </div>
-                        <p class="text-[11px] sm:text-xs text-gray-500 font-sans mt-0.5">All funds credited to your Royal Privilege Card</p>
+                        <p class="text-[10px] sm:text-xs text-gray-500 font-sans mt-0.5 line-clamp-1 sm:line-clamp-none">All funds credited to your Royal Privilege Card</p>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-2 sm:gap-3 self-start md:self-auto">
-                    <a href="{{ route('wallet', ['tab' => 'recharge']) }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all">
-                        <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-                        <span>Recharge Wallet</span>
+                    <a href="{{ route('wallet', ['tab' => 'recharge']) }}" class="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white text-[11px] sm:text-sm font-bold shadow-xs hover:shadow-md transition-all">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                        <span>Recharge</span>
                     </a>
-                    <a href="{{ route('wallet') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs sm:text-sm font-semibold transition-all">
-                        <span>Card Overview</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <a href="{{ route('wallet') }}" class="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-2.5 rounded-lg sm:rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-[11px] sm:text-sm font-semibold transition-all">
+                        <span>Overview</span>
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </a>
                 </div>
             </div>
 
-            <div class="p-4 sm:p-6 md:p-10 space-y-6 sm:space-y-8">
+            <div class="p-3 sm:p-6 md:p-10 space-y-3 sm:space-y-6 md:space-y-8">
 
-                <!-- Summary Metrics Bar -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Summary Metrics Bar (Compact 3-Column on Mobile & Desktop) -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-4">
                     
                     <!-- Metric 1: Total Credits -->
-                    <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-emerald-50 to-white border border-emerald-200/80 shadow-xs flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Total Money Credited</p>
-                            <h3 class="text-2xl sm:text-3xl font-bold font-serif text-emerald-700 mt-1">+ ₹ {{ number_format($totalCredit, 2) }}</h3>
-                            <p class="text-[11px] text-gray-400 font-sans mt-0.5">Lifetime wallet additions</p>
+                    <div class="p-2.5 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl bg-gradient-to-br from-emerald-50 to-white border border-emerald-200/80 shadow-2xs flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <p class="text-[9px] xs:text-[10px] sm:text-xs font-bold text-emerald-800 uppercase tracking-tight sm:tracking-wider truncate">Credited</p>
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-emerald-500 text-white hidden sm:flex items-center justify-center shadow-xs shrink-0">
+                                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
+                            </div>
                         </div>
-                        <div class="w-11 h-11 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-sm shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
-                        </div>
+                        <h3 class="text-xs xs:text-sm sm:text-xl md:text-2xl font-extrabold sm:font-bold font-serif text-emerald-700 mt-1 truncate">+ ₹ {{ number_format($totalCredit, 2) }}</h3>
+                        <p class="text-[10px] sm:text-[11px] text-gray-400 font-sans mt-0.5 hidden sm:block">Lifetime additions</p>
                     </div>
 
                     <!-- Metric 2: Available Balance -->
-                    <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-white border border-amber-200/80 shadow-xs flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-bold text-gray-600 uppercase tracking-wider">Current Available Balance</p>
-                            <h3 class="text-2xl sm:text-3xl font-bold font-serif text-rani-primary-dark mt-1">₹ {{ number_format($wallet->avl_balance, 2) }}</h3>
-                            <p class="text-[11px] text-gray-400 font-sans mt-0.5">Active spendable funds</p>
+                    <div class="p-2.5 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-50 to-white border border-amber-200/80 shadow-2xs flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <p class="text-[9px] xs:text-[10px] sm:text-xs font-bold text-gray-600 uppercase tracking-tight sm:tracking-wider truncate">Balance</p>
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-rani-gold to-yellow-500 text-rani-dark hidden sm:flex items-center justify-center shadow-xs shrink-0">
+                                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                            </div>
                         </div>
-                        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-rani-gold to-yellow-500 text-rani-dark flex items-center justify-center shadow-sm shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-                        </div>
+                        <h3 class="text-xs xs:text-sm sm:text-xl md:text-2xl font-extrabold sm:font-bold font-serif text-rani-primary-dark mt-1 truncate">₹ {{ number_format($wallet->avl_balance, 2) }}</h3>
+                        <p class="text-[10px] sm:text-[11px] text-gray-400 font-sans mt-0.5 hidden sm:block">Spendable funds</p>
                     </div>
 
                     <!-- Metric 3: Total Credit Transactions Count -->
-                    <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-white border border-slate-200 shadow-xs flex items-center justify-between sm:col-span-2 lg:col-span-1">
-                        <div>
-                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Credit Transactions</p>
-                            <h3 class="text-2xl sm:text-3xl font-bold font-serif text-gray-800 mt-1">{{ $creditTransactions->total() }} Records</h3>
-                            <p class="text-[11px] text-gray-400 font-sans mt-0.5">Official invoices available</p>
+                    <div class="p-2.5 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl bg-gradient-to-br from-slate-50 to-white border border-slate-200 shadow-2xs flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <p class="text-[9px] xs:text-[10px] sm:text-xs font-bold text-gray-500 uppercase tracking-tight sm:tracking-wider truncate">Records</p>
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-slate-100 text-gray-600 hidden sm:flex items-center justify-center shadow-xs shrink-0">
+                                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            </div>
                         </div>
-                        <div class="w-11 h-11 rounded-2xl bg-slate-100 text-gray-600 flex items-center justify-center shadow-sm shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        </div>
+                        <h3 class="text-xs xs:text-sm sm:text-xl md:text-2xl font-extrabold sm:font-bold font-serif text-gray-800 mt-1 truncate">{{ $creditTransactions->total() }} Txns</h3>
+                        <p class="text-[10px] sm:text-[11px] text-gray-400 font-sans mt-0.5 hidden sm:block">Receipts available</p>
                     </div>
 
                 </div>
 
                 <!-- Search Filter Form -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50/80 p-3 rounded-2xl border border-gray-200/70">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-gray-50/80 p-2 sm:p-3 rounded-xl sm:rounded-2xl border border-gray-200/70">
                     <form method="GET" action="{{ route('wallet.credit') }}" class="relative flex-1">
                         <input type="text" 
                                name="search" 
                                value="{{ request('search') }}" 
-                               placeholder="Search by Transaction ID, title, payment gateway..." 
-                               class="w-full pl-9 pr-24 py-2 text-xs sm:text-sm rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white shadow-xs">
-                        <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <button type="submit" class="absolute right-1.5 top-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors">
+                               placeholder="Search transaction ID, method..." 
+                               class="w-full pl-8 sm:pl-9 pr-20 sm:pr-24 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg sm:rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white shadow-2xs">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 absolute left-2.5 sm:left-3 top-2 sm:top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <button type="submit" class="absolute right-1 top-1 sm:right-1.5 sm:top-1 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md sm:rounded-lg text-[11px] sm:text-xs font-bold transition-colors">
                             Search
                         </button>
                     </form>
                     @if(request('search'))
-                        <a href="{{ route('wallet.credit') }}" class="px-3 py-2 text-xs font-bold text-gray-500 hover:text-red-600 bg-white border border-gray-200 rounded-xl transition-colors text-center">
+                        <a href="{{ route('wallet.credit') }}" class="px-2.5 py-1.5 sm:px-3 sm:py-2 text-[11px] sm:text-xs font-bold text-gray-500 hover:text-red-600 bg-white border border-gray-200 rounded-lg sm:rounded-xl transition-colors text-center">
                             Clear Filter
                         </a>
                     @endif
