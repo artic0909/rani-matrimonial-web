@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\MasterDataController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -22,5 +23,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/blueticks', [AdminController::class, 'bluetickRequests'])->name('blueticks');
         Route::post('/bluetick/{id}/approve', [AdminController::class, 'approveBluetick'])->name('bluetick.approve');
         Route::post('/bluetick/{id}/reject', [AdminController::class, 'rejectBluetick'])->name('bluetick.reject');
+
+        // Dynamic Master Data CRUD Routes (12 Database Master Tables)
+        Route::prefix('masters')->name('masters.')->group(function () {
+            Route::get('/{type}', [MasterDataController::class, 'index'])->name('index');
+            Route::get('/{type}/data', [MasterDataController::class, 'data'])->name('data');
+            Route::get('/{type}/parents', [MasterDataController::class, 'parents'])->name('parents');
+            Route::post('/{type}', [MasterDataController::class, 'store'])->name('store');
+            Route::put('/{type}/{id}', [MasterDataController::class, 'update'])->name('update');
+            Route::delete('/{type}/{id}', [MasterDataController::class, 'destroy'])->name('destroy');
+        });
     });
 });
