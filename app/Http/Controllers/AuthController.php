@@ -1149,6 +1149,63 @@ class AuthController extends Controller
         ]);
     }
 
+    // Crop an existing gallery / album photo
+    public function cropGalleryPhoto(Request $request)
+    {
+        $request->validate([
+            'photo_id' => 'required|integer',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,webp|max:15360',
+            'set_as_profile' => 'nullable|boolean',
+        ]);
+
+        $candidate = Auth::user();
+        $photo = CandidatePhoto::where('id', $request->photo_id)
+            ->where('candidate_id', $candidate->id)
+            ->first();
+
+        if (! $photo) {
+            return response()->json(['success' => false, 'message' => 'Photo not found.'], 404);
+        }
+
+        $manager = new ImageManager(new Driver);
+        $file = $request->file('photo');
+        $filename = uniqid('gallery_'.$candidate->id.'_').'.webp';
+        $path = 'gallery/'.$filename;
+
+        $image = $manager->decodePath($file->getRealPath());
+        $encoded = $image->scaleDown(1600)->encodeUsingFileExtension('webp', 75);
+        Storage::disk('public')->put($path, (string) $encoded);
+
+        $oldPath = $photo->photo_path;
+        if ($oldPath && $oldPath !== $path && Storage::disk('public')->exists($oldPath)) {
+            Storage::disk('public')->delete($oldPath);
+        }
+
+        $setAsProfile = $request->boolean('set_as_profile') || (bool) $photo->is_profile_picture;
+
+        if ($setAsProfile) {
+            CandidatePhoto::where('candidate_id', $candidate->id)->update(['is_profile_picture' => false]);
+            $photo->update([
+                'photo_path' => $path,
+                'is_profile_picture' => true,
+            ]);
+            $candidate->update(['profile_picture' => $path]);
+        } else {
+            $photo->update([
+                'photo_path' => $path,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Photo cropped and updated successfully.',
+            'photo_id' => $photo->id,
+            'image_url' => asset('storage/'.$path),
+            'is_profile_picture' => (bool) $photo->is_profile_picture,
+            'profile_url' => $candidate->profile_picture ? asset('storage/'.$candidate->profile_picture) : null,
+        ]);
+    }
+
     // Set a gallery photo as main profile picture
     public function setProfilePhoto(Request $request)
     {

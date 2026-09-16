@@ -427,6 +427,7 @@ window.profileEditor = function(config = {}) {
         cropShape: 'circle',
         cropperZoomLevel: 1,
         cropperInstance: null,
+        editingPhoto: null,
 
         onReligionChange() {
             this.formData.community = '';
@@ -808,6 +809,10 @@ window.profileEditor = function(config = {}) {
                 console.error('Crop Error:', err);
                 this.isSavingCrop = false;
             }
+        },
+
+        async saveCroppedPhoto(setAsProfile = false) {
+            return this.saveCroppedProfilePicture();
         }
     };
 };

@@ -1,4 +1,4 @@
-<!-- WhatsApp / Facebook style Profile Picture Cropper Modal (Royal Rani Theme) -->
+<!-- WhatsApp / Facebook style Profile Picture & Album Cropper Modal (Royal Rani Theme) -->
 <div x-show="isCropperOpen" 
      x-cloak 
      class="fixed inset-0 z-[100] flex items-center justify-center p-2.5 sm:p-4 bg-black/85 backdrop-blur-md"
@@ -27,7 +27,7 @@
                 </div>
                 <div>
                     <h3 class="text-base sm:text-lg font-bold font-serif text-white tracking-wide flex items-center gap-1.5">
-                        <span>Adjust Profile Photo</span>
+                        <span x-text="(typeof editingPhoto !== 'undefined' && editingPhoto && !editingPhoto.is_profile_picture) ? 'Adjust Album Photo' : 'Adjust Profile Photo'"></span>
                     </h3>
                     <p class="text-[11px] sm:text-xs text-gray-300">Drag to position & scroll/slide to zoom</p>
                 </div>
@@ -52,21 +52,19 @@
                 <div class="md:col-span-4 flex flex-col items-center justify-center p-3 sm:p-4 bg-rani-dark/60 rounded-2xl border border-rani-gold/20 text-center space-y-2.5 sm:space-y-3">
                     <span class="text-[10px] sm:text-[11px] font-bold text-rani-gold uppercase tracking-wider flex items-center gap-1">
                         <svg class="w-3.5 h-3.5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                        Live Profile Preview
+                        <span x-text="(typeof editingPhoto !== 'undefined' && editingPhoto && !editingPhoto.is_profile_picture) ? 'Live Photo Preview' : 'Live Profile Preview'"></span>
                     </span>
                     
-                    <!-- Circular Preview -->
+                    <!-- Circular / Square Preview -->
                     <div class="relative">
-                        <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-3 border-rani-gold shadow-xl overflow-hidden bg-black flex items-center justify-center ring-2 ring-rani-gold/30">
+                        <div class="w-24 h-24 sm:w-32 sm:h-32 border-3 border-rani-gold shadow-xl overflow-hidden bg-black flex items-center justify-center ring-2 ring-rani-gold/30" :class="cropShape === 'circle' ? 'rounded-full' : 'rounded-2xl'">
                             <canvas id="cropper-live-preview" class="w-full h-full object-cover"></canvas>
                         </div>
-                        <span class="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white text-[9px] font-bold px-2.5 py-0.5 rounded-full border border-rani-gold/40 shadow-md whitespace-nowrap">
-                            As seen by matches
+                        <span class="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white text-[9px] font-bold px-2.5 py-0.5 rounded-full border border-rani-gold/40 shadow-md whitespace-nowrap" x-text="(typeof editingPhoto !== 'undefined' && editingPhoto && !editingPhoto.is_profile_picture) ? 'Photo Frame' : 'As seen by matches'">
                         </span>
                     </div>
 
-                    <p class="text-[10px] sm:text-[11px] text-gray-300 leading-snug pt-1">
-                        Centered frame displayed across search results & match cards.
+                    <p class="text-[10px] sm:text-[11px] text-gray-300 leading-snug pt-1" x-text="(typeof editingPhoto !== 'undefined' && editingPhoto && !editingPhoto.is_profile_picture) ? 'Centered frame displayed in your gallery & album.' : 'Centered frame displayed across search results & match cards.'">
                     </p>
                 </div>
             </div>
@@ -127,30 +125,44 @@
         </div>
 
         <!-- Footer Buttons -->
-        <div class="px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-rani-dark via-[#1e0a13] to-rani-dark border-t border-rani-gold/20 flex items-center justify-between gap-3 sm:gap-4 shrink-0">
+        <div class="px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-rani-dark via-[#1e0a13] to-rani-dark border-t border-rani-gold/20 flex items-center justify-between gap-2.5 sm:gap-4 shrink-0 flex-wrap">
             <button type="button" 
                     @click="closeCropper()" 
                     class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-gray-200 font-semibold text-xs transition-colors border border-white/10">
                 Cancel
             </button>
 
-            <button type="button" 
-                    @click="saveCroppedProfilePicture()" 
-                    :disabled="isSavingCrop"
-                    class="px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-rani-primary via-rani-primary-dark to-rani-primary hover:from-rani-primary-dark hover:to-rani-primary text-white font-bold text-xs shadow-lg hover:shadow-rani-gold/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer disabled:opacity-50 disabled:pointer-events-none border border-rani-gold/40">
-                <template x-if="!isSavingCrop">
-                    <span class="flex items-center gap-1.5 sm:gap-2">
-                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-                        <span>Set as Profile Photo</span>
-                    </span>
+            <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                <!-- Optional 'Set as Profile' button when editing an album photo -->
+                <template x-if="typeof editingPhoto !== 'undefined' && editingPhoto && !editingPhoto.is_profile_picture">
+                    <button type="button"
+                            @click="(typeof saveCroppedPhoto === 'function') ? saveCroppedPhoto(true) : saveCroppedProfilePicture()"
+                            :disabled="isSavingCrop"
+                            class="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/10 hover:bg-rani-gold/20 hover:text-rani-gold text-gray-200 font-bold text-xs border border-rani-gold/30 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer">
+                        <svg class="w-3.5 h-3.5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span>Save & Set Profile</span>
+                    </button>
                 </template>
-                <template x-if="isSavingCrop">
-                    <span class="flex items-center gap-1.5 sm:gap-2">
-                        <svg class="animate-spin w-3.5 h-3.5 sm:w-4 sm:h-4 text-rani-gold" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        <span>Saving Photo...</span>
-                    </span>
-                </template>
-            </button>
+
+                <!-- Primary Save Button -->
+                <button type="button" 
+                        @click="(typeof saveCroppedPhoto === 'function') ? saveCroppedPhoto(false) : saveCroppedProfilePicture()" 
+                        :disabled="isSavingCrop"
+                        class="px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-rani-primary via-rani-primary-dark to-rani-primary hover:from-rani-primary-dark hover:to-rani-primary text-white font-bold text-xs shadow-lg hover:shadow-rani-gold/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer disabled:opacity-50 disabled:pointer-events-none border border-rani-gold/40">
+                    <template x-if="!isSavingCrop">
+                        <span class="flex items-center gap-1.5 sm:gap-2">
+                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                            <span x-text="(typeof editingPhoto !== 'undefined' && editingPhoto && !editingPhoto.is_profile_picture) ? 'Save Cropped Photo' : 'Set as Profile Photo'"></span>
+                        </span>
+                    </template>
+                    <template x-if="isSavingCrop">
+                        <span class="flex items-center gap-1.5 sm:gap-2">
+                            <svg class="animate-spin w-3.5 h-3.5 sm:w-4 sm:h-4 text-rani-gold" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            <span>Saving Photo...</span>
+                        </span>
+                    </template>
+                </button>
+            </div>
         </div>
 
     </div>

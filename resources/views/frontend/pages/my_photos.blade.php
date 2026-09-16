@@ -165,20 +165,24 @@
                                 <!-- Actions -->
                                 <div class="p-1.5 sm:p-2.5 bg-gray-50/70 flex items-center justify-between border-t border-gray-100 gap-1">
                                     <template x-if="!photo.is_profile_picture">
-                                        <div class="flex items-center gap-1 sm:gap-2 flex-wrap">
-                                            <button type="button" @click="setAsProfile(photo)" class="text-[10px] sm:text-[11px] font-bold text-rani-primary hover:text-rani-primary-dark hover:underline flex items-center gap-0.5 transition-colors whitespace-nowrap">
+                                        <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                                            <button type="button" @click="setAsProfile(photo)" class="text-[10px] sm:text-[11px] font-bold text-rani-primary hover:text-rani-primary-dark hover:underline flex items-center gap-0.5 transition-colors whitespace-nowrap" title="Set as main profile photo">
                                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                                 Set as Profile
+                                            </button>
+                                            <button type="button" @click="openCropperWithUrl(photo.url, photo)" class="text-[10px] sm:text-[11px] font-bold text-rani-gold-dark hover:text-rani-gold hover:underline flex items-center gap-1 transition-colors whitespace-nowrap" title="Crop this album photo">
+                                                <svg class="w-3 h-3 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                Crop
                                             </button>
                                         </div>
                                     </template>
                                     <template x-if="photo.is_profile_picture">
-                                        <div class="flex items-center gap-1 sm:gap-2 flex-wrap">
+                                        <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                                             <span class="text-[10px] sm:text-[11px] font-bold text-emerald-600 flex items-center gap-0.5">
                                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                                 Active
                                             </span>
-                                            <button type="button" @click="openCropperWithUrl(photo.url)" class="text-[10px] sm:text-[11px] font-bold text-rani-gold-dark hover:text-rani-gold hover:underline flex items-center gap-1 transition-colors whitespace-nowrap" title="Re-crop active profile photo">
+                                            <button type="button" @click="openCropperWithUrl(photo.url, photo)" class="text-[10px] sm:text-[11px] font-bold text-rani-gold-dark hover:text-rani-gold hover:underline flex items-center gap-1 transition-colors whitespace-nowrap" title="Re-crop active profile photo">
                                                 <svg class="w-3 h-3 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                                 Crop
                                             </button>
@@ -382,6 +386,7 @@ window.galleryManager = function() {
         cropShape: 'circle',
         cropperZoomLevel: 1,
         cropperInstance: null,
+        editingPhoto: null,
 
         settings: {
             photo_privacy: @json($candidate->photo_privacy ?? 'Visible to all Members (Recommended)'),
@@ -389,6 +394,7 @@ window.galleryManager = function() {
         },
 
         openCropper(event) {
+            this.editingPhoto = null;
             const file = event.target.files ? event.target.files[0] : null;
             if (!file) return;
 
@@ -429,12 +435,13 @@ window.galleryManager = function() {
             event.target.value = '';
         },
 
-        openCropperWithUrl(photoUrl) {
+        openCropperWithUrl(photoUrl, photo = null) {
+            this.editingPhoto = photo;
             const imageElement = document.getElementById('cropper-target-image');
             if (!imageElement) return;
 
             this.isCropperOpen = true;
-            this.cropShape = 'circle';
+            this.cropShape = (photo && !photo.is_profile_picture) ? 'square' : 'circle';
             this.cropperZoomLevel = 1;
 
             if (this.cropperInstance) {
@@ -534,21 +541,22 @@ window.galleryManager = function() {
 
         closeCropper() {
             this.isCropperOpen = false;
+            this.editingPhoto = null;
             if (this.cropperInstance) {
                 this.cropperInstance.destroy();
                 this.cropperInstance = null;
             }
         },
 
-        async saveCroppedProfilePicture() {
+        async saveCroppedPhoto(setAsProfile = false) {
             if (!this.cropperInstance) return;
 
             this.isSavingCrop = true;
 
             try {
                 const canvas = this.cropperInstance.getCroppedCanvas({
-                    width: 800,
-                    height: 800,
+                    width: 1000,
+                    height: 1000,
                     imageSmoothingEnabled: true,
                     imageSmoothingQuality: 'high'
                 });
@@ -564,54 +572,126 @@ window.galleryManager = function() {
                     }
 
                     const formData = new FormData();
-                    formData.append('profile_picture', blob, 'profile_' + Date.now() + '.webp');
 
-                    try {
-                        const response = await fetch('{{ route("profile.upload-photo") }}', {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json'
-                            },
-                            body: formData
-                        });
+                    if (this.editingPhoto && this.editingPhoto.id) {
+                        formData.append('photo_id', this.editingPhoto.id);
+                        formData.append('photo', blob, 'cropped_' + Date.now() + '.webp');
+                        if (setAsProfile) {
+                            formData.append('set_as_profile', '1');
+                        }
 
-                        const result = await response.json();
-                        if (result.success) {
-                            const newUrl = result.image_url + '?t=' + Date.now();
-                            this.profileImageUrl = newUrl;
-
-                            this.closeCropper();
-
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Profile Photo Updated!',
-                                text: result.message || 'Your new profile picture has been framed and saved.',
-                                timer: 1800,
-                                showConfirmButton: false,
-                                customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
-                            }).then(() => {
-                                window.location.reload();
+                        try {
+                            const response = await fetch('{{ route("photos.crop") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                },
+                                body: formData
                             });
-                        } else {
-                            const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat().join('<br>') : 'Error uploading picture');
+
+                            const result = await response.json();
+                            if (result.success) {
+                                const newUrl = result.image_url + '?t=' + Date.now();
+                                
+                                this.photos = this.photos.map(p => {
+                                    if (p.id === this.editingPhoto.id) {
+                                        p.url = newUrl;
+                                        if (result.is_profile_picture) {
+                                            p.is_profile_picture = true;
+                                        }
+                                    } else if (result.is_profile_picture) {
+                                        p.is_profile_picture = false;
+                                    }
+                                    return p;
+                                });
+
+                                if (result.is_profile_picture && result.profile_url) {
+                                    this.profileImageUrl = result.profile_url + '?t=' + Date.now();
+                                }
+
+                                this.closeCropper();
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Photo Updated!',
+                                    text: result.message || 'Your cropped photo has been saved.',
+                                    timer: 1800,
+                                    showConfirmButton: false,
+                                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat().join('<br>') : 'Error saving cropped photo');
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Save Failed',
+                                    html: errorMsg,
+                                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                                });
+                            }
+                        } catch (error) {
+                            console.error('Crop Save Error:', error);
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Upload Failed',
-                                html: errorMsg,
+                                title: 'Upload Error',
+                                text: 'An error occurred while saving. Please try again.',
                                 customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                             });
+                        } finally {
+                            this.isSavingCrop = false;
                         }
-                    } catch (error) {
-                        console.error('Save Error:', error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Upload Error',
-                            text: 'An error occurred while uploading. Please try again.',
-                            customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
-                        });
-                    } finally {
-                        this.isSavingCrop = false;
+                    } else {
+                        formData.append('profile_picture', blob, 'profile_' + Date.now() + '.webp');
+
+                        try {
+                            const response = await fetch('{{ route("profile.upload-photo") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                },
+                                body: formData
+                            });
+
+                            const result = await response.json();
+                            if (result.success) {
+                                const newUrl = result.image_url + '?t=' + Date.now();
+                                this.profileImageUrl = newUrl;
+
+                                this.closeCropper();
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Profile Photo Updated!',
+                                    text: result.message || 'Your new profile picture has been framed and saved.',
+                                    timer: 1800,
+                                    showConfirmButton: false,
+                                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                const errorMsg = result.message || (result.errors ? Object.values(result.errors).flat().join('<br>') : 'Error uploading picture');
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Upload Failed',
+                                    html: errorMsg,
+                                    customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                                });
+                            }
+                        } catch (error) {
+                            console.error('Save Error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Upload Error',
+                                text: 'An error occurred while uploading. Please try again.',
+                                customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                            });
+                        } finally {
+                            this.isSavingCrop = false;
+                        }
                     }
                 }, 'image/webp', 0.90);
 
@@ -619,6 +699,10 @@ window.galleryManager = function() {
                 console.error('Crop Error:', err);
                 this.isSavingCrop = false;
             }
+        },
+
+        async saveCroppedProfilePicture() {
+            return this.saveCroppedPhoto(false);
         },
 
         previewPhoto(photo) {
