@@ -30,6 +30,7 @@ class MasterDataController extends Controller
         $configs = [
             'countries' => [
                 'type' => 'countries',
+                'view_dir' => 'country',
                 'model' => Country::class,
                 'singular' => 'Country',
                 'plural' => 'Countries',
@@ -40,6 +41,7 @@ class MasterDataController extends Controller
             ],
             'states' => [
                 'type' => 'states',
+                'view_dir' => 'state',
                 'model' => State::class,
                 'singular' => 'State',
                 'plural' => 'States',
@@ -54,6 +56,7 @@ class MasterDataController extends Controller
             ],
             'cities' => [
                 'type' => 'cities',
+                'view_dir' => 'city',
                 'model' => City::class,
                 'singular' => 'City',
                 'plural' => 'Cities',
@@ -68,6 +71,7 @@ class MasterDataController extends Controller
             ],
             'religions' => [
                 'type' => 'religions',
+                'view_dir' => 'religion',
                 'model' => Religion::class,
                 'singular' => 'Religion',
                 'plural' => 'Religions',
@@ -78,6 +82,7 @@ class MasterDataController extends Controller
             ],
             'communities' => [
                 'type' => 'communities',
+                'view_dir' => 'community',
                 'model' => Community::class,
                 'singular' => 'Community',
                 'plural' => 'Communities',
@@ -92,6 +97,7 @@ class MasterDataController extends Controller
             ],
             'diets' => [
                 'type' => 'diets',
+                'view_dir' => 'diet',
                 'model' => Diet::class,
                 'singular' => 'Diet',
                 'plural' => 'Diets',
@@ -102,6 +108,7 @@ class MasterDataController extends Controller
             ],
             'heights' => [
                 'type' => 'heights',
+                'view_dir' => 'height',
                 'model' => Height::class,
                 'singular' => 'Height',
                 'plural' => 'Heights',
@@ -112,6 +119,7 @@ class MasterDataController extends Controller
             ],
             'hobbies' => [
                 'type' => 'hobbies',
+                'view_dir' => 'hobby',
                 'model' => Hobby::class,
                 'singular' => 'Hobby',
                 'plural' => 'Hobbies',
@@ -122,6 +130,7 @@ class MasterDataController extends Controller
             ],
             'incomes' => [
                 'type' => 'incomes',
+                'view_dir' => 'income',
                 'model' => Income::class,
                 'singular' => 'Income Bracket',
                 'plural' => 'Income Brackets',
@@ -132,6 +141,7 @@ class MasterDataController extends Controller
             ],
             'marital_statuses' => [
                 'type' => 'marital_statuses',
+                'view_dir' => 'maritialstatus',
                 'model' => MaritalStatus::class,
                 'singular' => 'Marital Status',
                 'plural' => 'Marital Statuses',
@@ -142,6 +152,7 @@ class MasterDataController extends Controller
             ],
             'qualifications' => [
                 'type' => 'qualifications',
+                'view_dir' => 'qualification',
                 'model' => Qualification::class,
                 'singular' => 'Qualification',
                 'plural' => 'Qualifications',
@@ -152,6 +163,7 @@ class MasterDataController extends Controller
             ],
             'working_withs' => [
                 'type' => 'working_withs',
+                'view_dir' => 'workingwith',
                 'model' => WorkingWith::class,
                 'singular' => 'Working With',
                 'plural' => 'Working Withs',
@@ -183,7 +195,9 @@ class MasterDataController extends Controller
 
         $totalRecords = $config['model']::count();
 
-        return view('admin.masters.index', compact('config', 'parents', 'totalRecords'));
+        $viewName = "admin.{$config['view_dir']}.index";
+
+        return view($viewName, compact('config', 'parents', 'totalRecords'));
     }
 
     /**
