@@ -212,12 +212,12 @@
                     </button>
                 </div>
 
-                <!-- Section 1: Looking For & Age -->
+                <!-- Section 1: Basic & Profile Details -->
                 <div class="border border-gray-100/80 rounded-2xl p-4 bg-gradient-to-br from-gray-50/60 to-white space-y-3.5 shadow-2xs">
                     <div class="flex items-center justify-between">
                         <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
                             <span class="w-2 h-2 rounded-full bg-rani-primary"></span>
-                            <span>Looking For & Age</span>
+                            <span>Looking For & Basics</span>
                         </h4>
                         <span class="text-[10px] font-mono font-bold text-rani-gold bg-rani-primary/5 px-2 py-0.5 rounded-full">01</span>
                     </div>
@@ -230,6 +230,17 @@
                             <button type="button" @click="filters.gender = 'Female'; fetchResults()" :class="filters.gender === 'Female' ? 'bg-white text-rani-primary font-bold shadow-xs' : 'text-gray-600 hover:text-gray-900'" class="py-1.5 px-2 rounded-lg text-xs transition-all cursor-pointer">Bride</button>
                             <button type="button" @click="filters.gender = 'Male'; fetchResults()" :class="filters.gender === 'Male' ? 'bg-white text-rani-primary font-bold shadow-xs' : 'text-gray-600 hover:text-gray-900'" class="py-1.5 px-2 rounded-lg text-xs transition-all cursor-pointer">Groom</button>
                         </div>
+                    </div>
+
+                    <!-- Profile Created For -->
+                    <div>
+                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Profile Created By</label>
+                        <select x-model="filters.profile_for" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                            <option value="all">All (Created By Anyone)</option>
+                            @foreach($profileFors as $pf)
+                                <option value="{{ $pf }}">{{ $pf }}</option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <!-- Age Range -->
@@ -251,6 +262,25 @@
                         </div>
                     </div>
 
+                    <!-- Height Range -->
+                    <div>
+                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Height Range</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <select x-model="filters.height_min" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                                <option value="all">Min Height (Any)</option>
+                                @foreach($heights as $h)
+                                    <option value="{{ $h->name }}">{{ $h->name }}</option>
+                                @endforeach
+                            </select>
+                            <select x-model="filters.height_max" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                                <option value="all">Max Height (Any)</option>
+                                @foreach($heights as $h)
+                                    <option value="{{ $h->name }}">{{ $h->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
                     <!-- Marital Status -->
                     <div>
                         <label class="text-[11px] font-semibold text-gray-600 block mb-1">Marital Status</label>
@@ -266,25 +296,14 @@
                             <option value="Annulled">Annulled</option>
                         </select>
                     </div>
-
-                    <!-- Height -->
-                    <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Height (Minimum)</label>
-                        <select x-model="filters.height_min" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
-                            <option value="all">All Heights</option>
-                            @foreach($heights as $h)
-                                <option value="{{ $h->name }}">{{ $h->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
                 </div>
 
-                <!-- Section 2: Religion & Community -->
+                <!-- Section 2: Religion, Community & Astro -->
                 <div class="border border-gray-100/80 rounded-2xl p-4 bg-gradient-to-br from-gray-50/60 to-white space-y-3.5 shadow-2xs">
                     <div class="flex items-center justify-between">
                         <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
                             <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                            <span>Religion & Community</span>
+                            <span>Religion & Astro</span>
                         </h4>
                         <span class="text-[10px] font-mono font-bold text-rani-gold bg-rani-primary/5 px-2 py-0.5 rounded-full">02</span>
                     </div>
@@ -310,6 +329,41 @@
                             </template>
                         </select>
                     </div>
+
+                    <!-- Sub-Community -->
+                    <div>
+                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Sub-Community / Clan</label>
+                        <input type="text" x-model.debounce.400ms="filters.sub_community" @input="fetchResults()" placeholder="e.g. Kulin, Vaishnav..." class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                    </div>
+
+                    <!-- Mother Tongue -->
+                    <div>
+                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Mother Tongue</label>
+                        <select x-model="filters.mother_tongue" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                            <option value="all">All Mother Tongues</option>
+                            @foreach($motherTongues as $mt)
+                                <option value="{{ $mt }}">{{ $mt }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Manglik Status -->
+                    <div>
+                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Manglik Status</label>
+                        <select x-model="filters.manglik" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                            <option value="all">All Manglik Statuses</option>
+                            <option value="Non-Manglik">Non-Manglik</option>
+                            <option value="Manglik">Manglik</option>
+                            <option value="Anshik Manglik">Anshik Manglik</option>
+                            <option value="Don't Know">Don't Know</option>
+                        </select>
+                    </div>
+
+                    <!-- Gothra -->
+                    <div>
+                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Gothra</label>
+                        <input type="text" x-model.debounce.400ms="filters.gothra" @input="fetchResults()" placeholder="e.g. Kashyap, Shandilya..." class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                    </div>
                 </div>
 
                 <!-- Section 3: Location Details -->
@@ -317,7 +371,7 @@
                     <div class="flex items-center justify-between">
                         <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
                             <span class="w-2 h-2 rounded-full bg-sky-500"></span>
-                            <span>Location & City</span>
+                            <span>Location & Living</span>
                         </h4>
                         <span class="text-[10px] font-mono font-bold text-rani-gold bg-rani-primary/5 px-2 py-0.5 rounded-full">03</span>
                     </div>
@@ -353,6 +407,23 @@
                                 <option :value="ct.name" x-text="ct.name"></option>
                             </template>
                         </select>
+                    </div>
+
+                    <!-- Residency Status -->
+                    <div>
+                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Residency Status</label>
+                        <select x-model="filters.residency_status" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                            <option value="all">All Residency Types</option>
+                            @foreach($residencyStatuses as $rs)
+                                <option value="{{ $rs }}">{{ $rs }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Grew Up In -->
+                    <div>
+                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Grew Up In (City / Region)</label>
+                        <input type="text" x-model.debounce.400ms="filters.grew_up_in" @input="fetchResults()" placeholder="e.g. Kolkata, Mumbai..." class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
                     </div>
                 </div>
 
@@ -399,6 +470,12 @@
                         </select>
                     </div>
 
+                    <!-- Profession / Designation Search -->
+                    <div>
+                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Profession / Role</label>
+                        <input type="text" x-model.debounce.400ms="filters.profession" @input="fetchResults()" placeholder="e.g. Software Engineer, Doctor, CA..." class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                    </div>
+
                     <!-- Annual Income -->
                     <div>
                         <label class="text-[11px] font-semibold text-gray-600 block mb-1">Annual Income</label>
@@ -419,12 +496,12 @@
                     </div>
                 </div>
 
-                <!-- Section 5: Diet & Manglik Details -->
+                <!-- Section 5: Lifestyle, Health & Habits -->
                 <div class="border border-gray-100/80 rounded-2xl p-4 bg-gradient-to-br from-gray-50/60 to-white space-y-3.5 shadow-2xs">
                     <div class="flex items-center justify-between">
                         <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
                             <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-                            <span>Diet & Manglik Details</span>
+                            <span>Lifestyle & Health</span>
                         </h4>
                         <span class="text-[10px] font-mono font-bold text-rani-gold bg-rani-primary/5 px-2 py-0.5 rounded-full">05</span>
                     </div>
@@ -445,17 +522,98 @@
                         </select>
                     </div>
 
-                    <!-- Manglik -->
+                    <!-- Blood Group -->
                     <div>
-                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Manglik Status</label>
-                        <select x-model="filters.manglik" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
-                            <option value="all">All Manglik Statuses</option>
-                            <option value="Non-Manglik">Non-Manglik</option>
-                            <option value="Manglik">Manglik</option>
-                            <option value="Anshik Manglik">Anshik Manglik</option>
-                            <option value="Don't Know">Don't Know</option>
+                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Blood Group</label>
+                        <select x-model="filters.blood_group" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                            <option value="all">All Blood Groups</option>
+                            @foreach($bloodGroups as $bg)
+                                <option value="{{ $bg }}">{{ $bg }}</option>
+                            @endforeach
                         </select>
                     </div>
+
+                    <!-- Disability / Special Needs -->
+                    <div>
+                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Disability / Special Needs</label>
+                        <select x-model="filters.disability" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                            <option value="all">Doesn't Matter (All)</option>
+                            <option value="None">None (Normal)</option>
+                            <option value="Physically Challenged">Physically Challenged</option>
+                        </select>
+                    </div>
+
+                    <!-- Hobbies / Interests -->
+                    <div>
+                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Hobbies & Interests</label>
+                        <select x-model="filters.hobbies_interests" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                            <option value="all">All Hobbies</option>
+                            @foreach($hobbies as $hb)
+                                <option value="{{ $hb->name }}">{{ $hb->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Section 6: Family Background -->
+                <div class="border border-gray-100/80 rounded-2xl p-4 bg-gradient-to-br from-gray-50/60 to-white space-y-3.5 shadow-2xs">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                            <span>Family Background</span>
+                        </h4>
+                        <span class="text-[10px] font-mono font-bold text-rani-gold bg-rani-primary/5 px-2 py-0.5 rounded-full">06</span>
+                    </div>
+
+                    <!-- Family Financial Status -->
+                    <div>
+                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Family Financial Status</label>
+                        <select x-model="filters.family_financial_status" @change="fetchResults()" class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                            <option value="all">All Family Statuses</option>
+                            @foreach($familyFinancialStatuses as $ffs)
+                                <option value="{{ $ffs }}">{{ $ffs }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Father's Profession -->
+                    <div>
+                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Father's Profession</label>
+                        <input type="text" x-model.debounce.400ms="filters.father_profession" @input="fetchResults()" placeholder="e.g. Business, Retired, Govt..." class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                    </div>
+
+                    <!-- Mother's Profession -->
+                    <div>
+                        <label class="text-[11px] font-semibold text-gray-600 block mb-1">Mother's Profession</label>
+                        <input type="text" x-model.debounce.400ms="filters.mother_profession" @input="fetchResults()" placeholder="e.g. Homemaker, Teacher..." class="w-full text-xs py-2 px-2.5 bg-white border border-gray-200 rounded-xl focus:border-rani-gold focus:ring-1 focus:ring-rani-gold/30">
+                    </div>
+                </div>
+
+                <!-- Section 7: Verification & Badges -->
+                <div class="border border-gray-100/80 rounded-2xl p-4 bg-gradient-to-br from-gray-50/60 to-white space-y-3 shadow-2xs">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                            <span>Trust & Verification</span>
+                        </h4>
+                        <span class="text-[10px] font-mono font-bold text-rani-gold bg-rani-primary/5 px-2 py-0.5 rounded-full">07</span>
+                    </div>
+
+                    <label class="flex items-center justify-between p-2 rounded-xl bg-gray-50 hover:bg-gray-100/80 transition-colors cursor-pointer border border-gray-100">
+                        <span class="text-xs font-semibold text-gray-800 flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span>Photo Available Only</span>
+                        </span>
+                        <input type="checkbox" x-model="filters.has_photo" @change="fetchResults()" class="w-4 h-4 rounded text-rani-primary focus:ring-rani-gold">
+                    </label>
+
+                    <label class="flex items-center justify-between p-2 rounded-xl bg-gray-50 hover:bg-gray-100/80 transition-colors cursor-pointer border border-gray-100">
+                        <span class="text-xs font-semibold text-gray-800 flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            <span>Blue Tick Verified Only</span>
+                        </span>
+                        <input type="checkbox" x-model="filters.verified_only" @change="fetchResults()" class="w-4 h-4 rounded text-rani-primary focus:ring-rani-gold">
+                    </label>
                 </div>
 
             </div>
@@ -786,197 +944,363 @@
                 </div>
 
                 <!-- Drawer Filter Body (Clean scrollbar) -->
+                <!-- Drawer Filter Body (Clean scrollbar) -->
                 <div class="flex-1 p-4 space-y-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                     
-                    <!-- Gender -->
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-700 block mb-1">Looking For</label>
-                        <div class="grid grid-cols-3 gap-1.5">
-                            <button type="button" @click="filters.gender = 'all'; fetchResults()" :class="filters.gender === 'all' ? 'bg-rani-primary text-white font-bold' : 'bg-gray-100 text-gray-700'" class="py-2 px-2 rounded-xl text-xs cursor-pointer">All</button>
-                            <button type="button" @click="filters.gender = 'Female'; fetchResults()" :class="filters.gender === 'Female' ? 'bg-rani-primary text-white font-bold' : 'bg-gray-100 text-gray-700'" class="py-2 px-2 rounded-xl text-xs cursor-pointer">Bride</button>
-                            <button type="button" @click="filters.gender = 'Male'; fetchResults()" :class="filters.gender === 'Male' ? 'bg-rani-primary text-white font-bold' : 'bg-gray-100 text-gray-700'" class="py-2 px-2 rounded-xl text-xs cursor-pointer">Groom</button>
+                    <!-- Section 1: Looking For & Basics -->
+                    <div class="space-y-3 pb-3 border-b border-gray-100">
+                        <p class="text-[11px] font-bold text-rani-primary uppercase tracking-wider">01. Looking For & Basics</p>
+                        
+                        <!-- Gender -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Looking For</label>
+                            <div class="grid grid-cols-3 gap-1.5">
+                                <button type="button" @click="filters.gender = 'all'; fetchResults()" :class="filters.gender === 'all' ? 'bg-rani-primary text-white font-bold' : 'bg-gray-100 text-gray-700'" class="py-2 px-2 rounded-xl text-xs cursor-pointer">All</button>
+                                <button type="button" @click="filters.gender = 'Female'; fetchResults()" :class="filters.gender === 'Female' ? 'bg-rani-primary text-white font-bold' : 'bg-gray-100 text-gray-700'" class="py-2 px-2 rounded-xl text-xs cursor-pointer">Bride</button>
+                                <button type="button" @click="filters.gender = 'Male'; fetchResults()" :class="filters.gender === 'Male' ? 'bg-rani-primary text-white font-bold' : 'bg-gray-100 text-gray-700'" class="py-2 px-2 rounded-xl text-xs cursor-pointer">Groom</button>
+                            </div>
+                        </div>
+
+                        <!-- Profile Created For -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Profile Created By</label>
+                            <select x-model="filters.profile_for" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All (Created By Anyone)</option>
+                                @foreach($profileFors as $pf)
+                                    <option value="{{ $pf }}">{{ $pf }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Age Min/Max -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Age Range</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <select x-model="filters.age_min" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                    <option value="">Min Age (Any)</option>
+                                    @for($a = 18; $a <= 65; $a++)
+                                        <option value="{{ $a }}">{{ $a }} Yrs</option>
+                                    @endfor
+                                </select>
+                                <select x-model="filters.age_max" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                    <option value="">Max Age (Any)</option>
+                                    @for($a = 18; $a <= 70; $a++)
+                                        <option value="{{ $a }}">{{ $a }} Yrs</option>
+                                    @endfor
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Height Range -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Height Range</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <select x-model="filters.height_min" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                    <option value="all">Min Height (Any)</option>
+                                    @foreach($heights as $h)
+                                        <option value="{{ $h->name }}">{{ $h->name }}</option>
+                                    @endforeach
+                                </select>
+                                <select x-model="filters.height_max" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                    <option value="all">Max Height (Any)</option>
+                                    @foreach($heights as $h)
+                                        <option value="{{ $h->name }}">{{ $h->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Marital Status -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Marital Status</label>
+                            <select x-model="filters.marital_status" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All Marital Statuses</option>
+                                @foreach($maritalStatuses as $ms)
+                                    <option value="{{ $ms->name }}">{{ $ms->name }}</option>
+                                @endforeach
+                                <option value="Never Married">Never Married</option>
+                                <option value="Divorced">Divorced</option>
+                                <option value="Widowed">Widowed</option>
+                                <option value="Awaiting Divorce">Awaiting Divorce</option>
+                                <option value="Annulled">Annulled</option>
+                            </select>
                         </div>
                     </div>
 
-                    <!-- Age Min/Max -->
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-700 block mb-1">Age Range</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <select x-model="filters.age_min" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
-                                <option value="">Min Age (Any)</option>
-                                @for($a = 18; $a <= 65; $a++)
-                                    <option value="{{ $a }}">{{ $a }} Yrs</option>
-                                @endfor
+                    <!-- Section 2: Religion, Community & Astro -->
+                    <div class="space-y-3 pb-3 border-b border-gray-100">
+                        <p class="text-[11px] font-bold text-amber-600 uppercase tracking-wider">02. Religion & Astro</p>
+
+                        <!-- Religion -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Religion</label>
+                            <select x-model="filters.religion" @change="onReligionChange()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All Religions</option>
+                                @foreach($religions as $r)
+                                    <option value="{{ $r->name }}">{{ $r->name }}</option>
+                                @endforeach
                             </select>
-                            <select x-model="filters.age_max" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
-                                <option value="">Max Age (Any)</option>
-                                @for($a = 18; $a <= 70; $a++)
-                                    <option value="{{ $a }}">{{ $a }} Yrs</option>
-                                @endfor
+                        </div>
+
+                        <!-- Community -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Community / Caste</label>
+                            <select x-model="filters.community" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All Communities</option>
+                                <template x-for="com in availableCommunities" :key="com.id || com.name">
+                                    <option :value="com.name" x-text="com.name"></option>
+                                </template>
+                            </select>
+                        </div>
+
+                        <!-- Sub-Community -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Sub-Community / Clan</label>
+                            <input type="text" x-model.debounce.400ms="filters.sub_community" @input="fetchResults()" placeholder="e.g. Kulin, Vaishnav..." class="w-full text-xs py-2 px-2.5 border rounded-xl">
+                        </div>
+
+                        <!-- Mother Tongue -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Mother Tongue</label>
+                            <select x-model="filters.mother_tongue" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All Mother Tongues</option>
+                                @foreach($motherTongues as $mt)
+                                    <option value="{{ $mt }}">{{ $mt }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Manglik Status -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Manglik Status</label>
+                            <select x-model="filters.manglik" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All Manglik Statuses</option>
+                                <option value="Non-Manglik">Non-Manglik</option>
+                                <option value="Manglik">Manglik</option>
+                                <option value="Anshik Manglik">Anshik Manglik</option>
+                                <option value="Don't Know">Don't Know</option>
+                            </select>
+                        </div>
+
+                        <!-- Gothra -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Gothra</label>
+                            <input type="text" x-model.debounce.400ms="filters.gothra" @input="fetchResults()" placeholder="e.g. Kashyap, Shandilya..." class="w-full text-xs py-2 px-2.5 border rounded-xl">
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Location Details -->
+                    <div class="space-y-3 pb-3 border-b border-gray-100">
+                        <p class="text-[11px] font-bold text-sky-600 uppercase tracking-wider">03. Location & Living</p>
+
+                        <!-- Country -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Country</label>
+                            <select x-model="filters.country" @change="onCountryChange()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All Countries</option>
+                                @foreach($countries as $c)
+                                    <option value="{{ $c->name }}">{{ $c->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- State -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">State</label>
+                            <select x-model="filters.state" @change="onStateChange()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All States</option>
+                                <template x-for="st in availableStates" :key="st.id || st.name">
+                                    <option :value="st.name" x-text="st.name"></option>
+                                </template>
+                            </select>
+                        </div>
+
+                        <!-- City -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">City</label>
+                            <select x-model="filters.city" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All Cities</option>
+                                <template x-for="ct in availableCities" :key="ct.id || ct.name">
+                                    <option :value="ct.name" x-text="ct.name"></option>
+                                </template>
+                            </select>
+                        </div>
+
+                        <!-- Residency Status -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Residency Status</label>
+                            <select x-model="filters.residency_status" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All Residency Types</option>
+                                @foreach($residencyStatuses as $rs)
+                                    <option value="{{ $rs }}">{{ $rs }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Grew Up In -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Grew Up In (City / Region)</label>
+                            <input type="text" x-model.debounce.400ms="filters.grew_up_in" @input="fetchResults()" placeholder="e.g. Kolkata, Mumbai..." class="w-full text-xs py-2 px-2.5 border rounded-xl">
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Education, Profession & Income -->
+                    <div class="space-y-3 pb-3 border-b border-gray-100">
+                        <p class="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">04. Education & Career</p>
+
+                        <!-- Highest Qualification -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Education</label>
+                            <select x-model="filters.highest_qualification" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All Education</option>
+                                <option value="Doctorate">Doctorate / PhD</option>
+                                <option value="Masters">Masters / Post Graduate</option>
+                                <option value="Bachelors">Bachelors / Graduate</option>
+                                <option value="Diploma">Diploma / Vocational</option>
+                                <option value="High School">High School</option>
+                                <option value="MBBS">MBBS / Medical</option>
+                                <option value="B.Tech">B.Tech / B.E. / Engineering</option>
+                                <option value="MBA">MBA / PGDM</option>
+                                <option value="CA">CA / CS / Finance</option>
+                            </select>
+                        </div>
+
+                        <!-- Working Sector -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Working Sector</label>
+                            <select x-model="filters.working_with" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All Sectors</option>
+                                @foreach($workingWiths as $ww)
+                                    <option value="{{ $ww->name }}">{{ $ww->name }}</option>
+                                @endforeach
+                                <option value="Private Company">Private Company</option>
+                                <option value="Government / Public Sector">Government / Public Sector</option>
+                                <option value="Business / Self Employed">Business / Self Employed</option>
+                                <option value="Defense / Civil Services">Defense / Civil Services</option>
+                                <option value="Not Working">Not Working</option>
+                            </select>
+                        </div>
+
+                        <!-- Profession / Role -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Profession / Role</label>
+                            <input type="text" x-model.debounce.400ms="filters.profession" @input="fetchResults()" placeholder="e.g. Software Engineer, Doctor..." class="w-full text-xs py-2 px-2.5 border rounded-xl">
+                        </div>
+
+                        <!-- Annual Income -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Annual Income</label>
+                            <select x-model="filters.annual_income" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All Income Levels</option>
+                                @foreach($incomes as $inc)
+                                    <option value="{{ $inc->name }}">{{ $inc->name }}</option>
+                                @endforeach
+                                <option value="0-3">₹0 - 3 Lakh</option>
+                                <option value="3-6">₹3 - 6 Lakh</option>
+                                <option value="6-10">₹6 - 10 Lakh</option>
+                                <option value="10-15">₹10 - 15 Lakh</option>
+                                <option value="15-25">₹15 - 25 Lakh</option>
+                                <option value="25-50">₹25 - 50 Lakh</option>
+                                <option value="50">₹50 Lakh - 1 Crore</option>
+                                <option value="100">₹1 Crore & above</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Religion -->
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-700 block mb-1">Religion</label>
-                        <select x-model="filters.religion" @change="onReligionChange()" class="w-full text-xs py-2 px-2 border rounded-xl">
-                            <option value="all">All Religions</option>
-                            @foreach($religions as $r)
-                                <option value="{{ $r->name }}">{{ $r->name }}</option>
-                            @endforeach
-                        </select>
+                    <!-- Section 5: Lifestyle, Health & Habits -->
+                    <div class="space-y-3 pb-3 border-b border-gray-100">
+                        <p class="text-[11px] font-bold text-rose-600 uppercase tracking-wider">05. Lifestyle & Health</p>
+
+                        <!-- Diet -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Diet</label>
+                            <select x-model="filters.diet" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All Diets</option>
+                                @foreach($diets as $d)
+                                    <option value="{{ $d->name }}">{{ $d->name }}</option>
+                                @endforeach
+                                <option value="Vegetarian">Vegetarian</option>
+                                <option value="Non-Vegetarian">Non-Vegetarian</option>
+                                <option value="Eggetarian">Eggetarian</option>
+                                <option value="Jain">Jain</option>
+                                <option value="Vegan">Vegan</option>
+                            </select>
+                        </div>
+
+                        <!-- Blood Group -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Blood Group</label>
+                            <select x-model="filters.blood_group" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All Blood Groups</option>
+                                @foreach($bloodGroups as $bg)
+                                    <option value="{{ $bg }}">{{ $bg }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Disability -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Disability / Special Needs</label>
+                            <select x-model="filters.disability" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">Doesn't Matter (All)</option>
+                                <option value="None">None (Normal)</option>
+                                <option value="Physically Challenged">Physically Challenged</option>
+                            </select>
+                        </div>
+
+                        <!-- Hobbies & Interests -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Hobbies & Interests</label>
+                            <select x-model="filters.hobbies_interests" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All Hobbies</option>
+                                @foreach($hobbies as $hb)
+                                    <option value="{{ $hb->name }}">{{ $hb->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
 
-                    <!-- Community -->
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-700 block mb-1">Community / Caste</label>
-                        <select x-model="filters.community" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
-                            <option value="all">All Communities</option>
-                            <template x-for="com in availableCommunities" :key="com.id || com.name">
-                                <option :value="com.name" x-text="com.name"></option>
-                            </template>
-                        </select>
+                    <!-- Section 6: Family Details -->
+                    <div class="space-y-3 pb-3 border-b border-gray-100">
+                        <p class="text-[11px] font-bold text-purple-600 uppercase tracking-wider">06. Family Background</p>
+
+                        <!-- Family Financial Status -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Family Financial Status</label>
+                            <select x-model="filters.family_financial_status" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
+                                <option value="all">All Family Statuses</option>
+                                @foreach($familyFinancialStatuses as $ffs)
+                                    <option value="{{ $ffs }}">{{ $ffs }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Father's Profession -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Father's Profession</label>
+                            <input type="text" x-model.debounce.400ms="filters.father_profession" @input="fetchResults()" placeholder="e.g. Business, Retired, Govt..." class="w-full text-xs py-2 px-2.5 border rounded-xl">
+                        </div>
+
+                        <!-- Mother's Profession -->
+                        <div>
+                            <label class="text-[11px] font-bold text-gray-700 block mb-1">Mother's Profession</label>
+                            <input type="text" x-model.debounce.400ms="filters.mother_profession" @input="fetchResults()" placeholder="e.g. Homemaker, Teacher..." class="w-full text-xs py-2 px-2.5 border rounded-xl">
+                        </div>
                     </div>
 
-                    <!-- Height Min -->
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-700 block mb-1">Height (Minimum)</label>
-                        <select x-model="filters.height_min" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
-                            <option value="all">All Heights</option>
-                            @foreach($heights as $h)
-                                <option value="{{ $h->name }}">{{ $h->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                    <!-- Section 7: Verification Badges -->
+                    <div class="space-y-2 pt-1">
+                        <p class="text-[11px] font-bold text-blue-600 uppercase tracking-wider">07. Trust & Verification</p>
 
-                    <!-- Marital Status -->
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-700 block mb-1">Marital Status</label>
-                        <select x-model="filters.marital_status" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
-                            <option value="all">All Marital Statuses</option>
-                            @foreach($maritalStatuses as $ms)
-                                <option value="{{ $ms->name }}">{{ $ms->name }}</option>
-                            @endforeach
-                            <option value="Never Married">Never Married</option>
-                            <option value="Divorced">Divorced</option>
-                            <option value="Widowed">Widowed</option>
-                            <option value="Awaiting Divorce">Awaiting Divorce</option>
-                            <option value="Annulled">Annulled</option>
-                        </select>
-                    </div>
+                        <label class="flex items-center justify-between p-2 rounded-xl bg-gray-50 border border-gray-100 cursor-pointer">
+                            <span class="text-xs font-semibold text-gray-800">Photo Available Only</span>
+                            <input type="checkbox" x-model="filters.has_photo" @change="fetchResults()" class="w-4 h-4 rounded text-rani-primary">
+                        </label>
 
-                    <!-- Country -->
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-700 block mb-1">Country</label>
-                        <select x-model="filters.country" @change="onCountryChange()" class="w-full text-xs py-2 px-2 border rounded-xl">
-                            <option value="all">All Countries</option>
-                            @foreach($countries as $c)
-                                <option value="{{ $c->name }}">{{ $c->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <!-- State -->
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-700 block mb-1">State</label>
-                        <select x-model="filters.state" @change="onStateChange()" class="w-full text-xs py-2 px-2 border rounded-xl">
-                            <option value="all">All States</option>
-                            <template x-for="st in availableStates" :key="st.id || st.name">
-                                <option :value="st.name" x-text="st.name"></option>
-                            </template>
-                        </select>
-                    </div>
-
-                    <!-- City -->
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-700 block mb-1">City</label>
-                        <select x-model="filters.city" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
-                            <option value="all">All Cities</option>
-                            <template x-for="ct in availableCities" :key="ct.id || ct.name">
-                                <option :value="ct.name" x-text="ct.name"></option>
-                            </template>
-                        </select>
-                    </div>
-
-                    <!-- Highest Qualification -->
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-700 block mb-1">Education</label>
-                        <select x-model="filters.highest_qualification" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
-                            <option value="all">All Education</option>
-                            <option value="Doctorate">Doctorate / PhD</option>
-                            <option value="Masters">Masters / Post Graduate</option>
-                            <option value="Bachelors">Bachelors / Graduate</option>
-                            <option value="Diploma">Diploma / Vocational</option>
-                            <option value="High School">High School</option>
-                            <option value="MBBS">MBBS / Medical</option>
-                            <option value="B.Tech">B.Tech / B.E. / Engineering</option>
-                            <option value="MBA">MBA / PGDM</option>
-                            <option value="CA">CA / CS / Finance</option>
-                        </select>
-                    </div>
-
-                    <!-- Working Sector -->
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-700 block mb-1">Working Sector</label>
-                        <select x-model="filters.working_with" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
-                            <option value="all">All Sectors</option>
-                            @foreach($workingWiths as $ww)
-                                <option value="{{ $ww->name }}">{{ $ww->name }}</option>
-                            @endforeach
-                            <option value="Private Company">Private Company</option>
-                            <option value="Government / Public Sector">Government / Public Sector</option>
-                            <option value="Business / Self Employed">Business / Self Employed</option>
-                            <option value="Defense / Civil Services">Defense / Civil Services</option>
-                            <option value="Not Working">Not Working</option>
-                        </select>
-                    </div>
-
-                    <!-- Annual Income -->
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-700 block mb-1">Annual Income</label>
-                        <select x-model="filters.annual_income" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
-                            <option value="all">All Income Levels</option>
-                            @foreach($incomes as $inc)
-                                <option value="{{ $inc->name }}">{{ $inc->name }}</option>
-                            @endforeach
-                            <option value="0-3">₹0 - 3 Lakh</option>
-                            <option value="3-6">₹3 - 6 Lakh</option>
-                            <option value="6-10">₹6 - 10 Lakh</option>
-                            <option value="10-15">₹10 - 15 Lakh</option>
-                            <option value="15-25">₹15 - 25 Lakh</option>
-                            <option value="25-50">₹25 - 50 Lakh</option>
-                            <option value="50">₹50 Lakh - 1 Crore</option>
-                            <option value="100">₹1 Crore & above</option>
-                        </select>
-                    </div>
-
-                    <!-- Diet -->
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-700 block mb-1">Diet</label>
-                        <select x-model="filters.diet" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
-                            <option value="all">All Diets</option>
-                            @foreach($diets as $d)
-                                <option value="{{ $d->name }}">{{ $d->name }}</option>
-                            @endforeach
-                            <option value="Vegetarian">Vegetarian</option>
-                            <option value="Non-Vegetarian">Non-Vegetarian</option>
-                            <option value="Eggetarian">Eggetarian</option>
-                            <option value="Jain">Jain</option>
-                            <option value="Vegan">Vegan</option>
-                        </select>
-                    </div>
-
-                    <!-- Manglik -->
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-700 block mb-1">Manglik Status</label>
-                        <select x-model="filters.manglik" @change="fetchResults()" class="w-full text-xs py-2 px-2 border rounded-xl">
-                            <option value="all">All Manglik Statuses</option>
-                            <option value="Non-Manglik">Non-Manglik</option>
-                            <option value="Manglik">Manglik</option>
-                            <option value="Anshik Manglik">Anshik Manglik</option>
-                            <option value="Don't Know">Don't Know</option>
-                        </select>
+                        <label class="flex items-center justify-between p-2 rounded-xl bg-gray-50 border border-gray-100 cursor-pointer">
+                            <span class="text-xs font-semibold text-gray-800">Blue Tick Verified Only</span>
+                            <input type="checkbox" x-model="filters.verified_only" @change="fetchResults()" class="w-4 h-4 rounded text-rani-primary">
+                        </label>
                     </div>
 
                 </div>
@@ -1100,6 +1424,7 @@ window.searchManager = function() {
         filters: {
             keyword: '',
             gender: '{{ $defaultGender ?? "all" }}',
+            profile_for: 'all',
             age_min: '',
             age_max: '',
             height_min: 'all',
@@ -1107,14 +1432,25 @@ window.searchManager = function() {
             marital_status: 'all',
             religion: 'all',
             community: 'all',
+            sub_community: '',
+            mother_tongue: 'all',
+            gothra: '',
             country: 'all',
             state: 'all',
             city: 'all',
-            diet: 'all',
+            residency_status: 'all',
+            grew_up_in: '',
             highest_qualification: 'all',
             working_with: 'all',
-            profession: 'all',
+            profession: '',
             annual_income: 'all',
+            diet: 'all',
+            blood_group: 'all',
+            disability: 'all',
+            hobbies_interests: 'all',
+            family_financial_status: 'all',
+            father_profession: '',
+            mother_profession: '',
             manglik: 'all',
             has_photo: false,
             verified_only: false,
@@ -1140,19 +1476,33 @@ window.searchManager = function() {
             let count = 0;
             if (this.filters.keyword) count++;
             if (this.filters.gender !== 'all') count++;
+            if (this.filters.profile_for !== 'all') count++;
             if (this.filters.age_min) count++;
             if (this.filters.age_max) count++;
             if (this.filters.height_min !== 'all') count++;
+            if (this.filters.height_max !== 'all') count++;
             if (this.filters.marital_status !== 'all') count++;
             if (this.filters.religion !== 'all') count++;
             if (this.filters.community !== 'all') count++;
+            if (this.filters.sub_community) count++;
+            if (this.filters.mother_tongue !== 'all') count++;
+            if (this.filters.gothra) count++;
             if (this.filters.country !== 'all') count++;
             if (this.filters.state !== 'all') count++;
             if (this.filters.city !== 'all') count++;
-            if (this.filters.diet !== 'all') count++;
+            if (this.filters.residency_status !== 'all') count++;
+            if (this.filters.grew_up_in) count++;
             if (this.filters.highest_qualification !== 'all') count++;
             if (this.filters.working_with !== 'all') count++;
+            if (this.filters.profession) count++;
             if (this.filters.annual_income !== 'all') count++;
+            if (this.filters.diet !== 'all') count++;
+            if (this.filters.blood_group !== 'all') count++;
+            if (this.filters.disability !== 'all') count++;
+            if (this.filters.hobbies_interests !== 'all') count++;
+            if (this.filters.family_financial_status !== 'all') count++;
+            if (this.filters.father_profession) count++;
+            if (this.filters.mother_profession) count++;
             if (this.filters.manglik !== 'all') count++;
             if (this.filters.has_photo) count++;
             if (this.filters.verified_only) count++;
@@ -1207,6 +1557,7 @@ window.searchManager = function() {
             this.filters = {
                 keyword: '',
                 gender: 'all',
+                profile_for: 'all',
                 age_min: '',
                 age_max: '',
                 height_min: 'all',
@@ -1214,14 +1565,25 @@ window.searchManager = function() {
                 marital_status: 'all',
                 religion: 'all',
                 community: 'all',
+                sub_community: '',
+                mother_tongue: 'all',
+                gothra: '',
                 country: 'all',
                 state: 'all',
                 city: 'all',
-                diet: 'all',
+                residency_status: 'all',
+                grew_up_in: '',
                 highest_qualification: 'all',
                 working_with: 'all',
-                profession: 'all',
+                profession: '',
                 annual_income: 'all',
+                diet: 'all',
+                blood_group: 'all',
+                disability: 'all',
+                hobbies_interests: 'all',
+                family_financial_status: 'all',
+                father_profession: '',
+                mother_profession: '',
                 manglik: 'all',
                 has_photo: false,
                 verified_only: false,
@@ -1257,97 +1619,112 @@ window.searchManager = function() {
         },
 
         async toggleShortlist(match) {
+            if (!match) return;
+            const isCurrentlyShortlisted = match.is_shortlisted;
+
+            // Optimistic UI update
+            match.is_shortlisted = !isCurrentlyShortlisted;
+
             try {
                 const res = await fetch('{{ route("matches.shortlist") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '{{ csrf_token() }}',
+                        'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ profile_id: match.id })
+                    body: JSON.stringify({
+                        profile_id: match.id
+                    })
                 });
 
                 const data = await res.json();
+
                 if (data.success) {
-                    match.is_shortlisted = data.is_shortlisted;
-                    const toast = Swal.mixin({
+                    match.is_shortlisted = data.shortlisted !== undefined ? data.shortlisted : (data.is_shortlisted !== undefined ? data.is_shortlisted : !isCurrentlyShortlisted);
+                    Swal.fire({
+                        icon: match.is_shortlisted ? 'success' : 'info',
+                        title: match.is_shortlisted ? 'Shortlisted!' : 'Removed',
+                        text: data.message || (match.is_shortlisted ? 'Profile added to your shortlist.' : 'Profile removed from your shortlist.'),
                         toast: true,
                         position: 'top-end',
                         showConfirmButton: false,
-                        timer: 2000
+                        timer: 2000,
+                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title' }
                     });
-                    toast.fire({
-                        icon: 'success',
-                        title: data.is_shortlisted ? 'Added to Shortlist' : 'Removed from Shortlist'
-                    });
+                } else {
+                    // Revert if failed
+                    match.is_shortlisted = isCurrentlyShortlisted;
                 }
             } catch (e) {
-                console.error(e);
+                match.is_shortlisted = isCurrentlyShortlisted;
+                console.error('Shortlist error:', e);
             }
         },
 
         async sendInterest(match) {
-            const confirm = await Swal.fire({
-                title: 'Send Connection Request?',
-                text: `Send interest request to ${match.first_name} (${match.id})`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, Send Interest',
-                cancelButtonText: 'Cancel',
-                customClass: {
-                    popup: 'rani-swal-popup',
-                    title: 'rani-swal-title',
-                    confirmButton: 'rani-swal-confirm',
-                    cancelButton: 'rani-swal-cancel'
-                }
-            });
-
-            if (!confirm.isConfirmed) return;
+            if (!match) return;
+            if (match.request_type === 'sent') return;
 
             try {
                 const res = await fetch('{{ route("matches.send-interest") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '{{ csrf_token() }}',
+                        'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ profile_id: match.id })
+                    body: JSON.stringify({
+                        profile_id: match.id
+                    })
                 });
 
                 const data = await res.json();
+
                 if (data.success) {
+                    match.is_interest_sent = true;
                     match.request_type = 'sent';
+
+                    const fullName = (match.first_name || '') + (match.last_name ? ' ' + match.last_name : '');
+
                     Swal.fire({
                         icon: 'success',
-                        title: 'Interest Sent!',
-                        text: data.message || `Connection request sent to ${match.first_name}.`,
-                        timer: 2000,
-                        showConfirmButton: false,
+                        title: 'Connection Request Sent!',
+                        html: '<p class="text-sm text-gray-200">Your connection request was dispatched to <strong>' + (fullName || 'Candidate') + '</strong>.<br><span class="text-xs text-gray-400 mt-1 block">A WhatsApp notification with your name and profile summary has been delivered.</span></p>',
+                        confirmButtonText: 'Great',
                         customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                     });
-                } else if (data.redirect_wallet) {
+                } else if (data.insufficient_balance || data.redirect_wallet) {
                     Swal.fire({
                         icon: 'warning',
-                        title: 'Insufficient Balance',
-                        text: data.message || 'Please recharge your wallet to send connection requests.',
+                        title: data.title || 'Insufficient Wallet Balance',
+                        html: '<div class="text-left bg-black/40 border border-amber-500/30 rounded-xl p-3.5 mt-2">' +
+                              '<p class="text-sm text-amber-200 leading-relaxed font-medium">' + (data.message || 'Please recharge your wallet to send connection requests.') + '</p>' +
+                              '</div>',
                         showCancelButton: true,
-                        confirmButtonText: 'Go to Wallet',
-                        customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
-                    }).then((r) => {
-                        if (r.isConfirmed) window.location.href = '{{ route("wallet") }}';
+                        confirmButtonText: '💳 Recharge Wallet Now',
+                        cancelButtonText: 'Maybe Later',
+                        customClass: {
+                            popup: 'rani-swal-popup',
+                            title: 'rani-swal-title',
+                            confirmButton: 'rani-swal-confirm',
+                            cancelButton: 'rani-swal-cancel'
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = data.redirect || '{{ route("wallet") }}';
+                        }
                     });
                 } else {
                     Swal.fire({
-                        icon: 'info',
+                        icon: 'error',
                         title: 'Notice',
-                        text: data.message || 'Could not send request.',
+                        text: data.message || 'Unable to send connection request.',
                         customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                     });
                 }
             } catch (err) {
-                console.error(err);
+                console.error('Send Interest error:', err);
             }
         },
 

@@ -39,7 +39,18 @@ class SearchController extends Controller
         $workingWiths = WorkingWith::all();
         $hobbies = Hobby::all();
 
-        // Default search filters
+        // Additional candidate table field lists
+        $motherTongues = [
+            'Bengali', 'Hindi', 'Telugu', 'Marathi', 'Tamil', 'Gujarati', 'Urdu',
+            'Kannada', 'Odia', 'Malayalam', 'Punjabi', 'Assamese', 'Maithili',
+            'Marwari', 'Sindhi', 'Konkani', 'Kashmiri', 'Nepali', 'English'
+        ];
+        $bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+        $familyFinancialStatuses = ['Rich / Affluent', 'Upper Middle Class', 'Middle Class', 'Modest'];
+        $residencyStatuses = ['Citizen', 'Permanent Resident', 'Work Permit', 'Student Visa', 'Temporary Visa'];
+        $profileFors = ['Self', 'Son', 'Daughter', 'Brother', 'Sister', 'Friend', 'Relative'];
+
+        // Default search gender filter
         $defaultGender = 'all';
         if ($candidate && ! empty($candidate->gender)) {
             $userGender = strtolower(trim($candidate->gender));
@@ -56,6 +67,11 @@ class SearchController extends Controller
             'incomes',
             'workingWiths',
             'hobbies',
+            'motherTongues',
+            'bloodGroups',
+            'familyFinancialStatuses',
+            'residencyStatuses',
+            'profileFors',
             'defaultGender'
         ));
     }
@@ -183,7 +199,13 @@ class SearchController extends Controller
             });
         }
 
-        // 4. Marital Status Filter
+        // 4. Profile Created For Filter
+        $profileFor = trim($request->input('profile_for', 'all'));
+        if (! empty($profileFor) && strtolower($profileFor) !== 'all') {
+            $query->where('profile_for', 'LIKE', "%{$profileFor}%");
+        }
+
+        // 5. Marital Status Filter
         $maritalStatus = trim($request->input('marital_status', 'all'));
         if (! empty($maritalStatus) && strtolower($maritalStatus) !== 'all') {
             $query->where(function ($q) use ($maritalStatus) {
@@ -197,23 +219,40 @@ class SearchController extends Controller
             });
         }
 
-        // 5. Religion Filter
+        // 6. Religion Filter
         $religion = trim($request->input('religion', 'all'));
         if (! empty($religion) && strtolower($religion) !== 'all') {
             $query->where('religion', 'LIKE', "%{$religion}%");
         }
 
-        // 6. Community / Mother Tongue Filter
+        // 7. Community / Caste Filter
         $community = trim($request->input('community', 'all'));
         if (! empty($community) && strtolower($community) !== 'all') {
             $query->where(function ($q) use ($community) {
                 $q->where('community', 'LIKE', "%{$community}%")
-                    ->orWhere('sub_community', 'LIKE', "%{$community}%")
-                    ->orWhere('mother_tongue', 'LIKE', "%{$community}%");
+                    ->orWhere('sub_community', 'LIKE', "%{$community}%");
             });
         }
 
-        // 7. Location Filters: Country, State, City
+        // 8. Sub Community Filter
+        $subCommunity = trim($request->input('sub_community', 'all'));
+        if (! empty($subCommunity) && strtolower($subCommunity) !== 'all') {
+            $query->where('sub_community', 'LIKE', "%{$subCommunity}%");
+        }
+
+        // 9. Mother Tongue Filter
+        $motherTongue = trim($request->input('mother_tongue', 'all'));
+        if (! empty($motherTongue) && strtolower($motherTongue) !== 'all') {
+            $query->where('mother_tongue', 'LIKE', "%{$motherTongue}%");
+        }
+
+        // 10. Gothra Filter
+        $gothra = trim($request->input('gothra', ''));
+        if (! empty($gothra)) {
+            $query->where('gothra', 'LIKE', "%{$gothra}%");
+        }
+
+        // 11. Location Filters: Country, State, City
         $country = trim($request->input('country', 'all'));
         if (! empty($country) && strtolower($country) !== 'all') {
             $query->where('country', 'LIKE', "%{$country}%");
@@ -229,7 +268,21 @@ class SearchController extends Controller
             $query->where('city', 'LIKE', "%{$city}%");
         }
 
-        // 8. Diet Filter
+        // 12. Residency Status / Living In / Grew Up In
+        $residencyStatus = trim($request->input('residency_status', 'all'));
+        if (! empty($residencyStatus) && strtolower($residencyStatus) !== 'all') {
+            $query->where(function ($q) use ($residencyStatus) {
+                $q->where('residency_status', 'LIKE', "%{$residencyStatus}%")
+                    ->orWhere('living_in', 'LIKE', "%{$residencyStatus}%");
+            });
+        }
+
+        $grewUpIn = trim($request->input('grew_up_in', ''));
+        if (! empty($grewUpIn)) {
+            $query->where('grew_up_in', 'LIKE', "%{$grewUpIn}%");
+        }
+
+        // 13. Diet Filter
         $diet = trim($request->input('diet', 'all'));
         if (! empty($diet) && strtolower($diet) !== 'all') {
             $query->where(function ($q) use ($diet) {
@@ -248,7 +301,7 @@ class SearchController extends Controller
             });
         }
 
-        // 9. Education / Highest Qualification Filter
+        // 14. Education / Highest Qualification Filter
         $qualification = trim($request->input('highest_qualification', 'all'));
         if (! empty($qualification) && strtolower($qualification) !== 'all') {
             $query->where(function ($q) use ($qualification) {
@@ -307,7 +360,7 @@ class SearchController extends Controller
             });
         }
 
-        // 10. Working With / Sector Filter
+        // 15. Working With / Sector Filter
         $workingWith = trim($request->input('working_with', 'all'));
         if (! empty($workingWith) && strtolower($workingWith) !== 'all') {
             $query->where(function ($q) use ($workingWith) {
@@ -339,7 +392,7 @@ class SearchController extends Controller
             });
         }
 
-        // 11. Profession Filter
+        // 16. Profession Filter
         $profession = trim($request->input('profession', 'all'));
         if (! empty($profession) && strtolower($profession) !== 'all') {
             $query->where(function ($q) use ($profession) {
@@ -348,7 +401,7 @@ class SearchController extends Controller
             });
         }
 
-        // 12. Manglik / Astro Filter
+        // 17. Manglik / Astro Filter
         $manglik = trim($request->input('manglik', 'all'));
         if (! empty($manglik) && strtolower($manglik) !== 'all') {
             $query->where(function ($q) use ($manglik) {
@@ -368,7 +421,51 @@ class SearchController extends Controller
             });
         }
 
-        // 13. Photo Available Only Filter
+        // 18. Blood Group Filter
+        $bloodGroup = trim($request->input('blood_group', 'all'));
+        if (! empty($bloodGroup) && strtolower($bloodGroup) !== 'all') {
+            $query->where('blood_group', $bloodGroup);
+        }
+
+        // 19. Disability / Health Info Filter
+        $disability = trim($request->input('disability', 'all'));
+        if (! empty($disability) && strtolower($disability) !== 'all') {
+            if ($disability === 'None') {
+                $query->where(function ($q) {
+                    $q->where('disability', 'None')
+                        ->orWhere('disability', 'No')
+                        ->orWhereNull('disability')
+                        ->orWhere('disability', '');
+                });
+            } else {
+                $query->where('disability', 'LIKE', "%{$disability}%");
+            }
+        }
+
+        // 20. Family Financial Status Filter
+        $familyStatus = trim($request->input('family_financial_status', 'all'));
+        if (! empty($familyStatus) && strtolower($familyStatus) !== 'all') {
+            $query->where('family_financial_status', 'LIKE', "%{$familyStatus}%");
+        }
+
+        // 21. Father's / Mother's Profession
+        $fatherProfession = trim($request->input('father_profession', 'all'));
+        if (! empty($fatherProfession) && strtolower($fatherProfession) !== 'all') {
+            $query->where('father_profession', 'LIKE', "%{$fatherProfession}%");
+        }
+
+        $motherProfession = trim($request->input('mother_profession', 'all'));
+        if (! empty($motherProfession) && strtolower($motherProfession) !== 'all') {
+            $query->where('mother_profession', 'LIKE', "%{$motherProfession}%");
+        }
+
+        // 22. Hobbies / Interests Filter
+        $hobbies = trim($request->input('hobbies_interests', 'all'));
+        if (! empty($hobbies) && strtolower($hobbies) !== 'all') {
+            $query->where('hobbies_interests', 'LIKE', "%{$hobbies}%");
+        }
+
+        // 23. Photo Available Only Filter
         $hasPhoto = $request->boolean('has_photo');
         if ($hasPhoto) {
             $query->where(function ($q) {
@@ -378,7 +475,7 @@ class SearchController extends Controller
             });
         }
 
-        // 14. Verified / Blue Tick Only Filter
+        // 24. Verified / Blue Tick Only Filter
         $verifiedOnly = $request->boolean('verified_only');
         if ($verifiedOnly) {
             $query->whereHas('bluetick', function ($q) {
@@ -405,20 +502,27 @@ class SearchController extends Controller
 
         $allCandidates = $query->limit(200)->get();
 
-        // 15. Smart Height Filter (Inches comparison)
+        // 25. Smart Height Filter (Inches comparison min & max)
         $heightMin = trim($request->input('height_min', 'all'));
-        if (! empty($heightMin) && strtolower($heightMin) !== 'all') {
-            $minInches = self::parseHeightToInches($heightMin);
-            if ($minInches !== null && $minInches > 0) {
-                $allCandidates = $allCandidates->filter(function ($c) use ($minInches) {
-                    $candInches = SearchController::parseHeightToInches($c->height);
-                    if ($candInches === null) {
-                        return true;
-                    }
+        $heightMax = trim($request->input('height_max', 'all'));
+        $minInches = (! empty($heightMin) && strtolower($heightMin) !== 'all') ? self::parseHeightToInches($heightMin) : null;
+        $maxInches = (! empty($heightMax) && strtolower($heightMax) !== 'all') ? self::parseHeightToInches($heightMax) : null;
 
-                    return $candInches >= $minInches;
-                });
-            }
+        if (($minInches !== null && $minInches > 0) || ($maxInches !== null && $maxInches > 0)) {
+            $allCandidates = $allCandidates->filter(function ($c) use ($minInches, $maxInches) {
+                $candInches = SearchController::parseHeightToInches($c->height);
+                if ($candInches === null) {
+                    return true;
+                }
+                if ($minInches !== null && $candInches < $minInches) {
+                    return false;
+                }
+                if ($maxInches !== null && $candInches > $maxInches) {
+                    return false;
+                }
+
+                return true;
+            });
         }
 
         // 16. Smart Annual Income Filter (Overlapping range comparison)
