@@ -17,6 +17,10 @@
                     <span class="badge-table success ms-1">
                         <i class="bi bi-patch-check-fill"></i> Blue Tick Verified
                     </span>
+                @elseif($candidate->bluetick && (int)$candidate->bluetick->is_accept === 0)
+                    <span class="badge-table pending ms-1">
+                        <i class="bi bi-clock-history"></i> Blue Tick Pending Review
+                    </span>
                 @endif
                 @if(($stats['matched_connections_total'] ?? 0) > 0)
                     <span class="badge-table success ms-1">
@@ -153,25 +157,49 @@
     <!-- START: Activity Overview Stats Strip -->
     <div class="row g-3 mb-4">
         <!-- Matched / Accepted -->
-        <div class="col-12 col-sm-6 col-xl-4">
+        <div class="col-12 col-sm-6 col-xl-3">
             <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100" style="border: 1px solid rgba(11, 19, 15, 0.06) !important;">
                 <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="table-user-sub fw-semibold">Matched / Accepted</span>
-                    <span class="badge-table success">{{ $stats['matched_connections_total'] }} Accepted</span>
+                    <span class="table-user-sub fw-semibold">Matched Connections</span>
+                    <span class="badge-table success">{{ $stats['matched_connections_total'] }}</span>
                 </div>
                 <div class="d-flex align-items-baseline gap-2 mb-2">
                     <h4 class="fw-bold mb-0 text-success font-monospace">💑 {{ $stats['matched_connections_total'] }}</h4>
-                    <span class="text-success small fw-semibold">Mutual Connections</span>
+                    <span class="text-success small fw-semibold">Mutual Accepted</span>
                 </div>
                 <div class="table-user-sub d-flex justify-content-between">
-                    <span><i class="bi bi-arrow-up-right text-primary me-1"></i> Sent Accepted: {{ $stats['sent_connections_accepted'] }}</span>
-                    <span><i class="bi bi-arrow-down-left text-info me-1"></i> Received Accepted: {{ $stats['received_connections_accepted'] }}</span>
+                    <span>Sent: {{ $stats['sent_connections_accepted'] }}</span>
+                    <span>Received: {{ $stats['received_connections_accepted'] }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blue Tick Status Card -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100" style="border: 1px solid rgba(11, 19, 15, 0.06) !important;">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="table-user-sub fw-semibold">Blue Tick KYC</span>
+                    <i class="bi bi-patch-check-fill text-warning fs-5"></i>
+                </div>
+                <div class="mb-2">
+                    @if($candidate->is_bluetick_verified ?? false)
+                        <h5 class="fw-bold text-success mb-0"><i class="bi bi-check-circle-fill me-1"></i> Verified Active</h5>
+                    @elseif($candidate->bluetick && (int)$candidate->bluetick->is_accept === 0)
+                        <h5 class="fw-bold text-warning-emphasis mb-0"><i class="bi bi-clock-history me-1"></i> Under Review</h5>
+                    @elseif($candidate->bluetick && (int)$candidate->bluetick->is_accept === 2)
+                        <h5 class="fw-bold text-danger mb-0"><i class="bi bi-x-circle-fill me-1"></i> Rejected</h5>
+                    @else
+                        <h5 class="fw-bold text-muted mb-0">Not Submitted</h5>
+                    @endif
+                </div>
+                <div class="table-user-sub">
+                    Aadhaar: <span class="font-monospace text-main">{{ $candidate->bluetick->aadhar_number ?? ($candidate->aadhar_number ?? 'N/A') }}</span>
                 </div>
             </div>
         </div>
 
         <!-- Sent Connections -->
-        <div class="col-12 col-sm-6 col-xl-4">
+        <div class="col-12 col-sm-6 col-xl-3">
             <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100" style="border: 1px solid rgba(11, 19, 15, 0.06) !important;">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <span class="table-user-sub fw-semibold">Sent Connections</span>
@@ -182,14 +210,14 @@
                     <span class="text-success small fw-semibold">({{ $stats['sent_connections_accepted'] }} Accepted)</span>
                 </div>
                 <div class="table-user-sub d-flex justify-content-between">
-                    <span><i class="bi bi-clock-history text-warning me-1"></i> Pending: {{ $stats['sent_connections_pending'] }}</span>
-                    <span><i class="bi bi-x-circle text-danger me-1"></i> Declined: {{ $stats['sent_connections_declined'] }}</span>
+                    <span>Pending: {{ $stats['sent_connections_pending'] }}</span>
+                    <span>Declined: {{ $stats['sent_connections_declined'] }}</span>
                 </div>
             </div>
         </div>
 
         <!-- Received Connections -->
-        <div class="col-12 col-sm-6 col-xl-4">
+        <div class="col-12 col-sm-6 col-xl-3">
             <div class="card border-0 shadow-sm rounded-3 p-3 bg-white h-100" style="border: 1px solid rgba(11, 19, 15, 0.06) !important;">
                 <div class="d-flex align-items-center justify-content-between mb-2">
                     <span class="table-user-sub fw-semibold">Received Requests</span>
@@ -200,8 +228,8 @@
                     <span class="text-success small fw-semibold">({{ $stats['received_connections_accepted'] }} Accepted)</span>
                 </div>
                 <div class="table-user-sub d-flex justify-content-between">
-                    <span><i class="bi bi-clock-history text-warning me-1"></i> Pending: {{ $stats['received_connections_pending'] }}</span>
-                    <span><i class="bi bi-x-circle text-danger me-1"></i> Declined: {{ $stats['received_connections_declined'] }}</span>
+                    <span>Pending: {{ $stats['received_connections_pending'] }}</span>
+                    <span>Declined: {{ $stats['received_connections_declined'] }}</span>
                 </div>
             </div>
         </div>
@@ -221,7 +249,15 @@
                     </button>
                 </li>
 
-                <!-- Tab 2: Matched / Accepted Connections -->
+                <!-- Tab 2: Blue Tick & KYC -->
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-semibold text-muted" 
+                            id="tab-bluetick" data-bs-toggle="tab" data-bs-target="#pane-bluetick" type="button" role="tab">
+                        <i class="bi bi-patch-check-fill me-1.5 text-warning"></i> Blue Tick & KYC ({{ $candidate->blueticks->count() }})
+                    </button>
+                </li>
+
+                <!-- Tab 3: Matched / Accepted Connections -->
                 <li class="nav-item" role="presentation">
                     <button class="nav-link fw-semibold text-muted" 
                             id="tab-matched-connections" data-bs-toggle="tab" data-bs-target="#pane-matched-connections" type="button" role="tab">
@@ -230,7 +266,7 @@
                     </button>
                 </li>
 
-                <!-- Tab 3: Sent Connection Requests -->
+                <!-- Tab 4: Sent Connection Requests -->
                 <li class="nav-item" role="presentation">
                     <button class="nav-link fw-semibold text-muted" 
                             id="tab-sent-connections" data-bs-toggle="tab" data-bs-target="#pane-sent-connections" type="button" role="tab">
@@ -238,7 +274,7 @@
                     </button>
                 </li>
 
-                <!-- Tab 4: Received Connection Requests -->
+                <!-- Tab 5: Received Connection Requests -->
                 <li class="nav-item" role="presentation">
                     <button class="nav-link fw-semibold text-muted" 
                             id="tab-received-connections" data-bs-toggle="tab" data-bs-target="#pane-received-connections" type="button" role="tab">
@@ -246,7 +282,7 @@
                     </button>
                 </li>
 
-                <!-- Tab 5: Sent WhatsApp Requests -->
+                <!-- Tab 6: Sent WhatsApp Requests -->
                 <li class="nav-item" role="presentation">
                     <button class="nav-link fw-semibold text-muted" 
                             id="tab-sent-whatsapp" data-bs-toggle="tab" data-bs-target="#pane-sent-whatsapp" type="button" role="tab">
@@ -254,7 +290,7 @@
                     </button>
                 </li>
 
-                <!-- Tab 6: Received WhatsApp Requests -->
+                <!-- Tab 7: Received WhatsApp Requests -->
                 <li class="nav-item" role="presentation">
                     <button class="nav-link fw-semibold text-muted" 
                             id="tab-received-whatsapp" data-bs-toggle="tab" data-bs-target="#pane-received-whatsapp" type="button" role="tab">
@@ -262,7 +298,7 @@
                     </button>
                 </li>
 
-                <!-- Tab 7: Photo Gallery -->
+                <!-- Tab 8: Photo Gallery -->
                 <li class="nav-item" role="presentation">
                     <button class="nav-link fw-semibold text-muted" 
                             id="tab-photos" data-bs-toggle="tab" data-bs-target="#pane-photos" type="button" role="tab">
@@ -270,7 +306,7 @@
                     </button>
                 </li>
 
-                <!-- Tab 8: Wallet Ledger -->
+                <!-- Tab 9: Wallet Ledger -->
                 <li class="nav-item" role="presentation">
                     <button class="nav-link fw-semibold text-muted" 
                             id="tab-wallet" data-bs-toggle="tab" data-bs-target="#pane-wallet" type="button" role="tab">
@@ -405,22 +441,20 @@
                                             <td class="fw-semibold text-main">{{ $candidate->pincode ?? ($candidate->zip_code ?? 'N/A') }}</td>
                                         </tr>
                                         <tr>
-                                            <td class="table-user-sub">Residency Status:</td>
-                                            <td class="fw-semibold text-main">{{ $candidate->residency_status ?? 'Citizen / Permanent Resident' }}</td>
-                                        </tr>
-                                        <tr>
                                             <td class="table-user-sub">Aadhaar Number:</td>
                                             <td class="fw-bold font-monospace text-main">
-                                                {{ $candidate->aadhar_number ? (substr($candidate->aadhar_number, 0, 4) . ' ' . substr($candidate->aadhar_number, 4, 4) . ' ' . substr($candidate->aadhar_number, 8)) : 'Not uploaded' }}
+                                                {{ $candidate->bluetick->aadhar_number ?? ($candidate->aadhar_number ? (substr($candidate->aadhar_number, 0, 4) . ' ' . substr($candidate->aadhar_number, 4, 4) . ' ' . substr($candidate->aadhar_number, 8)) : 'Not uploaded') }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class="table-user-sub">Blue Tick Status:</td>
                                             <td>
                                                 @if($candidate->is_bluetick_verified ?? false)
-                                                    <span class="badge-table success"><i class="bi bi-patch-check-fill"></i> Verified</span>
+                                                    <span class="badge-table success"><i class="bi bi-patch-check-fill"></i> Verified Active</span>
+                                                @elseif($candidate->bluetick && (int)$candidate->bluetick->is_accept === 0)
+                                                    <span class="badge-table pending">Pending Verification Review</span>
                                                 @else
-                                                    <span class="badge-table pending">Unverified / Pending</span>
+                                                    <span class="table-user-sub">Not Verified</span>
                                                 @endif
                                             </td>
                                         </tr>
@@ -557,7 +591,250 @@
                 </div>
 
                 <!-- ========================================================
-                     TAB PANE 2: MATCHED / ACCEPTED CONNECTIONS
+                     TAB PANE 2: BLUE TICK & AADHAAR KYC DETAILS
+                     ======================================================== -->
+                <div class="tab-pane fade" id="pane-bluetick" role="tabpanel">
+                    @php
+                        $latestBluetick = $candidate->bluetick ?? $candidate->blueticks->first();
+                    @endphp
+
+                    @if($latestBluetick)
+                        <!-- Blue Tick Status Banner -->
+                        <div class="card border-0 rounded-4 p-4 mb-4" 
+                             style="background: {{ (int)$latestBluetick->is_accept === 1 ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(15, 74, 50, 0.08))' : ((int)$latestBluetick->is_accept === 0 ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(217, 119, 6, 0.08))' : 'linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(185, 28, 28, 0.08))') }}; border: 1px solid {{ (int)$latestBluetick->is_accept === 1 ? 'rgba(34, 197, 94, 0.2)' : ((int)$latestBluetick->is_accept === 0 ? 'rgba(245, 158, 11, 0.2)' : 'rgba(239, 68, 68, 0.2)') }} !important;">
+                            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm" 
+                                         style="width: 56px; height: 56px; font-size: 28px; background: #fff; color: {{ (int)$latestBluetick->is_accept === 1 ? '#16a34a' : ((int)$latestBluetick->is_accept === 0 ? '#d97706' : '#dc2626') }};">
+                                        @if((int)$latestBluetick->is_accept === 1)
+                                            <i class="bi bi-patch-check-fill"></i>
+                                        @elseif((int)$latestBluetick->is_accept === 0)
+                                            <i class="bi bi-clock-history"></i>
+                                        @else
+                                            <i class="bi bi-x-circle-fill"></i>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <h5 class="fw-bold mb-0 text-main">
+                                                @if((int)$latestBluetick->is_accept === 1)
+                                                    Blue Tick Verification Approved & Active
+                                                @elseif((int)$latestBluetick->is_accept === 0)
+                                                    Verification Request Pending Review
+                                                @else
+                                                    Verification Request Rejected
+                                                @endif
+                                            </h5>
+                                        </div>
+                                        <p class="table-user-sub mb-0">
+                                            Aadhaar Number: <strong class="font-monospace text-main">{{ $latestBluetick->aadhar_number ? (substr($latestBluetick->aadhar_number, 0, 4) . ' ' . substr($latestBluetick->aadhar_number, 4, 4) . ' ' . substr($latestBluetick->aadhar_number, 8)) : 'N/A' }}</strong>
+                                            • Submitted: <span class="text-main">{{ $latestBluetick->created_at ? $latestBluetick->created_at->format('d M, Y h:i A') : 'N/A' }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons for Admin Verification -->
+                                <div class="d-flex align-items-center gap-2">
+                                    @if((int)$latestBluetick->is_accept !== 1)
+                                        <button type="button" 
+                                                class="btn-custom btn-custom-primary btn-custom-sm" 
+                                                onclick="handleApproveBluetick({{ $latestBluetick->id }})">
+                                            <i class="bi bi-check2-circle"></i> Approve & Grant Blue Tick
+                                        </button>
+                                    @endif
+                                    @if((int)$latestBluetick->is_accept !== 2)
+                                        <button type="button" 
+                                                class="btn-custom btn-custom-danger btn-custom-sm" 
+                                                onclick="openRejectBluetickModal({{ $latestBluetick->id }})">
+                                            <i class="bi bi-x-circle"></i> Reject Verification
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aadhaar Photos Showcase Grid -->
+                        <div class="row g-4 mb-4">
+                            <!-- Front Document Photo -->
+                            <div class="col-12 col-md-6">
+                                <div class="card border rounded-3 p-3 bg-white h-100" style="border: 1px solid rgba(11, 19, 15, 0.08) !important;">
+                                    <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="bi bi-card-image fs-5 text-primary"></i>
+                                            <h6 class="fw-bold mb-0 text-main">Aadhaar Card - Front Side</h6>
+                                        </div>
+                                        @if($latestBluetick->aadhar_photo_front)
+                                            <a href="{{ asset('storage/' . $latestBluetick->aadhar_photo_front) }}" target="_blank" class="btn-custom btn-custom-light btn-custom-sm py-0 px-2" style="font-size: 11px;">
+                                                <i class="bi bi-box-arrow-up-right"></i> Open High-Res
+                                            </a>
+                                        @endif
+                                    </div>
+                                    <div class="text-center bg-light rounded-3 p-2 overflow-hidden position-relative" style="min-height: 240px; display: flex; align-items: center; justify-content: center;">
+                                        @if($latestBluetick->aadhar_photo_front)
+                                            <img src="{{ asset('storage/' . $latestBluetick->aadhar_photo_front) }}" 
+                                                 alt="Aadhaar Front" 
+                                                 class="img-fluid rounded-2 shadow-sm" 
+                                                 style="max-height: 260px; object-fit: contain; cursor: pointer;"
+                                                 onclick="window.open(this.src, '_blank')">
+                                        @else
+                                            <div class="text-muted p-4">
+                                                <i class="bi bi-file-earmark-x fs-1 d-block mb-1"></i>
+                                                <span>No front photo uploaded</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Back Document Photo -->
+                            <div class="col-12 col-md-6">
+                                <div class="card border rounded-3 p-3 bg-white h-100" style="border: 1px solid rgba(11, 19, 15, 0.08) !important;">
+                                    <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="bi bi-card-image fs-5 text-primary"></i>
+                                            <h6 class="fw-bold mb-0 text-main">Aadhaar Card - Back Side</h6>
+                                        </div>
+                                        @if($latestBluetick->aadhar_photo_back)
+                                            <a href="{{ asset('storage/' . $latestBluetick->aadhar_photo_back) }}" target="_blank" class="btn-custom btn-custom-light btn-custom-sm py-0 px-2" style="font-size: 11px;">
+                                                <i class="bi bi-box-arrow-up-right"></i> Open High-Res
+                                            </a>
+                                        @endif
+                                    </div>
+                                    <div class="text-center bg-light rounded-3 p-2 overflow-hidden position-relative" style="min-height: 240px; display: flex; align-items: center; justify-content: center;">
+                                        @if($latestBluetick->aadhar_photo_back)
+                                            <img src="{{ asset('storage/' . $latestBluetick->aadhar_photo_back) }}" 
+                                                 alt="Aadhaar Back" 
+                                                 class="img-fluid rounded-2 shadow-sm" 
+                                                 style="max-height: 260px; object-fit: contain; cursor: pointer;"
+                                                 onclick="window.open(this.src, '_blank')">
+                                        @else
+                                            <div class="text-muted p-4">
+                                                <i class="bi bi-file-earmark-x fs-1 d-block mb-1"></i>
+                                                <span>No back photo uploaded</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Complete Blue Tick Submission History Table -->
+                        <div class="table-card-custom">
+                            <div class="table-header-control">
+                                <h6 class="fw-bold mb-0 text-main">All Verification Submissions History</h6>
+                                <span class="badge-table success">{{ $candidate->blueticks->count() }} Records</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table-custom">
+                                    <thead>
+                                        <tr>
+                                            <th class="ps-4" style="width: 50px;">#</th>
+                                            <th>Submission Date</th>
+                                            <th>Aadhaar Number</th>
+                                            <th>Front Photo</th>
+                                            <th>Back Photo</th>
+                                            <th>Status</th>
+                                            <th>Admin Remarks</th>
+                                            <th class="text-end pe-4">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($candidate->blueticks as $item)
+                                            <tr>
+                                                <td class="ps-4 text-muted fw-bold font-monospace">{{ $loop->iteration }}</td>
+                                                <td>
+                                                    <div class="fw-semibold text-main">{{ $item->created_at ? $item->created_at->format('d M, Y') : 'N/A' }}</div>
+                                                    <div class="table-user-sub font-monospace">{{ $item->created_at ? $item->created_at->format('h:i A') : '' }}</div>
+                                                </td>
+                                                <td>
+                                                    <span class="font-monospace fw-bold text-main">
+                                                        {{ $item->aadhar_number ? (substr($item->aadhar_number, 0, 4) . ' ' . substr($item->aadhar_number, 4, 4) . ' ' . substr($item->aadhar_number, 8)) : 'N/A' }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    @if($item->aadhar_photo_front)
+                                                        <a href="{{ asset('storage/' . $item->aadhar_photo_front) }}" target="_blank" class="table-btn-action" title="View Front Photo">
+                                                            <i class="bi bi-file-earmark-image text-primary"></i>
+                                                        </a>
+                                                    @else
+                                                        <span class="table-user-sub">N/A</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if($item->aadhar_photo_back)
+                                                        <a href="{{ asset('storage/' . $item->aadhar_photo_back) }}" target="_blank" class="table-btn-action" title="View Back Photo">
+                                                            <i class="bi bi-file-earmark-image text-primary"></i>
+                                                        </a>
+                                                    @else
+                                                        <span class="table-user-sub">N/A</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if((int)$item->is_accept === 1)
+                                                        <span class="badge-table success">Approved</span>
+                                                    @elseif((int)$item->is_accept === 0)
+                                                        <span class="badge-table pending">Pending</span>
+                                                    @else
+                                                        <span class="badge-table failed">Rejected</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <div class="table-user-sub">{{ $item->admin_notes ?? 'None' }}</div>
+                                                </td>
+                                                <td class="text-end pe-4">
+                                                    <div class="d-inline-flex gap-1">
+                                                        @if((int)$item->is_accept !== 1)
+                                                            <button class="btn-custom btn-custom-primary btn-custom-sm py-0 px-2" 
+                                                                    onclick="handleApproveBluetick({{ $item->id }})" 
+                                                                    title="Approve verification"
+                                                                    style="font-size: 11px;">
+                                                                <i class="bi bi-check-lg"></i> Approve
+                                                            </button>
+                                                        @endif
+                                                        @if((int)$item->is_accept !== 2)
+                                                            <button class="btn-custom btn-custom-danger btn-custom-sm py-0 px-2" 
+                                                                    onclick="openRejectBluetickModal({{ $item->id }})" 
+                                                                    title="Reject verification"
+                                                                    style="font-size: 11px;">
+                                                                <i class="bi bi-x-lg"></i> Reject
+                                                            </button>
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="8" class="text-center py-4 text-muted">
+                                                    No verification history.
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    @else
+                        <!-- No Submissions Found -->
+                        <div class="p-5 text-center bg-white rounded-4 border" style="border: 1px solid rgba(11, 19, 15, 0.08) !important;">
+                            <div class="rounded-circle d-inline-flex align-items-center justify-content-center p-3 mb-3" style="background-color: rgba(245, 158, 11, 0.1); color: #d97706;">
+                                <i class="bi bi-patch-question-fill fs-1"></i>
+                            </div>
+                            <h5 class="fw-bold text-main mb-1">No Blue Tick Verification Submitted</h5>
+                            <p class="table-user-sub mb-3" style="max-width: 480px; margin: 0 auto;">
+                                This candidate has not yet uploaded their Government Aadhaar Card for Genuine Blue Tick Identity Verification.
+                            </p>
+                            @if($candidate->aadhar_number)
+                                <div class="badge bg-light text-dark border font-monospace px-3 py-1.5">
+                                    Profile Aadhaar Number: {{ $candidate->aadhar_number }}
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+
+                <!-- ========================================================
+                     TAB PANE 3: MATCHED / ACCEPTED CONNECTIONS
                      ======================================================== -->
                 <div class="tab-pane fade" id="pane-matched-connections" role="tabpanel">
                     <div class="table-card-custom">
@@ -679,7 +956,7 @@
                 </div>
 
                 <!-- ========================================================
-                     TAB PANE 3: SENT CONNECTION REQUESTS
+                     TAB PANE 4: SENT CONNECTION REQUESTS
                      ======================================================== -->
                 <div class="tab-pane fade" id="pane-sent-connections" role="tabpanel">
                     <div class="table-card-custom">
@@ -784,7 +1061,7 @@
                 </div>
 
                 <!-- ========================================================
-                     TAB PANE 4: RECEIVED CONNECTION REQUESTS
+                     TAB PANE 5: RECEIVED CONNECTION REQUESTS
                      ======================================================== -->
                 <div class="tab-pane fade" id="pane-received-connections" role="tabpanel">
                     <div class="table-card-custom">
@@ -889,7 +1166,7 @@
                 </div>
 
                 <!-- ========================================================
-                     TAB PANE 5: SENT WHATSAPP REQUESTS
+                     TAB PANE 6: SENT WHATSAPP REQUESTS
                      ======================================================== -->
                 <div class="tab-pane fade" id="pane-sent-whatsapp" role="tabpanel">
                     <div class="table-card-custom">
@@ -982,7 +1259,7 @@
                 </div>
 
                 <!-- ========================================================
-                     TAB PANE 6: RECEIVED WHATSAPP REQUESTS
+                     TAB PANE 7: RECEIVED WHATSAPP REQUESTS
                      ======================================================== -->
                 <div class="tab-pane fade" id="pane-received-whatsapp" role="tabpanel">
                     <div class="table-card-custom">
@@ -1075,7 +1352,7 @@
                 </div>
 
                 <!-- ========================================================
-                     TAB PANE 7: PHOTO GALLERY
+                     TAB PANE 8: PHOTO GALLERY
                      ======================================================== -->
                 <div class="tab-pane fade" id="pane-photos" role="tabpanel">
                     <div class="d-flex align-items-center justify-content-between mb-3">
@@ -1115,7 +1392,7 @@
                 </div>
 
                 <!-- ========================================================
-                     TAB PANE 8: WALLET LEDGER
+                     TAB PANE 9: WALLET LEDGER
                      ======================================================== -->
                 <div class="tab-pane fade" id="pane-wallet" role="tabpanel">
                     <div class="table-card-custom">
@@ -1197,4 +1474,110 @@
     <!-- END: Tabbed Content Container -->
 
 </div>
+
+<!-- Modal: Reject Blue Tick Verification -->
+<div class="modal fade" id="rejectBluetickModal" tabindex="-1" aria-labelledby="rejectBluetickModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-danger text-white border-0 px-4 py-3">
+                <h5 class="modal-title fw-bold" id="rejectBluetickModalLabel">
+                    <i class="bi bi-x-circle me-1"></i> Reject Blue Tick Verification
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="rejectBluetickForm" onsubmit="submitRejectBluetick(event)">
+                <div class="modal-body p-4">
+                    <input type="hidden" id="rejectBluetickId" name="bluetick_id" value="">
+                    <div class="mb-3">
+                        <label for="rejectReason" class="form-label fw-bold text-main small">Rejection Reason <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="rejectReason" name="reason" rows="3" required placeholder="e.g., Aadhaar photo is blurry, name does not match profile, incomplete documents..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0 px-4 py-3">
+                    <button type="button" class="btn-custom btn-custom-light btn-custom-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-custom btn-custom-danger btn-custom-sm" id="btnSubmitReject">
+                        Confirm Rejection
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    function handleApproveBluetick(id) {
+        if (!confirm('Are you sure you want to approve this Aadhaar document and grant Genuine Blue Tick Verification badge to {{ $candidate->first_name }}?')) {
+            return;
+        }
+
+        fetch(`{{ url('/admin/bluetick') }}/${id}/approve`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ notes: 'Approved by Administrator' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message || 'Blue Tick approved successfully!');
+                window.location.reload();
+            } else {
+                alert(data.message || 'Failed to approve Blue Tick.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('An unexpected error occurred while processing approval.');
+        });
+    }
+
+    function openRejectBluetickModal(id) {
+        document.getElementById('rejectBluetickId').value = id;
+        document.getElementById('rejectReason').value = '';
+        const modal = new bootstrap.Modal(document.getElementById('rejectBluetickModal'));
+        modal.show();
+    }
+
+    function submitRejectBluetick(e) {
+        e.preventDefault();
+        const id = document.getElementById('rejectBluetickId').value;
+        const reason = document.getElementById('rejectReason').value;
+        const btn = document.getElementById('btnSubmitReject');
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Processing...';
+
+        fetch(`{{ url('/admin/bluetick') }}/${id}/reject`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ reason: reason })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message || 'Blue Tick rejected.');
+                window.location.reload();
+            } else {
+                alert(data.message || 'Failed to reject Blue Tick.');
+                btn.disabled = false;
+                btn.textContent = 'Confirm Rejection';
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('An unexpected error occurred while processing rejection.');
+            btn.disabled = false;
+            btn.textContent = 'Confirm Rejection';
+        });
+    }
+</script>
+@endpush
 @endsection
