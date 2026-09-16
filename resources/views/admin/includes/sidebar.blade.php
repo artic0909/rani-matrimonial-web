@@ -5,8 +5,8 @@
 <div class="sidebar-wrapper" id="sidebar">
   <!-- Brand Logo / Identity -->
   <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
-    <i class="bi bi-asterisk"></i>
-    <span>Spark Admin</span>
+    <img src="{{ asset('logo.png') }}" class="" alt="" height="60" width="60">
+    <span>Rani Matrimonial</span>
   </a>
 
   <!-- Navigation Menu -->
