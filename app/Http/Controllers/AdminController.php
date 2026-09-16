@@ -205,8 +205,10 @@ class AdminController extends Controller
                 $q->where('first_name', 'LIKE', "%{$search}%")
                   ->orWhere('last_name', 'LIKE', "%{$search}%")
                   ->orWhere('email', 'LIKE', "%{$search}%")
+                  ->orWhere('mobile', 'LIKE', "%{$search}%")
                   ->orWhere('phone', 'LIKE', "%{$search}%")
                   ->orWhere('candidate_code', 'LIKE', "%{$search}%")
+                  ->orWhere('profile_id', 'LIKE', "%{$search}%")
                   ->orWhere('city', 'LIKE', "%{$search}%");
             });
         }
@@ -220,6 +222,119 @@ class AdminController extends Controller
         ];
 
         return view('admin.candidate.index', compact('candidates', 'gender', 'search', 'counts'));
+    }
+
+    /**
+     * Candidate Full Details Page (All Profile fields, Sent/Coming Connections, WhatsApp Requests)
+     */
+    public function candidateDetails($id)
+    {
+        $candidate = Candidate::with([
+            'photos',
+            'wallet.transactions' => function ($q) {
+                $q->latest()->limit(50);
+            },
+            'blueticks',
+            'sentConnectionRequests' => function ($q) {
+                $q->with(['receiver.photos', 'receiver.bluetick'])->latest();
+            },
+            'receivedConnectionRequests' => function ($q) {
+                $q->with(['sender.photos', 'sender.bluetick'])->latest();
+            },
+            'sentWhatsAppRequests' => function ($q) {
+                $q->with(['receiver.photos', 'receiver.bluetick'])->latest();
+            },
+            'receivedWhatsAppRequests' => function ($q) {
+                $q->with(['sender.photos', 'sender.bluetick'])->latest();
+            },
+        ])->findOrFail($id);
+
+        // 1. Matched / Accepted Connection Requests (Mutual Matches)
+        $matchedConnections = collect();
+
+        foreach ($candidate->sentConnectionRequests->where('status', 'accepted') as $req) {
+            if ($req->receiver) {
+                $matchedConnections->push((object)[
+                    'id' => $req->id,
+                    'type' => 'sent',
+                    'type_label' => 'Sent by ' . $candidate->first_name . ' (Accepted)',
+                    'partner' => $req->receiver,
+                    'request' => $req,
+                    'matched_at' => $req->responded_at ?? $req->updated_at ?? $req->created_at,
+                ]);
+            }
+        }
+
+        foreach ($candidate->receivedConnectionRequests->where('status', 'accepted') as $req) {
+            if ($req->sender) {
+                $matchedConnections->push((object)[
+                    'id' => $req->id,
+                    'type' => 'received',
+                    'type_label' => 'Received & Accepted by ' . $candidate->first_name,
+                    'partner' => $req->sender,
+                    'request' => $req,
+                    'matched_at' => $req->responded_at ?? $req->updated_at ?? $req->created_at,
+                ]);
+            }
+        }
+
+        $matchedConnections = $matchedConnections->sortByDesc('matched_at')->values();
+
+        // 2. Matched / Accepted WhatsApp Requests
+        $matchedWhatsApp = collect();
+        foreach ($candidate->sentWhatsAppRequests->where('status', 'accepted') as $wa) {
+            if ($wa->receiver) {
+                $matchedWhatsApp->push((object)[
+                    'id' => $wa->id,
+                    'type' => 'sent',
+                    'type_label' => 'Sent Request (Accepted)',
+                    'partner' => $wa->receiver,
+                    'request' => $wa,
+                    'matched_at' => $wa->responded_at ?? $wa->updated_at ?? $wa->created_at,
+                ]);
+            }
+        }
+
+        foreach ($candidate->receivedWhatsAppRequests->where('status', 'accepted') as $wa) {
+            if ($wa->sender) {
+                $matchedWhatsApp->push((object)[
+                    'id' => $wa->id,
+                    'type' => 'received',
+                    'type_label' => 'Received Request (Accepted)',
+                    'partner' => $wa->sender,
+                    'request' => $wa,
+                    'matched_at' => $wa->responded_at ?? $wa->updated_at ?? $wa->created_at,
+                ]);
+            }
+        }
+        $matchedWhatsApp = $matchedWhatsApp->sortByDesc('matched_at')->values();
+
+        $stats = [
+            'matched_connections_total' => $matchedConnections->count(),
+            'matched_whatsapp_total' => $matchedWhatsApp->count(),
+
+            'sent_connections_total' => $candidate->sentConnectionRequests->count(),
+            'sent_connections_pending' => $candidate->sentConnectionRequests->where('status', 'pending')->count(),
+            'sent_connections_accepted' => $candidate->sentConnectionRequests->where('status', 'accepted')->count(),
+            'sent_connections_declined' => $candidate->sentConnectionRequests->whereIn('status', ['declined', 'rejected', 'cancelled'])->count(),
+
+            'received_connections_total' => $candidate->receivedConnectionRequests->count(),
+            'received_connections_pending' => $candidate->receivedConnectionRequests->where('status', 'pending')->count(),
+            'received_connections_accepted' => $candidate->receivedConnectionRequests->where('status', 'accepted')->count(),
+            'received_connections_declined' => $candidate->receivedConnectionRequests->whereIn('status', ['declined', 'rejected'])->count(),
+
+            'sent_whatsapp_total' => $candidate->sentWhatsAppRequests->count(),
+            'sent_whatsapp_pending' => $candidate->sentWhatsAppRequests->where('status', 'pending')->count(),
+            'sent_whatsapp_accepted' => $candidate->sentWhatsAppRequests->where('status', 'accepted')->count(),
+            'sent_whatsapp_declined' => $candidate->sentWhatsAppRequests->whereIn('status', ['declined', 'rejected'])->count(),
+
+            'received_whatsapp_total' => $candidate->receivedWhatsAppRequests->count(),
+            'received_whatsapp_pending' => $candidate->receivedWhatsAppRequests->where('status', 'pending')->count(),
+            'received_whatsapp_accepted' => $candidate->receivedWhatsAppRequests->where('status', 'accepted')->count(),
+            'received_whatsapp_declined' => $candidate->receivedWhatsAppRequests->whereIn('status', ['declined', 'rejected'])->count(),
+        ];
+
+        return view('admin.candidate.show', compact('candidate', 'stats', 'matchedConnections', 'matchedWhatsApp'));
     }
 
     /**

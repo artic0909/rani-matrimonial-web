@@ -16,6 +16,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Main Modules: Candidates, Transactions, Branches, Blue Ticks
         Route::get('/candidates', [AdminController::class, 'candidates'])->name('candidates.index');
+        Route::get('/candidates/{id}', [AdminController::class, 'candidateDetails'])->name('candidates.show');
         Route::get('/transactions', [AdminController::class, 'transactions'])->name('transactions.index');
         Route::get('/branches', [AdminController::class, 'branches'])->name('branches.index');
         Route::get('/blueticks', [AdminController::class, 'bluetickRequests'])->name('blueticks');

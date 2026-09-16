@@ -114,6 +114,21 @@ class Candidate extends Authenticatable
         return $this->hasMany(ConnectionRequest::class, 'sender_id');
     }
 
+    public function receivedConnectionRequests(): HasMany
+    {
+        return $this->hasMany(ConnectionRequest::class, 'receiver_id');
+    }
+
+    public function sentWhatsAppRequests(): HasMany
+    {
+        return $this->hasMany(WhatsAppChatRequest::class, 'sender_id');
+    }
+
+    public function receivedWhatsAppRequests(): HasMany
+    {
+        return $this->hasMany(WhatsAppChatRequest::class, 'receiver_id');
+    }
+
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class, 'candidate_id')->orderByDesc('id');
@@ -127,6 +142,31 @@ class Candidate extends Authenticatable
     public function blueticks(): HasMany
     {
         return $this->hasMany(Bluetick::class, 'candidate_id')->orderByDesc('id');
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        if (!empty($this->profile_picture)) {
+            if (str_starts_with($this->profile_picture, 'http')) {
+                return $this->profile_picture;
+            }
+            if (str_starts_with($this->profile_picture, 'img/')) {
+                return asset($this->profile_picture);
+            }
+            return asset('storage/' . $this->profile_picture);
+        }
+
+        $photo = $this->photos ? ($this->photos->firstWhere('is_profile_picture', true) ?? $this->photos->first()) : null;
+        if ($photo && !empty($photo->photo_path)) {
+            return asset('storage/' . $photo->photo_path);
+        }
+
+        $defaultImg = strtolower($this->gender ?? '') === 'female' ? 'img/female/correct1.png' : 'img/male/correct1.png';
+        if (file_exists(public_path($defaultImg))) {
+            return asset($defaultImg);
+        }
+
+        return 'https://ui-avatars.com/api/?name=' . urlencode(($this->first_name ?? 'C') . ' ' . ($this->last_name ?? '')) . '&background=0d6efd&color=fff';
     }
 
     public function getIsBluetickVerifiedAttribute(): bool
