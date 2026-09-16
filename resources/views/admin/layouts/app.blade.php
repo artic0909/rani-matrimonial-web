@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>@yield('title', 'Spark Admin - Premium Bootstrap 5 Admin Dashboard Template')</title>
+  <title>@yield('title', 'Rani Matrimonial | Admin Panel')</title>
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="{{ asset('admin/images/favicon.ico') }}">
+  <link rel="icon" type="image/png" href="{{ asset('logo.png') }}">
 
   <!-- Local Third-Party Libraries (100% Offline Compatible) -->
   <link rel="stylesheet" href="{{ asset('admin/libs/bootstrap/css/bootstrap.min.css') }}">

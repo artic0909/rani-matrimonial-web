@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Spark Admin - Dashboard')
+@section('title', 'Rani Matrimonial - Dashboard')
 
 @section('content')
     <div class="page-header">
