@@ -1500,8 +1500,8 @@
                                                     <a href="{{ route('admin.transactions.receipt', $txn->id) }}" 
                                                        target="_blank" 
                                                        class="btn-custom btn-custom-secondary btn-custom-sm py-1 px-2.5 shadow-xs" 
-                                                       title="Download Official PDF Receipt">
-                                                        <i class="bi bi-download"></i> Receipt
+                                                       title="View Official Receipt & Print / Save as PDF">
+                                                        <i class="bi bi-receipt"></i> Receipt
                                                     </a>
                                                 </td>
                                             </tr>

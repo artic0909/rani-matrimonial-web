@@ -406,21 +406,32 @@ class AdminController extends Controller
         $candidate = $transaction->candidate ?? ($transaction->wallet->candidate ?? null);
         $wallet = $transaction->wallet;
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.transaction_receipt', [
-            'candidate' => $candidate,
-            'wallet' => $wallet,
-            'transaction' => $transaction,
-        ]);
+        // If explicit PDF download is requested
+        if ($request->query('download') == '1') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.transaction_receipt', [
+                'candidate' => $candidate,
+                'wallet' => $wallet,
+                'transaction' => $transaction,
+            ]);
+            $pdf->setPaper('a4', 'portrait');
+            $filename = 'Receipt-' . ($transaction->transaction_id ?? $transaction->id) . '.pdf';
+            return $pdf->download($filename);
+        }
 
-        $pdf->setPaper('a4', 'portrait');
-
-        $filename = 'Receipt-' . ($transaction->transaction_id ?? $transaction->id) . '.pdf';
-
-        if ($request->query('view') == '1' || $request->query('preview') == '1') {
+        // If explicit PDF stream is requested
+        if ($request->query('pdf') == '1' || $request->query('stream') == '1') {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.transaction_receipt', [
+                'candidate' => $candidate,
+                'wallet' => $wallet,
+                'transaction' => $transaction,
+            ]);
+            $pdf->setPaper('a4', 'portrait');
+            $filename = 'Receipt-' . ($transaction->transaction_id ?? $transaction->id) . '.pdf';
             return $pdf->stream($filename);
         }
 
-        return $pdf->download($filename);
+        // Default: Render dedicated interactive web receipt view with Print & Save as PDF controls
+        return view('admin.transaction.receipt', compact('candidate', 'wallet', 'transaction'));
     }
 
     /**
