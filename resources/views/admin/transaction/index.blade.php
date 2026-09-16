@@ -115,7 +115,8 @@
                         <th>Amount</th>
                         <th>Description</th>
                         <th>Status</th>
-                        <th class="text-end pe-4" style="width: 140px;">Date & Time</th>
+                        <th>Date & Time</th>
+                        <th class="text-center pe-4" style="width: 120px;">Receipt</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -188,7 +189,7 @@
                                     <span class="badge-table failed">{{ ucfirst($status) }}</span>
                                 @endif
                             </td>
-                            <td class="text-end pe-4">
+                            <td>
                                 <div class="table-user-sub fw-semibold text-main">
                                     {{ $txn->created_at ? $txn->created_at->format('d M, Y') : 'N/A' }}
                                 </div>
@@ -196,10 +197,18 @@
                                     {{ $txn->created_at ? $txn->created_at->format('h:i A') : '' }}
                                 </div>
                             </td>
+                            <td class="text-center pe-4">
+                                <a href="{{ route('admin.transactions.receipt', $txn->id) }}" 
+                                   target="_blank" 
+                                   class="btn-custom btn-custom-secondary btn-custom-sm py-1 px-2.5 shadow-xs" 
+                                   title="Download Official PDF Receipt">
+                                    <i class="bi bi-download"></i> Receipt
+                                </a>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center py-5 text-muted">
+                            <td colspan="9" class="text-center py-5 text-muted">
                                 <i class="bi bi-wallet2 fs-2 d-block mb-2 text-muted-green"></i>
                                 <span class="fw-semibold">No transactions found matching the selected filter.</span>
                             </td>

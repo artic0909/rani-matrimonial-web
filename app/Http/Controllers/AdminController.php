@@ -398,6 +398,32 @@ class AdminController extends Controller
     }
 
     /**
+     * Download or view official transaction PDF receipt for admin
+     */
+    public function downloadTransactionReceipt(Request $request, $id)
+    {
+        $transaction = \App\Models\WalletTransaction::with(['wallet.candidate', 'candidate'])->findOrFail($id);
+        $candidate = $transaction->candidate ?? ($transaction->wallet->candidate ?? null);
+        $wallet = $transaction->wallet;
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.transaction_receipt', [
+            'candidate' => $candidate,
+            'wallet' => $wallet,
+            'transaction' => $transaction,
+        ]);
+
+        $pdf->setPaper('a4', 'portrait');
+
+        $filename = 'Receipt-' . ($transaction->transaction_id ?? $transaction->id) . '.pdf';
+
+        if ($request->query('view') == '1' || $request->query('preview') == '1') {
+            return $pdf->stream($filename);
+        }
+
+        return $pdf->download($filename);
+    }
+
+    /**
      * Branches Page (Navigation Tabs)
      */
     public function branches(Request $request)

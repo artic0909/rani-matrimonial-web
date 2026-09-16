@@ -1463,7 +1463,8 @@
                                         <th>Amount</th>
                                         <th>Title & Details</th>
                                         <th>Status</th>
-                                        <th class="text-end pe-4">Date</th>
+                                        <th>Date</th>
+                                        <th class="text-center pe-4" style="width: 120px;">Receipt</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1492,20 +1493,28 @@
                                                 <td>
                                                     <span class="badge-table success">{{ ucfirst($txn->status ?? 'completed') }}</span>
                                                 </td>
-                                                <td class="text-end pe-4">
+                                                <td>
                                                     <div class="table-user-sub">{{ $txn->created_at ? $txn->created_at->format('d M, Y h:i A') : 'N/A' }}</div>
+                                                </td>
+                                                <td class="text-center pe-4">
+                                                    <a href="{{ route('admin.transactions.receipt', $txn->id) }}" 
+                                                       target="_blank" 
+                                                       class="btn-custom btn-custom-secondary btn-custom-sm py-1 px-2.5 shadow-xs" 
+                                                       title="Download Official PDF Receipt">
+                                                        <i class="bi bi-download"></i> Receipt
+                                                    </a>
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="7" class="text-center py-4 text-muted">
+                                                <td colspan="8" class="text-center py-4 text-muted">
                                                     No transactions recorded on this candidate's wallet.
                                                 </td>
                                             </tr>
                                         @endforelse
                                     @else
                                         <tr>
-                                            <td colspan="7" class="text-center py-4 text-muted">
+                                            <td colspan="8" class="text-center py-4 text-muted">
                                                 No wallet transactions found.
                                             </td>
                                         </tr>

@@ -19,6 +19,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/candidates/{id}', [AdminController::class, 'candidateDetails'])->name('candidates.show');
         Route::post('/candidates/{id}/toggle-status', [AdminController::class, 'toggleCandidateStatus'])->name('candidates.toggle-status');
         Route::get('/transactions', [AdminController::class, 'transactions'])->name('transactions.index');
+        Route::get('/transactions/{id}/receipt', [AdminController::class, 'downloadTransactionReceipt'])->name('transactions.receipt');
         Route::get('/branches', [AdminController::class, 'branches'])->name('branches.index');
         Route::get('/blueticks', [AdminController::class, 'bluetickRequests'])->name('blueticks');
         Route::post('/bluetick/{id}/approve', [AdminController::class, 'approveBluetick'])->name('bluetick.approve');
