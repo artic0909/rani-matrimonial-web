@@ -110,14 +110,8 @@
         <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a></li>
         <li><a class="dropdown-item" href="#"><i class="bi bi-lock"></i> Lock Screen</a></li>
         <li>
-          <hr class="dropdown-divider">
-        </li>
-        <li>
-          <form method="POST" action="{{ route('admin.logout') }}" id="adminLogoutForm" class="d-none">
-            @csrf
-          </form>
-          <a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); document.getElementById('adminLogoutForm').submit();">
-            <i class="bi bi-box-arrow-right"></i> Logout
+          <a class="dropdown-item text-danger" href="{{ route('admin.logout') }}">
+            <i class="bi bi-box-arrow-right me-1"></i> Logout
           </a>
         </li>
       </ul>

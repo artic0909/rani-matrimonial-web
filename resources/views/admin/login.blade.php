@@ -34,6 +34,13 @@
                 <span>Rani Matrimonial</span>
             </a>
 
+            @if (session('success'))
+                <div class="alert alert-success py-2 px-3 mb-3 text-start small">
+                    <i class="bi bi-check-circle-fill me-1"></i>
+                    {{ session('success') }}
+                </div>
+            @endif
+
             @if ($errors->any())
                 <div class="alert alert-danger py-2 px-3 mb-3 text-start small">
                     <i class="bi bi-exclamation-triangle-fill me-1"></i>

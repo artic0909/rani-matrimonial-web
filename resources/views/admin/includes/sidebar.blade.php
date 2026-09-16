@@ -76,13 +76,18 @@
   </div>
 
   <!-- Sidebar Profile Card (Dynamic Footer) -->
-  <div class="sidebar-profile">
-    <img src="{{ asset('admin/images/avatar.png') }}" alt="Administrator" class="sidebar-profile-img"
-      onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop'">
-    <div class="sidebar-profile-info">
-      <div class="sidebar-profile-name">{{ auth('admin')->user()->name ?? 'Administrator' }}</div>
-      <div class="sidebar-profile-email">{{ auth('admin')->user()->email ?? 'admin@email.com' }}</div>
+  <div class="sidebar-profile d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-2 overflow-hidden">
+      <img src="{{ asset('admin/images/avatar.png') }}" alt="Administrator" class="sidebar-profile-img flex-shrink-0"
+        onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop'">
+      <div class="sidebar-profile-info text-truncate">
+        <div class="sidebar-profile-name text-truncate">{{ auth('admin')->user()->name ?? 'Administrator' }}</div>
+        <div class="sidebar-profile-email text-truncate">{{ auth('admin')->user()->email ?? 'admin@rm.com' }}</div>
+      </div>
     </div>
+    <a href="{{ route('admin.logout') }}" class="text-white-50 text-hover-white p-1 ms-2" title="Sign Out" aria-label="Sign Out">
+      <i class="bi bi-box-arrow-right fs-5"></i>
+    </a>
   </div>
 </div>
 <!-- ==========================================
