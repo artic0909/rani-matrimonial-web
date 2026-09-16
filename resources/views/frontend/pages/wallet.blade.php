@@ -26,30 +26,30 @@
         <div class="heart-floating delay-3" style="left: 65%; animation-delay: 3s;"></div>
     </div>
 
-    <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="relative z-10 max-w-6xl mx-auto px-2.5 sm:px-6 lg:px-8">
         
         <!-- Main Card Container -->
-        <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/60 mb-10 overflow-hidden relative z-10">
+        <div class="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl shadow-2xl border border-white/60 mb-10 overflow-hidden relative z-10">
             
             <!-- Royal accent top bar -->
-            <div class="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold opacity-95"></div>
+            <div class="absolute top-0 left-0 w-full h-2 sm:h-2.5 bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold opacity-95"></div>
             
             <!-- Page Header -->
-            <div class="px-6 md:px-10 pt-8 pb-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="px-4 sm:px-6 md:px-10 pt-6 sm:pt-8 pb-4 sm:pb-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-rani-primary to-rani-primary-dark flex items-center justify-center text-rani-gold shadow-md">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                    <div class="flex items-center gap-2.5 sm:gap-3">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-br from-rani-primary to-rani-primary-dark flex items-center justify-center text-rani-gold shadow-md shrink-0">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                         </div>
                         <div>
-                            <h1 class="text-2xl md:text-3xl font-bold font-serif text-rani-primary-dark tracking-wide">My Wallet</h1>
-                            <!-- <p class="text-xs text-gray-500 font-sans mt-0.5">Your exclusive matrimonial privilege card & digital balance</p> -->
+                            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold font-serif text-rani-primary-dark tracking-wide">My Wallet</h1>
+                            <p class="text-[11px] sm:text-xs text-gray-500 font-sans mt-0.5">Your exclusive matrimonial privilege card & digital balance</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="p-6 md:p-10 space-y-10">
+            <div class="p-3.5 sm:p-6 md:p-10 space-y-6 sm:space-y-10">
 
                 <!-- ================= SECTION 1: CREDIT CARD & QUICK STATS ================= -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -269,36 +269,36 @@
                     <!-- Tabs Header & Search Filter -->
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 pb-4">
                         
-                        <!-- Navigation Tabs (All, Credit, Debit) -->
-                        <div class="flex items-center space-x-2 bg-gray-100/90 p-1.5 rounded-2xl border border-gray-200/70 self-start">
+                        <!-- Navigation Tabs (All, Credit, Debit) - Hidden on mobile screens since subheader navigation handles it -->
+                        <div class="hidden md:flex items-center space-x-1.5 sm:space-x-2 bg-gray-100/90 p-1 sm:p-1.5 rounded-2xl border border-gray-200/70 overflow-x-auto max-w-full [&::-webkit-scrollbar]:hidden">
                             <!-- Tab: All -->
                             <button type="button" 
-                                    @click="activeTab = 'all'" 
+                                    @click="setTab('all')" 
                                     :class="activeTab === 'all' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md font-bold' : 'text-gray-600 hover:text-rani-primary font-medium'"
-                                    class="px-5 py-2 rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+                                    class="px-3 sm:px-5 py-2 rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
                                 <span>All History</span>
-                                <span class="px-2 py-0.2 rounded-full text-[10px]" :class="activeTab === 'all' ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700'" x-text="filteredTransactions.length"></span>
+                                <span class="px-1.5 sm:px-2 py-0.2 rounded-full text-[10px]" :class="activeTab === 'all' ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700'" x-text="filteredTransactions.length"></span>
                             </button>
 
                             <!-- Tab: Credits -->
                             <button type="button" 
-                                    @click="activeTab = 'credit'" 
+                                    @click="setTab('credit')" 
                                     :class="activeTab === 'credit' ? 'bg-gradient-to-r from-emerald-600 to-teal-700 text-white shadow-md font-bold' : 'text-gray-600 hover:text-emerald-700 font-medium'"
-                                    class="px-5 py-2 rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path></svg>
+                                    class="px-3 sm:px-5 py-2 rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path></svg>
                                 <span>Credits (+)</span>
-                                <span class="px-2 py-0.2 rounded-full text-[10px]" :class="activeTab === 'credit' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800'" x-text="creditCount"></span>
+                                <span class="px-1.5 sm:px-2 py-0.2 rounded-full text-[10px]" :class="activeTab === 'credit' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800'" x-text="creditCount"></span>
                             </button>
 
                             <!-- Tab: Debits -->
                             <button type="button" 
-                                    @click="activeTab = 'debit'" 
+                                    @click="setTab('debit')" 
                                     :class="activeTab === 'debit' ? 'bg-gradient-to-r from-rose-700 to-red-800 text-white shadow-md font-bold' : 'text-gray-600 hover:text-rose-700 font-medium'"
-                                    class="px-5 py-2 rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path></svg>
+                                    class="px-3 sm:px-5 py-2 rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path></svg>
                                 <span>Debits (-)</span>
-                                <span class="px-2 py-0.2 rounded-full text-[10px]" :class="activeTab === 'debit' ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-800'" x-text="debitCount"></span>
+                                <span class="px-1.5 sm:px-2 py-0.2 rounded-full text-[10px]" :class="activeTab === 'debit' ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-800'" x-text="debitCount"></span>
                             </button>
                         </div>
 
@@ -415,20 +415,20 @@
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+         class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs">
         
         <div @click.away="!isProcessingRecharge && (openAddMoneyModal = false)" 
-             class="bg-white rounded-3xl shadow-2xl border border-rani-gold/30 max-w-md w-full p-6 md:p-8 relative overflow-hidden space-y-6">
+             class="bg-white rounded-3xl shadow-2xl border border-rani-gold/30 max-w-md w-full p-5 sm:p-6 md:p-8 relative overflow-y-auto max-h-[92vh] space-y-4 sm:space-y-6">
             
             <!-- Modal Header -->
-            <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+            <div class="flex items-center justify-between pb-3 sm:pb-4 border-b border-gray-100">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rani-primary to-rani-primary-dark text-rani-gold flex items-center justify-center shadow-md">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-rani-primary to-rani-primary-dark text-rani-gold flex items-center justify-center shadow-md shrink-0">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold font-serif text-rani-primary-dark">Add Money to Wallet</h3>
-                        <p class="text-[11px] text-gray-500">Fast & 100% Secure via Razorpay Gateway</p>
+                        <h3 class="text-base sm:text-lg font-bold font-serif text-rani-primary-dark">Add Money to Wallet</h3>
+                        <p class="text-[10px] sm:text-[11px] text-gray-500">Fast & 100% Secure via Razorpay Gateway</p>
                     </div>
                 </div>
                 <button @click="openAddMoneyModal = false" :disabled="isProcessingRecharge" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-30">
@@ -439,11 +439,11 @@
             <!-- Predefined Amount Pills -->
             <div class="space-y-2">
                 <label class="text-xs font-bold text-gray-700 uppercase tracking-wider">Select Amount (INR)</label>
-                <div class="grid grid-cols-4 gap-2">
-                    <button type="button" @click="rechargeAmount = 200" :class="rechargeAmount === 200 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 200</button>
-                    <button type="button" @click="rechargeAmount = 500" :class="rechargeAmount === 500 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 500</button>
-                    <button type="button" @click="rechargeAmount = 1000" :class="rechargeAmount === 1000 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 1,000</button>
-                    <button type="button" @click="rechargeAmount = 2500" :class="rechargeAmount === 2500 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 2,500</button>
+                <div class="grid grid-cols-4 gap-1.5 sm:gap-2">
+                    <button type="button" @click="rechargeAmount = 200" :class="rechargeAmount === 200 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2 sm:py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 200</button>
+                    <button type="button" @click="rechargeAmount = 500" :class="rechargeAmount === 500 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2 sm:py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 500</button>
+                    <button type="button" @click="rechargeAmount = 1000" :class="rechargeAmount === 1000 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2 sm:py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 1,000</button>
+                    <button type="button" @click="rechargeAmount = 2500" :class="rechargeAmount === 2500 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-sm' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-2 sm:py-2.5 rounded-xl border text-xs font-semibold transition-all">₹ 2,500</button>
                 </div>
             </div>
 
@@ -463,7 +463,7 @@
             </div>
 
             <!-- Razorpay Gateway Info Banner -->
-            <div class="p-3.5 rounded-2xl bg-gradient-to-br from-amber-50/70 via-gray-50 to-white border border-amber-200/70 space-y-2">
+            <div class="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-br from-amber-50/70 via-gray-50 to-white border border-amber-200/70 space-y-1.5 sm:space-y-2">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -472,16 +472,16 @@
                     <span class="text-[10px] font-extrabold uppercase tracking-wider bg-rani-gold/20 text-rani-primary-dark px-2 py-0.5 rounded">256-Bit SSL</span>
                 </div>
                 <p class="text-[11px] text-gray-600 leading-relaxed">
-                    Supports <strong>UPI</strong> (Google Pay, PhonePe, Paytm, BHIM), <strong>Credit & Debit Cards</strong> (Visa, MasterCard, RuPay), and <strong>Net Banking</strong> (50+ Banks).
+                    Supports <strong>UPI</strong> (GPay, PhonePe, Paytm), <strong>Cards</strong> (Visa, MC, RuPay), and <strong>Net Banking</strong>.
                 </p>
             </div>
 
             <!-- Action Button -->
-            <div class="pt-2">
+            <div class="pt-1 sm:pt-2">
                 <button type="button" 
                         @click="submitRecharge()" 
                         :disabled="isProcessingRecharge || !rechargeAmount || rechargeAmount <= 0"
-                        class="w-full py-3.5 rounded-xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+                        class="w-full py-3 sm:py-3.5 rounded-xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white font-bold text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50">
                     <span x-show="!isProcessingRecharge" class="flex items-center gap-2">
                         <span>Pay</span>
                         <span x-text="'₹ ' + Number(rechargeAmount || 0).toLocaleString('en-IN')"></span>
@@ -507,18 +507,18 @@
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+         class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs">
         
         <div @click.away="openSpendModal = false" 
-             class="bg-white rounded-3xl shadow-2xl border border-rani-gold/30 max-w-md w-full p-6 md:p-8 relative overflow-hidden space-y-6">
+             class="bg-white rounded-3xl shadow-2xl border border-rani-gold/30 max-w-md w-full p-5 sm:p-6 md:p-8 relative overflow-y-auto max-h-[92vh] space-y-4 sm:space-y-6">
             
-            <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+            <div class="flex items-center justify-between pb-3 sm:pb-4 border-b border-gray-100">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center">
+                    <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold font-serif text-rani-primary-dark">Use Wallet Credits</h3>
+                        <h3 class="text-base sm:text-lg font-bold font-serif text-rani-primary-dark">Use Wallet Credits</h3>
                         <p class="text-xs text-gray-500">Spend balance for matrimonial services</p>
                     </div>
                 </div>
@@ -590,8 +590,13 @@
 <!-- Alpine Wallet Manager JS Component -->
 <script>
 function walletManager(initialData) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlTab = (urlParams.get('tab') || '').toLowerCase();
+    const isRecharge = urlTab === 'recharge' || urlParams.get('action') === 'recharge';
+    const initialTab = (urlTab === 'credit' || urlTab === 'debit') ? urlTab : 'all';
+
     return {
-        activeTab: 'all',
+        activeTab: initialTab,
         searchQuery: '',
         avlBalance: initialData.avlBalance,
         totalCredit: initialData.totalCredit,
@@ -599,10 +604,19 @@ function walletManager(initialData) {
         transactions: initialData.transactions || [],
 
         // Add Money Modal State
-        openAddMoneyModal: false,
+        openAddMoneyModal: isRecharge,
         rechargeAmount: 500,
         paymentMethod: 'UPI / QR (Instant)',
         isProcessingRecharge: false,
+
+        setTab(tabName) {
+            this.activeTab = tabName;
+            try {
+                const url = new URL(window.location.href);
+                url.searchParams.set('tab', tabName);
+                window.history.replaceState({}, '', url);
+            } catch (e) {}
+        },
 
         // Spend Modal State
         openSpendModal: false,
