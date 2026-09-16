@@ -78,10 +78,9 @@
                 <thead>
                     <tr>
                         <th class="ps-4" style="width: 60px;">#</th>
-                        <th>{{ $config['singular'] }} Name</th>
-                        @if(!empty($config['has_parent']))
-                            <th>{{ $config['parent_label'] ?? 'Parent' }}</th>
-                        @endif
+                        <th>City Name</th>
+                        <th>State</th>
+                        <th>Country</th>
                         <th>Created Date</th>
                         <th class="text-center pe-4" style="width: 130px;">Actions</th>
                     </tr>
@@ -89,9 +88,9 @@
                 <tbody id="master-table-body">
                     <!-- Dynamic Records Rendered via JS -->
                     <tr>
-                        <td colspan="{{ !empty($config['has_parent']) ? '5' : '4' }}" class="text-center py-5 text-muted">
+                        <td colspan="6" class="text-center py-5 text-muted">
                             <div class="spinner-border spinner-border-sm me-2" style="color: var(--brand-forest-medium);" role="status"></div>
-                            <span class="fw-semibold">Loading {{ strtolower($config['plural']) }}...</span>
+                            <span class="fw-semibold">Loading cities...</span>
                         </td>
                     </tr>
                 </tbody>
@@ -300,9 +299,9 @@
         const tbody = document.getElementById('master-table-body');
         tbody.innerHTML = `
             <tr>
-                <td colspan="${MASTER_CONFIG.hasParent ? 5 : 4}" class="text-center py-5 text-muted">
+                <td colspan="6" class="text-center py-5 text-muted">
                     <div class="spinner-border spinner-border-sm me-2" style="color: var(--brand-forest-medium);" role="status"></div>
-                    <span class="fw-semibold">Loading ${MASTER_CONFIG.plural.toLowerCase()}...</span>
+                    <span class="fw-semibold">Loading cities...</span>
                 </td>
             </tr>
         `;
@@ -341,7 +340,7 @@
             console.error(err);
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="${MASTER_CONFIG.hasParent ? 5 : 4}" class="text-center py-5 text-danger">
+                    <td colspan="6" class="text-center py-5 text-danger">
                         <i class="bi bi-exclamation-triangle fs-4 d-block mb-2"></i>
                         <span>Failed to load data. <a href="javascript:void(0)" onclick="fetchMasterData(state.page)" class="text-success text-decoration-underline fw-semibold">Try again</a></span>
                     </td>
@@ -359,9 +358,9 @@
         if (!records || records.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="${MASTER_CONFIG.hasParent ? 5 : 4}" class="text-center py-5 text-muted">
+                    <td colspan="6" class="text-center py-5 text-muted">
                         <i class="bi bi-inbox fs-2 text-muted-green d-block mb-2"></i>
-                        <span class="fw-semibold">No ${MASTER_CONFIG.plural.toLowerCase()} found.</span>
+                        <span class="fw-semibold">No cities found.</span>
                         <div class="small mt-1 text-secondary">Try adjusting your search or filters, or create a new entry.</div>
                     </td>
                 </tr>
@@ -376,18 +375,8 @@
             const continuousIndex = startIndex + idx + 1;
             const createdDate = row.created_at ? new Date(row.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A';
             
-            let parentCell = '';
-            if (MASTER_CONFIG.hasParent) {
-                let parentName = 'None';
-                if (MASTER_CONFIG.type === 'states' && row.country) {
-                    parentName = row.country.name;
-                } else if (MASTER_CONFIG.type === 'cities' && row.state) {
-                    parentName = `${row.state.name}${row.state.country ? ` <span class="text-muted small">(${row.state.country.name})</span>` : ''}`;
-                } else if (MASTER_CONFIG.type === 'communities' && row.religion) {
-                    parentName = row.religion.name;
-                }
-                parentCell = `<td><span class="badge bg-light text-dark border px-2.5 py-1 rounded-pill">${escapeHtml(parentName)}</span></td>`;
-            }
+            const stateName = row.state ? row.state.name : 'N/A';
+            const countryName = (row.state && row.state.country) ? row.state.country.name : 'N/A';
 
             html += `
                 <tr id="row-${row.id}">
@@ -395,7 +384,12 @@
                     <td>
                         <span class="fw-bold text-main">${escapeHtml(row.name)}</span>
                     </td>
-                    ${parentCell}
+                    <td>
+                        <span class="badge bg-light text-dark border px-2.5 py-1 rounded-pill fw-semibold">${escapeHtml(stateName)}</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border px-2.5 py-1 rounded-pill"><i class="bi bi-globe-americas me-1" style="color: var(--brand-forest-medium);"></i>${escapeHtml(countryName)}</span>
+                    </td>
                     <td>
                         <div class="table-user-sub"><i class="bi bi-clock me-1"></i>${createdDate}</div>
                     </td>
@@ -403,13 +397,13 @@
                         <div class="d-flex align-items-center justify-content-center gap-1.5">
                             <button type="button" 
                                     class="table-btn-action" 
-                                    title="Edit ${MASTER_CONFIG.singular}" 
+                                    title="Edit City" 
                                     onclick="openEditModal(${row.id})">
                                 <i class="bi bi-pencil-square"></i>
                             </button>
                             <button type="button" 
                                     class="table-btn-action text-danger" 
-                                    title="Delete ${MASTER_CONFIG.singular}" 
+                                    title="Delete City" 
                                     onclick="confirmDelete(${row.id}, '${escapeHtml(row.name)}')">
                                 <i class="bi bi-trash"></i>
                             </button>

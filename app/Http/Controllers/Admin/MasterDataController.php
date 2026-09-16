@@ -227,6 +227,12 @@ class MasterDataController extends Controller
                         $pq->where('name', 'LIKE', "%{$search}%");
                     });
                 }
+
+                if ($config['type'] === 'cities') {
+                    $q->orWhereHas('state.country', function ($cq) use ($search) {
+                        $cq->where('name', 'LIKE', "%{$search}%");
+                    });
+                }
             });
         }
 
