@@ -244,103 +244,125 @@
     <!-- START: Tabbed Content Container (Highly Polished & Responsive) -->
     <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden" style="border: 1px solid rgba(11, 19, 15, 0.06) !important;">
         
-        <!-- START: Responsive Custom Horizontal Scroll Tabs Header -->
-        <div class="candidate-tabs-bar p-2 bg-light border-bottom">
-            <ul class="nav nav-pills d-flex flex-nowrap overflow-x-auto gap-2 align-items-center mb-0 px-2 py-1" 
-                id="candidateShowTabs" 
-                role="tablist" 
-                style="scrollbar-width: none; -ms-overflow-style: none;">
+        <!-- START: Responsive Custom Horizontal Scroll Tabs Header with Arrow Controls -->
+        <div class="candidate-tabs-bar p-2 bg-light border-bottom position-relative">
+            <div class="candidate-tabs-wrapper d-flex align-items-center position-relative">
                 
-                <!-- Tab 1: Complete Profile Details -->
-                <li class="nav-item flex-shrink-0" role="presentation">
-                    <button class="nav-link active custom-tab-btn" 
-                            id="tab-profile-details" data-bs-toggle="tab" data-bs-target="#pane-profile-details" type="button" role="tab">
-                        <i class="bi bi-person-lines-fill"></i>
-                        <span>Profile Details</span>
-                    </button>
-                </li>
+                <!-- Left Scroll Arrow Button -->
+                <button type="button" 
+                        class="tab-scroll-btn tab-scroll-left btn-custom btn-custom-light p-0 flex-shrink-0 shadow-xs" 
+                        id="btnScrollTabsLeft" 
+                        onclick="scrollCandidateTabs('left')" 
+                        title="Scroll Tabs Left">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
 
-                <!-- Tab 2: Blue Tick & KYC -->
-                <li class="nav-item flex-shrink-0" role="presentation">
-                    <button class="nav-link custom-tab-btn" 
-                            id="tab-bluetick" data-bs-toggle="tab" data-bs-target="#pane-bluetick" type="button" role="tab">
-                        <i class="bi bi-patch-check-fill text-warning"></i>
-                        <span>Blue Tick & KYC</span>
-                        <span class="badge rounded-pill ms-1 tab-badge">{{ $candidate->blueticks->count() }}</span>
-                    </button>
-                </li>
+                <!-- Scrollable Tabs List -->
+                <ul class="nav nav-pills d-flex flex-nowrap overflow-x-auto gap-2 align-items-center mb-0 px-2 py-1 flex-grow-1" 
+                    id="candidateShowTabs" 
+                    role="tablist">
+                    
+                    <!-- Tab 1: Complete Profile Details -->
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link active custom-tab-btn" 
+                                id="tab-profile-details" data-bs-toggle="tab" data-bs-target="#pane-profile-details" type="button" role="tab">
+                            <i class="bi bi-person-lines-fill"></i>
+                            <span>Profile Details</span>
+                        </button>
+                    </li>
 
-                <!-- Tab 3: Matched / Accepted Connections -->
-                <li class="nav-item flex-shrink-0" role="presentation">
-                    <button class="nav-link custom-tab-btn" 
-                            id="tab-matched-connections" data-bs-toggle="tab" data-bs-target="#pane-matched-connections" type="button" role="tab">
-                        <i class="bi bi-heart-fill text-danger"></i>
-                        <span>Matched (Accepted)</span>
-                        <span class="badge rounded-pill ms-1 tab-badge bg-success text-white">{{ $stats['matched_connections_total'] }}</span>
-                    </button>
-                </li>
+                    <!-- Tab 2: Blue Tick & KYC -->
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link custom-tab-btn" 
+                                id="tab-bluetick" data-bs-toggle="tab" data-bs-target="#pane-bluetick" type="button" role="tab">
+                            <i class="bi bi-patch-check-fill text-warning"></i>
+                            <span>Blue Tick & KYC</span>
+                            <span class="badge rounded-pill ms-1 tab-badge">{{ $candidate->blueticks->count() }}</span>
+                        </button>
+                    </li>
 
-                <!-- Tab 4: Sent Connection Requests -->
-                <li class="nav-item flex-shrink-0" role="presentation">
-                    <button class="nav-link custom-tab-btn" 
-                            id="tab-sent-connections" data-bs-toggle="tab" data-bs-target="#pane-sent-connections" type="button" role="tab">
-                        <i class="bi bi-send-fill"></i>
-                        <span>Sent Requests</span>
-                        <span class="badge rounded-pill ms-1 tab-badge">{{ $stats['sent_connections_total'] }}</span>
-                    </button>
-                </li>
+                    <!-- Tab 3: Matched / Accepted Connections -->
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link custom-tab-btn" 
+                                id="tab-matched-connections" data-bs-toggle="tab" data-bs-target="#pane-matched-connections" type="button" role="tab">
+                            <i class="bi bi-heart-fill text-danger"></i>
+                            <span>Matched (Accepted)</span>
+                            <span class="badge rounded-pill ms-1 tab-badge bg-success text-white">{{ $stats['matched_connections_total'] }}</span>
+                        </button>
+                    </li>
 
-                <!-- Tab 5: Received Connection Requests -->
-                <li class="nav-item flex-shrink-0" role="presentation">
-                    <button class="nav-link custom-tab-btn" 
-                            id="tab-received-connections" data-bs-toggle="tab" data-bs-target="#pane-received-connections" type="button" role="tab">
-                        <i class="bi bi-inbox-fill text-info"></i>
-                        <span>Received Requests</span>
-                        <span class="badge rounded-pill ms-1 tab-badge">{{ $stats['received_connections_total'] }}</span>
-                    </button>
-                </li>
+                    <!-- Tab 4: Sent Connection Requests -->
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link custom-tab-btn" 
+                                id="tab-sent-connections" data-bs-toggle="tab" data-bs-target="#pane-sent-connections" type="button" role="tab">
+                            <i class="bi bi-send-fill"></i>
+                            <span>Sent Requests</span>
+                            <span class="badge rounded-pill ms-1 tab-badge">{{ $stats['sent_connections_total'] }}</span>
+                        </button>
+                    </li>
 
-                <!-- Tab 6: Sent WhatsApp Requests -->
-                <li class="nav-item flex-shrink-0" role="presentation">
-                    <button class="nav-link custom-tab-btn" 
-                            id="tab-sent-whatsapp" data-bs-toggle="tab" data-bs-target="#pane-sent-whatsapp" type="button" role="tab">
-                        <i class="bi bi-whatsapp text-success"></i>
-                        <span>Sent WhatsApp</span>
-                        <span class="badge rounded-pill ms-1 tab-badge">{{ $stats['sent_whatsapp_total'] }}</span>
-                    </button>
-                </li>
+                    <!-- Tab 5: Received Connection Requests -->
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link custom-tab-btn" 
+                                id="tab-received-connections" data-bs-toggle="tab" data-bs-target="#pane-received-connections" type="button" role="tab">
+                            <i class="bi bi-inbox-fill text-info"></i>
+                            <span>Received Requests</span>
+                            <span class="badge rounded-pill ms-1 tab-badge">{{ $stats['received_connections_total'] }}</span>
+                        </button>
+                    </li>
 
-                <!-- Tab 7: Received WhatsApp Requests -->
-                <li class="nav-item flex-shrink-0" role="presentation">
-                    <button class="nav-link custom-tab-btn" 
-                            id="tab-received-whatsapp" data-bs-toggle="tab" data-bs-target="#pane-received-whatsapp" type="button" role="tab">
-                        <i class="bi bi-chat-dots-fill text-success"></i>
-                        <span>Received WhatsApp</span>
-                        <span class="badge rounded-pill ms-1 tab-badge">{{ $stats['received_whatsapp_total'] }}</span>
-                    </button>
-                </li>
+                    <!-- Tab 6: Sent WhatsApp Requests -->
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link custom-tab-btn" 
+                                id="tab-sent-whatsapp" data-bs-toggle="tab" data-bs-target="#pane-sent-whatsapp" type="button" role="tab">
+                            <i class="bi bi-whatsapp text-success"></i>
+                            <span>Sent WhatsApp</span>
+                            <span class="badge rounded-pill ms-1 tab-badge">{{ $stats['sent_whatsapp_total'] }}</span>
+                        </button>
+                    </li>
 
-                <!-- Tab 8: Photo Gallery -->
-                <li class="nav-item flex-shrink-0" role="presentation">
-                    <button class="nav-link custom-tab-btn" 
-                            id="tab-photos" data-bs-toggle="tab" data-bs-target="#pane-photos" type="button" role="tab">
-                        <i class="bi bi-images text-warning"></i>
-                        <span>Photos</span>
-                        <span class="badge rounded-pill ms-1 tab-badge">{{ $candidate->photos->count() }}</span>
-                    </button>
-                </li>
+                    <!-- Tab 7: Received WhatsApp Requests -->
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link custom-tab-btn" 
+                                id="tab-received-whatsapp" data-bs-toggle="tab" data-bs-target="#pane-received-whatsapp" type="button" role="tab">
+                            <i class="bi bi-chat-dots-fill text-success"></i>
+                            <span>Received WhatsApp</span>
+                            <span class="badge rounded-pill ms-1 tab-badge">{{ $stats['received_whatsapp_total'] }}</span>
+                        </button>
+                    </li>
 
-                <!-- Tab 9: Wallet Ledger -->
-                <li class="nav-item flex-shrink-0" role="presentation">
-                    <button class="nav-link custom-tab-btn" 
-                            id="tab-wallet" data-bs-toggle="tab" data-bs-target="#pane-wallet" type="button" role="tab">
-                        <i class="bi bi-wallet2 text-secondary"></i>
-                        <span>Wallet</span>
-                    </button>
-                </li>
-            </ul>
+                    <!-- Tab 8: Photo Gallery -->
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link custom-tab-btn" 
+                                id="tab-photos" data-bs-toggle="tab" data-bs-target="#pane-photos" type="button" role="tab">
+                            <i class="bi bi-images text-warning"></i>
+                            <span>Photos</span>
+                            <span class="badge rounded-pill ms-1 tab-badge">{{ $candidate->photos->count() }}</span>
+                        </button>
+                    </li>
+
+                    <!-- Tab 9: Wallet Ledger -->
+                    <li class="nav-item flex-shrink-0" role="presentation">
+                        <button class="nav-link custom-tab-btn" 
+                                id="tab-wallet" data-bs-toggle="tab" data-bs-target="#pane-wallet" type="button" role="tab">
+                            <i class="bi bi-wallet2 text-secondary"></i>
+                            <span>Wallet</span>
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Right Scroll Arrow Button -->
+                <button type="button" 
+                        class="tab-scroll-btn tab-scroll-right btn-custom btn-custom-light p-0 flex-shrink-0 shadow-xs" 
+                        id="btnScrollTabsRight" 
+                        onclick="scrollCandidateTabs('right')" 
+                        title="Scroll Tabs Right">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+
+            </div>
         </div>
-        <!-- END: Responsive Custom Horizontal Scroll Tabs Header -->
+        <!-- END: Responsive Custom Horizontal Scroll Tabs Header with Arrow Controls -->
 
         <div class="card-body p-4">
             <div class="tab-content" id="candidateShowTabsContent">
@@ -1596,10 +1618,97 @@
     background-color: rgba(255, 255, 255, 0.25) !important;
     color: #FFFFFF !important;
 }
+
+/* Tab Scroll Arrows */
+.tab-scroll-btn {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #FFFFFF !important;
+    border: 1px solid rgba(11, 19, 15, 0.12) !important;
+    color: var(--brand-forest-dark) !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 10;
+}
+.tab-scroll-btn:hover {
+    background-color: var(--brand-forest-dark) !important;
+    color: #FFFFFF !important;
+    border-color: var(--brand-forest-dark) !important;
+    transform: scale(1.08);
+}
+.tab-scroll-btn i {
+    font-size: 0.95rem;
+    line-height: 1;
+}
+.candidate-tabs-wrapper {
+    gap: 0.35rem;
+}
+#candidateShowTabs {
+    cursor: grab;
+    user-select: none;
+    scroll-behavior: smooth;
+}
+#candidateShowTabs.is-dragging {
+    cursor: grabbing !important;
+    scroll-behavior: auto !important;
+}
 </style>
 
 @push('scripts')
 <script>
+    function scrollCandidateTabs(direction) {
+        const tabsContainer = document.getElementById('candidateShowTabs');
+        if (!tabsContainer) return;
+        const scrollAmount = direction === 'left' ? -260 : 260;
+        tabsContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabsContainer = document.getElementById('candidateShowTabs');
+        if (!tabsContainer) return;
+
+        // Auto center clicked tab
+        tabsContainer.querySelectorAll('.custom-tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                setTimeout(() => {
+                    this.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                }, 50);
+            });
+        });
+
+        // Mouse Drag to Scroll
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        tabsContainer.addEventListener('mousedown', (e) => {
+            // Ignore click if on button to allow normal clicking
+            isDown = true;
+            tabsContainer.classList.add('is-dragging');
+            startX = e.pageX - tabsContainer.offsetLeft;
+            scrollLeft = tabsContainer.scrollLeft;
+        });
+        tabsContainer.addEventListener('mouseleave', () => {
+            isDown = false;
+            tabsContainer.classList.remove('is-dragging');
+        });
+        tabsContainer.addEventListener('mouseup', () => {
+            isDown = false;
+            tabsContainer.classList.remove('is-dragging');
+        });
+        tabsContainer.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - tabsContainer.offsetLeft;
+            const walk = (x - startX) * 1.5;
+            tabsContainer.scrollLeft = scrollLeft - walk;
+        });
+    });
     function handleToggleCandidateActive(id) {
         const btn = document.getElementById('btnToggleCandidateActive');
         const badge = document.getElementById('badgeCandidateVisibility');
