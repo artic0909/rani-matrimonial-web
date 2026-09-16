@@ -227,53 +227,78 @@
 <script>
 function toggleCandidateRowStatus(id) {
     const btn = document.getElementById(`btn-status-${id}`);
-    const icon = document.getElementById(`icon-status-${id}`);
-    const text = document.getElementById(`text-status-${id}`);
-
     if (!btn) return;
 
     const isCurrentlyActive = btn.classList.contains('success');
-    const promptMsg = isCurrentlyActive 
-        ? 'Deactivate this profile and hide it from public search results?' 
-        : 'Activate this profile and make it publicly visible again?';
+    const title = isCurrentlyActive ? 'Deactivate Profile?' : 'Activate Profile?';
+    const text = isCurrentlyActive 
+        ? 'Deactivate this candidate profile and hide it from all public search & match results? A WhatsApp notification will be sent automatically.' 
+        : 'Activate this candidate profile and make it publicly visible to all members?';
+    const icon = isCurrentlyActive ? 'warning' : 'question';
+    const confirmBtnText = isCurrentlyActive ? '<i class="bi bi-eye-slash-fill me-1"></i> Yes, Deactivate' : '<i class="bi bi-eye-fill me-1"></i> Yes, Activate';
 
-    if (!confirm(promptMsg)) {
-        return;
-    }
+    Swal.fire({
+        title: title,
+        text: text,
+        icon: icon,
+        showCancelButton: true,
+        confirmButtonText: confirmBtnText,
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        focusCancel: true
+    }).then((res) => {
+        if (!res.isConfirmed) return;
 
-    const prevHtml = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width:0.75rem;height:0.75rem;"></span>';
+        const prevHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width:0.75rem;height:0.75rem;"></span>';
 
-    fetch(`{{ url('/admin/candidates') }}/${id}/toggle-status`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        }
-    })
-    .then(r => r.json())
-    .then(data => {
-        btn.disabled = false;
-        if (data.success) {
-            if (data.is_active) {
-                btn.className = 'badge-table success border-0 cursor-pointer shadow-xs d-inline-flex align-items-center gap-1 text-decoration-none';
-                btn.innerHTML = `<i class="bi bi-check-circle-fill" id="icon-status-${id}"></i> <span id="text-status-${id}">Visible (Active)</span>`;
-            } else {
-                btn.className = 'badge-table failed border-0 cursor-pointer shadow-xs d-inline-flex align-items-center gap-1 text-decoration-none';
-                btn.innerHTML = `<i class="bi bi-eye-slash-fill" id="icon-status-${id}"></i> <span id="text-status-${id}">Hidden (Deactive)</span>`;
+        fetch(`{{ url('/admin/candidates') }}/${id}/toggle-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
             }
-        } else {
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.disabled = false;
+            if (data.success) {
+                if (data.is_active) {
+                    btn.className = 'badge-table success border-0 cursor-pointer shadow-xs d-inline-flex align-items-center gap-1 text-decoration-none';
+                    btn.innerHTML = `<i class="bi bi-check-circle-fill" id="icon-status-${id}"></i> <span id="text-status-${id}">Visible (Active)</span>`;
+                } else {
+                    btn.className = 'badge-table failed border-0 cursor-pointer shadow-xs d-inline-flex align-items-center gap-1 text-decoration-none';
+                    btn.innerHTML = `<i class="bi bi-eye-slash-fill" id="icon-status-${id}"></i> <span id="text-status-${id}">Hidden (Deactive)</span>`;
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Status Updated!',
+                    text: data.message,
+                    timer: 1600,
+                    showConfirmButton: false
+                });
+            } else {
+                btn.innerHTML = prevHtml;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'Error updating status'
+                });
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            btn.disabled = false;
             btn.innerHTML = prevHtml;
-            alert(data.message || 'Error updating status');
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        btn.disabled = false;
-        btn.innerHTML = prevHtml;
-        alert('Could not update status');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Could not update status'
+            });
+        });
     });
 }
 </script>

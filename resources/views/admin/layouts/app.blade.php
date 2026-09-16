@@ -71,6 +71,47 @@
       background-color: #072F1F;
       color: #B4F105;
     }
+
+    /* Custom Themed SweetAlert2 for Spark Admin */
+    .swal2-popup {
+      border-radius: 1.25rem !important;
+      font-family: inherit !important;
+      border: 1px solid rgba(11, 19, 15, 0.08) !important;
+      padding: 1.75rem !important;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12) !important;
+    }
+    .swal2-title {
+      font-weight: 700 !important;
+      color: #0B130F !important;
+      font-size: 1.25rem !important;
+    }
+    .swal2-html-container {
+      color: #4F5E56 !important;
+      font-size: 0.925rem !important;
+      line-height: 1.5 !important;
+    }
+    .swal2-confirm {
+      background-color: #0F4A32 !important;
+      border-radius: 50px !important;
+      font-weight: 600 !important;
+      font-size: 0.875rem !important;
+      padding: 0.6rem 1.6rem !important;
+      box-shadow: 0 4px 12px rgba(15, 74, 50, 0.25) !important;
+    }
+    .swal2-confirm:hover {
+      background-color: #072F1F !important;
+    }
+    .swal2-cancel {
+      background-color: #EEF2F0 !important;
+      color: #33413B !important;
+      border-radius: 50px !important;
+      font-weight: 600 !important;
+      font-size: 0.875rem !important;
+      padding: 0.6rem 1.4rem !important;
+    }
+    .swal2-cancel:hover {
+      background-color: #E2E8E5 !important;
+    }
   </style>
 
   @stack('styles')

@@ -55,10 +55,6 @@
                     <span>WhatsApp</span>
                 </a>
             @endif
-            <a href="{{ url('/candidate/' . ($candidate->candidate_code ?? $candidate->id)) }}" target="_blank" class="btn-custom btn-custom-light btn-custom-sm" id="linkPublicProfile">
-                <i class="bi bi-box-arrow-up-right"></i>
-                <span>Public Profile</span>
-            </a>
             <a href="{{ route('admin.candidates.index') }}" class="btn-custom btn-custom-light btn-custom-sm">
                 <i class="bi bi-arrow-left"></i>
                 <span>Candidates List</span>
@@ -1606,90 +1602,139 @@
 <script>
     function handleToggleCandidateActive(id) {
         const btn = document.getElementById('btnToggleCandidateActive');
-        const icon = document.getElementById('iconToggleCandidateActive');
-        const text = document.getElementById('textToggleCandidateActive');
         const badge = document.getElementById('badgeCandidateVisibility');
-        const iconBadge = document.getElementById('iconCandidateVisibility');
-        const textBadge = document.getElementById('textCandidateVisibility');
 
         const isCurrentlyActive = btn.classList.contains('btn-custom-outline-danger');
-        const actionText = isCurrentlyActive ? 'deactivate this profile and hide it from all public search & match results' : 'activate this profile and make it publicly visible again';
+        
+        const title = isCurrentlyActive ? 'Deactivate Profile?' : 'Activate Profile?';
+        const text = isCurrentlyActive 
+            ? 'Are you sure you want to deactivate this profile and hide it from all public search & match results? A WhatsApp notification will be sent automatically.' 
+            : 'Are you sure you want to activate this profile and make it publicly visible to all members?';
+        const icon = isCurrentlyActive ? 'warning' : 'question';
+        const confirmBtnText = isCurrentlyActive ? '<i class="bi bi-eye-slash-fill me-1"></i> Yes, Deactivate' : '<i class="bi bi-eye-fill me-1"></i> Yes, Activate';
 
-        if (!confirm(`Are you sure you want to ${actionText}?`)) {
-            return;
-        }
+        Swal.fire({
+            title: title,
+            text: text,
+            icon: icon,
+            showCancelButton: true,
+            confirmButtonText: confirmBtnText,
+            cancelButtonText: 'Cancel',
+            reverseButtons: true,
+            focusCancel: true
+        }).then((result) => {
+            if (!result.isConfirmed) return;
 
-        btn.disabled = true;
-        const originalHtml = btn.innerHTML;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Updating...';
+            btn.disabled = true;
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Updating...';
 
-        fetch(`{{ url('/admin/candidates') }}/${id}/toggle-status`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            btn.disabled = false;
-            if (data.success) {
-                if (data.is_active) {
-                    // Became Active
-                    btn.className = 'btn-custom btn-custom-outline-danger btn-custom-sm shadow-xs';
-                    btn.innerHTML = '<i class="bi bi-eye-slash-fill" id="iconToggleCandidateActive"></i> <span id="textToggleCandidateActive">Deactivate Profile (Hide Publicly)</span>';
-                    
-                    badge.className = 'badge-table success';
-                    badge.innerHTML = '<i class="bi bi-check-circle-fill"></i> Publicly Visible (Active)';
-                } else {
-                    // Became Deactivated
-                    btn.className = 'btn-custom btn-custom-secondary btn-custom-sm shadow-xs';
-                    btn.innerHTML = '<i class="bi bi-eye-fill" id="iconToggleCandidateActive"></i> <span id="textToggleCandidateActive">Activate Profile (Make Visible)</span>';
-                    
-                    badge.className = 'badge-table failed';
-                    badge.innerHTML = '<i class="bi bi-eye-slash-fill"></i> Hidden (Deactivated)';
+            fetch(`{{ url('/admin/candidates') }}/${id}/toggle-status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
                 }
-                alert(data.message || 'Status updated successfully!');
-            } else {
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.disabled = false;
+                if (data.success) {
+                    if (data.is_active) {
+                        // Became Active
+                        btn.className = 'btn-custom btn-custom-outline-danger btn-custom-sm shadow-xs';
+                        btn.innerHTML = '<i class="bi bi-eye-slash-fill" id="iconToggleCandidateActive"></i> <span id="textToggleCandidateActive">Deactivate Profile (Hide Publicly)</span>';
+                        
+                        badge.className = 'badge-table success';
+                        badge.innerHTML = '<i class="bi bi-check-circle-fill"></i> Publicly Visible (Active)';
+                    } else {
+                        // Became Deactivated
+                        btn.className = 'btn-custom btn-custom-secondary btn-custom-sm shadow-xs';
+                        btn.innerHTML = '<i class="bi bi-eye-fill" id="iconToggleCandidateActive"></i> <span id="textToggleCandidateActive">Activate Profile (Make Visible)</span>';
+                        
+                        badge.className = 'badge-table failed';
+                        badge.innerHTML = '<i class="bi bi-eye-slash-fill"></i> Hidden (Deactivated)';
+                    }
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Status Updated!',
+                        text: data.message || 'Profile visibility status has been updated successfully.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    btn.innerHTML = originalHtml;
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update Failed',
+                        text: data.message || 'Failed to update candidate status.'
+                    });
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                btn.disabled = false;
                 btn.innerHTML = originalHtml;
-                alert(data.message || 'Failed to update status.');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            btn.disabled = false;
-            btn.innerHTML = originalHtml;
-            alert('An unexpected error occurred while toggling status.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An unexpected error occurred while toggling status.'
+                });
+            });
         });
     }
 
     function handleApproveBluetick(id) {
-        if (!confirm('Are you sure you want to approve this Aadhaar document and grant Genuine Blue Tick Verification badge to {{ $candidate->first_name }}?')) {
-            return;
-        }
+        Swal.fire({
+            title: 'Approve Aadhaar KYC?',
+            text: 'Are you sure you want to approve this Aadhaar document and grant Genuine Blue Tick Verification badge to {{ $candidate->first_name }}?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '<i class="bi bi-patch-check-fill me-1"></i> Approve & Verify',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true
+        }).then((result) => {
+            if (!result.isConfirmed) return;
 
-        fetch(`{{ url('/admin/bluetick') }}/${id}/approve`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ notes: 'Approved by Administrator' })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.message || 'Blue Tick approved successfully!');
-                window.location.reload();
-            } else {
-                alert(data.message || 'Failed to approve Blue Tick.');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert('An unexpected error occurred while processing approval.');
+            fetch(`{{ url('/admin/bluetick') }}/${id}/approve`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ notes: 'Approved by Administrator' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Verified!',
+                        text: data.message || 'Blue Tick approved successfully!',
+                        timer: 1600,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Approval Failed',
+                        text: data.message || 'Failed to approve Blue Tick.'
+                    });
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An unexpected error occurred while processing approval.'
+                });
+            });
         });
     }
 
@@ -1721,19 +1766,34 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert(data.message || 'Blue Tick rejected.');
-                window.location.reload();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Rejected',
+                    text: data.message || 'Blue Tick verification request was rejected.',
+                    timer: 1600,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.reload();
+                });
             } else {
-                alert(data.message || 'Failed to reject Blue Tick.');
                 btn.disabled = false;
                 btn.textContent = 'Confirm Rejection';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Rejection Failed',
+                    text: data.message || 'Failed to reject Blue Tick.'
+                });
             }
         })
         .catch(err => {
             console.error(err);
-            alert('An unexpected error occurred while processing rejection.');
             btn.disabled = false;
             btn.textContent = 'Confirm Rejection';
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An unexpected error occurred while processing rejection.'
+            });
         });
     }
 </script>
