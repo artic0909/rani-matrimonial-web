@@ -13,13 +13,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Protected Admin Routes (Requires Admin Authentication)
     Route::middleware('auth:admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-        Route::get('/tables-basic', fn() => view('admin.tables-basic'))->name('tables.basic');
-        Route::get('/ui-forms', fn() => view('admin.ui-forms'))->name('ui.forms');
-        Route::get('/ui-buttons', fn() => view('admin.ui-buttons'))->name('ui.buttons');
-        Route::get('/page-blank', fn() => view('admin.page-blank'))->name('page.blank');
-        Route::get('/page-404', fn() => view('admin.page-404'))->name('page.404');
 
-        // Blue Tick Verification Features
+        // Main Modules: Candidates, Transactions, Branches, Blue Ticks
+        Route::get('/candidates', [AdminController::class, 'candidates'])->name('candidates.index');
+        Route::get('/transactions', [AdminController::class, 'transactions'])->name('transactions.index');
+        Route::get('/branches', [AdminController::class, 'branches'])->name('branches.index');
         Route::get('/blueticks', [AdminController::class, 'bluetickRequests'])->name('blueticks');
         Route::post('/bluetick/{id}/approve', [AdminController::class, 'approveBluetick'])->name('bluetick.approve');
         Route::post('/bluetick/{id}/reject', [AdminController::class, 'rejectBluetick'])->name('bluetick.reject');
@@ -33,5 +31,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::put('/{type}/{id}', [MasterDataController::class, 'update'])->name('update');
             Route::delete('/{type}/{id}', [MasterDataController::class, 'destroy'])->name('destroy');
         });
+
+        // Template Pages
+        Route::get('/tables-basic', fn() => view('admin.tables-basic'))->name('tables.basic');
+        Route::get('/ui-forms', fn() => view('admin.ui-forms'))->name('ui.forms');
+        Route::get('/ui-buttons', fn() => view('admin.ui-buttons'))->name('ui.buttons');
+        Route::get('/page-blank', fn() => view('admin.page-blank'))->name('page.blank');
+        Route::get('/page-404', fn() => view('admin.page-404'))->name('page.404');
     });
 });

@@ -185,4 +185,87 @@ class AdminController extends Controller
             'message' => "Blue Tick verification rejected for {$candidate->first_name}.",
         ]);
     }
+
+    /**
+     * Candidate Management (All, Male, Female with Search & Pagination)
+     */
+    public function candidates(Request $request)
+    {
+        $gender = strtolower($request->query('gender', 'all'));
+        $search = trim($request->query('search', ''));
+
+        $query = Candidate::with(['photos'])->latest();
+
+        if (in_array($gender, ['male', 'female'])) {
+            $query->where('gender', $gender);
+        }
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'LIKE', "%{$search}%")
+                  ->orWhere('last_name', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%")
+                  ->orWhere('phone', 'LIKE', "%{$search}%")
+                  ->orWhere('candidate_code', 'LIKE', "%{$search}%")
+                  ->orWhere('city', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $candidates = $query->paginate(15)->withQueryString();
+
+        $counts = [
+            'all' => Candidate::count(),
+            'male' => Candidate::where('gender', 'male')->count(),
+            'female' => Candidate::where('gender', 'female')->count(),
+        ];
+
+        return view('admin.candidate.index', compact('candidates', 'gender', 'search', 'counts'));
+    }
+
+    /**
+     * Wallet Transactions Ledger (Credit, Debit with Search & Summary)
+     */
+    public function transactions(Request $request)
+    {
+        $type = strtolower($request->query('type', 'all'));
+        $search = trim($request->query('search', ''));
+
+        $query = \App\Models\WalletTransaction::with(['wallet.candidate', 'candidate'])->latest();
+
+        if (in_array($type, ['credit', 'debit'])) {
+            $query->where('type', $type);
+        }
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('transaction_id', 'LIKE', "%{$search}%")
+                  ->orWhere('title', 'LIKE', "%{$search}%")
+                  ->orWhere('description', 'LIKE', "%{$search}%")
+                  ->orWhereHas('wallet.candidate', function ($cq) use ($search) {
+                      $cq->where('first_name', 'LIKE', "%{$search}%")
+                         ->orWhere('last_name', 'LIKE', "%{$search}%")
+                         ->orWhere('candidate_code', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+
+        $transactions = $query->paginate(15)->withQueryString();
+
+        $stats = [
+            'total_count' => \App\Models\WalletTransaction::count(),
+            'total_credits' => (float) \App\Models\WalletTransaction::where('type', 'credit')->where('status', 'completed')->sum('amount'),
+            'total_debits' => (float) \App\Models\WalletTransaction::where('type', 'debit')->where('status', 'completed')->sum('amount'),
+        ];
+
+        return view('admin.transaction.index', compact('transactions', 'type', 'search', 'stats'));
+    }
+
+    /**
+     * Branches Page (Navigation Tabs)
+     */
+    public function branches(Request $request)
+    {
+        $activeTab = $request->query('tab', 'overview');
+        return view('admin.branch.index', compact('activeTab'));
+    }
 }

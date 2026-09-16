@@ -22,6 +22,24 @@
           </a>
         </li>
         <li class="sidebar-menu-item">
+          <a href="{{ route('admin.candidates.index') }}" class="sidebar-menu-link {{ request()->routeIs('admin.candidates*') ? 'active' : '' }}" id="menu-candidates" title="Candidates">
+            <i class="bi bi-people-fill"></i>
+            <span>Candidates</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="{{ route('admin.transactions.index') }}" class="sidebar-menu-link {{ request()->routeIs('admin.transactions*') ? 'active' : '' }}" id="menu-transactions" title="Transactions">
+            <i class="bi bi-wallet2"></i>
+            <span>Transactions</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="{{ route('admin.branches.index') }}" class="sidebar-menu-link {{ request()->routeIs('admin.branches*') ? 'active' : '' }}" id="menu-branches" title="Branches">
+            <i class="bi bi-buildings"></i>
+            <span>Branches</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
           <a href="{{ route('admin.blueticks') }}" class="sidebar-menu-link {{ request()->routeIs('admin.blueticks*') ? 'active' : '' }}" id="menu-blueticks" title="Blue Tick Requests">
             <i class="bi bi-patch-check-fill text-warning"></i>
             <span>Blue Tick Requests</span>
