@@ -38,11 +38,163 @@ class WalletController extends Controller
             'candidate',
             'wallet',
             'totalCredit',
+            'totalDebit'
+        ));
+    }
+
+    /**
+     * Display candidate's All Transactions Statement Page
+     */
+    public function allView(Request $request)
+    {
+        /** @var Candidate $candidate */
+        $candidate = Auth::user();
+        $wallet = $candidate->getOrCreateWallet();
+
+        $totalCredit = (float) $wallet->transactions()
+            ->where('type', 'credit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $totalDebit = (float) $wallet->transactions()
+            ->where('type', 'debit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $query = $wallet->transactions()->orderByDesc('id');
+
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('transaction_id', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%")
+                  ->orWhere('payment_method', 'like', "%{$search}%");
+            });
+        }
+
+        $allTransactions = $query->paginate(15)->withQueryString();
+
+        return view('frontend.pages.wallet_all', compact(
+            'candidate',
+            'wallet',
+            'totalCredit',
             'totalDebit',
-            'allTransactions',
-            'creditTransactions',
+            'allTransactions'
+        ));
+    }
+
+    /**
+     * Display candidate's Credit / Deposits Page
+     */
+    public function creditView(Request $request)
+    {
+        /** @var Candidate $candidate */
+        $candidate = Auth::user();
+        $wallet = $candidate->getOrCreateWallet();
+
+        $totalCredit = (float) $wallet->transactions()
+            ->where('type', 'credit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $totalDebit = (float) $wallet->transactions()
+            ->where('type', 'debit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $query = $wallet->transactions()->where('type', 'credit')->orderByDesc('id');
+
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('transaction_id', 'like', "%{$search}%")
+                  ->orWhere('payment_method', 'like', "%{$search}%");
+            });
+        }
+
+        $creditTransactions = $query->paginate(15)->withQueryString();
+
+        return view('frontend.pages.wallet_credit', compact(
+            'candidate',
+            'wallet',
+            'totalCredit',
+            'totalDebit',
+            'creditTransactions'
+        ));
+    }
+
+    /**
+     * Display candidate's Debit / Spends Page
+     */
+    public function debitView(Request $request)
+    {
+        /** @var Candidate $candidate */
+        $candidate = Auth::user();
+        $wallet = $candidate->getOrCreateWallet();
+
+        $totalCredit = (float) $wallet->transactions()
+            ->where('type', 'credit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $totalDebit = (float) $wallet->transactions()
+            ->where('type', 'debit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $query = $wallet->transactions()->where('type', 'debit')->orderByDesc('id');
+
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('transaction_id', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%");
+            });
+        }
+
+        $debitTransactions = $query->paginate(15)->withQueryString();
+
+        return view('frontend.pages.wallet_debit', compact(
+            'candidate',
+            'wallet',
+            'totalCredit',
+            'totalDebit',
             'debitTransactions'
         ));
+    }
+
+    /**
+     * Download or view official transaction PDF receipt
+     */
+    public function downloadReceipt(Request $request, $id)
+    {
+        /** @var Candidate $candidate */
+        $candidate = Auth::user();
+        $wallet = $candidate->getOrCreateWallet();
+
+        $transaction = $wallet->transactions()->where('id', $id)->firstOrFail();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.transaction_receipt', [
+            'candidate' => $candidate,
+            'wallet' => $wallet,
+            'transaction' => $transaction,
+        ]);
+
+        $pdf->setPaper('a4', 'portrait');
+
+        $filename = 'Receipt-' . ($transaction->transaction_id ?? $transaction->id) . '.pdf';
+
+        if ($request->query('view') == '1' || $request->query('preview') == '1') {
+            return $pdf->stream($filename);
+        }
+
+        return $pdf->download($filename);
     }
 
     /**

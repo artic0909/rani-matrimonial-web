@@ -6,8 +6,7 @@
 <div class="relative pt-6 pb-20" x-data="walletManager({
     avlBalance: {{ (float) $wallet->avl_balance }},
     totalCredit: {{ (float) $totalCredit }},
-    totalDebit: {{ (float) $totalDebit }},
-    transactions: @js($allTransactions)
+    totalDebit: {{ (float) $totalDebit }}
 })">
     <!-- Background Image -->
     <div class="fixed inset-0 z-0 bg-cover bg-top bg-no-repeat" style="background-image: url('{{ asset('img/hero.png') }}');"></div>
@@ -220,12 +219,12 @@
 
                 </div>
 
-                <!-- ================= SECTION 2: TOTAL STATS COUNTERS ================= -->
-                <div>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <!-- ================= SECTION 2: TOTAL STATS COUNTERS & STATEMENTS ================= -->
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
                         
                         <!-- Card 1: Available Balance -->
-                        <div class="p-5 rounded-2xl bg-gradient-to-br from-amber-50/80 to-white border border-amber-200/80 shadow-sm flex items-center gap-4 transition-all hover:shadow-md">
+                        <div class="p-5 rounded-2xl bg-gradient-to-br from-amber-50/80 to-white border border-amber-200/80 shadow-sm flex items-center gap-4 transition-all">
                             <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-rani-gold to-yellow-500 text-rani-dark flex items-center justify-center shadow-md shrink-0">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             </div>
@@ -236,168 +235,69 @@
                             </div>
                         </div>
 
-                        <!-- Card 2: Total Credit (Green/Upward) -->
-                        <div class="p-5 rounded-2xl bg-gradient-to-br from-emerald-50/80 to-white border border-emerald-200/80 shadow-sm flex items-center gap-4 transition-all hover:shadow-md">
-                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-md shrink-0">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 11l5-5m0 0l5 5m-5-5v12"></path></svg>
+                        <!-- Card 2: Total Credit (Links to Credit Page) -->
+                        <a href="{{ route('wallet.credit') }}" class="p-5 rounded-2xl bg-gradient-to-br from-emerald-50/80 to-white border border-emerald-200/80 shadow-sm flex items-center justify-between transition-all hover:shadow-md hover:border-emerald-300 group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-md shrink-0">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 11l5-5m0 0l5 5m-5-5v12"></path></svg>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-1.5">
+                                        <p class="text-xs font-semibold text-emerald-700 uppercase tracking-wider">Total Credits (+)</p>
+                                        <span class="text-xs text-emerald-600 font-bold group-hover:translate-x-1 transition-transform">→</span>
+                                    </div>
+                                    <h3 class="text-xl md:text-2xl font-bold font-serif text-emerald-700" x-text="'+ ' + formatCurrency(totalCredit)"></h3>
+                                    <p class="text-[11px] text-emerald-600/80 font-sans font-medium">View deposit statements</p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-xs font-semibold text-emerald-700 uppercase tracking-wider">Total Credits (+)</p>
-                                <h3 class="text-xl md:text-2xl font-bold font-serif text-emerald-700" x-text="'+ ' + formatCurrency(totalCredit)"></h3>
-                                <p class="text-[11px] text-gray-400 font-sans">Total money credited</p>
-                            </div>
-                        </div>
+                        </a>
 
-                        <!-- Card 3: Total Debit (Ruby/Downward) -->
-                        <div class="p-5 rounded-2xl bg-gradient-to-br from-rose-50/80 to-white border border-rose-200/80 shadow-sm flex items-center gap-4 transition-all hover:shadow-md">
-                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-600 to-red-700 text-white flex items-center justify-center shadow-md shrink-0">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path></svg>
+                        <!-- Card 3: Total Debit (Links to Debit Page) -->
+                        <a href="{{ route('wallet.debit') }}" class="p-5 rounded-2xl bg-gradient-to-br from-rose-50/80 to-white border border-rose-200/80 shadow-sm flex items-center justify-between transition-all hover:shadow-md hover:border-rose-300 group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-600 to-red-700 text-white flex items-center justify-center shadow-md shrink-0">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path></svg>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-1.5">
+                                        <p class="text-xs font-semibold text-rose-700 uppercase tracking-wider">Total Debits (-)</p>
+                                        <span class="text-xs text-rose-600 font-bold group-hover:translate-x-1 transition-transform">→</span>
+                                    </div>
+                                    <h3 class="text-xl md:text-2xl font-bold font-serif text-rose-700" x-text="'- ' + formatCurrency(totalDebit)"></h3>
+                                    <p class="text-[11px] text-rose-600/80 font-sans font-medium">View service expenses</p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-xs font-semibold text-rose-700 uppercase tracking-wider">Total Debits (-)</p>
-                                <h3 class="text-xl md:text-2xl font-bold font-serif text-rose-700" x-text="'- ' + formatCurrency(totalDebit)"></h3>
-                                <p class="text-[11px] text-gray-400 font-sans">Total spent on services</p>
-                            </div>
-                        </div>
+                        </a>
 
                     </div>
-                </div>
 
-                <!-- ================= SECTION 3: TRANSACTION TABS & LIST ================= -->
-                <div class="space-y-6 pt-4">
-                    
-                    <!-- Tabs Header & Search Filter -->
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 pb-4">
-                        
-                        <!-- Navigation Tabs (All, Credit, Debit) - Hidden on mobile screens since subheader navigation handles it -->
-                        <div class="hidden md:flex items-center space-x-1.5 sm:space-x-2 bg-gray-100/90 p-1 sm:p-1.5 rounded-2xl border border-gray-200/70 overflow-x-auto max-w-full [&::-webkit-scrollbar]:hidden">
-                            <!-- Tab: All -->
-                            <button type="button" 
-                                    @click="setTab('all')" 
-                                    :class="activeTab === 'all' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-md font-bold' : 'text-gray-600 hover:text-rani-primary font-medium'"
-                                    class="px-3 sm:px-5 py-2 rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
-                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+                    <!-- Quick Statement Navigation Banner -->
+                    <div class="mt-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-gray-50 via-amber-50/30 to-gray-50 border border-gray-200/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 text-center sm:text-left">
+                            <div class="w-9 h-9 rounded-xl bg-rani-gold/20 text-rani-primary-dark flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-xs sm:text-sm font-bold text-gray-800">Looking for Transaction Invoices & Receipts?</h4>
+                                <p class="text-[11px] text-gray-500">Download official tax invoices and review your audit statement</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 flex-wrap justify-center">
+                            <a href="{{ route('wallet.all') }}" class="px-3.5 py-2 rounded-xl bg-white hover:bg-rani-primary hover:text-white text-gray-700 text-xs font-bold border border-gray-200 shadow-xs transition-all flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
                                 <span>All History</span>
-                                <span class="px-1.5 sm:px-2 py-0.2 rounded-full text-[10px]" :class="activeTab === 'all' ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700'" x-text="filteredTransactions.length"></span>
-                            </button>
-
-                            <!-- Tab: Credits -->
-                            <button type="button" 
-                                    @click="setTab('credit')" 
-                                    :class="activeTab === 'credit' ? 'bg-gradient-to-r from-emerald-600 to-teal-700 text-white shadow-md font-bold' : 'text-gray-600 hover:text-emerald-700 font-medium'"
-                                    class="px-3 sm:px-5 py-2 rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
-                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path></svg>
-                                <span>Credits (+)</span>
-                                <span class="px-1.5 sm:px-2 py-0.2 rounded-full text-[10px]" :class="activeTab === 'credit' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800'" x-text="creditCount"></span>
-                            </button>
-
-                            <!-- Tab: Debits -->
-                            <button type="button" 
-                                    @click="setTab('debit')" 
-                                    :class="activeTab === 'debit' ? 'bg-gradient-to-r from-rose-700 to-red-800 text-white shadow-md font-bold' : 'text-gray-600 hover:text-rose-700 font-medium'"
-                                    class="px-3 sm:px-5 py-2 rounded-xl text-xs md:text-sm transition-all duration-300 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
-                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path></svg>
-                                <span>Debits (-)</span>
-                                <span class="px-1.5 sm:px-2 py-0.2 rounded-full text-[10px]" :class="activeTab === 'debit' ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-800'" x-text="debitCount"></span>
-                            </button>
+                            </a>
+                            <a href="{{ route('wallet.credit') }}" class="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-800 text-xs font-bold border border-emerald-200 transition-all flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
+                                <span>Credits</span>
+                            </a>
+                            <a href="{{ route('wallet.debit') }}" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-700 hover:text-white text-rose-800 text-xs font-bold border border-rose-200 transition-all flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
+                                <span>Debits</span>
+                            </a>
                         </div>
-
-                        <!-- Search Filter -->
-                        <div class="relative w-full md:w-64">
-                            <input type="text" 
-                                   x-model="searchQuery" 
-                                   placeholder="Search by title, ID..." 
-                                   class="w-full pl-9 pr-4 py-2 text-xs md:text-sm rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-rani-gold focus:border-transparent bg-white shadow-sm">
-                            <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        </div>
-
                     </div>
-
-                    <!-- Transactions Feed / Table -->
-                    <div class="overflow-hidden rounded-2xl border border-gray-200/80 shadow-sm bg-white">
-                        
-                        <!-- Desktop Header -->
-                        <div class="hidden md:grid grid-cols-12 gap-4 px-6 py-3.5 bg-gray-50/90 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                            <div class="col-span-5">Transaction Details</div>
-                            <div class="col-span-2 text-center">Category</div>
-                            <div class="col-span-2 text-center">Payment Method</div>
-                            <div class="col-span-3 text-right">Amount & Status</div>
-                        </div>
-
-                        <!-- Transactions List -->
-                        <div class="divide-y divide-gray-100">
-                            <template x-for="txn in displayedTransactions" :key="txn.id">
-                                <div class="p-4 md:px-6 md:py-4 transition-colors hover:bg-gray-50/80 flex flex-col md:grid md:grid-cols-12 md:gap-4 items-start md:items-center">
-                                    
-                                    <!-- Col 1: Icon, Title, Transaction ID, Date -->
-                                    <div class="col-span-5 flex items-center gap-3.5 w-full">
-                                        <!-- Type Icon Circle -->
-                                        <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-xs"
-                                             :class="txn.type === 'credit' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-rose-100 text-rose-700 border border-rose-200'">
-                                            <template x-if="txn.type === 'credit'">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 11l5-5m0 0l5 5m-5-5v12"></path></svg>
-                                            </template>
-                                            <template x-if="txn.type === 'debit'">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path></svg>
-                                            </template>
-                                        </div>
-
-                                        <div class="min-w-0 flex-1">
-                                            <h4 class="text-sm font-bold text-gray-800 truncate" x-text="txn.title"></h4>
-                                            <p class="text-xs text-gray-500 truncate" x-show="txn.description" x-text="txn.description"></p>
-                                            <div class="flex items-center gap-2 mt-0.5">
-                                                <span class="font-mono text-[11px] text-gray-400 font-medium" x-text="txn.transaction_id"></span>
-                                                <span class="text-gray-300">•</span>
-                                                <span class="text-[11px] text-gray-400" x-text="formatDate(txn.created_at || txn.created_at_formatted)"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Col 2: Category Badge -->
-                                    <div class="col-span-2 text-left md:text-center mt-2 md:mt-0">
-                                        <span class="inline-block px-2.5 py-1 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 border border-gray-200/80" x-text="txn.category || 'General'"></span>
-                                    </div>
-
-                                    <!-- Col 3: Payment Method -->
-                                    <div class="col-span-2 text-left md:text-center mt-1 md:mt-0">
-                                        <span class="text-xs font-medium text-gray-600 flex items-center md:justify-center gap-1">
-                                            <svg class="w-3.5 h-3.5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                                            <span x-text="txn.payment_method || 'Wallet'"></span>
-                                        </span>
-                                    </div>
-
-                                    <!-- Col 4: Amount & Status -->
-                                    <div class="col-span-3 text-left md:text-right mt-3 md:mt-0 w-full md:w-auto flex md:flex-col justify-between md:justify-center items-center md:items-end">
-                                        <div class="text-sm md:text-base font-extrabold font-mono"
-                                             :class="txn.type === 'credit' ? 'text-emerald-600' : 'text-rose-600'"
-                                             x-text="(txn.type === 'credit' ? '+ ' : '- ') + formatCurrency(txn.amount)">
-                                        </div>
-                                        <div class="flex items-center gap-2 mt-0.5">
-                                            <span class="text-[10px] text-gray-400 font-mono" x-text="'Bal: ' + formatCurrency(txn.balance_after)"></span>
-                                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase"
-                                                  :class="txn.status === 'completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'"
-                                                  x-text="txn.status"></span>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </template>
-
-                            <!-- Empty State -->
-                            <div x-show="displayedTransactions.length === 0" class="p-12 text-center space-y-3">
-                                <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto text-gray-400">
-                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                </div>
-                                <h4 class="text-base font-bold text-gray-700 font-serif">No transactions found</h4>
-                                <p class="text-xs text-gray-500 max-w-sm mx-auto">There are no transactions matching your selected tab or search criteria.</p>
-                                <button @click="openAddMoneyModal = true" type="button" class="mt-2 inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-rani-primary text-white text-xs font-bold shadow hover:bg-rani-primary-dark transition-all">
-                                    Recharge Wallet Now
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-
                 </div>
 
             </div>
@@ -593,30 +493,17 @@ function walletManager(initialData) {
     const urlParams = new URLSearchParams(window.location.search);
     const urlTab = (urlParams.get('tab') || '').toLowerCase();
     const isRecharge = urlTab === 'recharge' || urlParams.get('action') === 'recharge';
-    const initialTab = (urlTab === 'credit' || urlTab === 'debit') ? urlTab : 'all';
 
     return {
-        activeTab: initialTab,
-        searchQuery: '',
         avlBalance: initialData.avlBalance,
         totalCredit: initialData.totalCredit,
         totalDebit: initialData.totalDebit,
-        transactions: initialData.transactions || [],
 
         // Add Money Modal State
         openAddMoneyModal: isRecharge,
         rechargeAmount: 500,
         paymentMethod: 'UPI / QR (Instant)',
         isProcessingRecharge: false,
-
-        setTab(tabName) {
-            this.activeTab = tabName;
-            try {
-                const url = new URL(window.location.href);
-                url.searchParams.set('tab', tabName);
-                window.history.replaceState({}, '', url);
-            } catch (e) {}
-        },
 
         // Spend Modal State
         openSpendModal: false,
@@ -627,34 +514,6 @@ function walletManager(initialData) {
             desc: 'Direct phone number and WhatsApp unlock for 1 match'
         },
         isProcessingSpend: false,
-
-        get creditCount() {
-            return this.transactions.filter(t => t.type === 'credit').length;
-        },
-
-        get debitCount() {
-            return this.transactions.filter(t => t.type === 'debit').length;
-        },
-
-        get filteredTransactions() {
-            return this.transactions.filter(t => {
-                if (this.activeTab === 'credit' && t.type !== 'credit') return false;
-                if (this.activeTab === 'debit' && t.type !== 'debit') return false;
-                return true;
-            });
-        },
-
-        get displayedTransactions() {
-            const query = this.searchQuery.toLowerCase().trim();
-            return this.filteredTransactions.filter(t => {
-                if (!query) return true;
-                const matchTitle = (t.title || '').toLowerCase().includes(query);
-                const matchDesc = (t.description || '').toLowerCase().includes(query);
-                const matchTxnId = (t.transaction_id || '').toLowerCase().includes(query);
-                const matchCategory = (t.category || '').toLowerCase().includes(query);
-                return matchTitle || matchDesc || matchTxnId || matchCategory;
-            });
-        },
 
         formatCurrency(num) {
             const val = parseFloat(num || 0);

@@ -60,6 +60,10 @@ Route::middleware('auth')->group(function () {
 
     // Wallet Routes
     Route::get('/wallet', [WalletController::class, 'index'])->name('wallet');
+    Route::get('/wallet/all', [WalletController::class, 'allView'])->name('wallet.all');
+    Route::get('/wallet/credit', [WalletController::class, 'creditView'])->name('wallet.credit');
+    Route::get('/wallet/debit', [WalletController::class, 'debitView'])->name('wallet.debit');
+    Route::get('/wallet/transaction/{id}/receipt', [WalletController::class, 'downloadReceipt'])->name('wallet.transaction.receipt');
     Route::post('/api/wallet/add-money', [WalletController::class, 'addMoney'])->name('wallet.add-money');
     Route::post('/api/wallet/razorpay/create-order', [WalletController::class, 'createRazorpayOrder'])->name('wallet.razorpay.create-order');
     Route::post('/api/wallet/razorpay/verify-payment', [WalletController::class, 'verifyRazorpayPayment'])->name('wallet.razorpay.verify-payment');

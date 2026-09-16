@@ -250,22 +250,25 @@
                 @elseif(request()->routeIs('wallet*'))
                     <!-- Wallet Sub Navigation (Recharge, All, Credit, Debit) -->
                     @php
-                        $currentWalletTab = request()->query('tab', 'all');
+                        $isRechargeActive = request()->routeIs('wallet') && (request()->query('tab') === 'recharge' || (!request()->query('tab') && !request()->routeIs('wallet.all') && !request()->routeIs('wallet.credit') && !request()->routeIs('wallet.debit')));
+                        $isAllActive = request()->routeIs('wallet.all') || (request()->routeIs('wallet') && request()->query('tab') === 'all');
+                        $isCreditActive = request()->routeIs('wallet.credit') || request()->query('tab') === 'credit';
+                        $isDebitActive = request()->routeIs('wallet.debit') || request()->query('tab') === 'debit';
                     @endphp
                     <nav class="flex space-x-2 sm:space-x-3 min-w-full sm:min-w-0">
-                        <a href="{{ route('wallet', ['tab' => 'recharge']) }}" class="{{ $currentWalletTab === 'recharge' ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-sm font-bold border border-rani-gold/40' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
+                        <a href="{{ route('wallet', ['tab' => 'recharge']) }}" class="{{ $isRechargeActive ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-sm font-bold border border-rani-gold/40' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                             <span>Recharge</span>
                         </a>
-                        <a href="{{ route('wallet', ['tab' => 'all']) }}" class="{{ ($currentWalletTab === 'all' || !$currentWalletTab) ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
+                        <a href="{{ route('wallet.all') }}" class="{{ $isAllActive ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
                             <span>All</span>
                         </a>
-                        <a href="{{ route('wallet', ['tab' => 'credit']) }}" class="{{ $currentWalletTab === 'credit' ? 'bg-emerald-600 text-white shadow-sm font-bold' : 'text-gray-600 hover:text-emerald-700 hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
+                        <a href="{{ route('wallet.credit') }}" class="{{ $isCreditActive ? 'bg-emerald-600 text-white shadow-sm font-bold' : 'text-gray-600 hover:text-emerald-700 hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
                             <span>Credit</span>
                         </a>
-                        <a href="{{ route('wallet', ['tab' => 'debit']) }}" class="{{ $currentWalletTab === 'debit' ? 'bg-rose-700 text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rose-700 hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
+                        <a href="{{ route('wallet.debit') }}" class="{{ $isDebitActive ? 'bg-rose-700 text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rose-700 hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
                             <span>Debit</span>
                         </a>
