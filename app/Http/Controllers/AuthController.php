@@ -571,7 +571,7 @@ class AuthController extends Controller
         NotificationService::syncCandidateNotifications($candidate);
 
         // Add verification tip notification if not yet verified
-        if (! $candidate->selfie_verified) {
+        if (! $candidate->is_bluetick_verified) {
             $hasNotif = Notification::where('candidate_id', $candidate->id)
                 ->where('type', 'bluetick_verification_tip')
                 ->exists();
