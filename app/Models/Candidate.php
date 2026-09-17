@@ -186,6 +186,10 @@ class Candidate extends Authenticatable
 
     public function getIsBluetickVerifiedAttribute(): bool
     {
+        if ((bool) ($this->selfie_verified ?? false)) {
+            return true;
+        }
+
         return (bool) ($this->bluetick && (int) $this->bluetick->is_accept === 1);
     }
 

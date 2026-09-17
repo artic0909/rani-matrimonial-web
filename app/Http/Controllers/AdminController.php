@@ -90,8 +90,14 @@ class AdminController extends Controller
         $deactivatedCandidates = Candidate::where('is_active', false)->count();
         $maleCandidates = Candidate::where('gender', 'male')->count();
         $femaleCandidates = Candidate::where('gender', 'female')->count();
-        $verifiedCandidates = Candidate::where('selfie_verified', true)->count();
-        $unverifiedCandidates = Candidate::where('selfie_verified', false)->count();
+        $verifiedCandidates = Candidate::where(function($q) {
+            $q->where('selfie_verified', true)
+              ->orWhereHas('bluetick', fn($bq) => $bq->where('is_accept', 1));
+        })->count();
+        $unverifiedCandidates = Candidate::where(function($q) {
+            $q->where('selfie_verified', false)
+              ->orWhereNull('selfie_verified');
+        })->whereDoesntHave('bluetick', fn($bq) => $bq->where('is_accept', 1))->count();
         $totalBranches = 4; // Regional Franchise Centers
 
         // Percentages (avoid divide by zero)
@@ -366,7 +372,7 @@ class AdminController extends Controller
         $verification = strtolower($request->query('verification', 'all'));
         $search = trim($request->query('search', ''));
 
-        $query = Candidate::with(['photos'])->latest();
+        $query = Candidate::with(['photos', 'bluetick'])->latest();
 
         if (in_array($gender, ['male', 'female'])) {
             $query->where('gender', $gender);
@@ -379,9 +385,15 @@ class AdminController extends Controller
         }
 
         if ($verification === 'verified') {
-            $query->where('selfie_verified', true);
+            $query->where(function ($q) {
+                $q->where('selfie_verified', true)
+                  ->orWhereHas('bluetick', fn($bq) => $bq->where('is_accept', 1));
+            });
         } elseif ($verification === 'unverified') {
-            $query->where('selfie_verified', false);
+            $query->where(function ($q) {
+                $q->where('selfie_verified', false)
+                  ->orWhereNull('selfie_verified');
+            })->whereDoesntHave('bluetick', fn($bq) => $bq->where('is_accept', 1));
         }
 
         if (!empty($search)) {
@@ -405,8 +417,14 @@ class AdminController extends Controller
             'female' => Candidate::where('gender', 'female')->count(),
             'active' => Candidate::where('is_active', true)->count(),
             'deactivated' => Candidate::where('is_active', false)->count(),
-            'verified' => Candidate::where('selfie_verified', true)->count(),
-            'unverified' => Candidate::where('selfie_verified', false)->count(),
+            'verified' => Candidate::where(function($q) {
+                $q->where('selfie_verified', true)
+                  ->orWhereHas('bluetick', fn($bq) => $bq->where('is_accept', 1));
+            })->count(),
+            'unverified' => Candidate::where(function($q) {
+                $q->where('selfie_verified', false)
+                  ->orWhereNull('selfie_verified');
+            })->whereDoesntHave('bluetick', fn($bq) => $bq->where('is_accept', 1))->count(),
         ];
 
         return view('admin.candidate.index', compact('candidates', 'gender', 'status', 'verification', 'search', 'counts'));
