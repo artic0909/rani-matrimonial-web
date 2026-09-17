@@ -16,10 +16,12 @@ class Referral extends Model
         'branch_id',
         'candidate_id',
         'first_wallet_recharge_amount',
+        'first_amount_add_date',
     ];
 
     protected $casts = [
         'first_wallet_recharge_amount' => 'decimal:2',
+        'first_amount_add_date' => 'datetime',
     ];
 
     /**

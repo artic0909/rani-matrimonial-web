@@ -47,7 +47,7 @@ class Wallet extends Model
             $this->avl_balance += $amount;
             $this->save();
 
-            return $this->transactions()->create([
+            $transaction = $this->transactions()->create([
                 'candidate_id' => $this->candidate_id,
                 'transaction_id' => 'TXN-'.strtoupper(Str::random(10)),
                 'type' => 'credit',
@@ -59,6 +59,20 @@ class Wallet extends Model
                 'status' => 'completed',
                 'payment_method' => $paymentMethod,
             ]);
+
+            // Check and update first wallet recharge for candidate referral
+            $referral = Referral::where('candidate_id', $this->candidate_id)
+                ->whereNull('first_amount_add_date')
+                ->first();
+
+            if ($referral) {
+                $referral->update([
+                    'first_wallet_recharge_amount' => $amount,
+                    'first_amount_add_date' => now(),
+                ]);
+            }
+
+            return $transaction;
         });
     }
 

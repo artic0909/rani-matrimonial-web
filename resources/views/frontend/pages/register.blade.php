@@ -735,6 +735,19 @@
                             <svg class="w-6 h-6 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Identity Verified!
                         </div>
+
+                        <!-- Optional Branch Referral Code -->
+                        <div class="mt-6 p-4 bg-white/10 border border-rani-gold/40 rounded-2xl backdrop-blur-sm">
+                            <label class="block text-sm font-semibold text-white mb-1.5">
+                                Referral Code <span class="text-xs text-white/70 font-normal">(Optional)</span>
+                            </label>
+                            <input type="text" 
+                                   x-model="formData.referral_code" 
+                                   placeholder="Enter Branch Code (e.g. BRM001)" 
+                                   class="w-full theme-input py-3 px-4 rounded-xl font-mono uppercase tracking-wider text-base"
+                                   maxlength="30">
+                            <p class="text-xs text-white/60 mt-1.5">If you were assisted or referred by a regional branch center, please enter their branch code.</p>
+                        </div>
                         
                         <div class="mt-8 pt-6 border-t border-white/20">
                             <button type="submit" class="w-full theme-btn text-[#4a0404] font-bold py-4.5 rounded-full text-xl transition-all flex justify-center items-center h-14">
@@ -777,6 +790,7 @@
                 profession: '', designation: '', company_name: '', company_address: '',
                 about_yourself: '',
                 aadhar_number: '',
+                referral_code: '',
                 hobbies: []
             },
             otp: '',

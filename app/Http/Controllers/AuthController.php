@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bluetick;
+use App\Models\Branch;
 use App\Models\Candidate;
 use App\Models\CandidatePhoto;
 use App\Models\ConnectionRequest;
@@ -13,6 +14,7 @@ use App\Models\Hobby;
 use App\Models\Income;
 use App\Models\MaritalStatus;
 use App\Models\Notification;
+use App\Models\Referral;
 use App\Models\Religion;
 use App\Models\Shortlisted;
 use App\Models\Wallet;
@@ -351,11 +353,12 @@ class AuthController extends Controller
 
             'about_yourself' => 'nullable|string',
             'hobbies_interests' => 'nullable|array',
+            'referral_code' => 'nullable|string|max:50',
             'profile_picture' => 'nullable|image|max:15360', // Allow images up to 15MB, compressed on server
             'selfie_image' => 'required|file|mimes:jpeg,png,jpg,webp|max:15360', // Mandatory, compressed on server
         ]);
 
-        $candidateData = $validated;
+        $candidateData = collect($validated)->except(['referral_code'])->toArray();
         if (empty($candidateData['income_type'])) {
             $candidateData['income_type'] = $candidateData['annual_income'];
         }
@@ -389,6 +392,25 @@ class AuthController extends Controller
         }
 
         $candidate = Candidate::create($candidateData);
+
+        // Process Optional Branch Referral Code
+        if ($request->filled('referral_code')) {
+            $rawCode = trim((string) $request->input('referral_code'));
+            $branch = Branch::whereRaw('LOWER(code) = ?', [strtolower($rawCode)])
+                ->orWhere('id', is_numeric($rawCode) ? (int) $rawCode : 0)
+                ->first();
+
+            if ($branch) {
+                Referral::firstOrCreate(
+                    ['candidate_id' => $candidate->id],
+                    [
+                        'branch_id' => $branch->id,
+                        'first_wallet_recharge_amount' => 0.00,
+                        'first_amount_add_date' => null,
+                    ]
+                );
+            }
+        }
 
         // Auto login after registration
         Auth::login($candidate);

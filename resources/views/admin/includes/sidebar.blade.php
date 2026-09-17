@@ -182,8 +182,7 @@
   <!-- Sidebar Profile Card (Dynamic Footer) -->
   <div class="sidebar-profile d-flex align-items-center justify-content-between">
     <a href="{{ route('admin.profile') }}" class="d-flex align-items-center gap-2 overflow-hidden text-decoration-none flex-grow-1" title="View & Edit Profile Settings">
-      <img src="{{ asset('admin/images/avatar.png') }}" alt="Administrator" class="sidebar-profile-img flex-shrink-0"
-        onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop'">
+     
       <div class="sidebar-profile-info text-truncate">
         <div class="sidebar-profile-name text-truncate text-white">{{ auth('admin')->user()->name ?? 'Administrator' }}</div>
         <div class="sidebar-profile-email text-truncate">{{ auth('admin')->user()->email ?? 'admin@rm.com' }}</div>
