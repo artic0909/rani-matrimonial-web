@@ -30,25 +30,43 @@
         
         <!-- START: Header Control & Filters -->
         <div class="table-header-control">
-            <!-- Filter Tabs: All, Male, Female -->
+            <!-- Filter Tabs: All, Male, Female, Active, Deactivated, Verified, Unverified -->
             <div class="d-flex flex-wrap align-items-center gap-2">
                 <a href="{{ route('admin.candidates.index', ['gender' => 'all', 'search' => $search]) }}" 
-                   class="btn-custom btn-custom-sm {{ $gender === 'all' ? 'btn-custom-primary' : 'btn-custom-light' }}">
-                    All Candidates ({{ $counts['all'] ?? 0 }})
+                   class="btn-custom btn-custom-sm {{ ($gender === 'all' && ($status ?? 'all') === 'all' && ($verification ?? 'all') === 'all') ? 'btn-custom-primary' : 'btn-custom-light' }}">
+                    All ({{ $counts['all'] ?? 0 }})
                 </a>
                 <a href="{{ route('admin.candidates.index', ['gender' => 'male', 'search' => $search]) }}" 
                    class="btn-custom btn-custom-sm {{ $gender === 'male' ? 'btn-custom-primary' : 'btn-custom-light' }}">
-                    <i class="bi bi-gender-male"></i> Male / Grooms ({{ $counts['male'] ?? 0 }})
+                    <i class="bi bi-gender-male"></i> Male ({{ $counts['male'] ?? 0 }})
                 </a>
                 <a href="{{ route('admin.candidates.index', ['gender' => 'female', 'search' => $search]) }}" 
                    class="btn-custom btn-custom-sm {{ $gender === 'female' ? 'btn-custom-primary' : 'btn-custom-light' }}">
-                    <i class="bi bi-gender-female"></i> Female / Brides ({{ $counts['female'] ?? 0 }})
+                    <i class="bi bi-gender-female"></i> Female ({{ $counts['female'] ?? 0 }})
+                </a>
+                <a href="{{ route('admin.candidates.index', ['status' => 'active', 'search' => $search]) }}" 
+                   class="btn-custom btn-custom-sm {{ ($status ?? '') === 'active' ? 'btn-custom-primary' : 'btn-custom-light' }}">
+                    <i class="bi bi-check-circle"></i> Active ({{ $counts['active'] ?? 0 }})
+                </a>
+                <a href="{{ route('admin.candidates.index', ['status' => 'deactivated', 'search' => $search]) }}" 
+                   class="btn-custom btn-custom-sm {{ in_array(($status ?? ''), ['deactivated', 'inactive']) ? 'btn-custom-primary' : 'btn-custom-light' }}">
+                    <i class="bi bi-person-x"></i> Deactivated ({{ $counts['deactivated'] ?? 0 }})
+                </a>
+                <a href="{{ route('admin.candidates.index', ['verification' => 'verified', 'search' => $search]) }}" 
+                   class="btn-custom btn-custom-sm {{ ($verification ?? '') === 'verified' ? 'btn-custom-primary' : 'btn-custom-light' }}">
+                    <i class="bi bi-patch-check"></i> Verified ({{ $counts['verified'] ?? 0 }})
+                </a>
+                <a href="{{ route('admin.candidates.index', ['verification' => 'unverified', 'search' => $search]) }}" 
+                   class="btn-custom btn-custom-sm {{ ($verification ?? '') === 'unverified' ? 'btn-custom-primary' : 'btn-custom-light' }}">
+                    <i class="bi bi-shield-exclamation"></i> Unverified ({{ $counts['unverified'] ?? 0 }})
                 </a>
             </div>
 
             <!-- Search Form -->
             <form method="GET" action="{{ route('admin.candidates.index') }}" class="table-search-box m-0">
-                <input type="hidden" name="gender" value="{{ $gender }}">
+                @if($gender !== 'all')<input type="hidden" name="gender" value="{{ $gender }}">@endif
+                @if(($status ?? 'all') !== 'all')<input type="hidden" name="status" value="{{ $status }}">@endif
+                @if(($verification ?? 'all') !== 'all')<input type="hidden" name="verification" value="{{ $verification }}">@endif
                 <i class="bi bi-search table-search-icon"></i>
                 <input type="text" 
                        name="search" 

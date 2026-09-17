@@ -40,19 +40,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // -----------------------------------------------------------------
-    // 2. Revenue Chart (Vertical Bar Chart - Income vs Expenses)
+    // 2. Revenue Chart (Vertical Bar Chart - Income vs Expenses in ₹)
     // -----------------------------------------------------------------
     const revenueChartEl = document.querySelector('#revenue-chart');
     if (revenueChartEl) {
+        const dData = window.dashboardData || {};
+        const revCategories = dData.revenueCategories && dData.revenueCategories.length > 0 
+            ? dData.revenueCategories 
+            : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'];
+        const revIncomeData = dData.revenueCredits && dData.revenueCredits.length > 0 
+            ? dData.revenueCredits 
+            : [0, 0, 0, 0, 0, 0, 0, 0];
+        const revExpensesData = dData.revenueDebits && dData.revenueDebits.length > 0 
+            ? dData.revenueDebits 
+            : [0, 0, 0, 0, 0, 0, 0, 0];
+
         const revenueChartOptions = {
             series: [
                 {
                     name: 'Income',
-                    data: [44, 55, 41, 67, 52, 70, 61, 85]
+                    data: revIncomeData
                 },
                 {
                     name: 'Expenses',
-                    data: [23, 33, 30, 48, 34, 45, 40, 45]
+                    data: revExpensesData
                 }
             ],
             chart: {
@@ -79,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 bar: {
                     horizontal: false,
                     columnWidth: '48%',
-                    borderRadius: 0
+                    borderRadius: 3
                 },
             },
             dataLabels: {
@@ -114,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             },
             xaxis: {
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                categories: revCategories,
                 labels: {
                     style: {
                         colors: '#6C7E75',
@@ -140,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
             tooltip: {
                 y: {
                     formatter: function (val) {
-                        return "$ " + val + ".000";
+                        return "₹ " + Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                     }
                 },
                 theme: 'dark'
@@ -152,18 +163,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // -----------------------------------------------------------------
-    // 3. Total View Performance Chart (Donut Chart)
+    // 3. Total View / Platform Performance Chart (Donut Chart)
     // -----------------------------------------------------------------
     const viewsChartEl = document.querySelector('#views-chart');
     if (viewsChartEl) {
+        const dData = window.dashboardData || {};
+        const donutSeries = dData.donutSeries && dData.donutSeries.length > 0 ? dData.donutSeries : [60, 25, 15];
+        const donutLabels = dData.donutLabels && dData.donutLabels.length > 0 ? dData.donutLabels : ['Active Profiles', 'Blue Tick Verified', 'Match Interactions'];
+        const donutTotalVal = dData.donutTotal !== undefined ? String(dData.donutTotal) : '0';
+        const donutTotalLabel = dData.donutTotalLabel || 'Total Profiles';
+
         const viewsChartOptions = {
-            series: [68, 23, 16], // View Count (68%), Percentage (23%), Sales (16%)
+            series: donutSeries,
             chart: {
                 type: 'donut',
                 height: 250,
                 fontFamily: 'Plus Jakarta Sans, sans-serif'
             },
-            labels: ['View Count', 'Percentage', 'Sales'],
+            labels: donutLabels,
             colors: ['#B4F105', '#051C12', '#F97316'], // Lime, Forest Dark, Orange
             states: {
                 hover: {
@@ -194,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             },
                             value: {
                                 show: true,
-                                fontSize: '26px',
+                                fontSize: '24px',
                                 fontWeight: 800,
                                 color: '#0B130F',
                                 offsetY: 8,
@@ -204,12 +221,12 @@ document.addEventListener('DOMContentLoaded', function () {
                             },
                             total: {
                                 show: true,
-                                label: 'Total Count',
+                                label: donutTotalLabel,
                                 fontSize: '11px',
                                 fontWeight: 500,
                                 color: '#6C7E75',
                                 formatter: function (w) {
-                                    return '565K';
+                                    return donutTotalVal;
                                 }
                             }
                         }
@@ -217,6 +234,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             },
             tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + "%";
+                    }
+                },
                 theme: 'dark'
             }
         };
@@ -226,12 +248,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // -----------------------------------------------------------------
-    // 4. Sparkline Charts (Net Income & Total Return)
+    // 4. Sparkline Charts (Net Income & Total Return in ₹)
     // -----------------------------------------------------------------
+    const dData = window.dashboardData || {};
+    const incomeSparkData = dData.incomeSparkline && dData.incomeSparkline.length > 0 
+        ? dData.incomeSparkline 
+        : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    const returnSparkData = dData.returnSparkline && dData.returnSparkline.length > 0 
+        ? dData.returnSparkline 
+        : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
     const incomeSparkOptions = {
         series: [{
             name: 'Net Income',
-            data: [45, 51, 46, 58, 50, 62, 55, 72, 65, 79, 70, 85]
+            data: incomeSparkData
         }],
         chart: {
             type: 'area',
@@ -258,6 +288,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 show: false
             },
             y: {
+                formatter: function (val) {
+                    return "₹ " + Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                },
                 title: {
                     formatter: function (seriesName) {
                         return '';
@@ -273,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const returnSparkOptions = {
         series: [{
             name: 'Total Return',
-            data: [50, 48, 55, 45, 40, 38, 42, 35, 30, 28, 32, 24]
+            data: returnSparkData
         }],
         chart: {
             type: 'area',
@@ -300,6 +333,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 show: false
             },
             y: {
+                formatter: function (val) {
+                    return "₹ " + Number(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                },
                 title: {
                     formatter: function (seriesName) {
                         return '';
@@ -331,10 +367,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const selectedRangeText = document.querySelector('#selected-date-range');
     
     if (datePickerTrigger && selectedRangeText) {
+        const defaultRange = (dData.dateRange && dData.dateRange.length === 2) 
+            ? dData.dateRange 
+            : [new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), new Date()];
+
         flatpickr(datePickerTrigger, {
             mode: 'range',
             dateFormat: 'Y-m-d',
-            defaultDate: ['2026-01-12', '2026-01-23'],
+            defaultDate: defaultRange,
             onValueUpdate: function (selectedDates, dateStr, instance) {
                 if (selectedDates.length === 2) {
                     const startStr = instance.formatDate(selectedDates[0], 'F j, Y');

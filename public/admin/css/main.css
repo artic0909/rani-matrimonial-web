@@ -3183,5 +3183,95 @@ span.flatpickr-weekday {
     color: var(--brand-lime) !important;
 }
 
+/* ---------------------------------------------------------------------
+   25. Interactive KPA Stat Cards & Clickable Grid
+--------------------------------------------------------------------- */
+.card-clickable {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none !important;
+    color: inherit !important;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    border: 1px solid rgba(11, 19, 15, 0.05);
+}
 
+.card-clickable:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(5, 28, 18, 0.1) !important;
+    border-color: rgba(7, 47, 31, 0.2) !important;
+    color: inherit !important;
+}
 
+.card-clickable:hover .kpa-arrow-icon {
+    transform: translateX(4px);
+    color: var(--brand-forest-medium);
+}
+
+.kpa-card-inner {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.kpa-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
+}
+
+.card-clickable:hover .kpa-icon-box {
+    transform: scale(1.08);
+}
+
+.kpa-stat-title {
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: var(--text-muted-green);
+    margin-bottom: 0.25rem;
+}
+
+.kpa-stat-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.15;
+    margin-bottom: 0.35rem;
+    letter-spacing: -0.02em;
+}
+
+.kpa-stat-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.775rem;
+    color: var(--text-muted-green);
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+    margin-top: auto;
+}
+
+.kpa-arrow-icon {
+    font-size: 0.9rem;
+    color: #94A3B8;
+    transition: all 0.25s ease;
+}
+
+.kpa-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 50rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}

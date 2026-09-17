@@ -84,18 +84,188 @@ class AdminController extends Controller
 
     public function dashboard()
     {
+        // 1. Candidate Platform Counts
         $totalCandidates = Candidate::count();
+        $activeCandidates = Candidate::where('is_active', true)->count();
+        $deactivatedCandidates = Candidate::where('is_active', false)->count();
+        $maleCandidates = Candidate::where('gender', 'male')->count();
+        $femaleCandidates = Candidate::where('gender', 'female')->count();
+        $verifiedCandidates = Candidate::where('selfie_verified', true)->count();
+        $unverifiedCandidates = Candidate::where('selfie_verified', false)->count();
+        $totalBranches = 4; // Regional Franchise Centers
+
+        // Percentages (avoid divide by zero)
+        $activeCandidatesPercent = $totalCandidates > 0 ? (int) round(($activeCandidates / $totalCandidates) * 100) : 0;
+        $deactivatedCandidatesPercent = $totalCandidates > 0 ? (int) round(($deactivatedCandidates / $totalCandidates) * 100) : 0;
+        $maleCandidatesPercent = $totalCandidates > 0 ? (int) round(($maleCandidates / $totalCandidates) * 100) : 0;
+        $femaleCandidatesPercent = $totalCandidates > 0 ? (int) round(($femaleCandidates / $totalCandidates) * 100) : 0;
+        $verifiedCandidatesPercent = $totalCandidates > 0 ? (int) round(($verifiedCandidates / $totalCandidates) * 100) : 0;
+        $unverifiedCandidatesPercent = $totalCandidates > 0 ? (int) round(($unverifiedCandidates / $totalCandidates) * 100) : 0;
+
+        // 2. Verification & Connections
         $pendingBlueTicks = Bluetick::with('candidate')->where('is_accept', 0)->latest()->get();
+        $pendingBlueTicksCount = $pendingBlueTicks->count();
         $approvedBlueTicks = Bluetick::where('is_accept', 1)->count();
         $totalConnections = ConnectionRequest::count();
+        $acceptedConnections = ConnectionRequest::where('status', 'accepted')->count();
+        $acceptedConnectionsPercent = $totalConnections > 0 ? (int) round(($acceptedConnections / $totalConnections) * 100) : 0;
+
+        $totalWhatsAppRequests = \App\Models\WhatsAppChatRequest::count();
+        $acceptedWhatsAppRequests = \App\Models\WhatsAppChatRequest::where('status', 'accepted')->count();
+        $acceptedWhatsAppPercent = $totalWhatsAppRequests > 0 ? (int) round(($acceptedWhatsAppRequests / $totalWhatsAppRequests) * 100) : 0;
+
         $recentRequests = Bluetick::with('candidate')->latest()->take(10)->get();
+
+        // 3. Financial Metrics (Wallets & Transactions in INR ₹)
+        $totalCredits = (float) \App\Models\WalletTransaction::where('type', 'credit')->where('status', 'completed')->sum('amount');
+        $totalDebits = (float) \App\Models\WalletTransaction::where('type', 'debit')->where('status', 'completed')->sum('amount');
+        $netIncome = $totalCredits - $totalDebits;
+
+        // Monthly comparison for Growth %
+        $thisMonthStart = now()->startOfMonth();
+        $lastMonthStart = now()->subMonth()->startOfMonth();
+        $lastMonthEnd = now()->subMonth()->endOfMonth();
+
+        $thisMonthCredits = (float) \App\Models\WalletTransaction::where('type', 'credit')
+            ->where('status', 'completed')
+            ->where('created_at', '>=', $thisMonthStart)
+            ->sum('amount');
+
+        $lastMonthCredits = (float) \App\Models\WalletTransaction::where('type', 'credit')
+            ->where('status', 'completed')
+            ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
+            ->sum('amount');
+
+        if ($lastMonthCredits > 0) {
+            $creditsGrowth = round((($thisMonthCredits - $lastMonthCredits) / $lastMonthCredits) * 100, 1);
+        } elseif ($thisMonthCredits > 0) {
+            $creditsGrowth = 100;
+        } else {
+            $creditsGrowth = 0;
+        }
+
+        $thisMonthDebits = (float) \App\Models\WalletTransaction::where('type', 'debit')
+            ->where('status', 'completed')
+            ->where('created_at', '>=', $thisMonthStart)
+            ->sum('amount');
+
+        $lastMonthDebits = (float) \App\Models\WalletTransaction::where('type', 'debit')
+            ->where('status', 'completed')
+            ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
+            ->sum('amount');
+
+        if ($lastMonthDebits > 0) {
+            $debitsGrowth = round((($thisMonthDebits - $lastMonthDebits) / $lastMonthDebits) * 100, 1);
+        } elseif ($thisMonthDebits > 0) {
+            $debitsGrowth = 100;
+        } else {
+            $debitsGrowth = 0;
+        }
+
+        // 4. Monthly Revenue Bar Chart (Last 8 Months)
+        $revenueCategories = [];
+        $revenueCredits = [];
+        $revenueDebits = [];
+
+        for ($i = 7; $i >= 0; $i--) {
+            $monthDate = now()->subMonths($i);
+            $mStart = $monthDate->copy()->startOfMonth();
+            $mEnd = $monthDate->copy()->endOfMonth();
+
+            $revenueCategories[] = $monthDate->format('M');
+            $revenueCredits[] = (float) \App\Models\WalletTransaction::where('type', 'credit')
+                ->where('status', 'completed')
+                ->whereBetween('created_at', [$mStart, $mEnd])
+                ->sum('amount');
+            $revenueDebits[] = (float) \App\Models\WalletTransaction::where('type', 'debit')
+                ->where('status', 'completed')
+                ->whereBetween('created_at', [$mStart, $mEnd])
+                ->sum('amount');
+        }
+
+        // 5. Sparklines (Last 12 Days)
+        $incomeSparkline = [];
+        $returnSparkline = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $dayDate = now()->subDays($i);
+            $dStart = $dayDate->copy()->startOfDay();
+            $dEnd = $dayDate->copy()->endOfDay();
+
+            $incomeSparkline[] = (float) \App\Models\WalletTransaction::where('type', 'credit')
+                ->where('status', 'completed')
+                ->whereBetween('created_at', [$dStart, $dEnd])
+                ->sum('amount');
+            $returnSparkline[] = (float) \App\Models\WalletTransaction::where('type', 'debit')
+                ->where('status', 'completed')
+                ->whereBetween('created_at', [$dStart, $dEnd])
+                ->sum('amount');
+        }
+
+        // 6. Recent Transactions List (Latest 6)
+        $recentTransactions = \App\Models\WalletTransaction::with(['candidate.photos', 'wallet.candidate'])
+            ->latest()
+            ->take(6)
+            ->get();
+
+        // 7. Donut Chart Data (Candidate Engagement Distribution)
+        $activePercent = $totalCandidates > 0 ? (int) round(($activeCandidates / $totalCandidates) * 100) : 0;
+        $verifiedPercent = $totalCandidates > 0 ? (int) round(($verifiedCandidates / $totalCandidates) * 100) : 0;
+        $interactionsCount = $totalConnections + $totalWhatsAppRequests;
+        $interactionsPercent = $totalCandidates > 0 ? (int) min(100, round(($interactionsCount / $totalCandidates) * 100)) : 0;
+
+        $donutSeries = [
+            $activePercent ?: 60,
+            $verifiedPercent ?: 25,
+            $interactionsPercent ?: 15
+        ];
+        $donutLabels = ['Active Profiles', 'Blue Tick Verified', 'Match Interactions'];
+        $donutTotal = $totalCandidates;
+        $donutTotalLabel = 'Total Profiles';
 
         return view('admin.dashboard', compact(
             'totalCandidates',
+            'activeCandidates',
+            'deactivatedCandidates',
+            'maleCandidates',
+            'femaleCandidates',
+            'verifiedCandidates',
+            'unverifiedCandidates',
+            'totalBranches',
+            'activeCandidatesPercent',
+            'deactivatedCandidatesPercent',
+            'maleCandidatesPercent',
+            'femaleCandidatesPercent',
+            'verifiedCandidatesPercent',
+            'unverifiedCandidatesPercent',
             'pendingBlueTicks',
+            'pendingBlueTicksCount',
             'approvedBlueTicks',
             'totalConnections',
-            'recentRequests'
+            'acceptedConnections',
+            'acceptedConnectionsPercent',
+            'totalWhatsAppRequests',
+            'acceptedWhatsAppRequests',
+            'acceptedWhatsAppPercent',
+            'recentRequests',
+            'totalCredits',
+            'totalDebits',
+            'netIncome',
+            'thisMonthCredits',
+            'lastMonthCredits',
+            'creditsGrowth',
+            'thisMonthDebits',
+            'lastMonthDebits',
+            'debitsGrowth',
+            'revenueCategories',
+            'revenueCredits',
+            'revenueDebits',
+            'incomeSparkline',
+            'returnSparkline',
+            'recentTransactions',
+            'donutSeries',
+            'donutLabels',
+            'donutTotal',
+            'donutTotalLabel'
         ));
     }
 
@@ -187,17 +357,31 @@ class AdminController extends Controller
     }
 
     /**
-     * Candidate Management (All, Male, Female with Search & Pagination)
+     * Candidate Management (All, Male, Female, Active, Deactivated, Verified with Search & Pagination)
      */
     public function candidates(Request $request)
     {
         $gender = strtolower($request->query('gender', 'all'));
+        $status = strtolower($request->query('status', 'all'));
+        $verification = strtolower($request->query('verification', 'all'));
         $search = trim($request->query('search', ''));
 
         $query = Candidate::with(['photos'])->latest();
 
         if (in_array($gender, ['male', 'female'])) {
             $query->where('gender', $gender);
+        }
+
+        if ($status === 'active') {
+            $query->where('is_active', true);
+        } elseif (in_array($status, ['deactivated', 'inactive'])) {
+            $query->where('is_active', false);
+        }
+
+        if ($verification === 'verified') {
+            $query->where('selfie_verified', true);
+        } elseif ($verification === 'unverified') {
+            $query->where('selfie_verified', false);
         }
 
         if (!empty($search)) {
@@ -219,9 +403,13 @@ class AdminController extends Controller
             'all' => Candidate::count(),
             'male' => Candidate::where('gender', 'male')->count(),
             'female' => Candidate::where('gender', 'female')->count(),
+            'active' => Candidate::where('is_active', true)->count(),
+            'deactivated' => Candidate::where('is_active', false)->count(),
+            'verified' => Candidate::where('selfie_verified', true)->count(),
+            'unverified' => Candidate::where('selfie_verified', false)->count(),
         ];
 
-        return view('admin.candidate.index', compact('candidates', 'gender', 'search', 'counts'));
+        return view('admin.candidate.index', compact('candidates', 'gender', 'status', 'verification', 'search', 'counts'));
     }
 
     /**
