@@ -148,6 +148,7 @@
                         <th>Code</th>
                         <th>Branch / Office Name</th>
                         <th>Designation</th>
+                        <th>Referrals</th>
                         <th>Contact Phone</th>
                         <th>Location (City, State)</th>
                         <th>Address</th>
@@ -180,6 +181,14 @@
                                 <span class="badge bg-light text-dark border px-2.5 py-1 fs-xs fw-semibold">
                                     {{ $branch->designation ?? 'Branch Manager' }}
                                 </span>
+                            </td>
+                            <td>
+                                <a href="{{ route('admin.branches.show', $branch->id) }}" class="text-decoration-none">
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 fw-bold fs-xs d-inline-flex align-items-center gap-1">
+                                        <i class="bi bi-people-fill"></i>
+                                        {{ number_format($branch->referrals_count ?? 0) }}
+                                    </span>
+                                </a>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center gap-2">

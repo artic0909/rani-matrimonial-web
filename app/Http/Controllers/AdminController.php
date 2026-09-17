@@ -8,7 +8,9 @@ use App\Models\Branch;
 use App\Models\Candidate;
 use App\Models\ConnectionRequest;
 use App\Models\Notification;
+use App\Models\Referral;
 use App\Services\NotificationService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -624,7 +626,7 @@ class AdminController extends Controller
         $search = trim($request->query('search', ''));
         $status = strtolower($request->query('status', 'all'));
 
-        $query = Branch::latest();
+        $query = Branch::withCount('referrals')->latest();
 
         if ($status === 'active') {
             $query->where('is_active', true);
@@ -696,13 +698,13 @@ class AdminController extends Controller
     }
 
     /**
-     * Show single branch details or return JSON for AJAX
+     * Show single branch details with full referral records, date filters, and analytics
      */
     public function showBranch(Request $request, $id)
     {
         $branch = Branch::findOrFail($id);
 
-        if ($request->wantsJson() || $request->ajax()) {
+        if ($request->wantsJson() && !$request->has('page') && !$request->has('filter_ajax')) {
             return response()->json([
                 'success' => true,
                 'branch' => $branch,
@@ -711,7 +713,117 @@ class AdminController extends Controller
             ]);
         }
 
-        return view('admin.branch.show', compact('branch'));
+        // Filter Inputs
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+        $dateType = $request->query('date_type', 'created_at'); // 'created_at' or 'first_amount_add_date'
+        $rechargeStatus = $request->query('recharge_status', 'all'); // 'all', 'recharged', 'pending'
+        $search = trim((string) $request->query('search', ''));
+        $quickRange = $request->query('quick_range', 'all');
+
+        // Apply quick range presets if dates not manually passed
+        if ($quickRange && $quickRange !== 'all' && empty($startDate) && empty($endDate)) {
+            $today = Carbon::today();
+            if ($quickRange === 'today') {
+                $startDate = $today->format('Y-m-d');
+                $endDate = $today->format('Y-m-d');
+            } elseif ($quickRange === 'yesterday') {
+                $startDate = $today->copy()->subDay()->format('Y-m-d');
+                $endDate = $today->copy()->subDay()->format('Y-m-d');
+            } elseif ($quickRange === 'this_week') {
+                $startDate = $today->copy()->startOfWeek()->format('Y-m-d');
+                $endDate = $today->copy()->endOfWeek()->format('Y-m-d');
+            } elseif ($quickRange === 'this_month') {
+                $startDate = $today->copy()->startOfMonth()->format('Y-m-d');
+                $endDate = $today->copy()->endOfMonth()->format('Y-m-d');
+            } elseif ($quickRange === 'last_month') {
+                $startDate = $today->copy()->subMonth()->startOfMonth()->format('Y-m-d');
+                $endDate = $today->copy()->subMonth()->endOfMonth()->format('Y-m-d');
+            } elseif ($quickRange === 'this_year') {
+                $startDate = $today->copy()->startOfYear()->format('Y-m-d');
+                $endDate = $today->copy()->endOfYear()->format('Y-m-d');
+            }
+        }
+
+        // Base query for referrals of this branch
+        $baseQuery = Referral::with(['candidate.photos', 'candidate.wallet', 'candidate.bluetick'])
+            ->where('branch_id', $branch->id);
+
+        // Filter by recharge status
+        if ($rechargeStatus === 'recharged') {
+            $baseQuery->where(function ($q) {
+                $q->where('first_wallet_recharge_amount', '>', 0)
+                  ->orWhereNotNull('first_amount_add_date');
+            });
+        } elseif ($rechargeStatus === 'pending') {
+            $baseQuery->where(function ($q) {
+                $q->where(function ($sq) {
+                    $sq->whereNull('first_wallet_recharge_amount')
+                       ->orWhere('first_wallet_recharge_amount', '<=', 0);
+                })->whereNull('first_amount_add_date');
+            });
+        }
+
+        // Filter by date
+        $targetDateCol = in_array($dateType, ['created_at', 'first_amount_add_date', 'updated_at']) ? $dateType : 'created_at';
+        if (!empty($startDate)) {
+            $baseQuery->whereDate($targetDateCol, '>=', $startDate);
+        }
+        if (!empty($endDate)) {
+            $baseQuery->whereDate($targetDateCol, '<=', $endDate);
+        }
+
+        // Search in candidate name, profile id, phone, email, city
+        if (!empty($search)) {
+            $baseQuery->whereHas('candidate', function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('candidate_code', 'like', "%{$search}%")
+                  ->orWhere('profile_id', 'like', "%{$search}%")
+                  ->orWhere('mobile', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('city', 'like', "%{$search}%");
+            });
+        }
+
+        // Paginate results
+        $referrals = $baseQuery->latest('id')->paginate(15)->withQueryString();
+
+        // Overall Branch Referral Lifetime Stats (unfiltered)
+        $allReferralsQuery = Referral::where('branch_id', $branch->id);
+        $referralStats = [
+            'total_referred' => (clone $allReferralsQuery)->count(),
+            'total_recharged' => (clone $allReferralsQuery)->where(function($q) {
+                $q->where('first_wallet_recharge_amount', '>', 0)
+                  ->orWhereNotNull('first_amount_add_date');
+            })->count(),
+            'pending_recharge' => (clone $allReferralsQuery)->where(function($q) {
+                $q->where(function($sq) {
+                    $sq->whereNull('first_wallet_recharge_amount')
+                       ->orWhere('first_wallet_recharge_amount', '<=', 0);
+                })->whereNull('first_amount_add_date');
+            })->count(),
+            'total_first_recharge_revenue' => (clone $allReferralsQuery)->sum('first_wallet_recharge_amount'),
+        ];
+
+        // Filtered stats
+        $filteredStats = [
+            'count' => $referrals->total(),
+            'recharge_sum' => (clone $baseQuery)->sum('first_wallet_recharge_amount'),
+        ];
+
+        return view('admin.branch.show', compact(
+            'branch',
+            'referrals',
+            'referralStats',
+            'filteredStats',
+            'startDate',
+            'endDate',
+            'dateType',
+            'rechargeStatus',
+            'search',
+            'quickRange'
+        ));
     }
 
     /**

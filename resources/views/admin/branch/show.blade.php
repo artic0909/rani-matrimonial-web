@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', $branch->name . ' (' . $branch->code . ') - Branch Details - Rani Matrimonial')
+@section('title', $branch->name . ' (' . $branch->code . ') - Branch Details & Referrals - Rani Matrimonial')
 
 @push('styles')
 <style>
@@ -62,7 +62,7 @@
     }
     .doc-image-container {
         position: relative;
-        height: 240px;
+        height: 220px;
         background: #f1f5f3;
         display: flex;
         align-items: center;
@@ -112,6 +112,51 @@
         border: 1px solid rgba(15, 74, 50, 0.08);
         border-radius: 12px;
         padding: 14px 18px;
+    }
+    .candidate-avatar-cell {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        object-fit: cover;
+        border: 1.5px solid rgba(15, 74, 50, 0.15);
+    }
+    .quick-preset-pill {
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        border: 1px solid rgba(15, 74, 50, 0.2);
+        background: #ffffff;
+        color: #0F4A32;
+        text-decoration: none;
+        transition: all 0.15s ease-in-out;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .quick-preset-pill:hover,
+    .quick-preset-pill.active {
+        background: #0F4A32;
+        color: #ffffff !important;
+        border-color: #0F4A32;
+    }
+    .badge-recharged {
+        background: rgba(34, 197, 94, 0.12);
+        color: #15803d;
+        border: 1px solid rgba(34, 197, 94, 0.25);
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+    }
+    .badge-pending-recharge {
+        background: rgba(245, 158, 11, 0.12);
+        color: #b45309;
+        border: 1px solid rgba(245, 158, 11, 0.25);
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.82rem;
     }
 </style>
 @endpush
@@ -240,12 +285,15 @@
                         <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($branch->full_address . ', ' . $branch->city . ', ' . $branch->state) }}" target="_blank" class="btn-custom btn-custom-light btn-custom-sm">
                             <i class="bi bi-map"></i> View on Google Maps
                         </a>
+                        <button type="button" class="btn-custom btn-custom-light btn-custom-sm" onclick="copyToClipboard('{{ $branch->code }}', 'Branch code copied!')">
+                            <i class="bi bi-share-fill"></i> Copy Branch Code ({{ $branch->code }})
+                        </button>
                     </div>
                 </div>
 
                 <!-- Fast Statistics / Code Display Box -->
                 <div class="col-12 col-lg-auto border-top border-lg-top-0 border-lg-start pt-3 pt-lg-0 ps-lg-4 text-center text-lg-start">
-                    <div class="info-label">Branch Code</div>
+                    <div class="info-label">Branch Referral Code</div>
                     <div class="fs-3 fw-bold font-monospace text-forest-medium mb-2" style="color: #0F4A32;">{{ $branch->code }}</div>
                     <div class="text-muted small">
                         <i class="bi bi-calendar3 me-1"></i> Registered: {{ $branch->created_at->format('d M, Y') }}
@@ -259,8 +307,455 @@
     </div>
     <!-- END: Hero Branch Information Card -->
 
-    <!-- START: Grid of Details & KYC Documents -->
-    <div class="row g-4">
+    <!-- START: Referral Performance Analytics Stat Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Stat 1: Total Candidates Referred -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card p-3 mb-0 h-100 shadow-sm border-0 rounded-4">
+                <div class="kpa-card-inner">
+                    <div>
+                        <div class="kpa-stat-title">Total Referrals</div>
+                        <div class="kpa-stat-value">{{ number_format($referralStats['total_referred'] ?? 0) }}</div>
+                    </div>
+                    <div class="kpa-icon-box" style="background-color: rgba(15, 74, 50, 0.1); color: var(--brand-forest-medium);">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                </div>
+                <div class="kpa-stat-footer">
+                    <span>Candidates signed up with {{ $branch->code }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stat 2: Recharged Accounts (Conversions) -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card p-3 mb-0 h-100 shadow-sm border-0 rounded-4">
+                <div class="kpa-card-inner">
+                    <div>
+                        <div class="kpa-stat-title">Recharged Accounts</div>
+                        <div class="kpa-stat-value text-success">{{ number_format($referralStats['total_recharged'] ?? 0) }}</div>
+                    </div>
+                    <div class="kpa-icon-box" style="background-color: rgba(34, 197, 94, 0.1); color: #16a34a;">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+                </div>
+                <div class="kpa-stat-footer">
+                    <span>Candidates with 1st wallet deposit</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stat 3: Pending 1st Recharge -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card p-3 mb-0 h-100 shadow-sm border-0 rounded-4">
+                <div class="kpa-card-inner">
+                    <div>
+                        <div class="kpa-stat-title">Pending 1st Recharge</div>
+                        <div class="kpa-stat-value text-warning">{{ number_format($referralStats['pending_recharge'] ?? 0) }}</div>
+                    </div>
+                    <div class="kpa-icon-box" style="background-color: rgba(245, 158, 11, 0.12); color: #d97706;">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                </div>
+                <div class="kpa-stat-footer">
+                    <span>Registered, awaiting top-up</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stat 4: Total 1st Recharge Revenue Generated -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card p-3 mb-0 h-100 shadow-sm border-0 rounded-4">
+                <div class="kpa-card-inner">
+                    <div>
+                        <div class="kpa-stat-title">1st Recharge Revenue</div>
+                        <div class="kpa-stat-value text-forest-medium">₹{{ number_format($referralStats['total_first_recharge_revenue'] ?? 0, 2) }}</div>
+                    </div>
+                    <div class="kpa-icon-box" style="background-color: rgba(15, 74, 50, 0.12); color: #0F4A32;">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+                </div>
+                <div class="kpa-stat-footer">
+                    <span>Total 1st deposit volume</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END: Referral Performance Analytics Stat Cards -->
+
+    <!-- START: Referral Details Table with Date Filter & Search -->
+    <div class="table-card-custom mb-5 shadow-sm rounded-4 border-0">
+        
+        <!-- Table Header & Filter Toolbar -->
+        <div class="p-4 border-bottom bg-white rounded-top-4">
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-3">
+                <div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="kpa-icon-box" style="background-color: rgba(15, 74, 50, 0.1); color: var(--brand-forest-medium); width: 36px; height: 36px; font-size: 16px;">
+                            <i class="bi bi-diagram-3-fill"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-0 text-main">Branch Referral Register & Candidate Details</h4>
+                            <p class="text-muted fs-xs mb-0">All candidates registered under branch code <strong class="font-monospace text-dark">{{ $branch->code }}</strong> with live wallet recharge tracking.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="badge bg-light text-dark border px-3 py-2 fw-semibold fs-xs">
+                        <i class="bi bi-funnel me-1 text-forest-medium"></i> Showing {{ $filteredStats['count'] }} of {{ $referralStats['total_referred'] }} records
+                    </span>
+                    @if($filteredStats['recharge_sum'] > 0)
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fw-bold fs-xs">
+                            <i class="bi bi-cash me-1"></i> Filtered Deposit: ₹{{ number_format($filteredStats['recharge_sum'], 2) }}
+                        </span>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Quick Date Presets Bar -->
+            <div class="d-flex flex-wrap align-items-center gap-1 mb-3 pt-2 border-top">
+                <span class="small fw-bold text-muted me-2"><i class="bi bi-clock-history me-1"></i> Quick Presets:</span>
+                
+                @php
+                    $currentQuery = request()->except(['page', 'quick_range', 'start_date', 'end_date']);
+                @endphp
+
+                <a href="{{ route('admin.branches.show', array_merge(['id' => $branch->id], $currentQuery, ['quick_range' => 'all'])) }}" 
+                   class="quick-preset-pill {{ ($quickRange === 'all' && empty($startDate) && empty($endDate)) ? 'active' : '' }}">
+                    All Time
+                </a>
+                <a href="{{ route('admin.branches.show', array_merge(['id' => $branch->id], $currentQuery, ['quick_range' => 'today'])) }}" 
+                   class="quick-preset-pill {{ $quickRange === 'today' ? 'active' : '' }}">
+                    Today
+                </a>
+                <a href="{{ route('admin.branches.show', array_merge(['id' => $branch->id], $currentQuery, ['quick_range' => 'yesterday'])) }}" 
+                   class="quick-preset-pill {{ $quickRange === 'yesterday' ? 'active' : '' }}">
+                    Yesterday
+                </a>
+                <a href="{{ route('admin.branches.show', array_merge(['id' => $branch->id], $currentQuery, ['quick_range' => 'this_week'])) }}" 
+                   class="quick-preset-pill {{ $quickRange === 'this_week' ? 'active' : '' }}">
+                    This Week
+                </a>
+                <a href="{{ route('admin.branches.show', array_merge(['id' => $branch->id], $currentQuery, ['quick_range' => 'this_month'])) }}" 
+                   class="quick-preset-pill {{ $quickRange === 'this_month' ? 'active' : '' }}">
+                    This Month
+                </a>
+                <a href="{{ route('admin.branches.show', array_merge(['id' => $branch->id], $currentQuery, ['quick_range' => 'last_month'])) }}" 
+                   class="quick-preset-pill {{ $quickRange === 'last_month' ? 'active' : '' }}">
+                    Last Month
+                </a>
+                <a href="{{ route('admin.branches.show', array_merge(['id' => $branch->id], $currentQuery, ['quick_range' => 'this_year'])) }}" 
+                   class="quick-preset-pill {{ $quickRange === 'this_year' ? 'active' : '' }}">
+                    This Year
+                </a>
+            </div>
+
+            <!-- Comprehensive Filter Form -->
+            <form method="GET" action="{{ route('admin.branches.show', $branch->id) }}" class="row g-2 align-items-end">
+                
+                <!-- Search Input -->
+                <div class="col-12 col-md-3">
+                    <label class="form-label small fw-bold text-muted mb-1"><i class="bi bi-search me-1"></i> Search Candidate</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-light"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="search" class="form-control" placeholder="Name, RM code, phone, city..." value="{{ $search }}">
+                    </div>
+                </div>
+
+                <!-- Date Type Selector -->
+                <div class="col-6 col-md-2">
+                    <label class="form-label small fw-bold text-muted mb-1"><i class="bi bi-calendar2-event me-1"></i> Date Type</label>
+                    <select name="date_type" class="form-select form-select-sm">
+                        <option value="created_at" {{ $dateType === 'created_at' ? 'selected' : '' }}>Registration Date</option>
+                        <option value="first_amount_add_date" {{ $dateType === 'first_amount_add_date' ? 'selected' : '' }}>1st Recharge Date</option>
+                    </select>
+                </div>
+
+                <!-- Start Date -->
+                <div class="col-6 col-md-2">
+                    <label class="form-label small fw-bold text-muted mb-1"><i class="bi bi-calendar-range me-1"></i> From Date</label>
+                    <input type="date" name="start_date" class="form-control form-control-sm" value="{{ $startDate }}">
+                </div>
+
+                <!-- End Date -->
+                <div class="col-6 col-md-2">
+                    <label class="form-label small fw-bold text-muted mb-1"><i class="bi bi-calendar-range-fill me-1"></i> To Date</label>
+                    <input type="date" name="end_date" class="form-control form-control-sm" value="{{ $endDate }}">
+                </div>
+
+                <!-- Recharge Status Filter -->
+                <div class="col-6 col-md-2">
+                    <label class="form-label small fw-bold text-muted mb-1"><i class="bi bi-wallet me-1"></i> Recharge Status</label>
+                    <select name="recharge_status" class="form-select form-select-sm">
+                        <option value="all" {{ $rechargeStatus === 'all' ? 'selected' : '' }}>All Status</option>
+                        <option value="recharged" {{ $rechargeStatus === 'recharged' ? 'selected' : '' }}>Recharged Only</option>
+                        <option value="pending" {{ $rechargeStatus === 'pending' ? 'selected' : '' }}>Pending Top-up</option>
+                    </select>
+                </div>
+
+                <!-- Submit and Reset Buttons -->
+                <div class="col-12 col-md-1 d-flex gap-1">
+                    <button type="submit" class="btn-custom btn-custom-primary btn-custom-sm w-100 py-1.5" title="Apply Filter">
+                        <i class="bi bi-funnel-fill"></i> Filter
+                    </button>
+                    @if(!empty($search) || !empty($startDate) || !empty($endDate) || $rechargeStatus !== 'all' || ($quickRange !== 'all' && $quickRange !== ''))
+                        <a href="{{ route('admin.branches.show', $branch->id) }}" class="btn-custom btn-custom-light btn-custom-sm py-1.5 px-2 text-danger" title="Clear Filters">
+                            <i class="bi bi-x-circle-fill"></i>
+                        </a>
+                    @endif
+                </div>
+            </form>
+
+            <!-- Active Filter Indicators -->
+            @if(!empty($search) || !empty($startDate) || !empty($endDate) || $rechargeStatus !== 'all')
+                <div class="d-flex flex-wrap align-items-center gap-2 mt-3 pt-2 border-top">
+                    <span class="fs-xs fw-bold text-muted">Active Filters:</span>
+                    @if(!empty($search))
+                        <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 fs-xs">
+                            Search: "{{ $search }}"
+                        </span>
+                    @endif
+                    @if(!empty($startDate) || !empty($endDate))
+                        <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 fs-xs">
+                            Date: {{ $startDate ?: 'Any' }} to {{ $endDate ?: 'Any' }} ({{ $dateType === 'first_amount_add_date' ? 'Recharge' : 'Joined' }})
+                        </span>
+                    @endif
+                    @if($rechargeStatus !== 'all')
+                        <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 fs-xs">
+                            Status: {{ ucfirst($rechargeStatus) }}
+                        </span>
+                    @endif
+                    <a href="{{ route('admin.branches.show', $branch->id) }}" class="text-danger text-decoration-none fs-xs fw-semibold ms-1">
+                        <i class="bi bi-trash3 me-1"></i> Clear All Filters
+                    </a>
+                </div>
+            @endif
+        </div>
+
+        <!-- Table Responsive Data List -->
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th class="ps-4" style="width: 50px;">#</th>
+                        <th>Candidate Profile</th>
+                        <th>Mobile / Contact</th>
+                        <th>Location</th>
+                        <th>Registration Date</th>
+                        <th>1st Wallet Recharge</th>
+                        <th>1st Recharge Date</th>
+                        <th>Wallet Balance</th>
+                        <th>Account Status</th>
+                        <th class="text-center pe-4" style="width: 120px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($referrals as $index => $referral)
+                        @php
+                            $candidate = $referral->candidate;
+                            $hasCandidate = (bool) $candidate;
+                            $hasRecharged = ($referral->first_wallet_recharge_amount > 0 || !empty($referral->first_amount_add_date));
+                            $phoneNum = $hasCandidate ? ($candidate->mobile ?? ($candidate->phone ?? null)) : null;
+                            $cleanPhone = $phoneNum ? preg_replace('/[^0-9]/', '', $phoneNum) : null;
+                        @endphp
+                        <tr>
+                            <!-- Row Number -->
+                            <td class="ps-4 text-muted fw-semibold font-monospace small">
+                                {{ $referrals->firstItem() + $index }}
+                            </td>
+
+                            <!-- Candidate Profile Column -->
+                            <td>
+                                @if($hasCandidate)
+                                    <div class="d-flex align-items-center gap-2.5">
+                                        <div class="position-relative">
+                                            <img src="{{ $candidate->avatar_url }}" 
+                                                 alt="{{ $candidate->first_name }} {{ $candidate->last_name }}" 
+                                                 class="candidate-avatar-cell shadow-xs"
+                                                 onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($candidate->first_name . ' ' . $candidate->last_name) }}&background=0d6efd&color=fff'">
+                                            @if($candidate->is_bluetick_verified)
+                                                <span class="position-absolute bottom-0 end-0 translate-middle-y badge rounded-pill bg-primary p-1 border border-2 border-white" title="Verified Blue Tick Profile">
+                                                    <i class="bi bi-patch-check-fill text-white" style="font-size: 10px;"></i>
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-main d-flex align-items-center gap-1.5">
+                                                <a href="{{ route('admin.candidates.show', $candidate->id) }}" class="text-decoration-none text-main hover-primary">
+                                                    {{ $candidate->first_name }} {{ $candidate->last_name }}
+                                                </a>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2 mt-0.5">
+                                                <span class="badge bg-light text-dark font-monospace border px-1.5 py-0.5 rounded fs-xs">
+                                                    {{ $candidate->display_code }}
+                                                </span>
+                                                <span class="text-muted fs-xs">
+                                                    {{ $candidate->gender ?? 'N/A' }}
+                                                    @if($candidate->dob)
+                                                        • {{ \Carbon\Carbon::parse($candidate->dob)->age }} Yrs
+                                                    @endif
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <span class="text-muted fst-italic">Candidate record removed (ID #{{ $referral->candidate_id }})</span>
+                                @endif
+                            </td>
+
+                            <!-- Mobile / Contact -->
+                            <td>
+                                @if($phoneNum)
+                                    <div class="d-flex align-items-center gap-1.5">
+                                        <span class="font-monospace fw-semibold text-main small">{{ $phoneNum }}</span>
+                                        @if($cleanPhone)
+                                            <a href="https://wa.me/{{ $cleanPhone }}" target="_blank" class="btn btn-sm btn-light p-1 px-1.5 rounded-circle text-success" title="Chat on WhatsApp">
+                                                <i class="bi bi-whatsapp"></i>
+                                            </a>
+                                            <a href="tel:{{ $phoneNum }}" class="btn btn-sm btn-light p-1 px-1.5 rounded-circle text-primary" title="Call">
+                                                <i class="bi bi-telephone-fill"></i>
+                                            </a>
+                                        @endif
+                                    </div>
+                                    @if($hasCandidate && $candidate->email)
+                                        <div class="text-muted fs-xs mt-0.5 text-truncate" style="max-width: 170px;" title="{{ $candidate->email }}">
+                                            {{ $candidate->email }}
+                                        </div>
+                                    @endif
+                                @else
+                                    <span class="text-muted fs-xs">-</span>
+                                @endif
+                            </td>
+
+                            <!-- Location -->
+                            <td>
+                                @if($hasCandidate && ($candidate->city || $candidate->state))
+                                    <div class="small fw-semibold text-dark">{{ $candidate->city ?? 'N/A' }}</div>
+                                    <div class="text-muted fs-xs">{{ $candidate->state ?? 'India' }}</div>
+                                @else
+                                    <span class="text-muted fs-xs">Not Specified</span>
+                                @endif
+                            </td>
+
+                            <!-- Registration Date with Branch Code -->
+                            <td>
+                                <div class="small fw-semibold text-dark">
+                                    {{ $referral->created_at->format('d M, Y') }}
+                                </div>
+                                <div class="text-muted fs-xs">
+                                    {{ $referral->created_at->format('h:i A') }} ({{ $referral->created_at->diffForHumans() }})
+                                </div>
+                            </td>
+
+                            <!-- 1st Wallet Recharge Amount -->
+                            <td>
+                                @if($hasRecharged)
+                                    <span class="badge-recharged d-inline-flex align-items-center gap-1">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        <span>₹{{ number_format($referral->first_wallet_recharge_amount, 2) }}</span>
+                                    </span>
+                                @else
+                                    <span class="badge-pending-recharge d-inline-flex align-items-center gap-1">
+                                        <i class="bi bi-hourglass-split"></i>
+                                        <span>₹0.00 (Pending)</span>
+                                    </span>
+                                @endif
+                            </td>
+
+                            <!-- 1st Recharge Date -->
+                            <td>
+                                @if($referral->first_amount_add_date)
+                                    <div class="small fw-semibold text-success">
+                                        {{ $referral->first_amount_add_date->format('d M, Y') }}
+                                    </div>
+                                    <div class="text-muted fs-xs">
+                                        {{ $referral->first_amount_add_date->format('h:i A') }}
+                                    </div>
+                                @elseif($hasRecharged)
+                                    <div class="small fw-semibold text-muted">
+                                        {{ $referral->updated_at->format('d M, Y') }}
+                                    </div>
+                                @else
+                                    <span class="text-muted small">-</span>
+                                @endif
+                            </td>
+
+                            <!-- Current Wallet Available Balance -->
+                            <td>
+                                @if($hasCandidate && $candidate->wallet)
+                                    <span class="fw-bold font-monospace text-dark small">
+                                        ₹{{ number_format($candidate->wallet->avl_balance, 2) }}
+                                    </span>
+                                @else
+                                    <span class="text-muted small">₹0.00</span>
+                                @endif
+                            </td>
+
+                            <!-- Status -->
+                            <td>
+                                @if($hasCandidate)
+                                    <span class="badge-table {{ $candidate->is_active ? 'success' : 'failed' }}">
+                                        {{ $candidate->is_active ? 'Active' : 'Deactivated' }}
+                                    </span>
+                                @else
+                                    <span class="badge-table failed">Deleted</span>
+                                @endif
+                            </td>
+
+                            <!-- Actions -->
+                            <td class="text-center pe-4">
+                                @if($hasCandidate)
+                                    <a href="{{ route('admin.candidates.show', $candidate->id) }}" 
+                                       class="btn-custom btn-custom-light btn-custom-sm py-1 px-2.5 shadow-xs" 
+                                       title="View Full Candidate Profile">
+                                        <i class="bi bi-eye-fill me-1"></i> View
+                                    </a>
+                                @else
+                                    <button class="btn btn-sm btn-light disabled" disabled>N/A</button>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="10" class="text-center py-5">
+                                <div class="p-4">
+                                    <i class="bi bi-people text-muted opacity-40 d-block mb-3" style="font-size: 3rem;"></i>
+                                    @if(!empty($search) || !empty($startDate) || !empty($endDate) || $rechargeStatus !== 'all')
+                                        <h5 class="fw-bold text-dark">No Referrals Matched Your Filters</h5>
+                                        <p class="text-muted small mb-3">Try adjusting your date range, search query, or recharge status filter.</p>
+                                        <a href="{{ route('admin.branches.show', $branch->id) }}" class="btn-custom btn-custom-light btn-custom-sm">
+                                            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset All Filters
+                                        </a>
+                                    @else
+                                        <h5 class="fw-bold text-dark">No Candidate Referrals Recorded Yet</h5>
+                                        <p class="text-muted small mb-0">When candidates register using branch code <strong class="font-monospace text-forest-medium">{{ $branch->code }}</strong>, their profile and wallet recharge history will automatically appear here.</p>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Table Footer Pagination -->
+        @if($referrals->hasPages())
+            <div class="p-3 bg-white border-top d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 rounded-bottom-4">
+                <div class="text-muted fs-xs">
+                    Showing <strong>{{ $referrals->firstItem() }}</strong> to <strong>{{ $referrals->lastItem() }}</strong> of <strong>{{ $referrals->total() }}</strong> referred candidates
+                </div>
+                <div>
+                    {{ $referrals->links() }}
+                </div>
+            </div>
+        @endif
+
+    </div>
+    <!-- END: Referral Details Table with Date Filter & Search -->
+
+    <!-- START: Grid of Office Details & KYC Documents -->
+    <div class="row g-4 mb-5">
         
         <!-- LEFT COLUMN: Location, Address & Manager Details -->
         <div class="col-12 col-lg-5">
@@ -813,7 +1308,7 @@
 
     // Confirm Delete
     function confirmDelete() {
-        if (confirm(`Are you sure you want to permanently delete branch "{{ addslashes($branch->name) }}" ({{ $branch->code }})? This action cannot be undone.`)) {
+        if (confirm(`Are you sure you want to permanently delete branch "${{ addslashes($branch->name) }}" (${{ $branch->code }})? This action cannot be undone.`)) {
             document.getElementById('deleteBranchForm').submit();
         }
     }
