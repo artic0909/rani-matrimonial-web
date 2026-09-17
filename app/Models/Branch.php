@@ -77,4 +77,12 @@ class Branch extends Model
 
         return asset('storage/' . $this->aadhar_back);
     }
+
+    /**
+     * Referrals recorded under this branch.
+     */
+    public function referrals(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Referral::class, 'branch_id');
+    }
 }

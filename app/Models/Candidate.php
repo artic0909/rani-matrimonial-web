@@ -228,4 +228,12 @@ class Candidate extends Authenticatable
     {
         return $this->candidate_code ?? $this->profile_id ?? ('RM'.str_pad($this->id, 5, '0', STR_PAD_LEFT));
     }
+
+    /**
+     * Referral record linking to the branch that onboarded/referred this candidate.
+     */
+    public function referral(): HasOne
+    {
+        return $this->hasOne(Referral::class, 'candidate_id');
+    }
 }
