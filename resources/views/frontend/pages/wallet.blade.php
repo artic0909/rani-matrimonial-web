@@ -615,11 +615,12 @@ function walletManager(initialData) {
                     handler: async function (response) {
                         // Step 3: Verify Payment Signature on server & credit wallet
                         try {
+                            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
                             const verifyRes = await fetch('{{ route("wallet.razorpay.verify-payment") }}', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                    'X-CSRF-TOKEN': csrfToken,
                                     'Accept': 'application/json'
                                 },
                                 body: JSON.stringify({
@@ -636,14 +637,18 @@ function walletManager(initialData) {
                                 self.avlBalance = verifyData.wallet.avl_balance;
                                 self.totalCredit = verifyData.wallet.total_credit;
                                 self.totalDebit = verifyData.wallet.total_debit;
-                                self.transactions.unshift(verifyData.transaction);
+                                if (self.transactions && Array.isArray(self.transactions)) {
+                                    self.transactions.unshift(verifyData.transaction);
+                                }
                                 self.openAddMoneyModal = false;
 
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Payment Successful!',
-                                    text: verifyData.message,
+                                    text: verifyData.message || 'Money has been successfully credited to your Royal Wallet.',
                                     customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                                }).then(() => {
+                                    window.location.reload();
                                 });
                             } else {
                                 Swal.fire({
@@ -658,7 +663,7 @@ function walletManager(initialData) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Verification Error',
-                                text: 'Failed to verify transaction. If your account was debited, it will be automatically credited.',
+                                text: 'Failed to complete transaction verification. If money was debited from your bank, please refresh or contact support.',
                                 customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                             });
                         } finally {
@@ -705,11 +710,12 @@ function walletManager(initialData) {
             this.isProcessingSpend = true;
 
             try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
                 const res = await fetch('{{ route("wallet.spend-money") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-CSRF-TOKEN': csrfToken,
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify({
@@ -726,7 +732,9 @@ function walletManager(initialData) {
                     this.avlBalance = data.wallet.avl_balance;
                     this.totalCredit = data.wallet.total_credit;
                     this.totalDebit = data.wallet.total_debit;
-                    this.transactions.unshift(data.transaction);
+                    if (this.transactions && Array.isArray(this.transactions)) {
+                        this.transactions.unshift(data.transaction);
+                    }
                     this.openSpendModal = false;
 
                     Swal.fire({
@@ -734,6 +742,8 @@ function walletManager(initialData) {
                         title: 'Service Activated!',
                         text: data.message,
                         customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                    }).then(() => {
+                        window.location.reload();
                     });
                 } else {
                     Swal.fire({

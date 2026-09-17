@@ -339,12 +339,19 @@ class WalletController extends Controller
         ]);
 
         /** @var Candidate $candidate */
-        $candidate = Auth::user();
+        $candidate = Auth::user() ?? Auth::guard('web')->user();
+        if (! $candidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated session. Please log in again.',
+            ], 401);
+        }
+
         $amount = (float) $request->amount;
         $amountInPaise = (int) round($amount * 100);
 
-        $key = config('services.razorpay.key');
-        $secret = config('services.razorpay.secret');
+        $key = config('services.razorpay.key') ?: env('RAZORPAY_KEY');
+        $secret = config('services.razorpay.secret') ?: env('RAZORPAY_SECRET');
 
         if (empty($key) || empty($secret)) {
             return response()->json([
@@ -378,7 +385,7 @@ class WalletController extends Controller
                 'description' => 'Royal Wallet Top-up (₹' . number_format($amount, 2) . ')',
                 'prefill' => [
                     'name' => trim(($candidate->first_name ?? '') . ' ' . ($candidate->last_name ?? '')),
-                    'contact' => $candidate->phone ?? '',
+                    'contact' => $candidate->phone ?? ($candidate->mobile ?? ''),
                     'email' => $candidate->email ?? '',
                 ],
                 'theme' => [
@@ -386,6 +393,7 @@ class WalletController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
+            \Log::error('Razorpay Create Order Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to initialize payment: ' . $e->getMessage(),
@@ -405,8 +413,8 @@ class WalletController extends Controller
             'amount' => 'required|numeric|min:1',
         ]);
 
-        $key = config('services.razorpay.key');
-        $secret = config('services.razorpay.secret');
+        $key = config('services.razorpay.key') ?: env('RAZORPAY_KEY');
+        $secret = config('services.razorpay.secret') ?: env('RAZORPAY_SECRET');
 
         if (empty($key) || empty($secret)) {
             return response()->json([
@@ -416,7 +424,13 @@ class WalletController extends Controller
         }
 
         /** @var Candidate $candidate */
-        $candidate = Auth::user();
+        $candidate = Auth::user() ?? Auth::guard('web')->user();
+        if (! $candidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated session. Please log in again.',
+            ], 401);
+        }
         $wallet = $candidate->getOrCreateWallet();
 
         $paymentId = $request->razorpay_payment_id;
@@ -466,11 +480,13 @@ class WalletController extends Controller
             ];
             $api->utility->verifyPaymentSignature($attributes);
         } catch (\Razorpay\Api\Errors\SignatureVerificationError $e) {
+            \Log::warning('Razorpay Signature Verification Failed: ' . $e->getMessage() . ' for payment ' . $paymentId);
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid payment signature. Verification failed.',
             ], 400);
         } catch (\Exception $e) {
+            \Log::error('Razorpay Verification Exception: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Signature verification error: ' . $e->getMessage(),
