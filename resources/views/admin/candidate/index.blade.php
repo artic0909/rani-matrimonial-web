@@ -285,10 +285,10 @@ function toggleCandidateRowStatus(id) {
             if (data.success) {
                 if (data.is_active) {
                     btn.className = 'badge-table success border-0 cursor-pointer shadow-xs d-inline-flex align-items-center gap-1 text-decoration-none';
-                    btn.innerHTML = `<i class="bi bi-check-circle-fill" id="icon-status-${id}"></i> <span id="text-status-${id}">Visible (Active)</span>`;
+                    btn.innerHTML = `<i class="bi bi-check-circle-fill" id="icon-status-${id}"></i> <span id="text-status-${id}">Visible</span>`;
                 } else {
                     btn.className = 'badge-table failed border-0 cursor-pointer shadow-xs d-inline-flex align-items-center gap-1 text-decoration-none';
-                    btn.innerHTML = `<i class="bi bi-eye-slash-fill" id="icon-status-${id}"></i> <span id="text-status-${id}">Hidden (Deactive)</span>`;
+                    btn.innerHTML = `<i class="bi bi-eye-slash-fill" id="icon-status-${id}"></i> <span id="text-status-${id}">Hidden</span>`;
                 }
 
                 Swal.fire({

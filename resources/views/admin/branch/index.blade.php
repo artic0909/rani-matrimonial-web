@@ -32,62 +32,74 @@
     <!-- START: Stat Cards Row -->
     <div class="row g-3 mb-4">
         <div class="col-12 col-sm-6 col-xl-3">
-            <a href="{{ route('admin.branches.index') }}" class="p-3 rounded-4 bg-white border shadow-sm d-flex align-items-center justify-content-between text-decoration-none card-clickable h-100">
-                <div class="d-flex align-items-center gap-3">
+            <a href="{{ route('admin.branches.index') }}" class="card card-clickable p-3 mb-0 h-100 text-decoration-none">
+                <div class="kpa-card-inner">
+                    <div>
+                        <div class="kpa-stat-title">Total Branches</div>
+                        <div class="kpa-stat-value">{{ number_format($counts['all'] ?? 0) }}</div>
+                    </div>
                     <div class="kpa-icon-box" style="background-color: rgba(15, 74, 50, 0.1); color: var(--brand-forest-medium);">
                         <i class="bi bi-buildings-fill"></i>
                     </div>
-                    <div>
-                        <div class="kpa-stat-title">Total Branches</div>
-                        <div class="kpa-stat-value fs-4 mb-0">{{ number_format($counts['all'] ?? 0) }}</div>
-                    </div>
                 </div>
-                <i class="bi bi-arrow-right kpa-arrow-icon"></i>
+                <div class="kpa-stat-footer">
+                    <span>All franchise centers</span>
+                    <i class="bi bi-arrow-right kpa-arrow-icon"></i>
+                </div>
             </a>
         </div>
 
         <div class="col-12 col-sm-6 col-xl-3">
-            <a href="{{ route('admin.branches.index', ['status' => 'active']) }}" class="p-3 rounded-4 bg-white border shadow-sm d-flex align-items-center justify-content-between text-decoration-none card-clickable h-100">
-                <div class="d-flex align-items-center gap-3">
+            <a href="{{ route('admin.branches.index', ['status' => 'active']) }}" class="card card-clickable p-3 mb-0 h-100 text-decoration-none">
+                <div class="kpa-card-inner">
+                    <div>
+                        <div class="kpa-stat-title">Active / Operational</div>
+                        <div class="kpa-stat-value">{{ number_format($counts['active'] ?? 0) }}</div>
+                    </div>
                     <div class="kpa-icon-box" style="background-color: rgba(34, 197, 94, 0.1); color: #16a34a;">
                         <i class="bi bi-check-circle-fill"></i>
                     </div>
-                    <div>
-                        <div class="kpa-stat-title">Active / Operational</div>
-                        <div class="kpa-stat-value fs-4 mb-0">{{ number_format($counts['active'] ?? 0) }}</div>
-                    </div>
                 </div>
-                <i class="bi bi-arrow-right kpa-arrow-icon"></i>
+                <div class="kpa-stat-footer">
+                    <span>Open & running</span>
+                    <i class="bi bi-arrow-right kpa-arrow-icon"></i>
+                </div>
             </a>
         </div>
 
         <div class="col-12 col-sm-6 col-xl-3">
-            <a href="{{ route('admin.branches.index', ['status' => 'inactive']) }}" class="p-3 rounded-4 bg-white border shadow-sm d-flex align-items-center justify-content-between text-decoration-none card-clickable h-100">
-                <div class="d-flex align-items-center gap-3">
+            <a href="{{ route('admin.branches.index', ['status' => 'inactive']) }}" class="card card-clickable p-3 mb-0 h-100 text-decoration-none">
+                <div class="kpa-card-inner">
+                    <div>
+                        <div class="kpa-stat-title">Inactive / Closed</div>
+                        <div class="kpa-stat-value">{{ number_format($counts['inactive'] ?? 0) }}</div>
+                    </div>
                     <div class="kpa-icon-box" style="background-color: rgba(100, 116, 139, 0.12); color: #64748b;">
                         <i class="bi bi-pause-circle-fill"></i>
                     </div>
-                    <div>
-                        <div class="kpa-stat-title">Inactive / Closed</div>
-                        <div class="kpa-stat-value fs-4 mb-0">{{ number_format($counts['inactive'] ?? 0) }}</div>
-                    </div>
                 </div>
-                <i class="bi bi-arrow-right kpa-arrow-icon"></i>
+                <div class="kpa-stat-footer">
+                    <span>Paused / suspended</span>
+                    <i class="bi bi-arrow-right kpa-arrow-icon"></i>
+                </div>
             </a>
         </div>
 
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="p-3 rounded-4 bg-white border shadow-sm d-flex align-items-center justify-content-between h-100">
-                <div class="d-flex align-items-center gap-3">
+            <div class="card p-3 mb-0 h-100">
+                <div class="kpa-card-inner">
+                    <div>
+                        <div class="kpa-stat-title">Cities Covered</div>
+                        <div class="kpa-stat-value">{{ number_format($counts['cities'] ?? 0) }}</div>
+                    </div>
                     <div class="kpa-icon-box" style="background-color: rgba(14, 165, 233, 0.12); color: #0284c7;">
                         <i class="bi bi-geo-alt-fill"></i>
                     </div>
-                    <div>
-                        <div class="kpa-stat-title">Cities Covered</div>
-                        <div class="kpa-stat-value fs-4 mb-0">{{ number_format($counts['cities'] ?? 0) }}</div>
-                    </div>
                 </div>
-                <span class="badge bg-light text-muted border px-2 py-1 rounded-pill fs-xs">Locations</span>
+                <div class="kpa-stat-footer">
+                    <span>Regional locations</span>
+                    <span class="badge bg-light text-muted border px-2 py-0.5 rounded-pill fs-xs">Locations</span>
+                </div>
             </div>
         </div>
     </div>
@@ -151,27 +163,27 @@
                             </td>
                             <td>
                                 <a href="{{ route('admin.branches.show', $branch->id) }}" class="text-decoration-none">
-                                    <span class="badge font-monospace px-2.5 py-1.5 fw-bold fs-xs shadow-xs" style="background: rgba(15, 74, 50, 0.1); color: #0F4A32; border: 1.5px solid rgba(15, 74, 50, 0.25); letter-spacing: 0.5px; border-radius: 6px;">
-                                        <i class="bi bi-qr-code me-1 text-muted-green"></i>{{ $branch->code }}
+                                    <span class="badge bg-light text-dark border font-monospace px-2.5 py-1 fw-bold fs-xs">
+                                        {{ $branch->code }}
                                     </span>
                                 </a>
                             </td>
                             <td>
-                                <a href="{{ route('admin.branches.show', $branch->id) }}" class="table-user-name fw-bold text-decoration-none text-main d-inline-block">
+                                <a href="{{ route('admin.branches.show', $branch->id) }}" class="table-user-name text-decoration-none d-block">
                                     {{ $branch->name }}
                                 </a>
-                                <div class="table-user-sub text-muted fs-xs">
-                                    <i class="bi bi-clock me-1"></i> Created {{ $branch->created_at->format('d M, Y') }}
+                                <div class="table-user-sub">
+                                    <i class="bi bi-clock me-1"></i>Created {{ $branch->created_at->format('d M, Y') }}
                                 </div>
                             </td>
                             <td>
-                                <span class="badge bg-light text-dark border px-2 py-1 fs-xs fw-semibold">
+                                <span class="badge bg-light text-dark border px-2.5 py-1 fs-xs fw-semibold">
                                     {{ $branch->designation ?? 'Branch Manager' }}
                                 </span>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <a href="tel:{{ $branch->phone }}" class="fw-bold font-monospace text-decoration-none" style="color: #0F4A32;">
+                                    <a href="tel:{{ $branch->phone }}" class="fw-bold font-monospace text-decoration-none" style="color: var(--brand-forest-dark);">
                                         <i class="bi bi-telephone-fill me-1 text-muted-green"></i>{{ $branch->phone }}
                                     </a>
                                     <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $branch->phone) }}" 
@@ -184,11 +196,11 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="fw-semibold text-main">{{ $branch->city }}</div>
+                                <div class="fw-semibold" style="color: var(--text-main);">{{ $branch->city }}</div>
                                 <div class="table-user-sub">{{ $branch->state }}</div>
                             </td>
                             <td>
-                                <div class="text-truncate" style="max-width: 220px;" title="{{ $branch->full_address }}">
+                                <div class="text-truncate text-muted-dark small" style="max-width: 240px;" title="{{ $branch->full_address }}">
                                     {{ $branch->full_address }}
                                 </div>
                             </td>
@@ -196,18 +208,17 @@
                                 <button type="button" 
                                         id="btn-status-{{ $branch->id }}" 
                                         onclick="toggleBranchRowStatus({{ $branch->id }})" 
-                                        class="badge-table {{ $branch->is_active ? 'success' : 'failed' }} border-0 cursor-pointer shadow-xs d-inline-flex align-items-center gap-1 text-decoration-none"
+                                        class="badge-table {{ $branch->is_active ? 'success' : 'failed' }} border-0 cursor-pointer shadow-xs d-inline-flex align-items-center text-decoration-none"
                                         title="Click to toggle status (Active / Inactive)">
-                                    <i class="bi {{ $branch->is_active ? 'bi-check-circle-fill' : 'bi-pause-circle-fill' }}" id="icon-status-{{ $branch->id }}"></i>
                                     <span id="text-status-{{ $branch->id }}">{{ $branch->is_active ? 'Active' : 'Inactive' }}</span>
                                 </button>
                             </td>
                             <td class="text-center pe-4">
                                 <div class="d-flex align-items-center justify-content-center gap-1.5">
                                     <a href="{{ route('admin.branches.show', $branch->id) }}" 
-                                       class="btn-custom btn-custom-light btn-custom-sm p-1.5" 
+                                       class="btn-custom btn-custom-primary btn-custom-sm" 
                                        title="View Full Branch Details">
-                                        <i class="bi bi-eye-fill text-muted-green" style="color: #0F4A32 !important;"></i>
+                                        <i class="bi bi-eye"></i> Details
                                     </a>
                                     <button type="button" 
                                             class="btn-custom btn-custom-light btn-custom-sm p-1.5" 
@@ -219,14 +230,14 @@
                                             class="btn-custom btn-custom-light btn-custom-sm p-1.5" 
                                             onclick="deleteBranchRow({{ $branch->id }}, '{{ addslashes($branch->name) }}', '{{ $branch->code }}')" 
                                             title="Delete Branch">
-                                        <i class="bi bi-trash3-fill text-danger"></i>
+                                        <i class="bi bi-trash3 text-danger"></i>
                                     </button>
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="text-center py-5">
+                            <td colspan="9" class="text-center py-5">
                                 <div class="d-flex flex-column align-items-center justify-content-center text-muted">
                                     <i class="bi bi-buildings fs-1 mb-2 opacity-50"></i>
                                     <h6 class="fw-bold mb-1">No Branch Records Found</h6>
@@ -634,16 +645,13 @@
             success: function(res) {
                 if (res.success) {
                     const $btn = $('#btn-status-' + id);
-                    const $icon = $('#icon-status-' + id);
                     const $text = $('#text-status-' + id);
 
                     if (res.is_active) {
                         $btn.removeClass('failed').addClass('success');
-                        $icon.removeClass('bi-pause-circle-fill').addClass('bi-check-circle-fill');
                         $text.text('Active');
                     } else {
                         $btn.removeClass('success').addClass('failed');
-                        $icon.removeClass('bi-check-circle-fill').addClass('bi-pause-circle-fill');
                         $text.text('Inactive');
                     }
 
