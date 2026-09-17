@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewCandidateRegistrationAdminMail;
 use App\Models\Bluetick;
 use App\Models\Branch;
 use App\Models\Candidate;
@@ -25,6 +26,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -493,6 +495,14 @@ class AuthController extends Controller
             }
         } catch (\Exception $e) {
             \Log::error('Welcome WhatsApp Message Error: '.$e->getMessage());
+        }
+
+        // Send New Candidate Registration Notification Email to Admin
+        try {
+            $adminEmail = env('ADMIN_NOTIFICATION_EMAIL', 'sumatra.sales2424@gmail.com') ?: 'sumatra.sales2424@gmail.com';
+            Mail::to($adminEmail)->send(new NewCandidateRegistrationAdminMail($candidate, isset($branch) && $branch ? $branch : null));
+        } catch (\Exception $e) {
+            \Log::error('Admin Registration Email Notification Error: '.$e->getMessage());
         }
 
         return response()->json(['success' => true, 'redirect' => route('dashboard')]);
