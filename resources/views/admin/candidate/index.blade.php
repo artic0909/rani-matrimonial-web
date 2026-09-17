@@ -188,7 +188,7 @@
                                         class="badge-table {{ $isActive ? 'success' : 'failed' }} border-0 cursor-pointer shadow-xs d-inline-flex align-items-center gap-1 text-decoration-none"
                                         title="Click to toggle status (Active / Deactivated)">
                                     <i class="bi {{ $isActive ? 'bi-check-circle-fill' : 'bi-eye-slash-fill' }}" id="icon-status-{{ $candidate->id }}"></i>
-                                    <span id="text-status-{{ $candidate->id }}">{{ $isActive ? 'Visible (Active)' : 'Hidden (Deactive)' }}</span>
+                                    <span id="text-status-{{ $candidate->id }}">{{ $isActive ? 'Visible' : 'Hidden' }}</span>
                                 </button>
                             </td>
                             <td>
@@ -201,12 +201,12 @@
                                        title="View Full Profile Details & Activity">
                                         <i class="bi bi-person-lines-fill"></i> Details
                                     </a>
-                                    <a href="{{ url('/candidate/' . ($candidate->candidate_code ?? $candidate->id)) }}" 
+                                    <!-- <a href="{{ url('/candidate/' . ($candidate->candidate_code ?? $candidate->id)) }}" 
                                        target="_blank" 
                                        class="table-btn-action" 
                                        title="Public Profile Preview">
                                         <i class="bi bi-box-arrow-up-right"></i>
-                                    </a>
+                                    </a> -->
                                 </div>
                             </td>
                         </tr>
