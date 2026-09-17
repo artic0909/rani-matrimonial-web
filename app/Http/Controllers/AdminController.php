@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\Bluetick;
+use App\Models\Branch;
 use App\Models\Candidate;
 use App\Models\ConnectionRequest;
 use App\Models\Notification;
@@ -11,6 +12,7 @@ use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -98,7 +100,7 @@ class AdminController extends Controller
             $q->where('selfie_verified', false)
               ->orWhereNull('selfie_verified');
         })->whereDoesntHave('bluetick', fn($bq) => $bq->where('is_accept', 1))->count();
-        $totalBranches = 4; // Regional Franchise Centers
+        $totalBranches = Branch::count(); // Regional Franchise Centers from database
 
         // Percentages (avoid divide by zero)
         $activeCandidatesPercent = $totalCandidates > 0 ? (int) round(($activeCandidates / $totalCandidates) * 100) : 0;
@@ -641,12 +643,183 @@ class AdminController extends Controller
     }
 
     /**
-     * Branches Page (Navigation Tabs)
+     * Branches Directory & Management
      */
     public function branches(Request $request)
     {
-        $activeTab = $request->query('tab', 'overview');
-        return view('admin.branch.index', compact('activeTab'));
+        $search = trim($request->query('search', ''));
+        $status = strtolower($request->query('status', 'all'));
+
+        $query = Branch::latest();
+
+        if ($status === 'active') {
+            $query->where('is_active', true);
+        } elseif (in_array($status, ['inactive', 'deactivated'])) {
+            $query->where('is_active', false);
+        }
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('code', 'LIKE', "%{$search}%")
+                  ->orWhere('city', 'LIKE', "%{$search}%")
+                  ->orWhere('state', 'LIKE', "%{$search}%")
+                  ->orWhere('phone', 'LIKE', "%{$search}%")
+                  ->orWhere('designation', 'LIKE', "%{$search}%")
+                  ->orWhere('full_address', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $branches = $query->paginate(15)->withQueryString();
+
+        $counts = [
+            'all' => Branch::count(),
+            'active' => Branch::where('is_active', true)->count(),
+            'inactive' => Branch::where('is_active', false)->count(),
+            'cities' => Branch::distinct('city')->count('city'),
+        ];
+
+        return view('admin.branch.index', compact('branches', 'counts', 'search', 'status'));
+    }
+
+    /**
+     * Store a new branch
+     */
+    public function storeBranch(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'city' => 'required|string|max:100',
+            'state' => 'required|string|max:100',
+            'full_address' => 'required|string|max:1000',
+            'designation' => 'required|string|max:100',
+            'aadhar_front' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:5120',
+            'aadhar_back' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:5120',
+        ]);
+
+        $data = $request->only(['name', 'phone', 'city', 'state', 'full_address', 'designation']);
+
+        if ($request->hasFile('aadhar_front')) {
+            $frontFile = $request->file('aadhar_front');
+            $frontName = 'branch_front_' . time() . '_' . rand(1000, 9999) . '.' . $frontFile->getClientOriginalExtension();
+            $data['aadhar_front'] = $frontFile->storeAs('branches', $frontName, 'public');
+        }
+
+        if ($request->hasFile('aadhar_back')) {
+            $backFile = $request->file('aadhar_back');
+            $backName = 'branch_back_' . time() . '_' . rand(1000, 9999) . '.' . $backFile->getClientOriginalExtension();
+            $data['aadhar_back'] = $backFile->storeAs('branches', $backName, 'public');
+        }
+
+        $branch = Branch::create($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Branch {$branch->name} ({$branch->code}) created successfully!",
+            'branch' => $branch,
+        ]);
+    }
+
+    /**
+     * Show single branch details as JSON for editing / inspection
+     */
+    public function showBranch($id)
+    {
+        $branch = Branch::findOrFail($id);
+        return response()->json([
+            'success' => true,
+            'branch' => $branch,
+            'front_url' => $branch->aadhar_front_url,
+            'back_url' => $branch->aadhar_back_url,
+        ]);
+    }
+
+    /**
+     * Update an existing branch
+     */
+    public function updateBranch(Request $request, $id)
+    {
+        $branch = Branch::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'city' => 'required|string|max:100',
+            'state' => 'required|string|max:100',
+            'full_address' => 'required|string|max:1000',
+            'designation' => 'required|string|max:100',
+            'aadhar_front' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:5120',
+            'aadhar_back' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:5120',
+        ]);
+
+        $data = $request->only(['name', 'phone', 'city', 'state', 'full_address', 'designation']);
+
+        if ($request->hasFile('aadhar_front')) {
+            if ($branch->aadhar_front && Storage::disk('public')->exists($branch->aadhar_front)) {
+                Storage::disk('public')->delete($branch->aadhar_front);
+            }
+            $frontFile = $request->file('aadhar_front');
+            $frontName = 'branch_front_' . time() . '_' . rand(1000, 9999) . '.' . $frontFile->getClientOriginalExtension();
+            $data['aadhar_front'] = $frontFile->storeAs('branches', $frontName, 'public');
+        }
+
+        if ($request->hasFile('aadhar_back')) {
+            if ($branch->aadhar_back && Storage::disk('public')->exists($branch->aadhar_back)) {
+                Storage::disk('public')->delete($branch->aadhar_back);
+            }
+            $backFile = $request->file('aadhar_back');
+            $backName = 'branch_back_' . time() . '_' . rand(1000, 9999) . '.' . $backFile->getClientOriginalExtension();
+            $data['aadhar_back'] = $backFile->storeAs('branches', $backName, 'public');
+        }
+
+        $branch->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Branch {$branch->name} ({$branch->code}) updated successfully!",
+            'branch' => $branch,
+        ]);
+    }
+
+    /**
+     * Toggle Branch Operational / Inactive Status
+     */
+    public function toggleBranchStatus(Request $request, $id)
+    {
+        $branch = Branch::findOrFail($id);
+        $branch->is_active = !$branch->is_active;
+        $branch->save();
+
+        return response()->json([
+            'success' => true,
+            'is_active' => (bool) $branch->is_active,
+            'message' => "Branch {$branch->name} is now " . ($branch->is_active ? 'Active (Operational)' : 'Inactive (Closed)') . '.',
+        ]);
+    }
+
+    /**
+     * Delete branch record
+     */
+    public function destroyBranch(Request $request, $id)
+    {
+        $branch = Branch::findOrFail($id);
+        $name = $branch->name;
+        $code = $branch->code;
+
+        if ($branch->aadhar_front && Storage::disk('public')->exists($branch->aadhar_front)) {
+            Storage::disk('public')->delete($branch->aadhar_front);
+        }
+        if ($branch->aadhar_back && Storage::disk('public')->exists($branch->aadhar_back)) {
+            Storage::disk('public')->delete($branch->aadhar_back);
+        }
+
+        $branch->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Branch {$name} ({$code}) was deleted successfully.",
+        ]);
     }
 
     /**

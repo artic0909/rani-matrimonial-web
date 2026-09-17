@@ -21,6 +21,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/transactions', [AdminController::class, 'transactions'])->name('transactions.index');
         Route::get('/transactions/{id}/receipt', [AdminController::class, 'downloadTransactionReceipt'])->name('transactions.receipt');
         Route::get('/branches', [AdminController::class, 'branches'])->name('branches.index');
+        Route::post('/branches', [AdminController::class, 'storeBranch'])->name('branches.store');
+        Route::get('/branches/{id}', [AdminController::class, 'showBranch'])->name('branches.show');
+        Route::put('/branches/{id}', [AdminController::class, 'updateBranch'])->name('branches.update');
+        Route::post('/branches/{id}/toggle-status', [AdminController::class, 'toggleBranchStatus'])->name('branches.toggle-status');
+        Route::delete('/branches/{id}', [AdminController::class, 'destroyBranch'])->name('branches.destroy');
         Route::get('/blueticks', [AdminController::class, 'bluetickRequests'])->name('blueticks');
         Route::post('/bluetick/{id}/approve', [AdminController::class, 'approveBluetick'])->name('bluetick.approve');
         Route::post('/bluetick/{id}/reject', [AdminController::class, 'rejectBluetick'])->name('bluetick.reject');
