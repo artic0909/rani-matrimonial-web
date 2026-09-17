@@ -139,7 +139,6 @@
                         <th>Contact Phone</th>
                         <th>Location (City, State)</th>
                         <th>Address</th>
-                        <th>Aadhaar Docs</th>
                         <th>Status</th>
                         <th class="text-center pe-4" style="width: 130px;">Actions</th>
                     </tr>
@@ -151,12 +150,16 @@
                                 {{ (($branches->currentPage() - 1) * $branches->perPage()) + $loop->iteration }}
                             </td>
                             <td>
-                                <span class="badge bg-light text-forest-medium border font-monospace px-2 py-1 fw-bold fs-xs">
-                                    {{ $branch->code }}
-                                </span>
+                                <a href="{{ route('admin.branches.show', $branch->id) }}" class="text-decoration-none">
+                                    <span class="badge font-monospace px-2.5 py-1.5 fw-bold fs-xs shadow-xs" style="background: rgba(15, 74, 50, 0.1); color: #0F4A32; border: 1.5px solid rgba(15, 74, 50, 0.25); letter-spacing: 0.5px; border-radius: 6px;">
+                                        <i class="bi bi-qr-code me-1 text-muted-green"></i>{{ $branch->code }}
+                                    </span>
+                                </a>
                             </td>
                             <td>
-                                <div class="table-user-name fw-bold">{{ $branch->name }}</div>
+                                <a href="{{ route('admin.branches.show', $branch->id) }}" class="table-user-name fw-bold text-decoration-none text-main d-inline-block">
+                                    {{ $branch->name }}
+                                </a>
                                 <div class="table-user-sub text-muted fs-xs">
                                     <i class="bi bi-clock me-1"></i> Created {{ $branch->created_at->format('d M, Y') }}
                                 </div>
@@ -168,7 +171,7 @@
                             </td>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <a href="tel:{{ $branch->phone }}" class="fw-bold font-monospace text-decoration-none text-forest-medium">
+                                    <a href="tel:{{ $branch->phone }}" class="fw-bold font-monospace text-decoration-none" style="color: #0F4A32;">
                                         <i class="bi bi-telephone-fill me-1 text-muted-green"></i>{{ $branch->phone }}
                                     </a>
                                     <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $branch->phone) }}" 
@@ -190,31 +193,6 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="d-flex align-items-center gap-1.5">
-                                    @if($branch->aadhar_front)
-                                        <button type="button" 
-                                                class="btn-custom btn-custom-light btn-custom-sm py-0.5 px-2 fs-xs" 
-                                                onclick="previewDoc('{{ $branch->aadhar_front_url }}', 'Aadhaar Front - {{ addslashes($branch->name) }}')"
-                                                title="View Aadhaar Front">
-                                            <i class="bi bi-card-image text-primary"></i> Front
-                                        </button>
-                                    @endif
-
-                                    @if($branch->aadhar_back)
-                                        <button type="button" 
-                                                class="btn-custom btn-custom-light btn-custom-sm py-0.5 px-2 fs-xs" 
-                                                onclick="previewDoc('{{ $branch->aadhar_back_url }}', 'Aadhaar Back - {{ addslashes($branch->name) }}')"
-                                                title="View Aadhaar Back">
-                                            <i class="bi bi-card-image text-info"></i> Back
-                                        </button>
-                                    @endif
-
-                                    @if(!$branch->aadhar_front && !$branch->aadhar_back)
-                                        <span class="badge bg-light text-muted border px-2 py-1 fs-xs">No Docs</span>
-                                    @endif
-                                </div>
-                            </td>
-                            <td>
                                 <button type="button" 
                                         id="btn-status-{{ $branch->id }}" 
                                         onclick="toggleBranchRowStatus({{ $branch->id }})" 
@@ -226,6 +204,11 @@
                             </td>
                             <td class="text-center pe-4">
                                 <div class="d-flex align-items-center justify-content-center gap-1.5">
+                                    <a href="{{ route('admin.branches.show', $branch->id) }}" 
+                                       class="btn-custom btn-custom-light btn-custom-sm p-1.5" 
+                                       title="View Full Branch Details">
+                                        <i class="bi bi-eye-fill text-muted-green" style="color: #0F4A32 !important;"></i>
+                                    </a>
                                     <button type="button" 
                                             class="btn-custom btn-custom-light btn-custom-sm p-1.5" 
                                             onclick="openEditBranchModal({{ $branch->id }})" 

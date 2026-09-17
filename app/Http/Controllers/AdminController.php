@@ -722,17 +722,22 @@ class AdminController extends Controller
     }
 
     /**
-     * Show single branch details as JSON for editing / inspection
+     * Show single branch details or return JSON for AJAX
      */
-    public function showBranch($id)
+    public function showBranch(Request $request, $id)
     {
         $branch = Branch::findOrFail($id);
-        return response()->json([
-            'success' => true,
-            'branch' => $branch,
-            'front_url' => $branch->aadhar_front_url,
-            'back_url' => $branch->aadhar_back_url,
-        ]);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'branch' => $branch,
+                'front_url' => $branch->aadhar_front_url,
+                'back_url' => $branch->aadhar_back_url,
+            ]);
+        }
+
+        return view('admin.branch.show', compact('branch'));
     }
 
     /**
@@ -775,11 +780,15 @@ class AdminController extends Controller
 
         $branch->update($data);
 
-        return response()->json([
-            'success' => true,
-            'message' => "Branch {$branch->name} ({$branch->code}) updated successfully!",
-            'branch' => $branch,
-        ]);
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Branch {$branch->name} ({$branch->code}) updated successfully!",
+                'branch' => $branch,
+            ]);
+        }
+
+        return redirect()->route('admin.branches.show', $branch->id)->with('success', "Branch {$branch->name} ({$branch->code}) updated successfully!");
     }
 
     /**
@@ -791,11 +800,17 @@ class AdminController extends Controller
         $branch->is_active = !$branch->is_active;
         $branch->save();
 
-        return response()->json([
-            'success' => true,
-            'is_active' => (bool) $branch->is_active,
-            'message' => "Branch {$branch->name} is now " . ($branch->is_active ? 'Active (Operational)' : 'Inactive (Closed)') . '.',
-        ]);
+        $statusMsg = "Branch {$branch->name} is now " . ($branch->is_active ? 'Active (Operational)' : 'Inactive (Closed)') . '.';
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'is_active' => (bool) $branch->is_active,
+                'message' => $statusMsg,
+            ]);
+        }
+
+        return redirect()->back()->with('success', $statusMsg);
     }
 
     /**
@@ -816,10 +831,14 @@ class AdminController extends Controller
 
         $branch->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => "Branch {$name} ({$code}) was deleted successfully.",
-        ]);
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Branch {$name} ({$code}) was deleted successfully.",
+            ]);
+        }
+
+        return redirect()->route('admin.branches.index')->with('success', "Branch {$name} ({$code}) was deleted successfully.");
     }
 
     /**
