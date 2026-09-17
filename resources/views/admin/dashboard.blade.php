@@ -15,23 +15,51 @@
         donutTotal: '{{ $donutTotal }}',
         donutTotalLabel: @json($donutTotalLabel),
         dateRange: [
-          '{{ now()->subDays(30)->format('Y-m-d') }}',
-          '{{ now()->format('Y-m-d') }}'
+          '{{ $startDate ?? now()->subDays(30)->format('Y-m-d') }}',
+          '{{ $endDate ?? now()->format('Y-m-d') }}'
         ]
       };
     </script>
 
     <!-- START: Dashboard Header Banner -->
-    <div class="page-header">
+    <div class="page-header d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
       <div>
-        <h1 class="page-title">Dashboard</h1>
-        <p class="page-subtitle">Real-time management for candidate profiles, verifications, match interactions & wallet finances.</p>
+        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+          <h1 class="page-title mb-0">Dashboard</h1>
+          @if($isFiltered)
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-2.5 py-1 rounded-pill fw-bold fs-xs d-inline-flex align-items-center gap-1">
+              <i class="bi bi-funnel-fill"></i> Filtered Timeframe
+            </span>
+          @else
+            <span class="badge bg-light text-dark border px-2.5 py-1 rounded-pill fw-semibold fs-xs">
+              Live Synchronized
+            </span>
+          @endif
+        </div>
+        <p class="page-subtitle mb-0">Real-time management for candidate profiles, verifications, match interactions & wallet finances.</p>
       </div>
-      <button class="btn-date-picker" type="button" id="date-picker-trigger">
-        <i class="bi bi-calendar4-event"></i>
-        <span id="selected-date-range">{{ now()->subDays(30)->format('F j, Y') }} - {{ now()->format('F j, Y') }}</span>
-        <i class="bi bi-chevron-down ms-1"></i>
-      </button>
+
+      <!-- Date Filter Toolbar with Presets & Picker -->
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        @if($isFiltered)
+          <a href="{{ route('admin.dashboard') }}" class="btn-custom btn-custom-outline-danger btn-custom-sm py-1.5 px-3 d-inline-flex align-items-center gap-1.5 shadow-xs" title="Reset date filter to standard overview">
+            <i class="bi bi-x-circle-fill"></i>
+            <span>Clear Filter</span>
+          </a>
+        @endif
+
+        <button class="btn-date-picker {{ $isFiltered ? 'shadow-sm border-forest' : '' }}" type="button" id="date-picker-trigger" title="Click to filter dashboard metrics by date range">
+          <i class="bi bi-calendar4-event text-forest-medium"></i>
+          <span id="selected-date-range">
+            @if($isFiltered)
+              {{ \Carbon\Carbon::parse($startDate)->format('M j, Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('M j, Y') }}
+            @else
+              {{ now()->subDays(30)->format('M j, Y') }} - {{ now()->format('M j, Y') }}
+            @endif
+          </span>
+          <i class="bi bi-chevron-down ms-1 text-muted"></i>
+        </button>
+      </div>
     </div>
     <!-- END: Dashboard Header Banner -->
 

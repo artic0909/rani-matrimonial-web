@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // -----------------------------------------------------------------
-    // 5. Flatpickr Date Range Picker Initialization
+    // 5. Flatpickr Date Range Picker Initialization & Real-Time Filter
     // -----------------------------------------------------------------
     const datePickerTrigger = document.querySelector('#date-picker-trigger');
     const selectedRangeText = document.querySelector('#selected-date-range');
@@ -377,12 +377,33 @@ document.addEventListener('DOMContentLoaded', function () {
             defaultDate: defaultRange,
             onValueUpdate: function (selectedDates, dateStr, instance) {
                 if (selectedDates.length === 2) {
-                    const startStr = instance.formatDate(selectedDates[0], 'F j, Y');
-                    const endStr = instance.formatDate(selectedDates[1], 'F j, Y');
+                    const startStr = instance.formatDate(selectedDates[0], 'M j, Y');
+                    const endStr = instance.formatDate(selectedDates[1], 'M j, Y');
                     selectedRangeText.textContent = `${startStr} - ${endStr}`;
                 } else if (selectedDates.length === 1) {
-                    const startStr = instance.formatDate(selectedDates[0], 'F j, Y');
+                    const startStr = instance.formatDate(selectedDates[0], 'M j, Y');
                     selectedRangeText.textContent = startStr;
+                }
+            },
+            onClose: function (selectedDates, dateStr, instance) {
+                if (selectedDates.length === 2) {
+                    const startVal = instance.formatDate(selectedDates[0], 'Y-m-d');
+                    const endVal = instance.formatDate(selectedDates[1], 'Y-m-d');
+                    
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('start_date') !== startVal || urlParams.get('end_date') !== endVal) {
+                        urlParams.set('start_date', startVal);
+                        urlParams.set('end_date', endVal);
+                        window.location.href = window.location.pathname + '?' + urlParams.toString();
+                    }
+                } else if (selectedDates.length === 1) {
+                    const startVal = instance.formatDate(selectedDates[0], 'Y-m-d');
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('start_date') !== startVal || urlParams.get('end_date') !== startVal) {
+                        urlParams.set('start_date', startVal);
+                        urlParams.set('end_date', startVal);
+                        window.location.href = window.location.pathname + '?' + urlParams.toString();
+                    }
                 }
             }
         });

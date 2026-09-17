@@ -86,17 +86,276 @@ class AdminController extends Controller
         return redirect()->route('admin.login')->with('success', 'You have been logged out successfully.');
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        // 1. Candidate Platform Counts
-        $totalCandidates = Candidate::count();
-        $activeCandidates = Candidate::where('is_active', true)->count();
-        $deactivatedCandidates = Candidate::where('is_active', false)->count();
-        $maleCandidates = Candidate::where('gender', 'male')->count();
-        $femaleCandidates = Candidate::where('gender', 'female')->count();
-        $verifiedCandidates = Candidate::whereHas('bluetick', fn($bq) => $bq->where('is_accept', 1))->count();
-        $unverifiedCandidates = Candidate::whereDoesntHave('bluetick', fn($bq) => $bq->where('is_accept', 1))->count();
-        $totalBranches = Branch::count(); // Regional Franchise Centers from database
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+        $isFiltered = !empty($startDate) && !empty($endDate);
+
+        if ($isFiltered) {
+            $start = Carbon::parse($startDate)->startOfDay();
+            $end = Carbon::parse($endDate)->endOfDay();
+            $diffDays = max(1, $start->diffInDays($end) + 1);
+            $prevStart = $start->copy()->subDays($diffDays);
+            $prevEnd = $start->copy()->subSecond();
+
+            // 1. Candidate Platform Counts in Range
+            $totalCandidates = Candidate::whereBetween('created_at', [$start, $end])->count();
+            $activeCandidates = Candidate::where('is_active', true)->whereBetween('created_at', [$start, $end])->count();
+            $deactivatedCandidates = Candidate::where('is_active', false)->whereBetween('created_at', [$start, $end])->count();
+            $maleCandidates = Candidate::where('gender', 'male')->whereBetween('created_at', [$start, $end])->count();
+            $femaleCandidates = Candidate::where('gender', 'female')->whereBetween('created_at', [$start, $end])->count();
+            $verifiedCandidates = Candidate::whereBetween('created_at', [$start, $end])->whereHas('bluetick', fn($bq) => $bq->where('is_accept', 1))->count();
+            $unverifiedCandidates = Candidate::whereBetween('created_at', [$start, $end])->whereDoesntHave('bluetick', fn($bq) => $bq->where('is_accept', 1))->count();
+            $totalBranches = Branch::whereBetween('created_at', [$start, $end])->count();
+
+            // 2. Verification & Connections in Range
+            $pendingBlueTicks = Bluetick::with('candidate')->where('is_accept', 0)->whereBetween('created_at', [$start, $end])->latest()->get();
+            $pendingBlueTicksCount = $pendingBlueTicks->count();
+            $approvedBlueTicks = Bluetick::where('is_accept', 1)->whereBetween('created_at', [$start, $end])->count();
+            $totalConnections = ConnectionRequest::whereBetween('created_at', [$start, $end])->count();
+            $acceptedConnections = ConnectionRequest::where('status', 'accepted')->whereBetween('created_at', [$start, $end])->count();
+            $acceptedConnectionsPercent = $totalConnections > 0 ? (int) round(($acceptedConnections / $totalConnections) * 100) : 0;
+
+            $totalWhatsAppRequests = \App\Models\WhatsAppChatRequest::whereBetween('created_at', [$start, $end])->count();
+            $acceptedWhatsAppRequests = \App\Models\WhatsAppChatRequest::where('status', 'accepted')->whereBetween('created_at', [$start, $end])->count();
+            $acceptedWhatsAppPercent = $totalWhatsAppRequests > 0 ? (int) round(($acceptedWhatsAppRequests / $totalWhatsAppRequests) * 100) : 0;
+
+            $recentRequests = Bluetick::with('candidate')->whereBetween('created_at', [$start, $end])->latest()->take(10)->get();
+            if ($recentRequests->isEmpty()) {
+                $recentRequests = Bluetick::with('candidate')->latest()->take(10)->get();
+            }
+
+            // 3. Financial Metrics (Wallets & Transactions in INR ₹) in Range
+            $totalCredits = (float) \App\Models\WalletTransaction::where('type', 'credit')->where('status', 'completed')->whereBetween('created_at', [$start, $end])->sum('amount');
+            $totalDebits = (float) \App\Models\WalletTransaction::where('type', 'debit')->where('status', 'completed')->whereBetween('created_at', [$start, $end])->sum('amount');
+            $netIncome = $totalCredits - $totalDebits;
+
+            $prevCredits = (float) \App\Models\WalletTransaction::where('type', 'credit')->where('status', 'completed')->whereBetween('created_at', [$prevStart, $prevEnd])->sum('amount');
+            $prevDebits = (float) \App\Models\WalletTransaction::where('type', 'debit')->where('status', 'completed')->whereBetween('created_at', [$prevStart, $prevEnd])->sum('amount');
+
+            $creditsGrowth = $prevCredits > 0 ? round((($totalCredits - $prevCredits) / $prevCredits) * 100, 1) : ($totalCredits > 0 ? 100 : 0);
+            $debitsGrowth = $prevDebits > 0 ? round((($totalDebits - $prevDebits) / $prevDebits) * 100, 1) : ($totalDebits > 0 ? 100 : 0);
+
+            $thisMonthCredits = $totalCredits;
+            $lastMonthCredits = $prevCredits;
+            $thisMonthDebits = $totalDebits;
+            $lastMonthDebits = $prevDebits;
+
+            // 4. Dynamic Revenue Bar Chart based on date range
+            $revenueCategories = [];
+            $revenueCredits = [];
+            $revenueDebits = [];
+
+            if ($diffDays <= 14) {
+                // Day-by-day intervals
+                for ($d = 0; $d < $diffDays; $d++) {
+                    $cDate = $start->copy()->addDays($d);
+                    $dStart = $cDate->copy()->startOfDay();
+                    $dEnd = $cDate->copy()->endOfDay();
+
+                    $revenueCategories[] = $cDate->format('d M');
+                    $revenueCredits[] = (float) \App\Models\WalletTransaction::where('type', 'credit')
+                        ->where('status', 'completed')
+                        ->whereBetween('created_at', [$dStart, $dEnd])
+                        ->sum('amount');
+                    $revenueDebits[] = (float) \App\Models\WalletTransaction::where('type', 'debit')
+                        ->where('status', 'completed')
+                        ->whereBetween('created_at', [$dStart, $dEnd])
+                        ->sum('amount');
+                }
+            } elseif ($diffDays <= 60) {
+                // Split into 6 to 8 even time slots
+                $slots = 8;
+                $slotDays = max(1, (int) ceil($diffDays / $slots));
+                for ($s = 0; $s < $slots; $s++) {
+                    $sStart = $start->copy()->addDays($s * $slotDays)->startOfDay();
+                    $sEnd = $sStart->copy()->addDays($slotDays - 1)->endOfDay();
+                    if ($sStart->gt($end)) break;
+                    if ($sEnd->gt($end)) $sEnd = $end->copy();
+
+                    $revenueCategories[] = $sStart->format('d M');
+                    $revenueCredits[] = (float) \App\Models\WalletTransaction::where('type', 'credit')
+                        ->where('status', 'completed')
+                        ->whereBetween('created_at', [$sStart, $sEnd])
+                        ->sum('amount');
+                    $revenueDebits[] = (float) \App\Models\WalletTransaction::where('type', 'debit')
+                        ->where('status', 'completed')
+                        ->whereBetween('created_at', [$sStart, $sEnd])
+                        ->sum('amount');
+                }
+            } else {
+                // Monthly intervals in range
+                $cursor = $start->copy()->startOfMonth();
+                while ($cursor->lte($end)) {
+                    $mStart = $cursor->copy()->startOfMonth();
+                    if ($mStart->lt($start)) $mStart = $start->copy();
+                    $mEnd = $cursor->copy()->endOfMonth();
+                    if ($mEnd->gt($end)) $mEnd = $end->copy();
+
+                    $revenueCategories[] = $cursor->format('M Y');
+                    $revenueCredits[] = (float) \App\Models\WalletTransaction::where('type', 'credit')
+                        ->where('status', 'completed')
+                        ->whereBetween('created_at', [$mStart, $mEnd])
+                        ->sum('amount');
+                    $revenueDebits[] = (float) \App\Models\WalletTransaction::where('type', 'debit')
+                        ->where('status', 'completed')
+                        ->whereBetween('created_at', [$mStart, $mEnd])
+                        ->sum('amount');
+
+                    $cursor->addMonth();
+                }
+            }
+
+            // 5. Sparklines in range (12 intervals)
+            $incomeSparkline = [];
+            $returnSparkline = [];
+            $sparkSlots = 12;
+            $sparkStep = max(1, $start->diffInSeconds($end) / $sparkSlots);
+            for ($i = 0; $i < $sparkSlots; $i++) {
+                $spStart = $start->copy()->addSeconds((int)($i * $sparkStep));
+                $spEnd = $spStart->copy()->addSeconds((int)$sparkStep);
+                if ($spEnd->gt($end)) $spEnd = $end->copy();
+
+                $incomeSparkline[] = (float) \App\Models\WalletTransaction::where('type', 'credit')
+                    ->where('status', 'completed')
+                    ->whereBetween('created_at', [$spStart, $spEnd])
+                    ->sum('amount');
+                $returnSparkline[] = (float) \App\Models\WalletTransaction::where('type', 'debit')
+                    ->where('status', 'completed')
+                    ->whereBetween('created_at', [$spStart, $spEnd])
+                    ->sum('amount');
+            }
+
+            // 6. Recent Transactions in range
+            $recentTransactions = \App\Models\WalletTransaction::with(['candidate.photos', 'wallet.candidate'])
+                ->whereBetween('created_at', [$start, $end])
+                ->latest()
+                ->take(6)
+                ->get();
+            if ($recentTransactions->isEmpty()) {
+                $recentTransactions = \App\Models\WalletTransaction::with(['candidate.photos', 'wallet.candidate'])
+                    ->latest()
+                    ->take(6)
+                    ->get();
+            }
+
+        } else {
+            // Lifetime / Standard Platform Counts
+            $totalCandidates = Candidate::count();
+            $activeCandidates = Candidate::where('is_active', true)->count();
+            $deactivatedCandidates = Candidate::where('is_active', false)->count();
+            $maleCandidates = Candidate::where('gender', 'male')->count();
+            $femaleCandidates = Candidate::where('gender', 'female')->count();
+            $verifiedCandidates = Candidate::whereHas('bluetick', fn($bq) => $bq->where('is_accept', 1))->count();
+            $unverifiedCandidates = Candidate::whereDoesntHave('bluetick', fn($bq) => $bq->where('is_accept', 1))->count();
+            $totalBranches = Branch::count(); // Regional Franchise Centers from database
+
+            // 2. Verification & Connections
+            $pendingBlueTicks = Bluetick::with('candidate')->where('is_accept', 0)->latest()->get();
+            $pendingBlueTicksCount = $pendingBlueTicks->count();
+            $approvedBlueTicks = Bluetick::where('is_accept', 1)->count();
+            $totalConnections = ConnectionRequest::count();
+            $acceptedConnections = ConnectionRequest::where('status', 'accepted')->count();
+            $acceptedConnectionsPercent = $totalConnections > 0 ? (int) round(($acceptedConnections / $totalConnections) * 100) : 0;
+
+            $totalWhatsAppRequests = \App\Models\WhatsAppChatRequest::count();
+            $acceptedWhatsAppRequests = \App\Models\WhatsAppChatRequest::where('status', 'accepted')->count();
+            $acceptedWhatsAppPercent = $totalWhatsAppRequests > 0 ? (int) round(($acceptedWhatsAppRequests / $totalWhatsAppRequests) * 100) : 0;
+
+            $recentRequests = Bluetick::with('candidate')->latest()->take(10)->get();
+
+            // 3. Financial Metrics (Wallets & Transactions in INR ₹)
+            $totalCredits = (float) \App\Models\WalletTransaction::where('type', 'credit')->where('status', 'completed')->sum('amount');
+            $totalDebits = (float) \App\Models\WalletTransaction::where('type', 'debit')->where('status', 'completed')->sum('amount');
+            $netIncome = $totalCredits - $totalDebits;
+
+            // Monthly comparison for Growth %
+            $thisMonthStart = now()->startOfMonth();
+            $lastMonthStart = now()->subMonth()->startOfMonth();
+            $lastMonthEnd = now()->subMonth()->endOfMonth();
+
+            $thisMonthCredits = (float) \App\Models\WalletTransaction::where('type', 'credit')
+                ->where('status', 'completed')
+                ->where('created_at', '>=', $thisMonthStart)
+                ->sum('amount');
+
+            $lastMonthCredits = (float) \App\Models\WalletTransaction::where('type', 'credit')
+                ->where('status', 'completed')
+                ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
+                ->sum('amount');
+
+            if ($lastMonthCredits > 0) {
+                $creditsGrowth = round((($thisMonthCredits - $lastMonthCredits) / $lastMonthCredits) * 100, 1);
+            } elseif ($thisMonthCredits > 0) {
+                $creditsGrowth = 100;
+            } else {
+                $creditsGrowth = 0;
+            }
+
+            $thisMonthDebits = (float) \App\Models\WalletTransaction::where('type', 'debit')
+                ->where('status', 'completed')
+                ->where('created_at', '>=', $thisMonthStart)
+                ->sum('amount');
+
+            $lastMonthDebits = (float) \App\Models\WalletTransaction::where('type', 'debit')
+                ->where('status', 'completed')
+                ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
+                ->sum('amount');
+
+            if ($lastMonthDebits > 0) {
+                $debitsGrowth = round((($thisMonthDebits - $lastMonthDebits) / $lastMonthDebits) * 100, 1);
+            } elseif ($thisMonthDebits > 0) {
+                $debitsGrowth = 100;
+            } else {
+                $debitsGrowth = 0;
+            }
+
+            // 4. Monthly Revenue Bar Chart (Last 8 Months)
+            $revenueCategories = [];
+            $revenueCredits = [];
+            $revenueDebits = [];
+
+            for ($i = 7; $i >= 0; $i--) {
+                $monthDate = now()->subMonths($i);
+                $mStart = $monthDate->copy()->startOfMonth();
+                $mEnd = $monthDate->copy()->endOfMonth();
+
+                $revenueCategories[] = $monthDate->format('M');
+                $revenueCredits[] = (float) \App\Models\WalletTransaction::where('type', 'credit')
+                    ->where('status', 'completed')
+                    ->whereBetween('created_at', [$mStart, $mEnd])
+                    ->sum('amount');
+                $revenueDebits[] = (float) \App\Models\WalletTransaction::where('type', 'debit')
+                    ->where('status', 'completed')
+                    ->whereBetween('created_at', [$mStart, $mEnd])
+                    ->sum('amount');
+            }
+
+            // 5. Sparklines (Last 12 Days)
+            $incomeSparkline = [];
+            $returnSparkline = [];
+            for ($i = 11; $i >= 0; $i--) {
+                $dayDate = now()->subDays($i);
+                $dStart = $dayDate->copy()->startOfDay();
+                $dEnd = $dayDate->copy()->endOfDay();
+
+                $incomeSparkline[] = (float) \App\Models\WalletTransaction::where('type', 'credit')
+                    ->where('status', 'completed')
+                    ->whereBetween('created_at', [$dStart, $dEnd])
+                    ->sum('amount');
+                $returnSparkline[] = (float) \App\Models\WalletTransaction::where('type', 'debit')
+                    ->where('status', 'completed')
+                    ->whereBetween('created_at', [$dStart, $dEnd])
+                    ->sum('amount');
+            }
+
+            // 6. Recent Transactions List (Latest 6)
+            $recentTransactions = \App\Models\WalletTransaction::with(['candidate.photos', 'wallet.candidate'])
+                ->latest()
+                ->take(6)
+                ->get();
+        }
 
         // Percentages (avoid divide by zero)
         $activeCandidatesPercent = $totalCandidates > 0 ? (int) round(($activeCandidates / $totalCandidates) * 100) : 0;
@@ -105,111 +364,6 @@ class AdminController extends Controller
         $femaleCandidatesPercent = $totalCandidates > 0 ? (int) round(($femaleCandidates / $totalCandidates) * 100) : 0;
         $verifiedCandidatesPercent = $totalCandidates > 0 ? (int) round(($verifiedCandidates / $totalCandidates) * 100) : 0;
         $unverifiedCandidatesPercent = $totalCandidates > 0 ? (int) round(($unverifiedCandidates / $totalCandidates) * 100) : 0;
-
-        // 2. Verification & Connections
-        $pendingBlueTicks = Bluetick::with('candidate')->where('is_accept', 0)->latest()->get();
-        $pendingBlueTicksCount = $pendingBlueTicks->count();
-        $approvedBlueTicks = Bluetick::where('is_accept', 1)->count();
-        $totalConnections = ConnectionRequest::count();
-        $acceptedConnections = ConnectionRequest::where('status', 'accepted')->count();
-        $acceptedConnectionsPercent = $totalConnections > 0 ? (int) round(($acceptedConnections / $totalConnections) * 100) : 0;
-
-        $totalWhatsAppRequests = \App\Models\WhatsAppChatRequest::count();
-        $acceptedWhatsAppRequests = \App\Models\WhatsAppChatRequest::where('status', 'accepted')->count();
-        $acceptedWhatsAppPercent = $totalWhatsAppRequests > 0 ? (int) round(($acceptedWhatsAppRequests / $totalWhatsAppRequests) * 100) : 0;
-
-        $recentRequests = Bluetick::with('candidate')->latest()->take(10)->get();
-
-        // 3. Financial Metrics (Wallets & Transactions in INR ₹)
-        $totalCredits = (float) \App\Models\WalletTransaction::where('type', 'credit')->where('status', 'completed')->sum('amount');
-        $totalDebits = (float) \App\Models\WalletTransaction::where('type', 'debit')->where('status', 'completed')->sum('amount');
-        $netIncome = $totalCredits - $totalDebits;
-
-        // Monthly comparison for Growth %
-        $thisMonthStart = now()->startOfMonth();
-        $lastMonthStart = now()->subMonth()->startOfMonth();
-        $lastMonthEnd = now()->subMonth()->endOfMonth();
-
-        $thisMonthCredits = (float) \App\Models\WalletTransaction::where('type', 'credit')
-            ->where('status', 'completed')
-            ->where('created_at', '>=', $thisMonthStart)
-            ->sum('amount');
-
-        $lastMonthCredits = (float) \App\Models\WalletTransaction::where('type', 'credit')
-            ->where('status', 'completed')
-            ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
-            ->sum('amount');
-
-        if ($lastMonthCredits > 0) {
-            $creditsGrowth = round((($thisMonthCredits - $lastMonthCredits) / $lastMonthCredits) * 100, 1);
-        } elseif ($thisMonthCredits > 0) {
-            $creditsGrowth = 100;
-        } else {
-            $creditsGrowth = 0;
-        }
-
-        $thisMonthDebits = (float) \App\Models\WalletTransaction::where('type', 'debit')
-            ->where('status', 'completed')
-            ->where('created_at', '>=', $thisMonthStart)
-            ->sum('amount');
-
-        $lastMonthDebits = (float) \App\Models\WalletTransaction::where('type', 'debit')
-            ->where('status', 'completed')
-            ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
-            ->sum('amount');
-
-        if ($lastMonthDebits > 0) {
-            $debitsGrowth = round((($thisMonthDebits - $lastMonthDebits) / $lastMonthDebits) * 100, 1);
-        } elseif ($thisMonthDebits > 0) {
-            $debitsGrowth = 100;
-        } else {
-            $debitsGrowth = 0;
-        }
-
-        // 4. Monthly Revenue Bar Chart (Last 8 Months)
-        $revenueCategories = [];
-        $revenueCredits = [];
-        $revenueDebits = [];
-
-        for ($i = 7; $i >= 0; $i--) {
-            $monthDate = now()->subMonths($i);
-            $mStart = $monthDate->copy()->startOfMonth();
-            $mEnd = $monthDate->copy()->endOfMonth();
-
-            $revenueCategories[] = $monthDate->format('M');
-            $revenueCredits[] = (float) \App\Models\WalletTransaction::where('type', 'credit')
-                ->where('status', 'completed')
-                ->whereBetween('created_at', [$mStart, $mEnd])
-                ->sum('amount');
-            $revenueDebits[] = (float) \App\Models\WalletTransaction::where('type', 'debit')
-                ->where('status', 'completed')
-                ->whereBetween('created_at', [$mStart, $mEnd])
-                ->sum('amount');
-        }
-
-        // 5. Sparklines (Last 12 Days)
-        $incomeSparkline = [];
-        $returnSparkline = [];
-        for ($i = 11; $i >= 0; $i--) {
-            $dayDate = now()->subDays($i);
-            $dStart = $dayDate->copy()->startOfDay();
-            $dEnd = $dayDate->copy()->endOfDay();
-
-            $incomeSparkline[] = (float) \App\Models\WalletTransaction::where('type', 'credit')
-                ->where('status', 'completed')
-                ->whereBetween('created_at', [$dStart, $dEnd])
-                ->sum('amount');
-            $returnSparkline[] = (float) \App\Models\WalletTransaction::where('type', 'debit')
-                ->where('status', 'completed')
-                ->whereBetween('created_at', [$dStart, $dEnd])
-                ->sum('amount');
-        }
-
-        // 6. Recent Transactions List (Latest 6)
-        $recentTransactions = \App\Models\WalletTransaction::with(['candidate.photos', 'wallet.candidate'])
-            ->latest()
-            ->take(6)
-            ->get();
 
         // 7. Donut Chart Data (Candidate Engagement Distribution)
         $activePercent = $totalCandidates > 0 ? (int) round(($activeCandidates / $totalCandidates) * 100) : 0;
@@ -224,9 +378,12 @@ class AdminController extends Controller
         ];
         $donutLabels = ['Active Profiles', 'Blue Tick Verified', 'Match Interactions'];
         $donutTotal = $totalCandidates;
-        $donutTotalLabel = 'Total Profiles';
+        $donutTotalLabel = $isFiltered ? 'Filtered Profiles' : 'Total Profiles';
 
         return view('admin.dashboard', compact(
+            'startDate',
+            'endDate',
+            'isFiltered',
             'totalCandidates',
             'activeCandidates',
             'deactivatedCandidates',
