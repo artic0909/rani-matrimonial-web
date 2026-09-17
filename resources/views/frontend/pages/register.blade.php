@@ -655,28 +655,59 @@
                     <div x-show="step === 13" style="display: none;"
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
-                         x-transition:enter-end="opacity-100 translate-x-0" 
-                          
-                          
-                         >
+                         x-transition:enter-end="opacity-100 translate-x-0">
                          
                         <div class="flex justify-center mb-6">
                             <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-rani-gold border border-rani-gold/50 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
                                 <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                             </div>
                         </div>
-                        <h4 class="text-2xl font-serif text-white mb-2 text-center text-shadow-sm">Verify Your Number</h4>
-                        <p class="text-sm text-white/80 text-center mb-8 font-light">A 4-digit secret code has been sent to <span class="font-bold text-rani-gold" x-text="formData.mobile"></span></p>
+                        <h4 class="text-2xl font-serif text-white mb-2 text-center text-shadow-sm">Verify Mobile Number</h4>
+                        <p class="text-sm text-white/80 text-center mb-2 font-light">
+                            A 4-digit verification code was sent via WhatsApp to:
+                        </p>
+                        <div class="flex items-center justify-center gap-2 mb-6">
+                            <span class="font-bold text-rani-gold font-mono text-base bg-white/10 px-3 py-1 rounded-full border border-rani-gold/40">
+                                +91 <span x-text="formData.mobile"></span>
+                            </span>
+                            <button type="button" @click="step = 6" class="text-xs text-white/70 hover:text-white underline ml-1 cursor-pointer">
+                                Edit Number
+                            </button>
+                        </div>
                         
-                        <div class="flex justify-center gap-4 mb-10" x-data="{ otpInputs: ['', '', '', ''] }">
-                            <template x-for="(digit, index) in otpInputs" :key="index">
-                                <input type="text" maxlength="1" x-model="otpInputs[index]" @input="handleOtpInput($event, index); otp = otpInputs.join('')" class="w-16 h-16 text-center text-3xl font-bold bg-white/70 border border-rani-gold/50 rounded-2xl focus:border-rani-gold focus:ring-4 focus:ring-rani-gold/30 outline-none otp-input text-[#4a0404] shadow-sm transition-all">
+                        <div class="flex justify-center gap-3 sm:gap-4 mb-6">
+                            <template x-for="(digit, index) in otpDigits" :key="index">
+                                <input type="text" 
+                                       inputmode="numeric" 
+                                       maxlength="1" 
+                                       x-model="otpDigits[index]" 
+                                       @input="handleOtpDigit($event, index)" 
+                                       @keydown="handleOtpKeydown($event, index)"
+                                       class="w-14 h-14 sm:w-16 sm:h-16 text-center text-3xl font-bold bg-white/80 border border-rani-gold/60 rounded-2xl focus:border-rani-gold focus:ring-4 focus:ring-rani-gold/30 outline-none otp-input text-[#4a0404] shadow-md transition-all font-mono">
+                            </template>
+                        </div>
+
+                        <!-- Resend OTP & Status -->
+                        <div class="text-center mb-6">
+                            <template x-if="otpCountdown > 0">
+                                <p class="text-xs text-white/70">
+                                    Resend code in <span class="font-bold text-rani-gold font-mono" x-text="otpCountdown"></span> seconds
+                                </p>
+                            </template>
+                            <template x-if="otpCountdown === 0">
+                                <button type="button" 
+                                        @click="sendOtp" 
+                                        :disabled="isOtpSending" 
+                                        class="text-sm text-rani-gold hover:text-white font-semibold underline inline-flex items-center gap-1 cursor-pointer transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                    <span x-text="isOtpSending ? 'Sending OTP...' : 'Resend WhatsApp OTP'"></span>
+                                </button>
                             </template>
                         </div>
                         
                         <div class="mt-4">
-                            <button type="button" @click="verifyOtp" :disabled="otp.length !== 4 || isVerifyingOtp" class="w-full theme-btn py-4 rounded-full text-lg flex justify-center items-center">
-                                <span x-show="!isVerifyingOtp">Verify OTP</span>
+                            <button type="button" @click="verifyOtp" :disabled="otpDigits.join('').length !== 4 || isVerifyingOtp" class="w-full theme-btn py-4 rounded-full text-lg flex justify-center items-center">
+                                <span x-show="!isVerifyingOtp">Verify & Continue</span>
                                 <svg x-show="isVerifyingOtp" class="animate-spin h-6 w-6 text-[#4a0404]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="display:none;"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             </button>
                         </div>
@@ -794,6 +825,10 @@
                 hobbies: []
             },
             otp: '',
+            otpDigits: ['', '', '', ''],
+            otpCountdown: 0,
+            otpTimer: null,
+            isOtpSending: false,
             imagePreview: null,
             isVerifyingOtp: false,
             isSelfieVerified: false,
@@ -1045,42 +1080,77 @@
                     this.imagePreview = URL.createObjectURL(file);
                 }
             },
+            startOtpTimer(seconds = 30) {
+                this.otpCountdown = seconds;
+                if (this.otpTimer) clearInterval(this.otpTimer);
+                this.otpTimer = setInterval(() => {
+                    if (this.otpCountdown > 0) {
+                        this.otpCountdown--;
+                    } else {
+                        clearInterval(this.otpTimer);
+                        this.otpTimer = null;
+                    }
+                }, 1000);
+            },
             sendOtp() {
+                if (!this.formData.mobile) return this.showError("Mobile number is missing.");
                 this.isOtpSending = true;
                 fetch('/api/send-registration-otp', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value },
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value 
+                    },
                     body: JSON.stringify({ mobile: this.formData.mobile })
                 })
                 .then(res => res.json())
                 .then(data => {
                     this.isOtpSending = false;
-                    this.showSuccess('OTP Sent', 'A verification code has been sent to ' + this.formData.mobile);
+                    if (data.success) {
+                        this.showSuccess('OTP Sent', data.message || ('A verification code has been sent to +91 ' + this.formData.mobile));
+                        this.startOtpTimer(30);
+                        this.$nextTick(() => {
+                            const firstInput = document.querySelector('.otp-input');
+                            if (firstInput) firstInput.focus();
+                        });
+                    } else {
+                        this.showError(data.message || 'Failed to send OTP.');
+                    }
                 })
                 .catch(err => {
                     this.isOtpSending = false;
-                    this.showError('Error sending OTP.');
+                    this.showError('Error sending OTP. Please check your connection.');
                 });
             },
             verifyOtp() {
+                this.otp = this.otpDigits.join('');
                 if(this.otp.length !== 4) return this.showError("Please enter the 4-digit OTP.");
                 
                 this.isVerifyingOtp = true;
                 fetch('/api/verify-registration-otp', {
                     method: 'POST',
-                    body: JSON.stringify({ otp: this.otp }),
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value }
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value 
+                    },
+                    body: JSON.stringify({ otp: this.otp, mobile: this.formData.mobile })
                 })
                 .then(res => res.json())
                 .then(data => {
                     this.isVerifyingOtp = false;
                     if(data.success) {
-                        this.nextStep();
+                        this.showSuccess('Verified!', 'Mobile number verified successfully.');
+                        this.step = 14;
                     } else {
-                        this.showError('Invalid OTP. Please try again.');
-                        const inputs = document.querySelectorAll('.otp-input');
-                        inputs.forEach(i => i.value = '');
+                        this.showError(data.message || 'Invalid OTP. Please try again.');
+                        this.otpDigits = ['', '', '', ''];
                         this.otp = '';
+                        this.$nextTick(() => {
+                            const firstInput = document.querySelector('.otp-input');
+                            if (firstInput) firstInput.focus();
+                        });
                     }
                 })
                 .catch(err => {
@@ -1088,10 +1158,29 @@
                     this.showError('Error verifying OTP.');
                 });
             },
-            handleOtpInput(e, index) {
-                const inputs = document.querySelectorAll('.otp-input');
-                if (e.target.value !== '' && index < 3) {
-                    inputs[index + 1].focus();
+            handleOtpDigit(e, index) {
+                const raw = e.target.value.replace(/[^0-9]/g, '');
+                this.otpDigits[index] = raw ? raw.slice(-1) : '';
+                this.otp = this.otpDigits.join('');
+                if (raw && index < 3) {
+                    this.$nextTick(() => {
+                        const inputs = document.querySelectorAll('.otp-input');
+                        if (inputs[index + 1]) inputs[index + 1].focus();
+                    });
+                }
+            },
+            handleOtpKeydown(e, index) {
+                if (e.key === 'Backspace') {
+                    if (!this.otpDigits[index] && index > 0) {
+                        this.$nextTick(() => {
+                            const inputs = document.querySelectorAll('.otp-input');
+                            if (inputs[index - 1]) {
+                                inputs[index - 1].focus();
+                                this.otpDigits[index - 1] = '';
+                                this.otp = this.otpDigits.join('');
+                            }
+                        });
+                    }
                 }
             },
             

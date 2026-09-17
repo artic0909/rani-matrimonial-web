@@ -46,9 +46,17 @@ class AuthController extends Controller
     // Login - Accept mobile and send/simulate OTP
     public function sendOtp(Request $request)
     {
-        $request->validate(['mobile' => 'required|digits:10']);
+        $rawMobile = $request->input('mobile', '');
+        $cleanMobile = preg_replace('/[^0-9]/', '', (string) $rawMobile);
+        $mobile = substr($cleanMobile, -10);
 
-        $candidate = Candidate::where('mobile', $request->mobile)->first();
+        if (strlen($mobile) !== 10) {
+            return response()->json(['success' => false, 'message' => 'Please enter a valid 10-digit mobile number.'], 422);
+        }
+
+        $candidate = Candidate::where('mobile', $mobile)
+            ->orWhere('mobile', 'LIKE', "%{$mobile}")
+            ->first();
 
         if (! $candidate) {
             return response()->json(['success' => false, 'message' => 'Mobile number not registered.'], 404);
@@ -64,29 +72,33 @@ class AuthController extends Controller
 
             if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
                 $twilio = new Client($apiKey, $apiSecret, $accountSid);
-                $formattedMobile = 'whatsapp:+91'.ltrim($request->mobile, '0');
+                $formattedMobile = 'whatsapp:+91' . $mobile;
+                $fromNumber = str_starts_with($twilioNumber, 'whatsapp:') ? $twilioNumber : 'whatsapp:' . $twilioNumber;
 
                 $templateSid = config('services.twilio.otp_template_sid') ?: (env('TWILIO_WHATSAPP_TEMPLATE_SID') ?: 'HX669abffc47f8e40515248108fed98ad8');
 
-                $twilio->messages->create(
+                $message = $twilio->messages->create(
                     $formattedMobile,
                     [
-                        'from' => $twilioNumber,
+                        'from' => $fromNumber,
                         'contentSid' => $templateSid,
                         'contentVariables' => json_encode([
                             '1' => (string) $otp,
                         ]),
                     ]
                 );
+
+                \Log::info("Login WhatsApp OTP sent to {$formattedMobile}, Twilio SID: {$message->sid}");
             }
         } catch (\Exception $e) {
             \Log::error('Twilio Login OTP Error: '.$e->getMessage());
         }
 
-        Session::put('otp_mobile', $request->mobile);
+        Session::put('otp_mobile', $mobile);
         Session::put('otp_code', (string) $otp);
+        Cache::put('login_otp_' . $mobile, (string) $otp, now()->addMinutes(10));
 
-        return response()->json(['success' => true, 'message' => 'OTP sent to '.$request->mobile]);
+        return response()->json(['success' => true, 'message' => 'OTP sent to +91 ' . $mobile]);
     }
 
     // Verify OTP and Login
@@ -96,12 +108,20 @@ class AuthController extends Controller
 
         $mobile = Session::get('otp_mobile');
         $code = Session::get('otp_code');
+        $cacheCode = $mobile ? Cache::get('login_otp_' . $mobile) : null;
 
-        if ($request->otp !== $code) {
-            return response()->json(['success' => false, 'message' => 'Invalid OTP'], 400);
+        if ($request->otp !== (string)$code && $request->otp !== (string)$cacheCode) {
+            return response()->json(['success' => false, 'message' => 'Invalid OTP. Please try again.'], 400);
         }
 
-        $candidate = Candidate::where('mobile', $mobile)->first();
+        $candidate = Candidate::where('mobile', $mobile)
+            ->orWhere('mobile', 'LIKE', "%{$mobile}")
+            ->first();
+
+        if (! $candidate) {
+            return response()->json(['success' => false, 'message' => 'Candidate record not found.'], 404);
+        }
+
         Auth::login($candidate);
 
         Session::forget(['otp_mobile', 'otp_code']);
@@ -120,17 +140,19 @@ class AuthController extends Controller
                 return response()->json(['exists' => true, 'message' => 'This Aadhar Number is already registered.']);
             }
         } else {
-            $request->validate([
-                'email' => 'required|email',
-                'mobile' => 'required|digits:10',
-            ]);
+            $rawMobile = $request->input('mobile', '');
+            $cleanMobile = preg_replace('/[^0-9]/', '', (string) $rawMobile);
+            $mobile = substr($cleanMobile, -10);
 
-            $exists = Candidate::where('email', $request->email)
-                ->orWhere('mobile', $request->mobile)
+            $email = trim((string) $request->input('email', ''));
+
+            $exists = Candidate::where('email', $email)
+                ->orWhere('mobile', $mobile)
+                ->orWhere('mobile', 'LIKE', "%{$mobile}")
                 ->first();
 
             if ($exists) {
-                $field = ($exists->email === $request->email) ? 'Email' : 'Mobile number';
+                $field = ($exists->email === $email) ? 'Email' : 'Mobile number';
 
                 return response()->json(['exists' => true, 'message' => "This {$field} is already registered."]);
             }
@@ -142,48 +164,59 @@ class AuthController extends Controller
     // Send OTP for Registration
     public function sendRegistrationOtp(Request $request)
     {
-        $request->validate([
-            'mobile' => 'required|digits:10',
-        ]);
+        $rawMobile = $request->input('mobile', '');
+        $cleanMobile = preg_replace('/[^0-9]/', '', (string) $rawMobile);
+        $mobile = substr($cleanMobile, -10);
 
-        $mobile = $request->mobile;
+        if (strlen($mobile) !== 10) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please provide a valid 10-digit mobile number.',
+            ], 422);
+        }
+
         $otp = rand(1000, 9999);
 
         try {
-            $apiKey = env('TWILIO_SID');
-            $apiSecret = env('TWILIO_AUTH_TOKEN');
-            $accountSid = env('TWILIO_ACCOUNT_SID');
-            $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
+            $apiKey = config('services.twilio.sid') ?: env('TWILIO_SID');
+            $apiSecret = config('services.twilio.auth_token') ?: env('TWILIO_AUTH_TOKEN');
+            $accountSid = config('services.twilio.account_sid') ?: env('TWILIO_ACCOUNT_SID');
+            $twilioNumber = config('services.twilio.whatsapp_number') ?: env('TWILIO_WHATSAPP_NUMBER');
 
             if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
                 $twilio = new Client($apiKey, $apiSecret, $accountSid);
-                // Format mobile number (assuming Indian numbers for now)
-                $formattedMobile = 'whatsapp:+91'.ltrim($mobile, '0');
+                $formattedMobile = 'whatsapp:+91' . $mobile;
+                $fromNumber = str_starts_with($twilioNumber, 'whatsapp:') ? $twilioNumber : 'whatsapp:' . $twilioNumber;
 
-                // Get Template SID from env, or fallback to the one provided
-                $templateSid = env('TWILIO_WHATSAPP_TEMPLATE_SID', 'HX669abffc47f8e40515248108fed98ad8');
+                $templateSid = config('services.twilio.otp_template_sid') ?: (env('TWILIO_WHATSAPP_TEMPLATE_SID') ?: 'HX669abffc47f8e40515248108fed98ad8');
 
                 $message = $twilio->messages->create(
                     $formattedMobile,
                     [
-                        'from' => $twilioNumber,
+                        'from' => $fromNumber,
                         'contentSid' => $templateSid,
                         'contentVariables' => json_encode([
                             '1' => (string) $otp,
                         ]),
                     ]
                 );
+
+                \Log::info("Registration WhatsApp OTP dispatched to {$formattedMobile}, Twilio SID: {$message->sid}");
+            } else {
+                \Log::warning("Twilio credentials incomplete for Registration OTP dispatch to {$mobile}");
             }
         } catch (\Exception $e) {
-            \Log::error('Twilio OTP Error: '.$e->getMessage());
-            // If Twilio fails, we might still want to proceed in local env or show error
-            // For now, let's just log it and proceed so testing doesn't completely block if credentials are wrong.
-            // If they want strict blocking: return response()->json(['success' => false, 'message' => 'Failed to send OTP.'], 500);
+            \Log::error('Twilio Registration OTP Error: ' . $e->getMessage());
         }
 
         Session::put('reg_otp_code', (string) $otp);
+        Session::put('reg_otp_mobile', (string) $mobile);
+        Cache::put('reg_otp_' . $mobile, (string) $otp, now()->addMinutes(10));
 
-        return response()->json(['success' => true, 'message' => 'OTP sent to '.$mobile]);
+        return response()->json([
+            'success' => true,
+            'message' => 'OTP sent to +91 ' . $mobile,
+        ]);
     }
 
     // Verify OTP for Registration
@@ -191,43 +224,62 @@ class AuthController extends Controller
     {
         $request->validate(['otp' => 'required|digits:4']);
 
-        $code = Session::get('reg_otp_code');
+        $enteredOtp = (string) $request->otp;
+        $sessionCode = (string) Session::get('reg_otp_code');
+        $mobile = (string) Session::get('reg_otp_mobile');
 
-        if ($request->otp !== $code) {
-            return response()->json(['success' => false, 'message' => 'Invalid OTP'], 400);
+        if (! $mobile && $request->has('mobile')) {
+            $cleanMobile = preg_replace('/[^0-9]/', '', (string) $request->mobile);
+            $mobile = substr($cleanMobile, -10);
         }
 
-        return response()->json(['success' => true]);
+        $cacheCode = $mobile ? (string) Cache::get('reg_otp_' . $mobile) : null;
+
+        if ($enteredOtp !== $sessionCode && $enteredOtp !== $cacheCode) {
+            return response()->json(['success' => false, 'message' => 'Invalid or expired OTP. Please try again.'], 400);
+        }
+
+        Session::put('reg_otp_verified', true);
+        if ($mobile) {
+            Cache::put('reg_otp_verified_' . $mobile, true, now()->addMinutes(30));
+        }
+
+        return response()->json(['success' => true, 'message' => 'Mobile number verified successfully!']);
     }
 
     // Send Selfie Link via WhatsApp
     public function sendSelfieLink(Request $request)
     {
-        $request->validate(['mobile' => 'required|digits:10']);
+        $rawMobile = $request->input('mobile', '');
+        $cleanMobile = preg_replace('/[^0-9]/', '', (string) $rawMobile);
+        $mobile = substr($cleanMobile, -10);
 
-        $mobile = $request->mobile;
+        if (strlen($mobile) !== 10) {
+            return response()->json(['success' => false, 'message' => 'Please provide a valid 10-digit mobile number.'], 422);
+        }
 
         // The dynamic variable {{1}} for the CTA button URL
         $linkParam = $mobile;
 
         try {
-            $apiKey = env('TWILIO_SID');
-            $apiSecret = env('TWILIO_AUTH_TOKEN');
-            $accountSid = env('TWILIO_ACCOUNT_SID');
-            $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
+            $apiKey = config('services.twilio.sid') ?: env('TWILIO_SID');
+            $apiSecret = config('services.twilio.auth_token') ?: env('TWILIO_AUTH_TOKEN');
+            $accountSid = config('services.twilio.account_sid') ?: env('TWILIO_ACCOUNT_SID');
+            $twilioNumber = config('services.twilio.whatsapp_number') ?: env('TWILIO_WHATSAPP_NUMBER');
 
             if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
                 $twilio = new Client($apiKey, $apiSecret, $accountSid);
-                $formattedMobile = 'whatsapp:+91'.ltrim($mobile, '0');
+                $formattedMobile = 'whatsapp:+91' . $mobile;
+                $fromNumber = str_starts_with($twilioNumber, 'whatsapp:') ? $twilioNumber : 'whatsapp:' . $twilioNumber;
 
-                // Uses the new CTA template for the selfie link
-                $templateSid = env('TWILIO_WHATSAPP_SELFIE_TEMPLATE_SID', 'HXd39d659900b66de60aa305cb61de868c');
+                // Uses the CTA template for the selfie link
+                $templateSid = config('services.twilio.selfie_template_sid') ?: (env('TWILIO_WHATSAPP_SELFIE_TEMPLATE_SID') ?: 'HXd39d659900b66de60aa305cb61de868c');
 
                 if ($templateSid) {
                     $twilio->messages->create(
                         $formattedMobile,
                         [
-                            'from' => $twilioNumber,
+                            'from' => $fromNumber,
                             'contentSid' => $templateSid,
                             'contentVariables' => json_encode([
                                 '1' => $linkParam,
