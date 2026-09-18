@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="relative pt-4 sm:pt-6 pb-16 sm:pb-20" x-data="{ 
-    createModalOpen: false,
+    showCreateForm: {{ $errors->any() ? 'true' : 'false' }},
     selectedImageModal: null,
     previewUrls: [],
     handleFiles(event) {
@@ -14,6 +14,14 @@
             for (let i = 0; i < files.length; i++) {
                 this.previewUrls.push(URL.createObjectURL(files[i]));
             }
+        }
+    },
+    toggleCreateForm() {
+        this.showCreateForm = !this.showCreateForm;
+        if (this.showCreateForm) {
+            this.$nextTick(() => {
+                document.getElementById('ticketFormSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
         }
     }
 }">
@@ -60,11 +68,11 @@
                 </div>
             </div>
 
-            <!-- Raise Ticket Button -->
-            <button @click="createModalOpen = true" 
+            <!-- Raise Ticket Button (Toggles Inline Form) -->
+            <button @click="toggleCreateForm()" 
                 class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white font-bold py-3 sm:py-3.5 px-5 sm:px-6 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 active:scale-95 text-xs sm:text-sm border border-rani-gold/50 shrink-0">
-                <i class="ri-add-circle-fill text-base sm:text-lg text-amber-300"></i>
-                <span>Raise New Ticket</span>
+                <i :class="showCreateForm ? 'ri-close-circle-fill text-amber-300' : 'ri-add-circle-fill text-amber-300'" class="text-base sm:text-lg"></i>
+                <span x-text="showCreateForm ? 'Close Ticket' : 'Create Ticket'">Create Ticket</span>
             </button>
         </div>
 
@@ -129,6 +137,135 @@
                 </div>
             </div>
 
+        </div>
+
+        <!-- INLINE RAISE NEW TICKET FORM SECTION -->
+        <div id="ticketFormSection" x-show="showCreateForm" x-cloak
+            x-transition:enter="transition ease-out duration-300 transform"
+            x-transition:enter-start="opacity-0 -translate-y-4 scale-98"
+            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+            x-transition:leave="transition ease-in duration-200 transform"
+            x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+            x-transition:leave-end="opacity-0 -translate-y-4 scale-98"
+            class="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl border border-rani-gold/50 shadow-2xl overflow-hidden mb-6 sm:mb-8">
+            
+            <!-- Card Header -->
+            <div class="bg-gradient-to-r from-rani-dark via-rani-primary-dark to-rani-primary text-white p-5 sm:p-6 flex items-center justify-between border-b border-rani-gold/30">
+                <div class="flex items-center gap-2.5 sm:gap-3">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-rani-gold/20 text-rani-gold flex items-center justify-center text-lg sm:text-xl font-bold border border-rani-gold/30 shrink-0">
+                        <i class="ri-ticket-line"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base sm:text-lg md:text-xl font-serif font-bold text-white">Raise New Support Ticket</h2>
+                        <p class="text-[11px] sm:text-xs text-rani-gold-light/90">Auto-generated dynamic ticket code will be assigned upon submission</p>
+                    </div>
+                </div>
+                <button type="button" @click="showCreateForm = false" class="text-white/80 hover:text-white p-1 rounded-lg transition" title="Close Form">
+                    <i class="ri-close-line text-2xl"></i>
+                </button>
+            </div>
+
+            <!-- Form Content -->
+            <form action="{{ route('support.store') }}" method="POST" enctype="multipart/form-data" class="p-5 sm:p-7 md:p-8 space-y-4 sm:space-y-5">
+                @csrf
+
+                <!-- Priority Choice -->
+                <div>
+                    <label class="block text-[11px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                        Select Priority <span class="text-red-500">*</span>
+                    </label>
+                    <div class="grid grid-cols-3 gap-2.5 sm:gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="priority" value="low" checked class="peer sr-only">
+                            <div class="p-2.5 sm:p-3 text-center rounded-xl sm:rounded-2xl border-2 border-gray-200 peer-checked:border-sky-500 peer-checked:bg-sky-50 transition hover:border-gray-300">
+                                <div class="w-2.5 h-2.5 rounded-full bg-sky-500 mx-auto mb-1"></div>
+                                <span class="text-xs font-bold text-gray-800 block">Low</span>
+                                <!-- <span class="text-[9px] sm:text-[10px] text-gray-400 block leading-tight">General</span> -->
+                            </div>
+                        </label>
+
+                        <label class="cursor-pointer">
+                            <input type="radio" name="priority" value="high" class="peer sr-only">
+                            <div class="p-2.5 sm:p-3 text-center rounded-xl sm:rounded-2xl border-2 border-gray-200 peer-checked:border-amber-500 peer-checked:bg-amber-50 transition hover:border-gray-300">
+                                <div class="w-2.5 h-2.5 rounded-full bg-amber-500 mx-auto mb-1"></div>
+                                <span class="text-xs font-bold text-gray-800 block">High</span>
+                                <!-- <span class="text-[9px] sm:text-[10px] text-gray-400 block leading-tight">Matches</span> -->
+                            </div>
+                        </label>
+
+                        <label class="cursor-pointer">
+                            <input type="radio" name="priority" value="urgent" class="peer sr-only">
+                            <div class="p-2.5 sm:p-3 text-center rounded-xl sm:rounded-2xl border-2 border-gray-200 peer-checked:border-rose-500 peer-checked:bg-rose-50 transition hover:border-gray-300">
+                                <div class="w-2.5 h-2.5 rounded-full bg-rose-500 mx-auto mb-1"></div>
+                                <span class="text-xs font-bold text-gray-800 block">Urgent</span>
+                                <!-- <span class="text-[9px] sm:text-[10px] text-gray-400 block leading-tight">Access</span> -->
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Subject -->
+                <div>
+                    <label for="ticket_subject" class="block text-[11px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                        Ticket Subject <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="ticket_subject" name="subject" required
+                        placeholder="Brief summary (e.g., Question regarding photo privacy or match request)"
+                        class="w-full px-3.5 py-2.5 sm:py-3 rounded-xl border border-gray-300 focus:border-rani-primary focus:ring-2 focus:ring-rani-primary/20 transition text-xs sm:text-sm text-gray-900 bg-white">
+                </div>
+
+                <!-- Message -->
+                <div>
+                    <label for="ticket_message" class="block text-[11px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                        Describe the Issue <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="ticket_message" name="message" rows="4" required
+                        placeholder="Please provide full details of what you need help with..."
+                        class="w-full px-3.5 py-2.5 sm:py-3 rounded-xl border border-gray-300 focus:border-rani-primary focus:ring-2 focus:ring-rani-primary/20 transition text-xs sm:text-sm text-gray-900 bg-white"></textarea>
+                </div>
+
+                <!-- Multiple Screenshots Upload -->
+                <div>
+                    <label class="block text-[11px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                        Upload Screenshots (Optional - Max 5 images)
+                    </label>
+                    <div class="relative border-2 border-dashed border-gray-300 hover:border-rani-primary rounded-xl sm:rounded-2xl p-3.5 sm:p-4 text-center cursor-pointer transition bg-gray-50/70">
+                        <input type="file" name="screenshots[]" multiple accept="image/*" @change="handleFiles($event)"
+                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        <div class="space-y-1">
+                            <i class="ri-image-add-line text-xl sm:text-2xl text-rani-primary"></i>
+                            <div class="text-[11px] sm:text-xs text-gray-700 font-bold">
+                                Click or Drag & Drop screenshots here
+                            </div>
+                            <p class="text-[10px] text-gray-400">PNG, JPG, JPEG, WEBP up to 5MB each</p>
+                        </div>
+                    </div>
+
+                    <!-- Live File Preview -->
+                    <template x-if="previewUrls.length > 0">
+                        <div class="mt-2.5 sm:mt-3 flex flex-wrap gap-2">
+                            <template x-for="(url, idx) in previewUrls" :key="idx">
+                                <div class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border border-gray-300 shadow-sm">
+                                    <img :src="url" class="w-full h-full object-cover">
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex items-center justify-end gap-2.5 sm:gap-3 pt-3.5 sm:pt-4 border-t border-gray-100">
+                    <button type="button" @click="showCreateForm = false"
+                        class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 text-xs sm:text-sm transition">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white font-bold py-2 sm:py-2.5 px-5 sm:px-6 rounded-xl shadow-md text-xs sm:text-sm transition flex items-center gap-1.5 border border-rani-gold/40">
+                        <i class="ri-check-line font-bold text-rani-gold"></i>
+                        <span>Submit Ticket</span>
+                    </button>
+                </div>
+            </form>
         </div>
 
         <!-- Tickets List -->
@@ -243,7 +380,7 @@
                     <p class="text-xs sm:text-sm text-gray-500 mb-5 sm:mb-6 max-w-sm mx-auto leading-relaxed">
                         Need assistance with your profile, matches, privacy or wallet? Submit a ticket and our support team will help you promptly.
                     </p>
-                    <button @click="createModalOpen = true" 
+                    <button @click="showCreateForm = true; $nextTick(() => { document.getElementById('ticketFormSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); })" 
                         class="inline-flex items-center gap-2 bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white font-bold py-2.5 sm:py-3 px-5 sm:px-6 rounded-xl text-xs sm:text-sm shadow-md transition border border-rani-gold/40">
                         <i class="ri-add-circle-fill text-amber-300 text-sm sm:text-base"></i>
                         <span>Raise Your First Ticket</span>
@@ -256,140 +393,7 @@
             </div>
         </div>
 
-        <!-- CREATE NEW TICKET MODAL -->
-        <div x-show="createModalOpen" x-cloak
-            class="fixed inset-0 z-50 flex items-center justify-center p-3.5 sm:p-4 bg-black/75 backdrop-blur-sm"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0">
-            
-            <div @click.away="createModalOpen = false"
-                class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-rani-gold/40">
-                
-                <!-- Modal Header -->
-                <div class="bg-gradient-to-r from-rani-dark via-rani-primary-dark to-rani-primary text-white p-5 sm:p-6 rounded-t-2xl sm:rounded-t-3xl flex items-center justify-between border-b border-rani-gold/30">
-                    <div class="flex items-center gap-2.5 sm:gap-3">
-                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-rani-gold/20 text-rani-gold flex items-center justify-center text-lg sm:text-xl font-bold border border-rani-gold/30 shrink-0">
-                            <i class="ri-ticket-line"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-base sm:text-lg font-serif font-bold text-white">Raise Support Ticket</h2>
-                            <p class="text-[11px] sm:text-xs text-rani-gold-light/80">Auto-generated dynamic ticket code will be assigned</p>
-                        </div>
-                    </div>
-                    <button @click="createModalOpen = false" class="text-white/80 hover:text-white p-1 rounded-lg">
-                        <i class="ri-close-line text-2xl"></i>
-                    </button>
-                </div>
-
-                <!-- Modal Form -->
-                <form action="{{ route('support.store') }}" method="POST" enctype="multipart/form-data" class="p-5 sm:p-7 md:p-8 space-y-4 sm:space-y-5">
-                    @csrf
-
-                    <!-- Priority Choice -->
-                    <div>
-                        <label class="block text-[11px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-                            Select Priority <span class="text-red-500">*</span>
-                        </label>
-                        <div class="grid grid-cols-3 gap-2.5 sm:gap-3">
-                            <label class="cursor-pointer">
-                                <input type="radio" name="priority" value="low" checked class="peer sr-only">
-                                <div class="p-2.5 sm:p-3 text-center rounded-xl sm:rounded-2xl border-2 border-gray-200 peer-checked:border-sky-500 peer-checked:bg-sky-50 transition">
-                                    <div class="w-2.5 h-2.5 rounded-full bg-sky-500 mx-auto mb-1"></div>
-                                    <span class="text-xs font-bold text-gray-800 block">Low</span>
-                                    <span class="text-[9px] sm:text-[10px] text-gray-400 block leading-tight">General</span>
-                                </div>
-                            </label>
-
-                            <label class="cursor-pointer">
-                                <input type="radio" name="priority" value="high" class="peer sr-only">
-                                <div class="p-2.5 sm:p-3 text-center rounded-xl sm:rounded-2xl border-2 border-gray-200 peer-checked:border-amber-500 peer-checked:bg-amber-50 transition">
-                                    <div class="w-2.5 h-2.5 rounded-full bg-amber-500 mx-auto mb-1"></div>
-                                    <span class="text-xs font-bold text-gray-800 block">High</span>
-                                    <span class="text-[9px] sm:text-[10px] text-gray-400 block leading-tight">Matches</span>
-                                </div>
-                            </label>
-
-                            <label class="cursor-pointer">
-                                <input type="radio" name="priority" value="urgent" class="peer sr-only">
-                                <div class="p-2.5 sm:p-3 text-center rounded-xl sm:rounded-2xl border-2 border-gray-200 peer-checked:border-rose-500 peer-checked:bg-rose-50 transition">
-                                    <div class="w-2.5 h-2.5 rounded-full bg-rose-500 mx-auto mb-1"></div>
-                                    <span class="text-xs font-bold text-gray-800 block">Urgent</span>
-                                    <span class="text-[9px] sm:text-[10px] text-gray-400 block leading-tight">Access</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Subject -->
-                    <div>
-                        <label for="ticket_subject" class="block text-[11px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                            Ticket Subject <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" id="ticket_subject" name="subject" required
-                            placeholder="Brief summary (e.g., Question regarding photo privacy or match request)"
-                            class="w-full px-3.5 py-2.5 sm:py-3 rounded-xl border border-gray-300 focus:border-rani-primary focus:ring-2 focus:ring-rani-primary/20 transition text-xs sm:text-sm text-gray-900">
-                    </div>
-
-                    <!-- Message -->
-                    <div>
-                        <label for="ticket_message" class="block text-[11px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                            Describe the Issue <span class="text-red-500">*</span>
-                        </label>
-                        <textarea id="ticket_message" name="message" rows="4" required
-                            placeholder="Please provide full details of what you need help with..."
-                            class="w-full px-3.5 py-2.5 sm:py-3 rounded-xl border border-gray-300 focus:border-rani-primary focus:ring-2 focus:ring-rani-primary/20 transition text-xs sm:text-sm text-gray-900"></textarea>
-                    </div>
-
-                    <!-- Multiple Screenshots Upload -->
-                    <div>
-                        <label class="block text-[11px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
-                            Upload Screenshots (Optional - Max 5 images)
-                        </label>
-                        <div class="relative border-2 border-dashed border-gray-300 hover:border-rani-primary rounded-xl sm:rounded-2xl p-3.5 sm:p-4 text-center cursor-pointer transition bg-gray-50/70">
-                            <input type="file" name="screenshots[]" multiple accept="image/*" @change="handleFiles($event)"
-                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                            <div class="space-y-1">
-                                <i class="ri-image-add-line text-xl sm:text-2xl text-rani-primary"></i>
-                                <div class="text-[11px] sm:text-xs text-gray-700 font-bold">
-                                    Click or Drag & Drop screenshots here
-                                </div>
-                                <p class="text-[10px] text-gray-400">PNG, JPG, JPEG, WEBP up to 5MB each</p>
-                            </div>
-                        </div>
-
-                        <!-- Live File Preview -->
-                        <template x-if="previewUrls.length > 0">
-                            <div class="mt-2.5 sm:mt-3 flex flex-wrap gap-2">
-                                <template x-for="(url, idx) in previewUrls" :key="idx">
-                                    <div class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border border-gray-300 shadow-sm">
-                                        <img :src="url" class="w-full h-full object-cover">
-                                    </div>
-                                </template>
-                            </div>
-                        </template>
-                    </div>
-
-                    <!-- Modal Actions -->
-                    <div class="flex items-center justify-end gap-2.5 sm:gap-3 pt-3.5 sm:pt-4 border-t border-gray-100">
-                        <button type="button" @click="createModalOpen = false"
-                            class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 text-xs sm:text-sm transition">
-                            Cancel
-                        </button>
-                        <button type="submit"
-                            class="bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white font-bold py-2 sm:py-2.5 px-5 sm:px-6 rounded-xl shadow-md text-xs sm:text-sm transition flex items-center gap-1.5 border border-rani-gold/40">
-                            <i class="ri-check-line font-bold text-rani-gold"></i>
-                            <span>Submit Ticket</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- IMAGE PREVIEW LIGHTBOX MODAL -->
+        <!-- IMAGE PREVIEW LIGHTBOX MODAL (FOR SCREENSHOT ATTACHMENTS ONLY) -->
         <div x-show="selectedImageModal !== null" x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md"
             @click="selectedImageModal = null">
