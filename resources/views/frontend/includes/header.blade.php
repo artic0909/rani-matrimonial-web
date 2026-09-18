@@ -111,9 +111,9 @@
                     <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     <span>Search</span>
                 </a>
-                <a href="#" class="font-serif text-base transition-colors hover:text-rani-gold font-medium" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">About</a>
-                <a href="#" class="font-serif text-base transition-colors hover:text-rani-gold font-medium" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">Help</a>
-                <a href="#" class="font-serif text-base transition-colors hover:text-rani-gold font-medium" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">Success Stories</a>
+                <a href="{{ url('/#about') }}" class="font-serif text-base transition-colors hover:text-rani-gold font-medium" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">About</a>
+                <a href="{{ route('help.center') }}" class="font-serif text-base transition-colors hover:text-rani-gold font-medium {{ request()->routeIs('help.center*') ? 'text-rani-gold font-bold' : '' }}" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">Help</a>
+                <a href="{{ route('stories') }}" class="font-serif text-base transition-colors hover:text-rani-gold font-medium {{ request()->routeIs('stories*') ? 'text-rani-gold font-bold' : '' }}" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">Success Stories</a>
             </nav>
 
             <!-- Auth Buttons -->
@@ -140,10 +140,8 @@
                         </div>
                     </div>
                 @else
-                    <a href="#" @click.prevent="showLogin = true" class="font-medium text-sm transition-colors" :class="{ 'text-rani-primary hover:text-rani-gold': scrolled, 'text-rani-light hover:text-rani-gold': !scrolled }">Log in</a>
-                    <a href="{{ route('register.page') }}" class="px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 border border-rani-gold text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary">
-                        Register Now
-                    </a>
+                    <a href="#" @click.prevent="showLogin = true" class="font-serif text-base transition-colors hover:text-rani-gold font-medium" :class="{ 'text-rani-primary-dark': scrolled, 'text-rani-light': !scrolled }">Log In</a>
+                    <a href="{{ route('register.page') }}" class="inline-flex items-center px-5 py-2.5 border border-rani-gold rounded-full shadow-md text-sm font-bold text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary transition-all duration-300 transform hover:-translate-y-0.5">Register Now</a>
                 @endauth
             </div>
 
@@ -166,9 +164,9 @@
                 <svg class="w-5 h-5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 <span>Search Profiles</span>
             </a>
-            <a href="#" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">About</a>
-            <a href="#" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">Help</a>
-            <a href="#" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">Success Stories</a>
+            <a href="{{ url('/#about') }}" class="block px-3 py-3 rounded-md text-base font-serif font-medium text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary">About</a>
+            <a href="{{ route('help.center') }}" class="block px-3 py-3 rounded-md text-base font-serif font-medium {{ request()->routeIs('help.center*') ? 'text-rani-primary font-bold' : 'text-rani-primary-dark' }} hover:bg-rani-primary/5 hover:text-rani-primary">Help</a>
+            <a href="{{ route('stories') }}" class="block px-3 py-3 rounded-md text-base font-serif font-medium {{ request()->routeIs('stories*') ? 'text-rani-primary font-bold' : 'text-rani-primary-dark' }} hover:bg-rani-primary/5 hover:text-rani-primary">Success Stories</a>
             <div class="mt-4 pt-4 border-t border-rani-gold/30 flex flex-col gap-3">
                 @auth
                     <a href="{{ route('dashboard') }}" class="block w-full text-center px-4 py-2 text-base font-medium text-rani-primary">My Dashboard</a>

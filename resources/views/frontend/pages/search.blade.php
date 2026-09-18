@@ -90,7 +90,7 @@
     background-color: #ffffff;
 }
 </style>
-<div class="relative pt-6 pb-20 min-h-screen" x-data="searchManager()" x-init="initSearch()">
+<div class="relative {{ Auth::check() ? 'pt-6 sm:pt-8' : 'pt-24 sm:pt-28 md:pt-32' }} pb-20 min-h-screen" x-data="searchManager()" x-init="initSearch()">
     
     <!-- Background Image (Exact same as matches & dashboard pages) -->
     <div class="fixed inset-0 z-0 bg-cover bg-top bg-no-repeat" style="background-image: url('{{ asset('img/hero.png') }}');"></div>
