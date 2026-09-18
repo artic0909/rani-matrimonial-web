@@ -87,21 +87,28 @@
     
     /* Step Indicator */
     .step-dot {
-        width: 30px;
-        height: 30px;
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: bold;
         transition: all 0.4s ease;
+    }
+    @media (min-width: 640px) {
+        .step-dot {
+            width: 30px;
+            height: 30px;
+            font-size: 12px;
+        }
     }
     .step-dot.active {
         background: #D4AF37;
         color: #4a0404;
         box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
-        transform: scale(1.2);
+        transform: scale(1.15);
     }
     .step-dot.completed {
         background: rgba(212, 175, 55, 0.5);
@@ -113,7 +120,7 @@
     }
 </style>
 
-<div class="min-h-screen py-12 relative flex items-center justify-center overflow-hidden" 
+<div class="min-h-screen py-4 sm:py-12 relative flex items-center justify-center overflow-hidden" 
      x-data="registrationForm({
         religions: {{ Js::from($religions) }},
         countries: {{ Js::from($countries) }},
@@ -144,32 +151,32 @@
         <div class="heart-floating delay-4" style="left: 80%; animation-delay: 14s; color: #D4AF37;"></div>
     </div>
 
-    <div class="w-full max-w-2xl mx-auto px-4 sm:px-6 relative z-10 py-12 mt-10">
+    <div class="w-full max-w-2xl mx-auto px-3 sm:px-6 relative z-10 py-3 sm:py-12 mt-1 sm:mt-10">
         
         <!-- Welcome Text -->
-        <div class="text-center mb-8">
-            <h2 class="text-3xl md:text-5xl font-serif font-bold text-white mb-2 drop-shadow-lg">
+        <div class="text-center mb-3 sm:mb-8">
+            <h2 class="text-2xl sm:text-3xl md:text-5xl font-serif font-bold text-white mb-1 sm:mb-2 drop-shadow-lg">
                 Join <span class="text-rani-gold">Ranimatrimonial</span>
             </h2>
-            <p class="text-rani-gold-light font-light text-lg">Your perfect match is waiting.</p>
+            <p class="text-rani-gold-light font-light text-sm sm:text-lg">Your perfect match is waiting.</p>
         </div>
 
         <!-- Form Container -->
-        <div class="glass-card rounded-[30px] p-8 md:p-10 relative overflow-hidden">
+        <div class="glass-card rounded-2xl sm:rounded-[30px] p-4 sm:p-8 md:p-10 relative overflow-hidden">
             
             <!-- Step Tracker Indicator (Visual Highlight) -->
-            <div class="mb-10 relative">
+            <div class="mb-4 sm:mb-8 relative">
                 <!-- Back Button -->
-                <button type="button" @click="prevStep()" x-show="step > 1" class="absolute left-0 top-0 text-white hover:text-rani-gold transition-colors z-20">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                <button type="button" @click="prevStep()" x-show="step > 1" class="absolute left-0 top-0 text-white hover:text-rani-gold transition-colors z-20 p-1">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
                 </button>
                 
-                <h3 class="text-center text-rani-gold text-sm font-bold uppercase tracking-widest mb-4">Step <span x-text="step"></span> of 14</h3>
+                <h3 class="text-center text-rani-gold text-xs sm:text-sm font-bold uppercase tracking-widest mb-2 sm:mb-4">Step <span x-text="step"></span> of 14</h3>
                 
                 <!-- Dots line -->
-                <div class="flex justify-between items-center relative max-w-md mx-auto z-10 px-6">
-                    <div class="absolute left-6 right-6 top-1/2 h-0.5 bg-white/20 -z-10 -translate-y-1/2"></div>
-                    <div class="absolute left-6 top-1/2 h-0.5 bg-rani-gold -z-10 -translate-y-1/2 transition-all duration-500 ease-out" :style="'width: ' + ((step - 1) / 13 * 100 * 0.88) + '%'"></div>
+                <div class="flex justify-between items-center relative max-w-md mx-auto z-10 px-3 sm:px-6">
+                    <div class="absolute left-3 sm:left-6 right-3 sm:right-6 top-1/2 h-0.5 bg-white/20 -z-10 -translate-y-1/2"></div>
+                    <div class="absolute left-3 sm:left-6 top-1/2 h-0.5 bg-rani-gold -z-10 -translate-y-1/2 transition-all duration-500 ease-out" :style="'width: ' + ((step - 1) / 13 * 100 * 0.88) + '%'"></div>
                     
                     <!-- Just showing 5 milestone dots to not clutter -->
                     <div class="step-dot" :class="step >= 1 ? (step === 1 ? 'active' : 'completed') : 'pending'">1</div>
@@ -181,7 +188,7 @@
             </div>
 
             <!-- Form Body -->
-            <div class="relative z-10 min-h-[320px] flex flex-col justify-center">
+            <div class="relative z-10 min-h-[220px] sm:min-h-[320px] flex flex-col justify-center">
                 <form id="unifiedRegForm" action="{{ route('register.final') }}" method="POST" enctype="multipart/form-data" @submit.prevent="submitForm">
                     @csrf
                     
@@ -189,29 +196,26 @@
                     <div x-show="step === 1" 
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
-                         x-transition:enter-end="opacity-100 translate-x-0" 
-                          
-                          
-                         >
+                         x-transition:enter-end="opacity-100 translate-x-0">
                         
-                        <div class="flex justify-center mb-6">
-                            <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-rani-gold border border-rani-gold/50 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        <div class="flex justify-center mb-3 sm:mb-6">
+                            <div class="w-14 h-14 sm:w-20 sm:h-20 bg-white/20 rounded-full flex items-center justify-center text-rani-gold border border-rani-gold/50 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                                <svg class="w-7 h-7 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                             </div>
                         </div>
 
-                        <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">This Profile is for</h4>
-                        <div class="flex flex-wrap justify-center gap-3 mb-8">
+                        <h4 class="text-xl sm:text-2xl font-serif text-white mb-4 sm:mb-8 text-center text-shadow-sm">This Profile is for</h4>
+                        <div class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-4 sm:mb-8">
                             <template x-for="type in ['Myself', 'My Son', 'My Daughter', 'My Brother', 'My Sister', 'My Friend']">
                                 <button type="button" @click="setProfileFor(type)" 
                                         :class="formData.profile_for === type ? 'selected' : ''"
-                                        class="option-btn py-2.5 px-6 rounded-full font-medium text-sm backdrop-blur-sm">
+                                        class="option-btn py-2 px-4 sm:py-2.5 sm:px-6 rounded-full font-medium text-xs sm:text-sm backdrop-blur-sm">
                                     <span x-text="type"></span>
                                 </button>
                             </template>
                         </div>
-                        <div class="mt-4">
-                            <button type="button" @click="nextStep" class="w-full theme-btn py-4 rounded-full text-lg transition-all">Continue</button>
+                        <div class="mt-3 sm:mt-4">
+                            <button type="button" @click="nextStep" class="w-full theme-btn py-3 sm:py-4 rounded-full text-base sm:text-lg transition-all">Continue</button>
                         </div>
                     </div>
 
@@ -221,42 +225,42 @@
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0">
                         
-                        <div class="flex justify-center mb-5">
-                            <div class="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 rounded-full flex items-center justify-center text-rani-gold border border-rani-gold/50 shadow-[0_0_20px_rgba(212,175,55,0.4)] backdrop-blur-md">
-                                <svg class="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM12 14c-4.418 0-8 3.582-8 8h16c0-4.418-3.582-8-8-8z"></path></svg>
+                        <div class="flex justify-center mb-2 sm:mb-5">
+                            <div class="w-12 h-12 sm:w-20 sm:h-20 bg-white/20 rounded-full flex items-center justify-center text-rani-gold border border-rani-gold/50 shadow-[0_0_20px_rgba(212,175,55,0.4)] backdrop-blur-md">
+                                <svg class="w-6 h-6 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM12 14c-4.418 0-8 3.582-8 8h16c0-4.418-3.582-8-8-8z"></path></svg>
                             </div>
                         </div>
 
-                        <h4 class="text-2xl sm:text-3xl font-serif text-white mb-2 text-center font-bold tracking-wide text-shadow-sm">Select Gender</h4>
-                        <p class="text-sm text-white/80 text-center mb-7 font-light">Choose whether this profile is for a Groom or a Bride</p>
+                        <h4 class="text-xl sm:text-3xl font-serif text-white mb-1 sm:mb-2 text-center font-bold tracking-wide text-shadow-sm">Select Gender</h4>
+                        <p class="text-xs sm:text-sm text-white/80 text-center mb-3 sm:mb-7 font-light">Choose whether this profile is for a Groom or a Bride</p>
 
                         <!-- Groom & Bride Selection Grid -->
-                        <div class="grid grid-cols-2 gap-4 sm:gap-6 max-w-md mx-auto mb-8">
+                        <div class="grid grid-cols-2 gap-3 sm:gap-6 max-w-md mx-auto mb-4 sm:mb-8">
                             <!-- Groom Card -->
                             <button type="button" @click="setGender('Male')" 
-                                class="relative overflow-hidden rounded-3xl p-5 sm:p-6 flex flex-col items-center justify-center transition-all duration-300 transform hover:-translate-y-1.5 cursor-pointer group focus:outline-none"
+                                class="relative overflow-hidden rounded-2xl sm:rounded-3xl p-3 sm:p-6 flex flex-col items-center justify-center transition-all duration-300 transform hover:-translate-y-1.5 cursor-pointer group focus:outline-none"
                                 :class="formData.gender === 'Male' 
-                                    ? 'bg-gradient-to-b from-white via-[#FFFBF2] to-[#FFF3DC] border-2 border-rani-gold shadow-[0_12px_30px_rgba(212,175,55,0.5)] ring-4 ring-rani-gold/30 scale-[1.03]' 
+                                    ? 'bg-gradient-to-b from-white via-[#FFFBF2] to-[#FFF3DC] border-2 border-rani-gold shadow-[0_12px_30px_rgba(212,175,55,0.5)] ring-4 ring-rani-gold/30 scale-[1.02] sm:scale-[1.03]' 
                                     : 'bg-white/80 hover:bg-white/95 border-2 border-white/70 hover:border-rani-gold/80 shadow-lg backdrop-blur-md hover:shadow-xl'">
                                 
                                 <!-- Top Selection Badge Indicator -->
-                                <div class="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300"
+                                <div class="absolute top-2 right-2 sm:top-3 sm:right-3 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all duration-300"
                                      :class="formData.gender === 'Male' 
                                         ? 'bg-rani-primary text-rani-gold shadow-md ring-2 ring-rani-gold scale-100' 
                                         : 'bg-gray-200/80 text-transparent scale-90 group-hover:bg-rani-gold/30 group-hover:text-rani-primary-dark'">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                 </div>
 
                                 <!-- Royal Gold Ring Frame Avatar -->
-                                <div class="relative p-1 rounded-full bg-gradient-to-tr from-rani-gold via-amber-200 to-rani-gold-light shadow-md mb-3 sm:mb-4 group-hover:scale-105 transition-transform duration-300">
-                                    <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-white border-2 border-white shadow-inner flex items-center justify-center">
+                                <div class="relative p-0.5 sm:p-1 rounded-full bg-gradient-to-tr from-rani-gold via-amber-200 to-rani-gold-light shadow-md mb-2 sm:mb-4 group-hover:scale-105 transition-transform duration-300">
+                                    <div class="w-16 h-16 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-white border-2 border-white shadow-inner flex items-center justify-center">
                                         <img src="{{ asset('img/groom.png') }}" alt="Groom" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
                                     </div>
                                 </div>
 
                                 <!-- Titles -->
-                                <span class="font-serif text-xl sm:text-2xl font-bold tracking-wide text-rani-primary-dark mb-1">Groom</span>
-                                <span class="text-xs font-semibold px-3 py-0.5 rounded-full transition-colors"
+                                <span class="font-serif text-base sm:text-2xl font-bold tracking-wide text-rani-primary-dark mb-0.5 sm:mb-1">Groom</span>
+                                <span class="text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-0.5 rounded-full transition-colors"
                                       :class="formData.gender === 'Male' 
                                         ? 'bg-rani-primary/10 text-rani-primary-dark font-bold' 
                                         : 'bg-gray-100 text-gray-500 group-hover:bg-rani-gold/20 group-hover:text-rani-primary-dark'">
@@ -266,29 +270,29 @@
 
                             <!-- Bride Card -->
                             <button type="button" @click="setGender('Female')" 
-                                class="relative overflow-hidden rounded-3xl p-5 sm:p-6 flex flex-col items-center justify-center transition-all duration-300 transform hover:-translate-y-1.5 cursor-pointer group focus:outline-none"
+                                class="relative overflow-hidden rounded-2xl sm:rounded-3xl p-3 sm:p-6 flex flex-col items-center justify-center transition-all duration-300 transform hover:-translate-y-1.5 cursor-pointer group focus:outline-none"
                                 :class="formData.gender === 'Female' 
-                                    ? 'bg-gradient-to-b from-white via-[#FFFBF2] to-[#FFF3DC] border-2 border-rani-gold shadow-[0_12px_30px_rgba(212,175,55,0.5)] ring-4 ring-rani-gold/30 scale-[1.03]' 
+                                    ? 'bg-gradient-to-b from-white via-[#FFFBF2] to-[#FFF3DC] border-2 border-rani-gold shadow-[0_12px_30px_rgba(212,175,55,0.5)] ring-4 ring-rani-gold/30 scale-[1.02] sm:scale-[1.03]' 
                                     : 'bg-white/80 hover:bg-white/95 border-2 border-white/70 hover:border-rani-gold/80 shadow-lg backdrop-blur-md hover:shadow-xl'">
                                 
                                 <!-- Top Selection Badge Indicator -->
-                                <div class="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300"
+                                <div class="absolute top-2 right-2 sm:top-3 sm:right-3 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all duration-300"
                                      :class="formData.gender === 'Female' 
                                         ? 'bg-rani-primary text-rani-gold shadow-md ring-2 ring-rani-gold scale-100' 
                                         : 'bg-gray-200/80 text-transparent scale-90 group-hover:bg-rani-gold/30 group-hover:text-rani-primary-dark'">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                 </div>
 
                                 <!-- Royal Gold Ring Frame Avatar -->
-                                <div class="relative p-1 rounded-full bg-gradient-to-tr from-rani-gold via-amber-200 to-rani-gold-light shadow-md mb-3 sm:mb-4 group-hover:scale-105 transition-transform duration-300">
-                                    <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-white border-2 border-white shadow-inner flex items-center justify-center">
+                                <div class="relative p-0.5 sm:p-1 rounded-full bg-gradient-to-tr from-rani-gold via-amber-200 to-rani-gold-light shadow-md mb-2 sm:mb-4 group-hover:scale-105 transition-transform duration-300">
+                                    <div class="w-16 h-16 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-white border-2 border-white shadow-inner flex items-center justify-center">
                                         <img src="{{ asset('img/bride.png') }}" alt="Bride" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
                                     </div>
                                 </div>
 
                                 <!-- Titles -->
-                                <span class="font-serif text-xl sm:text-2xl font-bold tracking-wide text-rani-primary-dark mb-1">Bride</span>
-                                <span class="text-xs font-semibold px-3 py-0.5 rounded-full transition-colors"
+                                <span class="font-serif text-base sm:text-2xl font-bold tracking-wide text-rani-primary-dark mb-0.5 sm:mb-1">Bride</span>
+                                <span class="text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-0.5 rounded-full transition-colors"
                                       :class="formData.gender === 'Female' 
                                         ? 'bg-rani-primary/10 text-rani-primary-dark font-bold' 
                                         : 'bg-gray-100 text-gray-500 group-hover:bg-rani-gold/20 group-hover:text-rani-primary-dark'">
@@ -297,8 +301,8 @@
                             </button>
                         </div>
 
-                        <div class="mt-4">
-                            <button type="button" :disabled="!formData.gender" @click="nextStep" class="w-full theme-btn py-4 rounded-full text-lg shadow-lg">Continue</button>
+                        <div class="mt-3 sm:mt-4">
+                            <button type="button" :disabled="!formData.gender" @click="nextStep" class="w-full theme-btn py-3 sm:py-4 rounded-full text-base sm:text-lg shadow-lg">Continue</button>
                         </div>
                     </div>
 
@@ -306,39 +310,36 @@
                     <div x-show="step === 3" style="display: none;"
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
-                         x-transition:enter-end="opacity-100 translate-x-0" 
-                          
-                          
-                         >
+                         x-transition:enter-end="opacity-100 translate-x-0">
                         
-                        <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Personal Details</h4>
-                        <div class="space-y-5 mb-8">
+                        <h4 class="text-xl sm:text-2xl font-serif text-white mb-3 sm:mb-8 text-center text-shadow-sm">Personal Details</h4>
+                        <div class="space-y-3 sm:space-y-5 mb-4 sm:mb-8">
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">First Name</label>
-                                <input type="text" name="first_name" x-model="formData.first_name" required class="w-full px-5 py-3.5 rounded-xl theme-input" placeholder="e.g. Rahul">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">First Name</label>
+                                <input type="text" name="first_name" x-model="formData.first_name" required class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base" placeholder="e.g. Rahul">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Middle Name (Optional)</label>
-                                <input type="text" name="middle_name" x-model="formData.middle_name" class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Middle Name (Optional)</label>
+                                <input type="text" name="middle_name" x-model="formData.middle_name" class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                             </div>
                             <!-- Last Name & Aadhar Number Row -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6 mt-3 sm:mt-5">
                                 <div>
-                                    <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Last Name</label>
+                                    <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Last Name</label>
                                     <input type="text" x-model="formData.last_name" placeholder="e.g. Sharma" 
-                                        class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                        class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Aadhar Number</label>
+                                    <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Aadhar Number</label>
                                     <input type="text" x-model="formData.aadhar_number" placeholder="12-digit Aadhar Number" maxlength="12"
-                                        class="w-full px-5 py-3.5 rounded-xl theme-input"
+                                        class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base"
                                         @input="formData.aadhar_number = $event.target.value.replace(/[^0-9]/g, '')">
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <button type="button" @click="nextStep" class="w-full theme-btn py-4 rounded-full text-lg transition-all">Continue</button>
+                        <div class="mt-3 sm:mt-4">
+                            <button type="button" @click="nextStep" class="w-full theme-btn py-3 sm:py-4 rounded-full text-base sm:text-lg transition-all">Continue</button>
                         </div>
                     </div>
 
@@ -346,43 +347,42 @@
                     <div x-show="step === 4" style="display: none;"
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
-                         x-transition:enter-end="opacity-100 translate-x-0" 
-                         >
+                         x-transition:enter-end="opacity-100 translate-x-0">
                         
-                        <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Date of Birth</h4>
-                        <div class="mb-8">
-                            <div class="flex justify-center items-center gap-3">
-                                <div class="w-24">
-                                    <label class="block text-xs font-bold text-rani-gold uppercase tracking-wider text-center mb-2">Day (DD)</label>
+                        <h4 class="text-xl sm:text-2xl font-serif text-white mb-3 sm:mb-8 text-center text-shadow-sm">Date of Birth</h4>
+                        <div class="mb-4 sm:mb-8">
+                            <div class="flex justify-center items-center gap-2 sm:gap-3">
+                                <div class="w-20 sm:w-24">
+                                    <label class="block text-[10px] sm:text-xs font-bold text-rani-gold uppercase tracking-wider text-center mb-1 sm:mb-2">Day (DD)</label>
                                     <input type="tel" x-ref="dobDay" x-model="formData.dob_day" 
                                            @input="handleDobDay($event)" 
                                            @keydown="handleDobKeydown($event, 'day')"
                                            placeholder="DD" maxlength="2" 
-                                           class="w-full px-2 py-4 rounded-xl theme-input font-bold text-center text-xl">
+                                           class="w-full px-1 sm:px-2 py-2.5 sm:py-4 rounded-xl theme-input font-bold text-center text-lg sm:text-xl">
                                 </div>
-                                <div class="text-rani-gold text-3xl font-light self-end pb-3">/</div>
-                                <div class="w-24">
-                                    <label class="block text-xs font-bold text-rani-gold uppercase tracking-wider text-center mb-2">Month (MM)</label>
+                                <div class="text-rani-gold text-2xl sm:text-3xl font-light self-end pb-2 sm:pb-3">/</div>
+                                <div class="w-20 sm:w-24">
+                                    <label class="block text-[10px] sm:text-xs font-bold text-rani-gold uppercase tracking-wider text-center mb-1 sm:mb-2">Month (MM)</label>
                                     <input type="tel" x-ref="dobMonth" x-model="formData.dob_month" 
                                            @input="handleDobMonth($event)" 
                                            @keydown="handleDobKeydown($event, 'month')"
                                            placeholder="MM" maxlength="2" 
-                                           class="w-full px-2 py-4 rounded-xl theme-input font-bold text-center text-xl">
+                                           class="w-full px-1 sm:px-2 py-2.5 sm:py-4 rounded-xl theme-input font-bold text-center text-lg sm:text-xl">
                                 </div>
-                                <div class="text-rani-gold text-3xl font-light self-end pb-3">/</div>
-                                <div class="w-28">
-                                    <label class="block text-xs font-bold text-rani-gold uppercase tracking-wider text-center mb-2">Year (YYYY)</label>
+                                <div class="text-rani-gold text-2xl sm:text-3xl font-light self-end pb-2 sm:pb-3">/</div>
+                                <div class="w-24 sm:w-28">
+                                    <label class="block text-[10px] sm:text-xs font-bold text-rani-gold uppercase tracking-wider text-center mb-1 sm:mb-2">Year (YYYY)</label>
                                     <input type="tel" x-ref="dobYear" x-model="formData.dob_year" 
                                            @input="handleDobYear($event)" 
                                            @keydown="handleDobKeydown($event, 'year')"
                                            placeholder="YYYY" maxlength="4" 
-                                           class="w-full px-2 py-4 rounded-xl theme-input font-bold text-center text-xl">
+                                           class="w-full px-1 sm:px-2 py-2.5 sm:py-4 rounded-xl theme-input font-bold text-center text-lg sm:text-xl">
                                 </div>
                             </div>
                             <input type="hidden" name="dob" :value="formData.dob_year + '-' + formData.dob_month + '-' + formData.dob_day">
                         </div>
-                        <div class="mt-4">
-                            <button type="button" @click="nextStep" :disabled="!(formData.dob_day && formData.dob_month && formData.dob_year && formData.dob_year.length === 4)" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                        <div class="mt-3 sm:mt-4">
+                            <button type="button" @click="nextStep" :disabled="!(formData.dob_day && formData.dob_month && formData.dob_year && formData.dob_year.length === 4)" class="w-full theme-btn py-3 sm:py-4 rounded-full text-base sm:text-lg">Continue</button>
                         </div>
                     </div>
 
@@ -390,16 +390,13 @@
                     <div x-show="step === 5" style="display: none;"
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
-                         x-transition:enter-end="opacity-100 translate-x-0" 
-                          
-                          
-                         >
+                         x-transition:enter-end="opacity-100 translate-x-0">
                          
-                        <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Religion & Community</h4>
-                        <div class="space-y-5 mb-8">
+                        <h4 class="text-xl sm:text-2xl font-serif text-white mb-3 sm:mb-8 text-center text-shadow-sm">Religion & Community</h4>
+                        <div class="space-y-3 sm:space-y-5 mb-4 sm:mb-8">
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Religion</label>
-                                <select name="religion" x-model="formData.religion" @change="onReligionChange" class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Religion</label>
+                                <select name="religion" x-model="formData.religion" @change="onReligionChange" class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                                     <option value="" disabled>Select Religion</option>
                                     <template x-for="item in masterData.religions" :key="item.id">
                                         <option :value="item.name" x-text="item.name"></option>
@@ -407,8 +404,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Community</label>
-                                <select name="community" x-model="formData.community" :disabled="!formData.religion" class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Community</label>
+                                <select name="community" x-model="formData.community" :disabled="!formData.religion" class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                                     <option value="" disabled>Select Community</option>
                                     <template x-for="comm in availableCommunities()" :key="comm.id">
                                         <option :value="comm.name" x-text="comm.name"></option>
@@ -416,12 +413,12 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Sub Community (Optional)</label>
-                                <input type="text" name="sub_community" x-model="formData.sub_community" placeholder="Enter Sub Community" class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Sub Community (Optional)</label>
+                                <input type="text" name="sub_community" x-model="formData.sub_community" placeholder="Enter Sub Community" class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <button type="button" @click="nextStep" :disabled="!(formData.religion && formData.community)" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                        <div class="mt-3 sm:mt-4">
+                            <button type="button" @click="nextStep" :disabled="!(formData.religion && formData.community)" class="w-full theme-btn py-3 sm:py-4 rounded-full text-base sm:text-lg">Continue</button>
                         </div>
                     </div>
 
@@ -429,27 +426,24 @@
                     <div x-show="step === 6" style="display: none;"
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
-                         x-transition:enter-end="opacity-100 translate-x-0" 
-                          
-                          
-                         >
+                         x-transition:enter-end="opacity-100 translate-x-0">
                          
-                        <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Contact Information</h4>
-                        <div class="space-y-5 mb-8">
+                        <h4 class="text-xl sm:text-2xl font-serif text-white mb-3 sm:mb-8 text-center text-shadow-sm">Contact Information</h4>
+                        <div class="space-y-3 sm:space-y-5 mb-4 sm:mb-8">
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Email ID</label>
-                                <input type="email" name="email" x-model="formData.email" required placeholder="name@example.com" class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Email ID</label>
+                                <input type="email" name="email" x-model="formData.email" required placeholder="name@example.com" class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Mobile Number</label>
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Mobile Number</label>
                                 <div class="flex shadow-sm rounded-xl overflow-hidden">
-                                    <span class="inline-flex items-center px-4 bg-white/50 text-[#4a0404] font-bold border border-rani-gold/40 border-r-0">+91</span>
-                                    <input type="tel" name="mobile" x-model="formData.mobile" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="10-digit number" class="flex-1 min-w-0 block w-full px-5 py-3.5 theme-input !rounded-l-none" maxlength="10">
+                                    <span class="inline-flex items-center px-3 sm:px-4 bg-white/50 text-[#4a0404] font-bold border border-rani-gold/40 border-r-0 text-xs sm:text-sm">+91</span>
+                                    <input type="tel" name="mobile" x-model="formData.mobile" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="10-digit number" class="flex-1 min-w-0 block w-full px-4 py-2.5 sm:px-5 sm:py-3.5 theme-input !rounded-l-none text-sm sm:text-base" maxlength="10">
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <button type="button" @click="nextStep" :disabled="!(formData.email && formData.mobile)" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                        <div class="mt-3 sm:mt-4">
+                            <button type="button" @click="nextStep" :disabled="!(formData.email && formData.mobile)" class="w-full theme-btn py-3 sm:py-4 rounded-full text-base sm:text-lg">Continue</button>
                         </div>
                     </div>
 
@@ -457,18 +451,15 @@
                     <div x-show="step === 7" style="display: none;"
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
-                         x-transition:enter-end="opacity-100 translate-x-0" 
-                          
-                          
-                         >
+                         x-transition:enter-end="opacity-100 translate-x-0">
                          
-                        <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Location</h4>
+                        <h4 class="text-xl sm:text-2xl font-serif text-white mb-3 sm:mb-8 text-center text-shadow-sm">Location</h4>
                         
                         <!-- Country Row -->
-                        <div class="mb-5">
-                            <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Country (Living In)</label>
+                        <div class="mb-3 sm:mb-5">
+                            <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Country (Living In)</label>
                             <select x-model="formData.country" @change="onCountryChange"
-                                class="w-full px-5 py-3.5 rounded-xl theme-input appearance-none">
+                                class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input appearance-none text-sm sm:text-base">
                                 <option value="" disabled>Select Country</option>
                                 <template x-for="c in masterData.countries" :key="c.id">
                                     <option :value="c.name" x-text="c.name"></option>
@@ -477,10 +468,10 @@
                         </div>
 
                         <!-- State & City Row -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5 mb-3 sm:mb-5">
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">State</label>
-                                <select x-model="formData.state" @change="onStateChange" :disabled="!formData.country" class="w-full px-5 py-3.5 rounded-xl theme-input appearance-none">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">State</label>
+                                <select x-model="formData.state" @change="onStateChange" :disabled="!formData.country" class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input appearance-none text-sm sm:text-base">
                                     <option value="" disabled>Select State</option>
                                     <template x-for="s in availableStates()" :key="s.id">
                                         <option :value="s.name" x-text="s.name"></option>
@@ -489,8 +480,8 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">City</label>
-                                <select x-model="formData.city" :disabled="!formData.state" class="w-full px-5 py-3.5 rounded-xl theme-input appearance-none">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">City</label>
+                                <select x-model="formData.city" :disabled="!formData.state" class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input appearance-none text-sm sm:text-base">
                                     <option value="" disabled>Select City</option>
                                     <template x-for="ct in availableCities()" :key="ct.id">
                                         <option :value="ct.name" x-text="ct.name"></option>
@@ -500,32 +491,30 @@
                         </div>
 
                         <!-- Police Station & Pincode Row -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5 mb-3 sm:mb-5">
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Police Station</label>
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Police Station</label>
                                 <input type="text" name="police_st" x-model="formData.police_st" placeholder="e.g. Park Street Police Station"
-                                    class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                    class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Pincode</label>
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Pincode</label>
                                 <input type="text" name="pincode" x-model="formData.pincode" placeholder="e.g. 700016" maxlength="10"
-                                    class="w-full px-5 py-3.5 rounded-xl theme-input"
+                                    class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base"
                                     @input="formData.pincode = $event.target.value.replace(/[^0-9]/g, '')">
                             </div>
                         </div>
 
                         <!-- Full Address -->
-                        <div class="mb-5">
-                            <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Full Address</label>
-                            <textarea x-model="formData.full_address" placeholder="Enter your complete residential address" rows="3"
-                                class="w-full px-5 py-3.5 rounded-xl theme-input resize-none"></textarea>
+                        <div class="mb-3 sm:mb-5">
+                            <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Full Address</label>
+                            <textarea x-model="formData.full_address" placeholder="Enter your complete residential address" rows="2"
+                                class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input resize-none text-sm sm:text-base"></textarea>
                         </div>
 
-
-
-                        <div class="mt-8">
-                            <button type="button" @click="nextStep" class="w-full theme-btn py-4 rounded-full text-lg transition-all">Continue</button>
+                        <div class="mt-4 sm:mt-8">
+                            <button type="button" @click="nextStep" class="w-full theme-btn py-3 sm:py-4 rounded-full text-base sm:text-lg transition-all">Continue</button>
                         </div>
                     </div>
 
@@ -533,16 +522,13 @@
                     <div x-show="step === 8" style="display: none;"
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
-                         x-transition:enter-end="opacity-100 translate-x-0" 
-                          
-                          
-                         >
+                         x-transition:enter-end="opacity-100 translate-x-0">
                          
-                        <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Physical & Diet</h4>
-                        <div class="space-y-5 mb-8">
+                        <h4 class="text-xl sm:text-2xl font-serif text-white mb-3 sm:mb-8 text-center text-shadow-sm">Physical & Diet</h4>
+                        <div class="space-y-3 sm:space-y-5 mb-4 sm:mb-8">
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Marital Status</label>
-                                <select name="marital_status" x-model="formData.marital_status" required class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Marital Status</label>
+                                <select name="marital_status" x-model="formData.marital_status" required class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                                     <option value="" disabled>Select Status</option>
                                     <template x-for="ms in masterData.maritalStatuses" :key="ms.id">
                                         <option :value="ms.name" x-text="ms.name"></option>
@@ -550,8 +536,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Height</label>
-                                <select name="height" x-model="formData.height" required class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Height</label>
+                                <select name="height" x-model="formData.height" required class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                                     <option value="" disabled>Select Height</option>
                                     <template x-for="h in masterData.heights" :key="h.id">
                                         <option :value="h.name" x-text="h.name"></option>
@@ -559,8 +545,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Diet</label>
-                                <select name="diet" x-model="formData.diet" required class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Diet</label>
+                                <select name="diet" x-model="formData.diet" required class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                                     <option value="" disabled>Select Diet</option>
                                     <template x-for="d in masterData.diets" :key="d.id">
                                         <option :value="d.name" x-text="d.name"></option>
@@ -568,8 +554,8 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <button type="button" @click="nextStep" :disabled="!(formData.marital_status && formData.height && formData.diet)" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                        <div class="mt-3 sm:mt-4">
+                            <button type="button" @click="nextStep" :disabled="!(formData.marital_status && formData.height && formData.diet)" class="w-full theme-btn py-3 sm:py-4 rounded-full text-base sm:text-lg">Continue</button>
                         </div>
                     </div>
 
@@ -577,16 +563,13 @@
                     <div x-show="step === 9" style="display: none;"
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
-                         x-transition:enter-end="opacity-100 translate-x-0" 
-                          
-                          
-                         >
+                         x-transition:enter-end="opacity-100 translate-x-0">
                          
-                        <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Education</h4>
-                        <div class="space-y-5 mb-8">
+                        <h4 class="text-xl sm:text-2xl font-serif text-white mb-3 sm:mb-8 text-center text-shadow-sm">Education</h4>
+                        <div class="space-y-3 sm:space-y-5 mb-4 sm:mb-8">
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Highest Qualification</label>
-                                <select name="highest_qualification" x-model="formData.highest_qualification" required class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Highest Qualification</label>
+                                <select name="highest_qualification" x-model="formData.highest_qualification" required class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                                     <option value="" disabled>Select Qualification</option>
                                     <option value="B.E / B.Tech">B.E / B.Tech</option>
                                     <option value="B.A">B.A</option>
@@ -596,29 +579,30 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">College Name</label>
-                                <input type="text" name="college_name" x-model="formData.college_name" class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">College Name</label>
+                                <input type="text" name="college_name" x-model="formData.college_name" class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">College Address</label>
-                                <input type="text" name="college_address" x-model="formData.college_address" class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">College Address</label>
+                                <input type="text" name="college_address" x-model="formData.college_address" class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <button type="button" @click="nextStep" :disabled="!formData.highest_qualification" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                        <div class="mt-3 sm:mt-4">
+                            <button type="button" @click="nextStep" :disabled="!formData.highest_qualification" class="w-full theme-btn py-3 sm:py-4 rounded-full text-base sm:text-lg">Continue</button>
                         </div>
-                    </div>                    <!-- Step 10: Income -->
+                    </div>
+
+                    <!-- Step 10: Income -->
                     <div x-show="step === 10" style="display: none;"
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
-                         x-transition:enter-end="opacity-100 translate-x-0" 
-                         >
+                         x-transition:enter-end="opacity-100 translate-x-0">
                          
-                        <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Income Details</h4>
-                        <div class="space-y-5 mb-8">
+                        <h4 class="text-xl sm:text-2xl font-serif text-white mb-3 sm:mb-8 text-center text-shadow-sm">Income Details</h4>
+                        <div class="space-y-3 sm:space-y-5 mb-4 sm:mb-8">
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Annual Income</label>
-                                <select name="annual_income" x-model="formData.annual_income" @change="formData.income_type = formData.annual_income" required class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Annual Income</label>
+                                <select name="annual_income" x-model="formData.annual_income" @change="formData.income_type = formData.annual_income" required class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                                     <option value="" disabled>Select Annual Income Range</option>
                                     <template x-for="inc in masterData.incomes" :key="inc.id">
                                         <option :value="inc.name" x-text="inc.name"></option>
@@ -626,8 +610,8 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <button type="button" @click="nextStep" :disabled="!formData.annual_income" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                        <div class="mt-3 sm:mt-4">
+                            <button type="button" @click="nextStep" :disabled="!formData.annual_income" class="w-full theme-btn py-3 sm:py-4 rounded-full text-base sm:text-lg">Continue</button>
                         </div>
                     </div>
 
@@ -635,14 +619,13 @@
                     <div x-show="step === 11" style="display: none;"
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
-                         x-transition:enter-end="opacity-100 translate-x-0" 
-                         >
+                         x-transition:enter-end="opacity-100 translate-x-0">
                          
-                        <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Career Details</h4>
-                        <div class="space-y-5 mb-8">
+                        <h4 class="text-xl sm:text-2xl font-serif text-white mb-2.5 sm:mb-8 text-center text-shadow-sm">Career Details</h4>
+                        <div class="space-y-2.5 sm:space-y-5 mb-3 sm:mb-8">
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Working With</label>
-                                <select name="working_with" x-model="formData.working_with" required class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-0.5 sm:mb-1.5 ml-1">Working With</label>
+                                <select name="working_with" x-model="formData.working_with" required class="w-full px-3.5 py-2 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                                     <option value="" disabled>Select Working Sector</option>
                                     <template x-for="w in masterData.workingWiths" :key="w.id">
                                         <option :value="w.name" x-text="w.name"></option>
@@ -650,24 +633,24 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Your Profession</label>
-                                <input type="text" name="profession" x-model="formData.profession" placeholder="e.g. Software Engineer, Doctor, Business" required class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-0.5 sm:mb-1.5 ml-1">Your Profession</label>
+                                <input type="text" name="profession" x-model="formData.profession" placeholder="e.g. Software Engineer, Doctor, Business" required class="w-full px-3.5 py-2 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Your Designation</label>
-                                <input type="text" name="designation" x-model="formData.designation" placeholder="e.g. Senior Manager, Consultant" required class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-0.5 sm:mb-1.5 ml-1">Your Designation</label>
+                                <input type="text" name="designation" x-model="formData.designation" placeholder="e.g. Senior Manager, Consultant" required class="w-full px-3.5 py-2 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Company Name</label>
-                                <input type="text" name="company_name" x-model="formData.company_name" placeholder="e.g. TCS, Infosys, Self Employed" class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-0.5 sm:mb-1.5 ml-1">Company Name</label>
+                                <input type="text" name="company_name" x-model="formData.company_name" placeholder="e.g. TCS, Infosys, Self Employed" class="w-full px-3.5 py-2 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Company Address</label>
-                                <input type="text" name="company_address" x-model="formData.company_address" class="w-full px-5 py-3.5 rounded-xl theme-input">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-0.5 sm:mb-1.5 ml-1">Company Address</label>
+                                <input type="text" name="company_address" x-model="formData.company_address" class="w-full px-3.5 py-2 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <button type="button" @click="nextStep" :disabled="!(formData.working_with && formData.profession && formData.designation)" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                        <div class="mt-3 sm:mt-4">
+                            <button type="button" @click="nextStep" :disabled="!(formData.working_with && formData.profession && formData.designation)" class="w-full theme-btn py-3 sm:py-4 rounded-full text-base sm:text-lg">Continue</button>
                         </div>
                     </div>
 
@@ -675,32 +658,29 @@
                     <div x-show="step === 12" style="display: none;"
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
-                         x-transition:enter-end="opacity-100 translate-x-0" 
-                          
-                          
-                         >
+                         x-transition:enter-end="opacity-100 translate-x-0">
                          
-                        <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Express Yourself</h4>
-                        <div class="space-y-6 mb-8">
+                        <h4 class="text-xl sm:text-2xl font-serif text-white mb-2.5 sm:mb-8 text-center text-shadow-sm">Express Yourself</h4>
+                        <div class="space-y-3 sm:space-y-6 mb-3 sm:mb-8">
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-1.5 ml-1">Write a little about yourself...</label>
-                                <textarea name="about_yourself" x-model="formData.about_yourself" required rows="4" placeholder="I am a caring and passionate person who loves..." class="w-full px-5 py-3.5 rounded-xl theme-input"></textarea>
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Write a little about yourself...</label>
+                                <textarea name="about_yourself" x-model="formData.about_yourself" required rows="2" placeholder="I am a caring and passionate person who loves..." class="w-full px-3.5 py-2 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base"></textarea>
                             </div>
                             
                             <div>
-                                <label class="block text-sm font-medium text-white/90 mb-3 ml-1">Hobbies & Interests</label>
-                                <div class="flex flex-wrap gap-2 max-h-56 overflow-y-auto pr-1">
+                                <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1.5 sm:mb-3 ml-1">Hobbies & Interests</label>
+                                <div class="flex flex-wrap gap-1.5 sm:gap-2 max-h-36 sm:max-h-56 overflow-y-auto pr-1">
                                     <template x-for="hobby in masterData.hobbies" :key="hobby.id">
-                                        <label class="px-4 py-2 rounded-full cursor-pointer transition-all duration-300 shadow-sm" :class="formData.hobbies.includes(hobby.name) ? 'selected option-btn' : 'option-btn'">
+                                        <label class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full cursor-pointer transition-all duration-300 shadow-sm" :class="formData.hobbies.includes(hobby.name) ? 'selected option-btn' : 'option-btn'">
                                             <input type="checkbox" name="hobbies_interests[]" :value="hobby.name" x-model="formData.hobbies" class="hidden">
-                                            <span class="text-sm font-medium" x-text="hobby.name"></span>
+                                            <span class="text-xs sm:text-sm font-medium" x-text="hobby.name"></span>
                                         </label>
                                     </template>
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-4">
-                            <button type="button" @click="nextStep" :disabled="!formData.about_yourself" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                        <div class="mt-3 sm:mt-4">
+                            <button type="button" @click="nextStep" :disabled="!formData.about_yourself" class="w-full theme-btn py-3 sm:py-4 rounded-full text-base sm:text-lg">Continue</button>
                         </div>
                     </div>
 
@@ -710,17 +690,17 @@
                          x-transition:enter-start="opacity-0 translate-x-12" 
                          x-transition:enter-end="opacity-100 translate-x-0">
                          
-                        <div class="flex justify-center mb-6">
-                            <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-rani-gold border border-rani-gold/50 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        <div class="flex justify-center mb-2.5 sm:mb-6">
+                            <div class="w-12 h-12 sm:w-20 sm:h-20 bg-white/20 rounded-full flex items-center justify-center text-rani-gold border border-rani-gold/50 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                                <svg class="w-6 h-6 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                             </div>
                         </div>
-                        <h4 class="text-2xl font-serif text-white mb-2 text-center text-shadow-sm">Verify Mobile Number</h4>
-                        <p class="text-sm text-white/80 text-center mb-2 font-light">
+                        <h4 class="text-xl sm:text-2xl font-serif text-white mb-1 sm:mb-2 text-center text-shadow-sm">Verify Mobile Number</h4>
+                        <p class="text-xs sm:text-sm text-white/80 text-center mb-1.5 sm:mb-2 font-light">
                             A 4-digit verification code was sent via WhatsApp to:
                         </p>
-                        <div class="flex items-center justify-center gap-2 mb-6">
-                            <span class="font-bold text-rani-gold font-mono text-base bg-white/10 px-3 py-1 rounded-full border border-rani-gold/40">
+                        <div class="flex items-center justify-center gap-2 mb-3.5 sm:mb-6">
+                            <span class="font-bold text-rani-gold font-mono text-xs sm:text-base bg-white/10 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-rani-gold/40">
                                 +91 <span x-text="formData.mobile"></span>
                             </span>
                             <button type="button" @click="step = 6" class="text-xs text-white/70 hover:text-white underline ml-1 cursor-pointer">
@@ -728,7 +708,7 @@
                             </button>
                         </div>
                         
-                        <div class="flex justify-center gap-3 sm:gap-4 mb-6">
+                        <div class="flex justify-center gap-2.5 sm:gap-4 mb-3.5 sm:mb-6">
                             <template x-for="(digit, index) in otpDigits" :key="index">
                                 <input type="text" 
                                        inputmode="numeric" 
@@ -736,12 +716,12 @@
                                        x-model="otpDigits[index]" 
                                        @input="handleOtpDigit($event, index)" 
                                        @keydown="handleOtpKeydown($event, index)"
-                                       class="w-14 h-14 sm:w-16 sm:h-16 text-center text-3xl font-bold bg-white/80 border border-rani-gold/60 rounded-2xl focus:border-rani-gold focus:ring-4 focus:ring-rani-gold/30 outline-none otp-input text-[#4a0404] shadow-md transition-all font-mono">
+                                       class="w-11 h-11 sm:w-16 sm:h-16 text-center text-xl sm:text-3xl font-bold bg-white/80 border border-rani-gold/60 rounded-xl sm:rounded-2xl focus:border-rani-gold focus:ring-4 focus:ring-rani-gold/30 outline-none otp-input text-[#4a0404] shadow-md transition-all font-mono">
                             </template>
                         </div>
 
                         <!-- Resend OTP & Status -->
-                        <div class="text-center mb-6">
+                        <div class="text-center mb-3.5 sm:mb-6">
                             <template x-if="otpCountdown > 0">
                                 <p class="text-xs text-white/70">
                                     Resend code in <span class="font-bold text-rani-gold font-mono" x-text="otpCountdown"></span> seconds
@@ -751,17 +731,17 @@
                                 <button type="button" 
                                         @click="sendOtp" 
                                         :disabled="isOtpSending" 
-                                        class="text-sm text-rani-gold hover:text-white font-semibold underline inline-flex items-center gap-1 cursor-pointer transition-colors">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                        class="text-xs sm:text-sm text-rani-gold hover:text-white font-semibold underline inline-flex items-center gap-1 cursor-pointer transition-colors">
+                                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                                     <span x-text="isOtpSending ? 'Sending OTP...' : 'Resend WhatsApp OTP'"></span>
                                 </button>
                             </template>
                         </div>
                         
-                        <div class="mt-4">
-                            <button type="button" @click="verifyOtp" :disabled="otpDigits.join('').length !== 4 || isVerifyingOtp" class="w-full theme-btn py-4 rounded-full text-lg flex justify-center items-center">
+                        <div class="mt-3 sm:mt-4">
+                            <button type="button" @click="verifyOtp" :disabled="otpDigits.join('').length !== 4 || isVerifyingOtp" class="w-full theme-btn py-3 sm:py-4 rounded-full text-base sm:text-lg flex justify-center items-center">
                                 <span x-show="!isVerifyingOtp">Verify & Continue</span>
-                                <svg x-show="isVerifyingOtp" class="animate-spin h-6 w-6 text-[#4a0404]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="display:none;"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                <svg x-show="isVerifyingOtp" class="animate-spin h-5 w-5 sm:h-6 sm:w-6 text-[#4a0404]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="display:none;"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             </button>
                         </div>
                     </div>
@@ -770,25 +750,22 @@
                     <div x-show="step === 14" style="display: none;"
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
-                         x-transition:enter-end="opacity-100 translate-x-0" 
-                          
-                          
-                         >
+                         x-transition:enter-end="opacity-100 translate-x-0">
                          
-                        <h4 class="text-2xl font-serif text-white mb-6 text-center text-shadow-sm">Profile Picture</h4>
+                        <h4 class="text-xl sm:text-2xl font-serif text-white mb-3 sm:mb-6 text-center text-shadow-sm">Profile Picture</h4>
                         
-                        <div class="mb-6">
-                            <div class="border-2 border-dashed border-rani-gold/50 bg-white/20 hover:bg-white/30 transition-colors rounded-2xl p-6 text-center cursor-pointer flex flex-col items-center justify-center backdrop-blur-sm" @click="$refs.fileInput.click()">
+                        <div class="mb-3 sm:mb-6">
+                            <div class="border-2 border-dashed border-rani-gold/50 bg-white/20 hover:bg-white/30 transition-colors rounded-xl sm:rounded-2xl p-3.5 sm:p-6 text-center cursor-pointer flex flex-col items-center justify-center backdrop-blur-sm" @click="$refs.fileInput.click()">
                                 <template x-if="!imagePreview">
                                     <div class="flex flex-col items-center">
-                                        <div class="w-16 h-16 bg-rani-gold rounded-full flex items-center justify-center shadow-sm mb-3 text-[#4a0404]">
-                                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-rani-gold rounded-full flex items-center justify-center shadow-sm mb-2 sm:mb-3 text-[#4a0404]">
+                                            <svg class="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                         </div>
-                                        <p class="text-sm font-medium text-white">Upload Profile Picture</p>
+                                        <p class="text-xs sm:text-sm font-medium text-white">Upload Profile Picture</p>
                                     </div>
                                 </template>
                                 <template x-if="imagePreview">
-                                    <div class="w-28 h-28 mx-auto rounded-full overflow-hidden border-4 border-rani-gold shadow-lg">
+                                    <div class="w-20 h-20 sm:w-28 sm:h-28 mx-auto rounded-full overflow-hidden border-4 border-rani-gold shadow-lg">
                                         <img :src="imagePreview" class="w-full h-full object-cover">
                                     </div>
                                 </template>
@@ -796,47 +773,47 @@
                             <input type="file" name="profile_picture" x-ref="fileInput" @change="handleFileUpload" class="hidden" accept="image/*">
                         </div>
 
-                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                            <button type="button" @click="startCamera" class="flex-1 py-4 px-4 rounded-xl option-btn font-medium flex flex-col items-center group">
-                                <svg class="w-7 h-7 mb-2 text-rani-gold group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+                        <div class="flex flex-col sm:flex-row gap-2.5 sm:gap-4 justify-center">
+                            <button type="button" @click="startCamera" class="flex-1 py-2.5 sm:py-4 px-3 sm:px-4 rounded-xl option-btn font-medium flex flex-col items-center group text-xs sm:text-sm">
+                                <svg class="w-5 h-5 sm:w-7 sm:h-7 mb-1 sm:mb-2 text-rani-gold group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
                                 Take Live Selfie
                             </button>
-                            <button type="button" @click="mockPhoneSelfie($event)" class="flex-1 py-4 px-4 rounded-xl option-btn font-medium flex flex-col items-center group">
-                                <svg class="w-7 h-7 mb-2 text-rani-gold group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                            <button type="button" @click="mockPhoneSelfie($event)" class="flex-1 py-2.5 sm:py-4 px-3 sm:px-4 rounded-xl option-btn font-medium flex flex-col items-center group text-xs sm:text-sm">
+                                <svg class="w-5 h-5 sm:w-7 sm:h-7 mb-1 sm:mb-2 text-rani-gold group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                                 Link to Phone
                             </button>
                         </div>
 
-                        <div x-show="isCameraOpen" class="mt-6 border-4 border-rani-gold rounded-2xl overflow-hidden relative bg-black shadow-2xl" style="display: none;">
+                        <div x-show="isCameraOpen" class="mt-4 sm:mt-6 border-4 border-rani-gold rounded-2xl overflow-hidden relative bg-black shadow-2xl" style="display: none;">
                             <video x-ref="videoElement" autoplay playsinline class="w-full h-auto"></video>
-                            <button type="button" @click="takeSelfie" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white text-[#4a0404] rounded-full p-4 shadow-[0_0_20px_rgba(212,175,55,0.8)] hover:scale-110 transition-transform border-4 border-rani-gold">
-                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+                            <button type="button" @click="takeSelfie" class="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 bg-white text-[#4a0404] rounded-full p-3 sm:p-4 shadow-[0_0_20px_rgba(212,175,55,0.8)] hover:scale-110 transition-transform border-4 border-rani-gold">
+                                <svg class="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
                             </button>
                         </div>
                         <canvas x-ref="canvasElement" class="hidden"></canvas>
 
-                        <div x-show="isSelfieVerified" class="mt-6 p-4 bg-green-500/20 border border-green-400 text-green-100 rounded-xl text-center font-medium shadow-sm flex items-center justify-center gap-2 backdrop-blur-sm" style="display: none;">
-                            <svg class="w-6 h-6 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div x-show="isSelfieVerified" class="mt-4 sm:mt-6 p-3 sm:p-4 bg-green-500/20 border border-green-400 text-green-100 rounded-xl text-center font-medium shadow-sm flex items-center justify-center gap-2 backdrop-blur-sm text-xs sm:text-sm" style="display: none;">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Identity Verified!
                         </div>
 
                         <!-- Optional Branch Referral Code -->
-                        <div class="mt-6 p-4 bg-white/10 border border-rani-gold/40 rounded-2xl backdrop-blur-sm">
-                            <label class="block text-sm font-semibold text-white mb-1.5">
-                                Referral Code <span class="text-xs text-white/70 font-normal">(Optional)</span>
+                        <div class="mt-3.5 sm:mt-6 p-3 sm:p-4 bg-white/10 border border-rani-gold/40 rounded-xl sm:rounded-2xl backdrop-blur-sm">
+                            <label class="block text-xs sm:text-sm font-semibold text-white mb-1 sm:mb-1.5">
+                                Referral Code <span class="text-[10px] sm:text-xs text-white/70 font-normal">(Optional)</span>
                             </label>
                             <input type="text" 
                                    x-model="formData.referral_code" 
                                    placeholder="Enter Branch Code (e.g. BRM001)" 
-                                   class="w-full theme-input py-3 px-4 rounded-xl font-mono uppercase tracking-wider text-base"
+                                   class="w-full theme-input py-2 px-3 sm:py-3 sm:px-4 rounded-xl font-mono uppercase tracking-wider text-sm sm:text-base"
                                    maxlength="30">
-                            <p class="text-xs text-white/60 mt-1.5">If you were assisted or referred by a regional branch center, please enter their branch code.</p>
+                            <p class="text-[10px] sm:text-xs text-white/60 mt-1 sm:mt-1.5">If you were assisted or referred by a regional branch center, please enter their branch code.</p>
                         </div>
                         
-                        <div class="mt-8 pt-6 border-t border-white/20">
-                            <button type="submit" class="w-full theme-btn text-[#4a0404] font-bold py-4.5 rounded-full text-xl transition-all flex justify-center items-center h-14">
+                        <div class="mt-4 pt-3 sm:mt-8 sm:pt-6 border-t border-white/20">
+                            <button type="submit" class="w-full theme-btn text-[#4a0404] font-bold py-3 sm:py-4.5 rounded-full text-base sm:text-xl transition-all flex justify-center items-center h-11 sm:h-14">
                                 <span x-show="!isSubmitting">Complete Registration</span>
-                                <svg x-show="isSubmitting" class="animate-spin h-6 w-6 text-[#4a0404]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="display:none;"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                <svg x-show="isSubmitting" class="animate-spin h-5 w-5 sm:h-6 sm:w-6 text-[#4a0404]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style="display:none;"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             </button>
                         </div>
                     </div>
