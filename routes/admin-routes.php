@@ -30,6 +30,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/bluetick/{id}/approve', [AdminController::class, 'approveBluetick'])->name('bluetick.approve');
         Route::post('/bluetick/{id}/reject', [AdminController::class, 'rejectBluetick'])->name('bluetick.reject');
 
+        // Success Stories Management
+        Route::get('/stories', [AdminController::class, 'stories'])->name('stories.index');
+        Route::post('/stories', [AdminController::class, 'storeStory'])->name('stories.store');
+        Route::get('/stories/{id}', [AdminController::class, 'showStory'])->name('stories.show');
+        Route::put('/stories/{id}', [AdminController::class, 'updateStory'])->name('stories.update');
+        Route::delete('/stories/{id}', [AdminController::class, 'destroyStory'])->name('stories.destroy');
+        Route::post('/stories/{id}/toggle-status', [AdminController::class, 'toggleStoryStatus'])->name('stories.toggle-status');
+
         // Admin Profile & Security Settings
         Route::get('/profile', [AdminController::class, 'profileSettings'])->name('profile');
         Route::post('/profile', [AdminController::class, 'updateProfile'])->name('profile.update');

@@ -5,11 +5,19 @@ use App\Http\Controllers\InboxController;
 use App\Http\Controllers\MatchesController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\WalletController;
+use App\Models\Story;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('frontend.pages.index');
+    $stories = Story::active()->take(6)->get();
+    return view('frontend.pages.index', compact('stories'));
 })->name('login');
+
+// Success Stories Page (Publicly available)
+Route::get('/success-stories', function () {
+    $stories = Story::active()->paginate(12);
+    return view('frontend.pages.stories', compact('stories'));
+})->name('stories');
 
 // Search Routes (Available for both authenticated candidates and visitors)
 Route::get('/search', [SearchController::class, 'index'])->name('search');

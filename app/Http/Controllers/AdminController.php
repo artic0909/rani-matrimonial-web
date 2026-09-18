@@ -9,6 +9,7 @@ use App\Models\Candidate;
 use App\Models\ConnectionRequest;
 use App\Models\Notification;
 use App\Models\Referral;
+use App\Models\Story;
 use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -1151,6 +1152,258 @@ class AdminController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Your administrator password has been updated successfully!',
+        ]);
+    }
+
+    /**
+     * ==========================================
+     * SUCCESS STORIES MODULE MANAGEMENT
+     * ==========================================
+     */
+
+    /**
+     * Display Success Stories Listing with Search, Filters & Metrics
+     */
+    public function stories(Request $request)
+    {
+        $search = trim($request->input('search', ''));
+        $status = $request->input('status', 'all');
+
+        $query = Story::query()->orderBy('order', 'asc')->orderBy('created_at', 'desc');
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'LIKE', "%{$search}%")
+                  ->orWhere('couple_names', 'LIKE', "%{$search}%")
+                  ->orWhere('descriptions', 'LIKE', "%{$search}%");
+            });
+        }
+
+        if ($status === 'active') {
+            $query->where('is_active', true);
+        } elseif ($status === 'inactive') {
+            $query->where('is_active', false);
+        }
+
+        $stories = $query->paginate(12)->withQueryString();
+
+        $counts = [
+            'total' => Story::count(),
+            'active' => Story::where('is_active', true)->count(),
+            'inactive' => Story::where('is_active', false)->count(),
+            'this_month' => Story::whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->count(),
+        ];
+
+        return view('admin.story.index', compact('stories', 'counts', 'search', 'status'));
+    }
+
+    /**
+     * Store a New Success Story
+     */
+    public function storeStory(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'descriptions' => 'required|string',
+            'couple_names' => 'nullable|string|max:255',
+            'wedding_date' => 'nullable|date',
+            'order' => 'nullable|integer',
+            'is_active' => 'nullable|in:0,1,true,false',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
+            'primary_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
+        ]);
+
+        $uploadedImages = [];
+
+        // Check primary image upload
+        if ($request->hasFile('primary_image')) {
+            $file = $request->file('primary_image');
+            $fileName = 'story_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('stories', $fileName, 'public');
+            $uploadedImages[] = $path;
+        }
+
+        // Check multiple images upload
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $idx => $imgFile) {
+                $fileName = 'story_' . time() . '_' . ($idx + 1) . '_' . uniqid() . '.' . $imgFile->getClientOriginalExtension();
+                $path = $imgFile->storeAs('stories', $fileName, 'public');
+                $uploadedImages[] = $path;
+            }
+        }
+
+        // Fallback default sample images if none uploaded
+        $imagesData = !empty($uploadedImages) ? json_encode($uploadedImages) : null;
+
+        $story = Story::create([
+            'title' => trim($request->input('title')),
+            'couple_names' => $request->filled('couple_names') ? trim($request->input('couple_names')) : null,
+            'wedding_date' => $request->filled('wedding_date') ? $request->input('wedding_date') : null,
+            'images' => $imagesData,
+            'descriptions' => trim($request->input('descriptions')),
+            'is_active' => $request->has('is_active') ? (bool) $request->input('is_active') : true,
+            'order' => (int) $request->input('order', 0),
+        ]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Success story "' . $story->title . '" created successfully!',
+                'story' => $story,
+            ]);
+        }
+
+        return redirect()->route('admin.stories.index')->with('success', 'Success story "' . $story->title . '" published successfully!');
+    }
+
+    /**
+     * Show Story Details (JSON / View)
+     */
+    public function showStory($id)
+    {
+        $story = Story::findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'story' => [
+                'id' => $story->id,
+                'title' => $story->title,
+                'couple_names' => $story->couple_names,
+                'wedding_date' => $story->wedding_date ? $story->wedding_date->format('Y-m-d') : null,
+                'formatted_wedding_date' => $story->formatted_wedding_date,
+                'descriptions' => $story->descriptions,
+                'is_active' => $story->is_active,
+                'order' => $story->order,
+                'image_url' => $story->image_url,
+                'gallery_images' => $story->gallery_images,
+                'created_at' => $story->created_at->format('M d, Y h:i A'),
+            ],
+        ]);
+    }
+
+    /**
+     * Update an Existing Success Story
+     */
+    public function updateStory(Request $request, $id)
+    {
+        $story = Story::findOrFail($id);
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'descriptions' => 'required|string',
+            'couple_names' => 'nullable|string|max:255',
+            'wedding_date' => 'nullable|date',
+            'order' => 'nullable|integer',
+            'is_active' => 'nullable|in:0,1,true,false',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
+            'primary_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
+        ]);
+
+        $currentImages = [];
+        if (!empty($story->images)) {
+            $raw = $story->images;
+            if (str_starts_with($raw, '[') || str_starts_with($raw, '{')) {
+                $decoded = json_decode($raw, true);
+                if (is_array($decoded)) {
+                    $currentImages = $decoded;
+                }
+            } else {
+                $currentImages = [$raw];
+            }
+        }
+
+        // If new primary image uploaded
+        if ($request->hasFile('primary_image')) {
+            $file = $request->file('primary_image');
+            $fileName = 'story_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('stories', $fileName, 'public');
+            // Prepend as primary
+            array_unshift($currentImages, $path);
+        }
+
+        // If new multiple images uploaded
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $idx => $imgFile) {
+                $fileName = 'story_' . time() . '_' . ($idx + 1) . '_' . uniqid() . '.' . $imgFile->getClientOriginalExtension();
+                $path = $imgFile->storeAs('stories', $fileName, 'public');
+                $currentImages[] = $path;
+            }
+        }
+
+        $story->update([
+            'title' => trim($request->input('title')),
+            'couple_names' => $request->filled('couple_names') ? trim($request->input('couple_names')) : null,
+            'wedding_date' => $request->filled('wedding_date') ? $request->input('wedding_date') : null,
+            'images' => !empty($currentImages) ? json_encode(array_values(array_unique($currentImages))) : $story->images,
+            'descriptions' => trim($request->input('descriptions')),
+            'is_active' => $request->has('is_active') ? (bool) $request->input('is_active') : $story->is_active,
+            'order' => (int) $request->input('order', $story->order),
+        ]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Success story "' . $story->title . '" updated successfully!',
+                'story' => $story,
+            ]);
+        }
+
+        return redirect()->route('admin.stories.index')->with('success', 'Success story "' . $story->title . '" updated successfully!');
+    }
+
+    /**
+     * Delete a Success Story
+     */
+    public function destroyStory($id)
+    {
+        $story = Story::findOrFail($id);
+        $title = $story->title;
+
+        // Clean up stored images
+        if (!empty($story->images)) {
+            $raw = $story->images;
+            $list = [];
+            if (str_starts_with($raw, '[') || str_starts_with($raw, '{')) {
+                $decoded = json_decode($raw, true);
+                if (is_array($decoded)) {
+                    $list = $decoded;
+                }
+            } else {
+                $list = [$raw];
+            }
+
+            foreach ($list as $imgPath) {
+                if ($imgPath && !str_starts_with($imgPath, 'img/') && !str_starts_with($imgPath, 'http')) {
+                    Storage::disk('public')->delete($imgPath);
+                }
+            }
+        }
+
+        $story->delete();
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Story "' . $title . '" deleted successfully.',
+            ]);
+        }
+
+        return redirect()->route('admin.stories.index')->with('success', 'Story "' . $title . '" deleted successfully.');
+    }
+
+    /**
+     * Toggle Active Status of a Story
+     */
+    public function toggleStoryStatus($id)
+    {
+        $story = Story::findOrFail($id);
+        $story->is_active = !$story->is_active;
+        $story->save();
+
+        return response()->json([
+            'success' => true,
+            'is_active' => (bool) $story->is_active,
+            'message' => 'Story is now ' . ($story->is_active ? 'Active (Published)' : 'Inactive (Hidden)'),
         ]);
     }
 }

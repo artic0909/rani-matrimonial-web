@@ -46,6 +46,12 @@
           </a>
         </li>
         <li class="sidebar-menu-item">
+          <a href="{{ route('admin.stories.index') }}" class="sidebar-menu-link {{ request()->routeIs('admin.stories*') ? 'active' : '' }}" id="menu-stories" title="Success Stories">
+            <i class="bi bi-stars text-danger"></i>
+            <span>Success Stories</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
           <a href="{{ route('admin.profile') }}" class="sidebar-menu-link {{ request()->routeIs('admin.profile*') ? 'active' : '' }}" id="menu-profile" title="Admin Profile & Settings">
             <i class="bi bi-person-gear"></i>
             <span>Profile & Settings</span>
