@@ -145,18 +145,18 @@
                 <div class="col-md-3">
                     <select name="status" class="form-select bg-light border-0" onchange="this.form.submit()">
                         <option value="all" {{ request('status') == 'all' || !request('status') ? 'selected' : '' }}>All Statuses</option>
-                        <option value="open" {{ request('status') == 'open' ? 'selected' : '' }}>⏳ Open</option>
-                        <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>🔄 In Progress</option>
-                        <option value="resolved" {{ request('status') == 'resolved' ? 'selected' : '' }}>✅ Resolved</option>
-                        <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>🔒 Closed</option>
+                        <option value="open" {{ request('status') == 'open' ? 'selected' : '' }}>Open</option>
+                        <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="resolved" {{ request('status') == 'resolved' ? 'selected' : '' }}>Resolved</option>
+                        <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                     <select name="priority" class="form-select bg-light border-0" onchange="this.form.submit()">
                         <option value="all" {{ request('priority') == 'all' || !request('priority') ? 'selected' : '' }}>All Priorities</option>
-                        <option value="urgent" {{ request('priority') == 'urgent' ? 'selected' : '' }}>🚨 Urgent Only</option>
-                        <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>⚡ High Only</option>
-                        <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>ℹ️ Low Only</option>
+                        <option value="urgent" {{ request('priority') == 'urgent' ? 'selected' : '' }}>Urgent Only</option>
+                        <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>High Only</option>
+                        <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Low Only</option>
                     </select>
                 </div>
                 <div class="col-md-2 text-md-end">
@@ -360,10 +360,10 @@
                                 Update Status <span class="text-danger">*</span>
                             </label>
                             <select class="form-select" id="ticket_status" name="status" required>
-                                <option value="open">⏳ Open</option>
-                                <option value="in_progress">🔄 In Progress</option>
-                                <option value="resolved">✅ Resolved</option>
-                                <option value="closed">🔒 Closed</option>
+                                <option value="open">Open</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="resolved">Resolved</option>
+                                <option value="closed">Closed</option>
                             </select>
                         </div>
                     </div>

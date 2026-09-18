@@ -104,8 +104,8 @@
                 <div class="col-md-3">
                     <select name="status" class="form-select bg-light border-0" onchange="this.form.submit()">
                         <option value="all" {{ request('status') == 'all' || !request('status') ? 'selected' : '' }}>All Statuses</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>⏳ Pending Only</option>
-                        <option value="replied" {{ request('status') == 'replied' ? 'selected' : '' }}>✅ Replied Only</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending Only</option>
+                        <option value="replied" {{ request('status') == 'replied' ? 'selected' : '' }}>Replied Only</option>
                     </select>
                 </div>
                 <div class="col-md-4 text-md-end">
