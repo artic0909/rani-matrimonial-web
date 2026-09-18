@@ -62,8 +62,8 @@
             <p class="text-muted small mb-0">Manage support tickets, track resolutions, and reply directly to candidate emails.</p>
         </div>
         <div class="col-md-6 text-md-end mt-3 mt-md-0">
-            <a href="{{ route('admin.tickets.index') }}" class="btn btn-outline-secondary btn-sm shadow-sm rounded-pill px-3">
-                <i class="align-middle" data-feather="rotate-cw"></i> Refresh Tickets
+            <a href="{{ route('admin.tickets.index') }}" class="btn-custom btn-custom-light btn-custom-sm rounded-pill px-3">
+                <i class="bi bi-arrow-clockwise"></i> Refresh Tickets
             </a>
         </div>
     </div>
@@ -74,8 +74,8 @@
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 bg-primary-subtle text-primary p-3 rounded-4 me-3">
-                            <i class="align-middle" data-feather="tag" style="width: 24px; height: 24px;"></i>
+                        <div class="flex-shrink-0 bg-primary-subtle text-primary p-3 rounded-4 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <i class="bi bi-ticket-perforated fs-4"></i>
                         </div>
                         <div>
                             <span class="text-muted small text-uppercase fw-bold">Total Tickets</span>
@@ -89,8 +89,8 @@
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 bg-warning-subtle text-warning p-3 rounded-4 me-3">
-                            <i class="align-middle" data-feather="clock" style="width: 24px; height: 24px;"></i>
+                        <div class="flex-shrink-0 bg-warning-subtle text-warning p-3 rounded-4 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <i class="bi bi-clock-history fs-4"></i>
                         </div>
                         <div>
                             <span class="text-muted small text-uppercase fw-bold">Open / Pending</span>
@@ -104,8 +104,8 @@
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 bg-danger-subtle text-danger p-3 rounded-4 me-3">
-                            <i class="align-middle" data-feather="alert-triangle" style="width: 24px; height: 24px;"></i>
+                        <div class="flex-shrink-0 bg-danger-subtle text-danger p-3 rounded-4 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <i class="bi bi-exclamation-triangle-fill fs-4"></i>
                         </div>
                         <div>
                             <span class="text-muted small text-uppercase fw-bold">Urgent Attention</span>
@@ -119,8 +119,8 @@
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 bg-success-subtle text-success p-3 rounded-4 me-3">
-                            <i class="align-middle" data-feather="check-circle" style="width: 24px; height: 24px;"></i>
+                        <div class="flex-shrink-0 bg-success-subtle text-success p-3 rounded-4 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <i class="bi bi-check-circle-fill fs-4"></i>
                         </div>
                         <div>
                             <span class="text-muted small text-uppercase fw-bold">Resolved Tickets</span>
@@ -138,7 +138,7 @@
             <form action="{{ route('admin.tickets.index') }}" method="GET" class="row g-2 align-items-center">
                 <div class="col-md-4">
                     <div class="input-group">
-                        <span class="input-group-text bg-light border-0"><i data-feather="search" class="text-muted"></i></span>
+                        <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
                         <input type="text" name="search" class="form-control bg-light border-0" placeholder="Search ticket code, candidate, subject..." value="{{ request('search') }}">
                     </div>
                 </div>
@@ -160,9 +160,9 @@
                     </select>
                 </div>
                 <div class="col-md-2 text-md-end">
-                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">Filter</button>
+                    <button type="submit" class="btn-custom btn-custom-primary btn-custom-sm px-3">Filter</button>
                     @if(request()->hasAny(['search', 'status', 'priority']))
-                        <a href="{{ route('admin.tickets.index') }}" class="btn btn-light btn-sm rounded-pill px-2">Clear</a>
+                        <a href="{{ route('admin.tickets.index') }}" class="btn-custom btn-custom-light btn-custom-sm px-2">Clear</a>
                     @endif
                 </div>
             </form>
@@ -177,16 +177,16 @@
         </div>
         <div class="card-body px-0 pt-0 pb-3">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light text-muted small text-uppercase">
+                <table class="table-custom">
+                    <thead>
                         <tr>
-                            <th class="ps-4">Ticket Code</th>
+                            <th class="ps-4" style="width: 120px;">Ticket Code</th>
                             <th>Candidate</th>
                             <th>Priority</th>
                             <th>Subject & Details</th>
                             <th>Status</th>
                             <th>Raised At</th>
-                            <th class="text-end pe-4" style="width: 140px;">Actions</th>
+                            <th class="text-center pe-4" style="width: 160px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -216,11 +216,11 @@
                                 <td>
                                     @if($ticket->priority === 'urgent')
                                         <span class="badge badge-urgent rounded-pill px-3 py-1">
-                                            <i data-feather="alert-triangle" style="width: 12px;"></i> URGENT
+                                            <i class="bi bi-exclamation-triangle-fill me-1"></i> URGENT
                                         </span>
                                     @elseif($ticket->priority === 'high')
                                         <span class="badge badge-high rounded-pill px-3 py-1">
-                                            <i data-feather="arrow-up" style="width: 12px;"></i> HIGH
+                                            <i class="bi bi-arrow-up-circle-fill me-1"></i> HIGH
                                         </span>
                                     @else
                                         <span class="badge badge-low rounded-pill px-3 py-1">
@@ -235,7 +235,7 @@
                                     </div>
                                     @if(!empty($ticket->screenshots) && count($ticket->screenshots) > 0)
                                         <div class="small text-primary mt-1">
-                                            <i data-feather="paperclip" style="width: 12px;"></i> {{ count($ticket->screenshots) }} Screenshot(s)
+                                            <i class="bi bi-paperclip me-1"></i> {{ count($ticket->screenshots) }} Screenshot(s)
                                         </div>
                                     @endif
                                 </td>
@@ -258,23 +258,25 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td class="text-muted small">
-                                    {{ $ticket->created_at ? $ticket->created_at->format('d M, Y') : 'N/A' }}<br>
-                                    <span class="text-secondary small">{{ $ticket->created_at ? $ticket->created_at->format('h:i A') : '' }}</span>
+                                <td>
+                                    <div class="table-user-sub">{{ $ticket->created_at ? $ticket->created_at->format('d M, Y') : 'N/A' }}</div>
+                                    <div class="text-muted small">{{ $ticket->created_at ? $ticket->created_at->format('h:i A') : '' }}</div>
                                 </td>
-                                <td class="text-end pe-4">
-                                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 me-1 btn-inspect-ticket" data-id="{{ $ticket->id }}">
-                                        <i data-feather="edit-3" class="align-middle" style="width: 14px;"></i> Reply
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-circle p-1 btn-delete-ticket" data-id="{{ $ticket->id }}" title="Delete">
-                                        <i data-feather="trash-2" style="width: 14px; height: 14px;"></i>
-                                    </button>
+                                <td class="text-center pe-4">
+                                    <div class="d-flex align-items-center justify-content-center gap-1.5">
+                                        <button type="button" class="btn-custom btn-custom-primary btn-custom-sm py-1 px-3 btn-inspect-ticket" data-id="{{ $ticket->id }}" title="Reply Ticket">
+                                            <i class="bi bi-reply-fill"></i> Reply
+                                        </button>
+                                        <button type="button" class="btn-custom btn-custom-light btn-custom-sm py-1 px-2.5 btn-delete-ticket text-danger" data-id="{{ $ticket->id }}" title="Delete Ticket">
+                                            <i class="bi bi-trash3-fill"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="7" class="text-center py-5 text-muted">
-                                    <i data-feather="inbox" class="mb-2" style="width: 40px; height: 40px;"></i>
+                                    <i class="bi bi-inbox fs-1 d-block mb-2 text-muted"></i>
                                     <p class="mb-0">No support tickets found.</p>
                                 </td>
                             </tr>
@@ -341,7 +343,7 @@
                 <!-- Existing Reply Box -->
                 <div id="modal-ticket-reply-history" class="mb-4 d-none">
                     <span class="text-success small text-uppercase fw-bold d-block mb-1">
-                        <i data-feather="check-circle" style="width: 14px;"></i> Previous Resolution / Reply:
+                        <i class="bi bi-check-circle-fill me-1"></i> Previous Resolution / Reply:
                     </span>
                     <div class="p-3 bg-white border border-success-subtle rounded-3 text-dark small" id="modal-prev-reply-text"></div>
                     <small class="text-muted d-block mt-1" id="modal-ticket-replied-at">Replied at: ---</small>
@@ -372,14 +374,14 @@
                         </label>
                         <textarea class="form-control" id="admin_reply" name="admin_reply" rows="4" required placeholder="Type the resolution or reply to send to the candidate via email..."></textarea>
                         <div class="form-text text-muted">
-                            <i data-feather="send" style="width: 12px;"></i> This response will be saved and sent directly to the candidate's registered email address.
+                            <i class="bi bi-send me-1"></i> This response will be saved and sent directly to the candidate's registered email address.
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 pt-2">
-                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary rounded-pill px-4" id="btn-save-ticket-reply">
-                            <i data-feather="check-circle" class="align-middle me-1" style="width: 14px;"></i> Save & Email Candidate
+                        <button type="button" class="btn-custom btn-custom-light btn-custom-sm px-4" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn-custom btn-custom-primary btn-custom-sm px-4" id="btn-save-ticket-reply">
+                            <i class="bi bi-check-circle me-1"></i> Save & Email Candidate
                         </button>
                     </div>
                 </form>
@@ -404,10 +406,6 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        if (typeof feather !== 'undefined') {
-            feather.replace();
-        }
-
         const ticketModal = new bootstrap.Modal(document.getElementById('ticketModal'));
         const imageLightboxModal = new bootstrap.Modal(document.getElementById('imageLightboxModal'));
 
@@ -516,8 +514,7 @@
                 },
                 dataType: 'json',
                 success: function(res) {
-                    submitBtn.prop('disabled', false).html('<i data-feather="check-circle" class="align-middle me-1" style="width: 14px;"></i> Save & Email Candidate');
-                    if (typeof feather !== 'undefined') feather.replace();
+                    submitBtn.prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i> Save & Email Candidate');
 
                     ticketModal.hide();
 
@@ -534,8 +531,7 @@
                     }, 1200);
                 },
                 error: function(xhr) {
-                    submitBtn.prop('disabled', false).html('<i data-feather="check-circle" class="align-middle me-1" style="width: 14px;"></i> Save & Email Candidate');
-                    if (typeof feather !== 'undefined') feather.replace();
+                    submitBtn.prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i> Save & Email Candidate');
 
                     let err = 'Failed to update ticket. Please try again.';
                     if (xhr.responseJSON && xhr.responseJSON.message) {
@@ -585,3 +581,4 @@
     });
 </script>
 @endpush
+

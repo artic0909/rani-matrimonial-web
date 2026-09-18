@@ -36,8 +36,8 @@
             <p class="text-muted small mb-0">Manage incoming visitor contact forms and send official email responses.</p>
         </div>
         <div class="col-md-6 text-md-end mt-3 mt-md-0">
-            <a href="{{ route('admin.helps.index') }}" class="btn btn-outline-secondary btn-sm shadow-sm rounded-pill px-3">
-                <i class="align-middle" data-feather="rotate-cw"></i> Refresh List
+            <a href="{{ route('admin.helps.index') }}" class="btn-custom btn-custom-light btn-custom-sm rounded-pill px-3">
+                <i class="bi bi-arrow-clockwise"></i> Refresh List
             </a>
         </div>
     </div>
@@ -48,8 +48,8 @@
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 bg-primary-subtle text-primary p-3 rounded-4 me-3">
-                            <i class="align-middle" data-feather="mail" style="width: 24px; height: 24px;"></i>
+                        <div class="flex-shrink-0 bg-primary-subtle text-primary p-3 rounded-4 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <i class="bi bi-envelope-open fs-4"></i>
                         </div>
                         <div>
                             <span class="text-muted small text-uppercase fw-bold">Total Inquiries</span>
@@ -63,8 +63,8 @@
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 bg-warning-subtle text-warning p-3 rounded-4 me-3">
-                            <i class="align-middle" data-feather="clock" style="width: 24px; height: 24px;"></i>
+                        <div class="flex-shrink-0 bg-warning-subtle text-warning p-3 rounded-4 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <i class="bi bi-clock-history fs-4"></i>
                         </div>
                         <div>
                             <span class="text-muted small text-uppercase fw-bold">Pending Response</span>
@@ -78,8 +78,8 @@
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0 bg-success-subtle text-success p-3 rounded-4 me-3">
-                            <i class="align-middle" data-feather="check-circle" style="width: 24px; height: 24px;"></i>
+                        <div class="flex-shrink-0 bg-success-subtle text-success p-3 rounded-4 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <i class="bi bi-check-circle-fill fs-4"></i>
                         </div>
                         <div>
                             <span class="text-muted small text-uppercase fw-bold">Replied / Solved</span>
@@ -97,7 +97,7 @@
             <form action="{{ route('admin.helps.index') }}" method="GET" class="row g-2 align-items-center">
                 <div class="col-md-5">
                     <div class="input-group">
-                        <span class="input-group-text bg-light border-0"><i data-feather="search" class="text-muted"></i></span>
+                        <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
                         <input type="text" name="search" class="form-control bg-light border-0" placeholder="Search by name, email, mobile, subject..." value="{{ request('search') }}">
                     </div>
                 </div>
@@ -109,9 +109,9 @@
                     </select>
                 </div>
                 <div class="col-md-4 text-md-end">
-                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-4">Apply Filter</button>
+                    <button type="submit" class="btn-custom btn-custom-primary btn-custom-sm px-4">Apply Filter</button>
                     @if(request()->hasAny(['search', 'status']))
-                        <a href="{{ route('admin.helps.index') }}" class="btn btn-light btn-sm rounded-pill px-3">Clear</a>
+                        <a href="{{ route('admin.helps.index') }}" class="btn-custom btn-custom-light btn-custom-sm px-3">Clear</a>
                     @endif
                 </div>
             </form>
@@ -126,15 +126,15 @@
         </div>
         <div class="card-body px-0 pt-0 pb-3">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light text-muted small text-uppercase">
+                <table class="table-custom">
+                    <thead>
                         <tr>
                             <th class="ps-4" style="width: 60px;">#ID</th>
                             <th>Sender & Contact</th>
                             <th>Subject & Preview</th>
                             <th>Status</th>
                             <th>Received At</th>
-                            <th class="text-end pe-4" style="width: 140px;">Actions</th>
+                            <th class="text-center pe-4" style="width: 160px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -145,12 +145,12 @@
                                     <div class="fw-bold text-dark">{{ $help->name }}</div>
                                     <div class="small text-muted">
                                         <a href="mailto:{{ $help->email }}" class="text-decoration-none text-muted">
-                                            <i class="align-middle text-primary" data-feather="mail" style="width: 12px;"></i> {{ $help->email }}
+                                            <i class="bi bi-envelope text-primary me-1"></i> {{ $help->email }}
                                         </a>
                                     </div>
                                     <div class="small text-muted">
                                         <a href="tel:{{ $help->full_phone }}" class="text-decoration-none text-dark fw-semibold">
-                                            <i class="align-middle text-success" data-feather="phone" style="width: 12px;"></i> {{ $help->full_phone }}
+                                            <i class="bi bi-telephone text-success me-1"></i> {{ $help->full_phone }}
                                         </a>
                                     </div>
                                 </td>
@@ -161,38 +161,40 @@
                                     </div>
                                     @if($help->status === 'replied' && $help->reply_message)
                                         <div class="small text-success mt-1">
-                                            <i data-feather="corner-down-right" style="width: 12px;"></i> Replied on {{ $help->replied_at ? $help->replied_at->format('M d, Y') : 'N/A' }}
+                                            <i class="bi bi-arrow-return-right me-1"></i> Replied on {{ $help->replied_at ? $help->replied_at->format('M d, Y') : 'N/A' }}
                                         </div>
                                     @endif
                                 </td>
                                 <td>
                                     @if($help->status === 'replied')
                                         <span class="badge badge-replied rounded-pill px-3 py-1 fw-bold">
-                                            <i data-feather="check" style="width: 12px;"></i> Replied
+                                            <i class="bi bi-check-circle-fill me-1"></i> Replied
                                         </span>
                                     @else
                                         <span class="badge badge-pending rounded-pill px-3 py-1 fw-bold">
-                                            <i data-feather="clock" style="width: 12px;"></i> Pending
+                                            <i class="bi bi-clock-fill me-1"></i> Pending
                                         </span>
                                     @endif
                                 </td>
-                                <td class="text-muted small">
-                                    {{ $help->created_at ? $help->created_at->format('d M, Y') : 'N/A' }}<br>
-                                    <span class="text-secondary small">{{ $help->created_at ? $help->created_at->format('h:i A') : '' }}</span>
+                                <td>
+                                    <div class="table-user-sub">{{ $help->created_at ? $help->created_at->format('d M, Y') : 'N/A' }}</div>
+                                    <div class="text-muted small">{{ $help->created_at ? $help->created_at->format('h:i A') : '' }}</div>
                                 </td>
-                                <td class="text-end pe-4">
-                                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 me-1 btn-view-help" data-id="{{ $help->id }}">
-                                        <i data-feather="message-circle" class="align-middle" style="width: 14px;"></i> Reply
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger rounded-circle p-1 btn-delete-help" data-id="{{ $help->id }}" title="Delete">
-                                        <i data-feather="trash-2" style="width: 14px; height: 14px;"></i>
-                                    </button>
+                                <td class="text-center pe-4">
+                                    <div class="d-flex align-items-center justify-content-center gap-1.5">
+                                        <button type="button" class="btn-custom btn-custom-primary btn-custom-sm py-1 px-3 btn-view-help" data-id="{{ $help->id }}" title="Reply Inquiry">
+                                            <i class="bi bi-reply-fill"></i> Reply
+                                        </button>
+                                        <button type="button" class="btn-custom btn-custom-light btn-custom-sm py-1 px-2.5 btn-delete-help text-danger" data-id="{{ $help->id }}" title="Delete Inquiry">
+                                            <i class="bi bi-trash3-fill"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="6" class="text-center py-5 text-muted">
-                                    <i data-feather="inbox" class="mb-2" style="width: 40px; height: 40px;"></i>
+                                    <i class="bi bi-inbox fs-1 d-block mb-2 text-muted"></i>
                                     <p class="mb-0">No help or contact inquiries found.</p>
                                 </td>
                             </tr>
@@ -256,7 +258,7 @@
                 <!-- Existing Reply (If any) -->
                 <div id="modal-existing-reply-box" class="mb-4 d-none">
                     <span class="text-success small text-uppercase fw-bold d-block mb-1">
-                        <i data-feather="check-circle" style="width: 14px;"></i> Previous Reply Sent:
+                        <i class="bi bi-check-circle-fill me-1"></i> Previous Reply Sent:
                     </span>
                     <div class="reply-preview-box text-dark small" id="modal-existing-reply-text">
                         ---
@@ -275,14 +277,14 @@
                         </label>
                         <textarea class="form-control" id="reply_message" name="reply_message" rows="5" required placeholder="Write your response here. This message will be immediately delivered to the sender's email address..."></textarea>
                         <div class="form-text text-muted">
-                            <i data-feather="info" style="width: 12px;"></i> Email will be sent from Rani Matrimonial to the sender's email address.
+                            <i class="bi bi-info-circle me-1"></i> Email will be sent from Rani Matrimonial to the sender's email address.
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 pt-2">
-                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary rounded-pill px-4" id="btn-send-reply">
-                            <i data-feather="send" class="align-middle me-1" style="width: 14px;"></i> Send Email Reply
+                        <button type="button" class="btn-custom btn-custom-light btn-custom-sm px-4" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn-custom btn-custom-primary btn-custom-sm px-4" id="btn-send-reply">
+                            <i class="bi bi-send me-1"></i> Send Email Reply
                         </button>
                     </div>
                 </form>
@@ -296,10 +298,6 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        if (typeof feather !== 'undefined') {
-            feather.replace();
-        }
-
         const helpModal = new bootstrap.Modal(document.getElementById('helpModal'));
 
         // Open View & Reply Modal
@@ -371,8 +369,7 @@
                 },
                 dataType: 'json',
                 success: function(res) {
-                    submitBtn.prop('disabled', false).html('<i data-feather="send" class="align-middle me-1" style="width: 14px;"></i> Send Email Reply');
-                    if (typeof feather !== 'undefined') feather.replace();
+                    submitBtn.prop('disabled', false).html('<i class="bi bi-send me-1"></i> Send Email Reply');
                     
                     helpModal.hide();
 
@@ -389,8 +386,7 @@
                     }, 1200);
                 },
                 error: function(xhr) {
-                    submitBtn.prop('disabled', false).html('<i data-feather="send" class="align-middle me-1" style="width: 14px;"></i> Send Email Reply');
-                    if (typeof feather !== 'undefined') feather.replace();
+                    submitBtn.prop('disabled', false).html('<i class="bi bi-send me-1"></i> Send Email Reply');
 
                     let err = 'Failed to send reply. Please try again.';
                     if (xhr.responseJSON && xhr.responseJSON.message) {
@@ -440,3 +436,4 @@
     });
 </script>
 @endpush
+
