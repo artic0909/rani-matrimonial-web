@@ -219,33 +219,86 @@
                     <div x-show="step === 2" style="display: none;"
                          x-transition:enter="transition ease-out duration-300" 
                          x-transition:enter-start="opacity-0 translate-x-12" 
-                         x-transition:enter-end="opacity-100 translate-x-0" 
-                          
-                          
-                         >
+                         x-transition:enter-end="opacity-100 translate-x-0">
                         
-                        <div class="flex justify-center mb-6">
-                            <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center text-rani-gold border border-rani-gold/50 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM12 14c-4.418 0-8 3.582-8 8h16c0-4.418-3.582-8-8-8z"></path></svg>
+                        <div class="flex justify-center mb-5">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 rounded-full flex items-center justify-center text-rani-gold border border-rani-gold/50 shadow-[0_0_20px_rgba(212,175,55,0.4)] backdrop-blur-md">
+                                <svg class="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM12 14c-4.418 0-8 3.582-8 8h16c0-4.418-3.582-8-8-8z"></path></svg>
                             </div>
                         </div>
-                        <h4 class="text-2xl font-serif text-white mb-8 text-center text-shadow-sm">Select Gender</h4>
-                        <div class="flex justify-center gap-6 mb-8">
+
+                        <h4 class="text-2xl sm:text-3xl font-serif text-white mb-2 text-center font-bold tracking-wide text-shadow-sm">Select Gender</h4>
+                        <p class="text-sm text-white/80 text-center mb-7 font-light">Choose whether this profile is for a Groom or a Bride</p>
+
+                        <!-- Groom & Bride Selection Grid -->
+                        <div class="grid grid-cols-2 gap-4 sm:gap-6 max-w-md mx-auto mb-8">
+                            <!-- Groom Card -->
                             <button type="button" @click="setGender('Male')" 
-                                :class="formData.gender === 'Male' ? 'selected' : ''"
-                                class="option-btn w-36 py-6 rounded-2xl flex flex-col items-center justify-center backdrop-blur-sm group">
-                                <span class="text-4xl mb-3 group-hover:scale-110 transition-transform">👨</span>
-                                <span class="text-base font-bold">Groom</span>
+                                class="relative overflow-hidden rounded-3xl p-5 sm:p-6 flex flex-col items-center justify-center transition-all duration-300 transform hover:-translate-y-1.5 cursor-pointer group focus:outline-none"
+                                :class="formData.gender === 'Male' 
+                                    ? 'bg-gradient-to-b from-white via-[#FFFBF2] to-[#FFF3DC] border-2 border-rani-gold shadow-[0_12px_30px_rgba(212,175,55,0.5)] ring-4 ring-rani-gold/30 scale-[1.03]' 
+                                    : 'bg-white/80 hover:bg-white/95 border-2 border-white/70 hover:border-rani-gold/80 shadow-lg backdrop-blur-md hover:shadow-xl'">
+                                
+                                <!-- Top Selection Badge Indicator -->
+                                <div class="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300"
+                                     :class="formData.gender === 'Male' 
+                                        ? 'bg-rani-primary text-rani-gold shadow-md ring-2 ring-rani-gold scale-100' 
+                                        : 'bg-gray-200/80 text-transparent scale-90 group-hover:bg-rani-gold/30 group-hover:text-rani-primary-dark'">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+
+                                <!-- Royal Gold Ring Frame Avatar -->
+                                <div class="relative p-1 rounded-full bg-gradient-to-tr from-rani-gold via-amber-200 to-rani-gold-light shadow-md mb-3 sm:mb-4 group-hover:scale-105 transition-transform duration-300">
+                                    <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-white border-2 border-white shadow-inner flex items-center justify-center">
+                                        <img src="{{ asset('img/groom.png') }}" alt="Groom" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                                    </div>
+                                </div>
+
+                                <!-- Titles -->
+                                <span class="font-serif text-xl sm:text-2xl font-bold tracking-wide text-rani-primary-dark mb-1">Groom</span>
+                                <span class="text-xs font-semibold px-3 py-0.5 rounded-full transition-colors"
+                                      :class="formData.gender === 'Male' 
+                                        ? 'bg-rani-primary/10 text-rani-primary-dark font-bold' 
+                                        : 'bg-gray-100 text-gray-500 group-hover:bg-rani-gold/20 group-hover:text-rani-primary-dark'">
+                                    Male
+                                </span>
                             </button>
+
+                            <!-- Bride Card -->
                             <button type="button" @click="setGender('Female')" 
-                                :class="formData.gender === 'Female' ? 'selected' : ''"
-                                class="option-btn w-36 py-6 rounded-2xl flex flex-col items-center justify-center backdrop-blur-sm group">
-                                <span class="text-4xl mb-3 group-hover:scale-110 transition-transform">👩</span>
-                                <span class="text-base font-bold">Bride</span>
+                                class="relative overflow-hidden rounded-3xl p-5 sm:p-6 flex flex-col items-center justify-center transition-all duration-300 transform hover:-translate-y-1.5 cursor-pointer group focus:outline-none"
+                                :class="formData.gender === 'Female' 
+                                    ? 'bg-gradient-to-b from-white via-[#FFFBF2] to-[#FFF3DC] border-2 border-rani-gold shadow-[0_12px_30px_rgba(212,175,55,0.5)] ring-4 ring-rani-gold/30 scale-[1.03]' 
+                                    : 'bg-white/80 hover:bg-white/95 border-2 border-white/70 hover:border-rani-gold/80 shadow-lg backdrop-blur-md hover:shadow-xl'">
+                                
+                                <!-- Top Selection Badge Indicator -->
+                                <div class="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300"
+                                     :class="formData.gender === 'Female' 
+                                        ? 'bg-rani-primary text-rani-gold shadow-md ring-2 ring-rani-gold scale-100' 
+                                        : 'bg-gray-200/80 text-transparent scale-90 group-hover:bg-rani-gold/30 group-hover:text-rani-primary-dark'">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+
+                                <!-- Royal Gold Ring Frame Avatar -->
+                                <div class="relative p-1 rounded-full bg-gradient-to-tr from-rani-gold via-amber-200 to-rani-gold-light shadow-md mb-3 sm:mb-4 group-hover:scale-105 transition-transform duration-300">
+                                    <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-white border-2 border-white shadow-inner flex items-center justify-center">
+                                        <img src="{{ asset('img/bride.png') }}" alt="Bride" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+                                    </div>
+                                </div>
+
+                                <!-- Titles -->
+                                <span class="font-serif text-xl sm:text-2xl font-bold tracking-wide text-rani-primary-dark mb-1">Bride</span>
+                                <span class="text-xs font-semibold px-3 py-0.5 rounded-full transition-colors"
+                                      :class="formData.gender === 'Female' 
+                                        ? 'bg-rani-primary/10 text-rani-primary-dark font-bold' 
+                                        : 'bg-gray-100 text-gray-500 group-hover:bg-rani-gold/20 group-hover:text-rani-primary-dark'">
+                                    Female
+                                </span>
                             </button>
                         </div>
+
                         <div class="mt-4">
-                            <button type="button" :disabled="!formData.gender" @click="nextStep" class="w-full theme-btn py-4 rounded-full text-lg">Continue</button>
+                            <button type="button" :disabled="!formData.gender" @click="nextStep" class="w-full theme-btn py-4 rounded-full text-lg shadow-lg">Continue</button>
                         </div>
                     </div>
 
