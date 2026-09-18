@@ -14,6 +14,33 @@
     <!-- Remix Icon -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet"/>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .rani-swal-popup {
+            background: #4a0404 !important;
+            border: 1px solid #D4AF37 !important;
+            color: #fff !important;
+            border-radius: 18px !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
+        }
+        .rani-swal-title {
+            color: #D4AF37 !important;
+            font-family: 'Playfair Display', serif !important;
+        }
+        .rani-swal-confirm {
+            background: linear-gradient(to right, #D4AF37, #C59B27) !important;
+            color: #4a0404 !important;
+            border-radius: 9999px !important;
+            font-weight: bold !important;
+            padding: 10px 28px !important;
+            border: none !important;
+        }
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+
     <!-- AlpineJS for interactivity -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 

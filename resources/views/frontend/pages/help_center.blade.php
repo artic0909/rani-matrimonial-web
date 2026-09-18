@@ -3,7 +3,7 @@
 @section('title', 'Help Center & Contact Us | Rani Matrimonial')
 
 @section('content')
-<div class="relative min-h-[100svh] pt-24 sm:pt-28 md:pt-36 pb-16 md:pb-20 overflow-x-hidden">
+<div class="relative min-h-[100svh] pt-24 sm:pt-28 md:pt-36 pb-16 md:pb-20 overflow-x-hidden" x-data="{ isSubmitting: false }">
     
     <!-- Background Image -->
     <div class="fixed inset-0 z-0 bg-cover bg-top bg-no-repeat pointer-events-none" style="background-image: url('{{ asset('img/hero.png') }}');"></div>
@@ -46,28 +46,51 @@
             </p>
         </div>
 
-        <!-- Success & Error Alerts -->
+        <!-- Themed Luxury Success & Error Alerts -->
         @if(session('success'))
-            <div class="max-w-4xl mx-auto mb-6 sm:mb-8 bg-emerald-950/85 border border-emerald-500/80 text-emerald-100 p-4 sm:px-6 sm:py-4 rounded-2xl flex items-start gap-3 shadow-2xl backdrop-blur-md">
-                <i class="ri-checkbox-circle-fill text-xl sm:text-2xl text-emerald-400 mt-0.5 shrink-0"></i>
-                <div>
-                    <h4 class="font-serif font-bold text-sm sm:text-base text-white">Message Delivered Successfully!</h4>
-                    <p class="text-xs sm:text-sm text-emerald-200/90 mt-0.5 leading-relaxed">{{ session('success') }}</p>
+            <div x-data="{ show: true }" x-show="show" x-transition.duration.300ms class="max-w-4xl mx-auto mb-6 sm:mb-8 bg-gradient-to-r from-rani-dark via-rani-primary-dark to-rani-dark border-2 border-rani-gold/80 text-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl shadow-2xl flex items-start justify-between gap-3.5 sm:gap-4 relative overflow-hidden backdrop-blur-md">
+                <div class="absolute -right-8 -bottom-8 w-24 h-24 bg-rani-gold/15 rounded-full blur-xl pointer-events-none"></div>
+                
+                <div class="flex items-start gap-3 sm:gap-4 min-w-0">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-rani-gold/20 text-rani-gold flex items-center justify-center text-xl sm:text-2xl font-bold border border-rani-gold/40 shadow-inner shrink-0 mt-0.5">
+                        <i class="ri-checkbox-circle-fill"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h4 class="font-serif font-bold text-sm sm:text-base md:text-lg text-rani-gold tracking-wide">
+                            Message Delivered Successfully!
+                        </h4>
+                        <p class="text-xs sm:text-sm text-amber-100/90 mt-0.5 leading-relaxed font-light">
+                            {{ session('success') }}
+                        </p>
+                    </div>
                 </div>
+                
+                <button type="button" @click="show = false" class="text-rani-gold-light/70 hover:text-rani-gold p-1 rounded-lg transition shrink-0" title="Dismiss Alert">
+                    <i class="ri-close-line text-xl sm:text-2xl"></i>
+                </button>
             </div>
         @endif
 
         @if($errors->any())
-            <div class="max-w-4xl mx-auto mb-6 sm:mb-8 bg-rose-950/85 border border-rose-500/80 text-rose-100 p-4 sm:px-6 sm:py-4 rounded-2xl flex items-start gap-3 shadow-2xl backdrop-blur-md">
-                <i class="ri-error-warning-fill text-xl sm:text-2xl text-rose-400 mt-0.5 shrink-0"></i>
-                <div>
-                    <h4 class="font-serif font-bold text-sm sm:text-base text-white">Please check the required fields:</h4>
-                    <ul class="list-disc list-inside text-xs sm:text-sm text-rose-200/90 mt-1 space-y-0.5">
-                        @foreach($errors->all() as $err)
-                            <li>{{ $err }}</li>
-                        @endforeach
-                    </ul>
+            <div x-data="{ show: true }" x-show="show" x-transition.duration.300ms class="max-w-4xl mx-auto mb-6 sm:mb-8 bg-gradient-to-r from-rose-950 via-rani-dark to-rose-950 border-2 border-rose-500/70 text-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl shadow-2xl flex items-start justify-between gap-3.5 sm:gap-4 relative overflow-hidden backdrop-blur-md">
+                <div class="flex items-start gap-3 sm:gap-4 min-w-0">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-xl sm:text-2xl font-bold border border-rose-500/40 shadow-inner shrink-0 mt-0.5">
+                        <i class="ri-error-warning-fill"></i>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h4 class="font-serif font-bold text-sm sm:text-base md:text-lg text-rose-300 tracking-wide">
+                            Please check the required fields:
+                        </h4>
+                        <ul class="list-disc list-inside text-xs sm:text-sm text-rose-200/90 mt-1 space-y-0.5">
+                            @foreach($errors->all() as $err)
+                                <li>{{ $err }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
+                <button type="button" @click="show = false" class="text-rose-300/70 hover:text-rose-300 p-1 rounded-lg transition shrink-0" title="Dismiss Alert">
+                    <i class="ri-close-line text-xl sm:text-2xl"></i>
+                </button>
             </div>
         @endif
 
@@ -85,7 +108,7 @@
                     </div>
                 </div>
 
-                <form action="{{ route('help.submit') }}" method="POST" class="space-y-4 sm:space-y-5">
+                <form action="{{ route('help.submit') }}" method="POST" @submit="isSubmitting = true" class="space-y-4 sm:space-y-5">
                     @csrf
 
                     <!-- Name -->
@@ -301,6 +324,45 @@
 
         </div>
 
+    </div>
+
+    <!-- Submission Loader Overlay Popup Modal -->
+    <div x-show="isSubmitting" x-cloak
+        class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100">
+        
+        <div class="bg-gradient-to-b from-rani-dark via-rani-primary-dark to-rani-dark p-7 sm:p-9 rounded-3xl border-2 border-rani-gold/60 shadow-2xl text-center max-w-sm w-full mx-auto relative overflow-hidden"
+            x-transition:enter="transition ease-out duration-300 transform"
+            x-transition:enter-start="scale-90 translate-y-4"
+            x-transition:enter-end="scale-100 translate-y-0">
+            
+            <!-- Decorative glow rings -->
+            <div class="absolute -top-12 -left-12 w-28 h-28 bg-rani-gold/20 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute -bottom-12 -right-12 w-28 h-28 bg-rani-primary/40 rounded-full blur-2xl pointer-events-none"></div>
+
+            <!-- Animated Royal Spinner & Icon -->
+            <div class="relative w-20 h-20 mx-auto mb-5 flex items-center justify-center">
+                <div class="absolute inset-0 rounded-full border-4 border-rani-gold/20"></div>
+                <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-rani-gold border-r-rani-gold animate-spin"></div>
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-rani-primary to-rani-primary-dark flex items-center justify-center text-rani-gold text-2xl shadow-inner border border-rani-gold/40">
+                    <i class="ri-mail-send-fill animate-pulse"></i>
+                </div>
+            </div>
+
+            <h3 class="text-lg sm:text-xl font-serif font-bold text-white mb-1.5 tracking-wide">
+                Delivering Your Message...
+            </h3>
+            <div class="flex items-center justify-center gap-2 mb-3">
+                <div class="h-[1px] w-8 bg-rani-gold/60"></div>
+                <div class="w-1.5 h-1.5 rounded-full bg-rani-gold"></div>
+                <div class="h-[1px] w-8 bg-rani-gold/60"></div>
+            </div>
+            <p class="text-xs sm:text-[13px] text-rani-gold-light/90 leading-relaxed font-light">
+                Please wait a moment while we process your inquiry and dispatch your confirmation email.
+            </p>
+        </div>
     </div>
 </div>
 @endsection
