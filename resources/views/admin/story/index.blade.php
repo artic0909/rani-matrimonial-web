@@ -34,13 +34,13 @@
   <!-- START: Metric Statistics Cards -->
   <div class="row g-3 mb-4">
     <div class="col-6 col-lg-3">
-      <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-        <div class="card-body p-3.5 d-flex align-items-center justify-content-between">
+      <div class="card p-3 p-xl-3.5 rounded-4 shadow-sm border-0 h-100 bg-white">
+        <div class="d-flex align-items-center justify-content-between">
           <div>
-            <span class="text-muted small text-uppercase fw-semibold tracking-wider d-block mb-1">Total Stories</span>
-            <h3 class="fw-bold text-gray-900 mb-0">{{ number_format($counts['total']) }}</h3>
+            <span class="text-uppercase fw-bold text-muted d-block" style="font-size: 0.725rem; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Total Stories</span>
+            <h2 class="fw-bold mb-0" style="font-size: 1.75rem; color: var(--text-main); line-height: 1.2;">{{ number_format($counts['total']) }}</h2>
           </div>
-          <div class="w-12 h-12 rounded-3 bg-light text-success d-flex align-items-center justify-center fs-4" style="width: 46px; height: 46px; background-color: rgba(7, 47, 31, 0.08); color: var(--brand-forest-medium);">
+          <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px; background-color: rgba(7, 47, 31, 0.08); color: var(--brand-forest-medium); font-size: 1.35rem;">
             <i class="bi bi-journal-bookmark-fill"></i>
           </div>
         </div>
@@ -48,13 +48,13 @@
     </div>
 
     <div class="col-6 col-lg-3">
-      <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-        <div class="card-body p-3.5 d-flex align-items-center justify-content-between">
+      <div class="card p-3 p-xl-3.5 rounded-4 shadow-sm border-0 h-100 bg-white">
+        <div class="d-flex align-items-center justify-content-between">
           <div>
-            <span class="text-muted small text-uppercase fw-semibold tracking-wider d-block mb-1">Published (Live)</span>
-            <h3 class="fw-bold text-success mb-0">{{ number_format($counts['active']) }}</h3>
+            <span class="text-uppercase fw-bold text-muted d-block" style="font-size: 0.725rem; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Published (Live)</span>
+            <h2 class="fw-bold mb-0 text-success" style="font-size: 1.75rem; line-height: 1.2;">{{ number_format($counts['active']) }}</h2>
           </div>
-          <div class="w-12 h-12 rounded-3 d-flex align-items-center justify-center fs-4" style="width: 46px; height: 46px; background-color: rgba(34, 197, 94, 0.12); color: var(--sys-green);">
+          <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px; background-color: rgba(34, 197, 94, 0.12); color: var(--sys-green); font-size: 1.35rem;">
             <i class="bi bi-check-circle-fill"></i>
           </div>
         </div>
@@ -62,13 +62,13 @@
     </div>
 
     <div class="col-6 col-lg-3">
-      <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-        <div class="card-body p-3.5 d-flex align-items-center justify-content-between">
+      <div class="card p-3 p-xl-3.5 rounded-4 shadow-sm border-0 h-100 bg-white">
+        <div class="d-flex align-items-center justify-content-between">
           <div>
-            <span class="text-muted small text-uppercase fw-semibold tracking-wider d-block mb-1">Drafts / Hidden</span>
-            <h3 class="fw-bold text-secondary mb-0">{{ number_format($counts['inactive']) }}</h3>
+            <span class="text-uppercase fw-bold text-muted d-block" style="font-size: 0.725rem; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Drafts / Hidden</span>
+            <h2 class="fw-bold mb-0 text-secondary" style="font-size: 1.75rem; line-height: 1.2;">{{ number_format($counts['inactive']) }}</h2>
           </div>
-          <div class="w-12 h-12 rounded-3 d-flex align-items-center justify-center fs-4" style="width: 46px; height: 46px; background-color: rgba(108, 117, 125, 0.12); color: #6c757d;">
+          <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px; background-color: rgba(108, 117, 125, 0.12); color: #6c757d; font-size: 1.35rem;">
             <i class="bi bi-eye-slash-fill"></i>
           </div>
         </div>
@@ -76,13 +76,13 @@
     </div>
 
     <div class="col-6 col-lg-3">
-      <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-        <div class="card-body p-3.5 d-flex align-items-center justify-content-between">
+      <div class="card p-3 p-xl-3.5 rounded-4 shadow-sm border-0 h-100 bg-white">
+        <div class="d-flex align-items-center justify-content-between">
           <div>
-            <span class="text-muted small text-uppercase fw-semibold tracking-wider d-block mb-1">Added This Month</span>
-            <h3 class="fw-bold text-danger mb-0">{{ number_format($counts['this_month']) }}</h3>
+            <span class="text-uppercase fw-bold text-muted d-block" style="font-size: 0.725rem; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Added This Month</span>
+            <h2 class="fw-bold mb-0 text-danger" style="font-size: 1.75rem; line-height: 1.2;">{{ number_format($counts['this_month']) }}</h2>
           </div>
-          <div class="w-12 h-12 rounded-3 d-flex align-items-center justify-center fs-4" style="width: 46px; height: 46px; background-color: rgba(239, 68, 68, 0.12); color: var(--sys-red);">
+          <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px; background-color: rgba(239, 68, 68, 0.12); color: var(--sys-red); font-size: 1.35rem;">
             <i class="bi bi-heart-fill"></i>
           </div>
         </div>
@@ -356,9 +356,9 @@
       <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
         <form id="createStoryForm" action="{{ route('admin.stories.store') }}" method="POST" enctype="multipart/form-data">
           @csrf
-          <div class="modal-header border-bottom py-3 px-4" style="background-color: #F8FAF9;">
-            <div class="d-flex align-items-center gap-2">
-              <div class="w-8 h-8 rounded-circle d-flex align-items-center justify-center text-white" style="width: 34px; height: 34px; background-color: var(--brand-forest-medium);">
+          <div class="modal-header border-bottom py-3.5 px-4" style="background-color: #F8FAF9;">
+            <div class="d-flex align-items-center gap-2.5">
+              <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: var(--brand-forest-medium);">
                 <i class="bi bi-plus-lg fs-6"></i>
               </div>
               <div>
@@ -375,32 +375,32 @@
               <!-- Story Title -->
               <div class="col-12">
                 <label class="form-label fw-bold text-dark small mb-1">Story Headline / Title <span class="text-danger">*</span></label>
-                <input type="text" name="title" class="form-control rounded-3" placeholder="e.g. Aditya & Neha: A Modern Fairytale of Shared Values" required>
+                <input type="text" name="title" class="form-control rounded-3 py-2 px-3" placeholder="e.g. Aditya & Neha: A Modern Fairytale of Shared Values" required>
               </div>
 
               <!-- Couple Names & Wedding Date -->
               <div class="col-12 col-md-6">
                 <label class="form-label fw-bold text-dark small mb-1">Couple Names</label>
-                <input type="text" name="couple_names" class="form-control rounded-3" placeholder="e.g. Aditya Singhania & Neha Kapoor">
+                <input type="text" name="couple_names" class="form-control rounded-3 py-2 px-3" placeholder="e.g. Aditya Singhania & Neha Kapoor">
               </div>
 
               <div class="col-12 col-md-6">
                 <label class="form-label fw-bold text-dark small mb-1">Wedding / Engagement Date</label>
-                <input type="date" name="wedding_date" class="form-control rounded-3">
+                <input type="date" name="wedding_date" class="form-control rounded-3 py-2 px-3">
               </div>
 
               <!-- Primary Couple Image -->
               <div class="col-12 col-md-6">
                 <label class="form-label fw-bold text-dark small mb-1">Primary Featured Photo <span class="text-danger">*</span></label>
-                <div class="p-3 border-2 border-dashed rounded-3 bg-light text-center cursor-pointer" onclick="$('#create_primary_image').click()" style="border-style: dashed !important; border-color: #CBD5E1;">
-                  <i class="bi bi-cloud-arrow-up fs-2 text-muted-green"></i>
+                <div class="p-3 border-2 border-dashed rounded-3 bg-light text-center cursor-pointer hover-scale" onclick="$('#create_primary_image').click()" style="border-style: dashed !important; border-color: #CBD5E1;">
+                  <i class="bi bi-cloud-arrow-up fs-2" style="color: var(--brand-forest-medium);"></i>
                   <div class="fw-semibold small text-gray-800 mt-1">Click to select primary cover photo</div>
-                  <div class="text-muted small" style="font-size: 11px;">JPEG, PNG, WebP (Max 10MB)</div>
+                  <div class="text-muted small" style="font-size: 11px;">JPEG, PNG, WebP (Max 20MB)</div>
                 </div>
                 <input type="file" name="primary_image" id="create_primary_image" class="d-none" accept="image/*" required>
                 
                 <!-- Primary Image Preview Container -->
-                <div id="create_primary_preview_wrap" class="mt-2 rounded-3 overflow-hidden border d-none position-relative" style="height: 140px; background-color: #f8f9fa;">
+                <div id="create_primary_preview_wrap" class="mt-2.5 rounded-3 overflow-hidden border d-none position-relative" style="height: 140px; background-color: #f8f9fa;">
                   <img id="create_primary_preview_img" src="" class="w-100 h-100 object-fit-contain">
                 </div>
               </div>
@@ -408,34 +408,34 @@
               <!-- Additional Gallery Images -->
               <div class="col-12 col-md-6">
                 <label class="form-label fw-bold text-dark small mb-1">Additional Gallery Photos (Optional)</label>
-                <div class="p-3 border-2 border-dashed rounded-3 bg-light text-center cursor-pointer" onclick="$('#create_gallery_images').click()" style="border-style: dashed !important; border-color: #CBD5E1;">
-                  <i class="bi bi-images fs-2 text-muted-green"></i>
+                <div class="p-3 border-2 border-dashed rounded-3 bg-light text-center cursor-pointer hover-scale" onclick="$('#create_gallery_images').click()" style="border-style: dashed !important; border-color: #CBD5E1;">
+                  <i class="bi bi-images fs-2" style="color: var(--brand-forest-medium);"></i>
                   <div class="fw-semibold small text-gray-800 mt-1">Click to select multiple gallery photos</div>
                   <div class="text-muted small" style="font-size: 11px;">Select multiple wedding photos</div>
                 </div>
                 <input type="file" name="images[]" id="create_gallery_images" class="d-none" accept="image/*" multiple>
 
                 <!-- Gallery Preview Thumbnails -->
-                <div id="create_gallery_preview_wrap" class="d-flex flex-wrap gap-2 mt-2"></div>
+                <div id="create_gallery_preview_wrap" class="d-flex flex-wrap gap-2 mt-2.5"></div>
               </div>
 
               <!-- Story Detailed Description -->
               <div class="col-12">
                 <label class="form-label fw-bold text-dark small mb-1">Story Narrative / Description <span class="text-danger">*</span></label>
-                <textarea name="descriptions" rows="5" class="form-control rounded-3" placeholder="Share how the couple met, their conversations on Rani Matrimonial, family meetings, and wedding memories..." required></textarea>
+                <textarea name="descriptions" rows="5" class="form-control rounded-3 p-3" placeholder="Share how the couple met, their conversations on Rani Matrimonial, family meetings, and wedding memories..." required></textarea>
               </div>
 
               <!-- Order & Active Status -->
               <div class="col-6">
                 <label class="form-label fw-bold text-dark small mb-1">Display Order</label>
-                <input type="number" name="order" class="form-control rounded-3" value="0" min="0">
+                <input type="number" name="order" class="form-control rounded-3 py-2 px-3" value="0" min="0">
                 <div class="form-text text-muted" style="font-size: 11px;">Lower order numbers appear first on frontend.</div>
               </div>
 
               <div class="col-6 d-flex align-items-center pt-3">
                 <div class="form-check form-switch">
                   <input class="form-check-input cursor-pointer" type="checkbox" name="is_active" value="1" id="create_is_active" checked>
-                  <label class="form-check-label fw-bold text-dark small" for="create_is_active">Publish immediately on frontend</label>
+                  <label class="form-check-label fw-bold text-dark small ms-1" for="create_is_active">Publish immediately on frontend</label>
                 </div>
               </div>
 
@@ -465,9 +465,9 @@
           <input type="hidden" name="_method" value="PUT">
           <input type="hidden" id="edit_story_id" name="story_id">
 
-          <div class="modal-header border-bottom py-3 px-4" style="background-color: #F8FAF9;">
-            <div class="d-flex align-items-center gap-2">
-              <div class="w-8 h-8 rounded-circle d-flex align-items-center justify-center text-white" style="width: 34px; height: 34px; background-color: var(--brand-forest-medium);">
+          <div class="modal-header border-bottom py-3.5 px-4" style="background-color: #F8FAF9;">
+            <div class="d-flex align-items-center gap-2.5">
+              <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: var(--brand-forest-medium);">
                 <i class="bi bi-pencil-square fs-6"></i>
               </div>
               <div>
@@ -484,32 +484,32 @@
               <!-- Story Title -->
               <div class="col-12">
                 <label class="form-label fw-bold text-dark small mb-1">Story Headline / Title <span class="text-danger">*</span></label>
-                <input type="text" name="title" id="edit_title" class="form-control rounded-3" required>
+                <input type="text" name="title" id="edit_title" class="form-control rounded-3 py-2 px-3" required>
               </div>
 
               <!-- Couple Names & Wedding Date -->
               <div class="col-12 col-md-6">
                 <label class="form-label fw-bold text-dark small mb-1">Couple Names</label>
-                <input type="text" name="couple_names" id="edit_couple_names" class="form-control rounded-3">
+                <input type="text" name="couple_names" id="edit_couple_names" class="form-control rounded-3 py-2 px-3">
               </div>
 
               <div class="col-12 col-md-6">
                 <label class="form-label fw-bold text-dark small mb-1">Wedding / Engagement Date</label>
-                <input type="date" name="wedding_date" id="edit_wedding_date" class="form-control rounded-3">
+                <input type="date" name="wedding_date" id="edit_wedding_date" class="form-control rounded-3 py-2 px-3">
               </div>
 
               <!-- Primary Couple Image -->
               <div class="col-12 col-md-6">
                 <label class="form-label fw-bold text-dark small mb-1">Replace Primary Photo (Optional)</label>
-                <div class="p-3 border-2 border-dashed rounded-3 bg-light text-center cursor-pointer" onclick="$('#edit_primary_image').click()" style="border-style: dashed !important; border-color: #CBD5E1;">
-                  <i class="bi bi-cloud-arrow-up fs-2 text-muted-green"></i>
+                <div class="p-3 border-2 border-dashed rounded-3 bg-light text-center cursor-pointer hover-scale" onclick="$('#edit_primary_image').click()" style="border-style: dashed !important; border-color: #CBD5E1;">
+                  <i class="bi bi-cloud-arrow-up fs-2" style="color: var(--brand-forest-medium);"></i>
                   <div class="fw-semibold small text-gray-800 mt-1">Click to replace primary cover photo</div>
                   <div class="text-muted small" style="font-size: 11px;">Leave blank to keep existing photo</div>
                 </div>
                 <input type="file" name="primary_image" id="edit_primary_image" class="d-none" accept="image/*">
                 
                 <!-- Primary Image Current / Preview Container -->
-                <div class="mt-2 rounded-3 overflow-hidden border" style="height: 140px; background-color: #f8f9fa;">
+                <div class="mt-2.5 rounded-3 overflow-hidden border" style="height: 140px; background-color: #f8f9fa;">
                   <img id="edit_primary_preview_img" src="" class="w-100 h-100 object-fit-contain">
                 </div>
               </div>
@@ -517,33 +517,33 @@
               <!-- Additional Gallery Images -->
               <div class="col-12 col-md-6">
                 <label class="form-label fw-bold text-dark small mb-1">Add More Gallery Photos (Optional)</label>
-                <div class="p-3 border-2 border-dashed rounded-3 bg-light text-center cursor-pointer" onclick="$('#edit_gallery_images').click()" style="border-style: dashed !important; border-color: #CBD5E1;">
-                  <i class="bi bi-images fs-2 text-muted-green"></i>
+                <div class="p-3 border-2 border-dashed rounded-3 bg-light text-center cursor-pointer hover-scale" onclick="$('#edit_gallery_images').click()" style="border-style: dashed !important; border-color: #CBD5E1;">
+                  <i class="bi bi-images fs-2" style="color: var(--brand-forest-medium);"></i>
                   <div class="fw-semibold small text-gray-800 mt-1">Click to upload more photos</div>
                   <div class="text-muted small" style="font-size: 11px;">Appends new photos to current gallery</div>
                 </div>
                 <input type="file" name="images[]" id="edit_gallery_images" class="d-none" accept="image/*" multiple>
 
                 <!-- Existing & New Gallery Photos Wrap -->
-                <div id="edit_gallery_preview_wrap" class="d-flex flex-wrap gap-2 mt-2"></div>
+                <div id="edit_gallery_preview_wrap" class="d-flex flex-wrap gap-2 mt-2.5"></div>
               </div>
 
               <!-- Story Detailed Description -->
               <div class="col-12">
                 <label class="form-label fw-bold text-dark small mb-1">Story Narrative / Description <span class="text-danger">*</span></label>
-                <textarea name="descriptions" id="edit_descriptions" rows="5" class="form-control rounded-3" required></textarea>
+                <textarea name="descriptions" id="edit_descriptions" rows="5" class="form-control rounded-3 p-3" required></textarea>
               </div>
 
               <!-- Order & Active Status -->
               <div class="col-6">
                 <label class="form-label fw-bold text-dark small mb-1">Display Order</label>
-                <input type="number" name="order" id="edit_order" class="form-control rounded-3" min="0">
+                <input type="number" name="order" id="edit_order" class="form-control rounded-3 py-2 px-3" min="0">
               </div>
 
               <div class="col-6 d-flex align-items-center pt-3">
                 <div class="form-check form-switch">
                   <input class="form-check-input cursor-pointer" type="checkbox" name="is_active" value="1" id="edit_is_active">
-                  <label class="form-check-label fw-bold text-dark small" for="edit_is_active">Publish on Frontend</label>
+                  <label class="form-check-label fw-bold text-dark small ms-1" for="edit_is_active">Publish on Frontend</label>
                 </div>
               </div>
 
@@ -569,9 +569,9 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
         
-        <div class="modal-header border-bottom py-3 px-4" style="background-color: #F8FAF9;">
-          <div class="d-flex align-items-center gap-2">
-            <div class="w-8 h-8 rounded-circle d-flex align-items-center justify-center text-white" style="width: 34px; height: 34px; background-color: var(--brand-forest-medium);">
+        <div class="modal-header border-bottom py-3.5 px-4" style="background-color: #F8FAF9;">
+          <div class="d-flex align-items-center gap-2.5">
+            <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: var(--brand-forest-medium);">
               <i class="bi bi-eye fs-6"></i>
             </div>
             <div>
@@ -582,35 +582,43 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
-        <div class="modal-body p-4 bg-white">
+        <div class="modal-body p-4 sm:p-4.5 bg-white">
           <!-- Featured Image -->
-          <div class="rounded-4 overflow-hidden border mb-3 position-relative shadow-sm" style="height: 280px; background-color: #072F1F;">
+          <div class="rounded-4 overflow-hidden border mb-3 position-relative shadow-sm" style="height: 300px; background-color: #072F1F;">
             <img id="view_primary_img" src="" class="w-100 h-100 object-fit-cover">
             <div class="position-absolute bottom-3 start-3">
-              <span id="view_couple_badge" class="badge bg-danger rounded-pill px-3 py-1.5 fs-7 shadow-sm"></span>
+              <span id="view_couple_badge" class="badge bg-danger bg-opacity-95 rounded-pill px-3 py-1.5 shadow-sm" style="font-size: 0.825rem;"></span>
             </div>
           </div>
 
           <!-- Gallery Strip -->
-          <div id="view_gallery_strip" class="d-flex gap-2 overflow-x-auto pb-2 mb-3"></div>
+          <div id="view_gallery_strip" class="d-flex gap-2.5 overflow-x-auto pb-1 mb-3.5"></div>
 
           <!-- Title & Meta -->
-          <h4 id="view_title" class="fw-bold text-gray-900 font-serif mb-2"></h4>
-          <div class="d-flex flex-wrap align-items-center gap-3 text-muted small mb-3 pb-3 border-bottom">
-            <span id="view_wedding_date"><i class="bi bi-calendar-heart text-danger me-1"></i> <span class="val"></span></span>
-            <span id="view_status_pill"></span>
-            <span id="view_created_at" class="text-muted"></span>
+          <div class="mb-3">
+            <h3 id="view_title" class="fw-bold text-gray-900 font-serif mb-2" style="font-size: 1.35rem; line-height: 1.35;"></h3>
+            <div class="d-flex flex-wrap align-items-center gap-3 text-muted small py-2.5 border-top border-bottom">
+              <span id="view_wedding_date" class="d-inline-flex align-items-center gap-1.5 text-danger fw-semibold">
+                <i class="bi bi-calendar-heart"></i>
+                <span class="val"></span>
+              </span>
+              <span id="view_status_pill"></span>
+              <span id="view_created_at" class="text-muted ms-auto"></span>
+            </div>
           </div>
 
           <!-- Full Narrative -->
-          <div class="bg-light p-3.5 rounded-3 border">
-            <h6 class="fw-bold mb-2" style="color: var(--brand-forest-medium);"><i class="bi bi-book-half me-1"></i> Full Story Narrative</h6>
-            <p id="view_descriptions" class="text-muted mb-0 leading-relaxed" style="white-space: pre-line; font-size: 0.925rem;"></p>
+          <div class="p-3.5 sm:p-4 rounded-4 border" style="background-color: #F8FAF9;">
+            <div class="d-flex align-items-center gap-2 mb-2 pb-2 border-bottom border-light">
+              <i class="bi bi-quote fs-5" style="color: var(--brand-forest-medium);"></i>
+              <h6 class="fw-bold mb-0" style="color: var(--brand-forest-medium); font-size: 0.95rem;">Matchmaking Narrative</h6>
+            </div>
+            <p id="view_descriptions" class="text-secondary mb-0 leading-relaxed" style="font-size: 0.925rem; line-height: 1.75; white-space: pre-line;"></p>
           </div>
         </div>
 
-        <div class="modal-footer bg-light border-top py-2.5 px-4">
-          <button type="button" class="btn-custom btn-custom-light btn-custom-sm" data-bs-dismiss="modal">Close</button>
+        <div class="modal-footer bg-light border-top py-3 px-4 d-flex justify-content-end">
+          <button type="button" class="btn-custom btn-custom-light btn-custom-sm px-4" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -918,7 +926,7 @@ $(document).ready(function() {
           if (s.gallery_images && s.gallery_images.length > 1) {
             s.gallery_images.forEach(function(img) {
               $gStrip.append(`
-                <button type="button" class="btn p-0 rounded-2 overflow-hidden border cursor-pointer shrink-0 shadow-2xs" onclick="$('#view_primary_img').attr('src', '${img}')" style="width: 58px; height: 58px;">
+                <button type="button" class="btn p-0 rounded-3 overflow-hidden border-2 cursor-pointer shrink-0 shadow-2xs hover-scale" onclick="$('#view_primary_img').attr('src', '${img}')" style="width: 62px; height: 62px; border-color: #E2E8F0;">
                   <img src="${img}" class="w-100 h-100 object-fit-cover">
                 </button>
               `);
@@ -1036,8 +1044,11 @@ $(document).ready(function() {
   transform: translateY(-4px);
   box-shadow: 0 14px 28px rgba(11, 19, 15, 0.08) !important;
 }
+.hover-scale {
+  transition: transform 0.2s ease-in-out;
+}
 .hover-scale:hover {
-  transform: scale(1.04);
+  transform: scale(1.03);
 }
 .line-clamp-2 {
   display: -webkit-box;
