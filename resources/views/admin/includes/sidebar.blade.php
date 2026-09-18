@@ -52,6 +52,30 @@
           </a>
         </li>
         <li class="sidebar-menu-item">
+          <a href="{{ route('admin.tickets.index') }}" class="sidebar-menu-link {{ request()->routeIs('admin.tickets*') ? 'active' : '' }}" id="menu-tickets" title="Support Tickets">
+            <i class="bi bi-ticket-detailed-fill text-info"></i>
+            <span>Support Tickets</span>
+            @php
+              $openTicketsCount = \App\Models\Ticket::whereIn('status', ['open', 'in_progress'])->count();
+            @endphp
+            @if($openTicketsCount > 0)
+              <span class="badge bg-danger rounded-pill ms-auto small" style="font-size: 10px;">{{ $openTicketsCount }}</span>
+            @endif
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="{{ route('admin.helps.index') }}" class="sidebar-menu-link {{ request()->routeIs('admin.helps*') ? 'active' : '' }}" id="menu-helps" title="Help & Contact Inquiries">
+            <i class="bi bi-envelope-paper-fill text-warning"></i>
+            <span>Help Inquiries</span>
+            @php
+              $pendingHelpsCount = \App\Models\Help::where('status', 'pending')->count();
+            @endphp
+            @if($pendingHelpsCount > 0)
+              <span class="badge bg-warning text-dark rounded-pill ms-auto small" style="font-size: 10px;">{{ $pendingHelpsCount }}</span>
+            @endif
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
           <a href="{{ route('admin.profile') }}" class="sidebar-menu-link {{ request()->routeIs('admin.profile*') ? 'active' : '' }}" id="menu-profile" title="Admin Profile & Settings">
             <i class="bi bi-person-gear"></i>
             <span>Profile & Settings</span>

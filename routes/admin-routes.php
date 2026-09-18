@@ -38,6 +38,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/stories/{id}', [AdminController::class, 'destroyStory'])->name('stories.destroy');
         Route::post('/stories/{id}/toggle-status', [AdminController::class, 'toggleStoryStatus'])->name('stories.toggle-status');
 
+        // Help & Contact Us Inquiries Management
+        Route::get('/helps', [AdminController::class, 'helps'])->name('helps.index');
+        Route::get('/helps/{id}', [AdminController::class, 'showHelp'])->name('helps.show');
+        Route::post('/helps/{id}/reply', [AdminController::class, 'replyHelp'])->name('helps.reply');
+        Route::delete('/helps/{id}', [AdminController::class, 'destroyHelp'])->name('helps.destroy');
+
+        // Candidate Support Tickets Management
+        Route::get('/tickets', [AdminController::class, 'tickets'])->name('tickets.index');
+        Route::get('/tickets/{id}', [AdminController::class, 'showTicket'])->name('tickets.show');
+        Route::post('/tickets/{id}/reply', [AdminController::class, 'replyTicket'])->name('tickets.reply');
+        Route::delete('/tickets/{id}', [AdminController::class, 'destroyTicket'])->name('tickets.destroy');
+
         // Admin Profile & Security Settings
         Route::get('/profile', [AdminController::class, 'profileSettings'])->name('profile');
         Route::post('/profile', [AdminController::class, 'updateProfile'])->name('profile.update');

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HelpSupportController;
 use App\Http\Controllers\InboxController;
 use App\Http\Controllers\MatchesController;
 use App\Http\Controllers\SearchController;
@@ -18,6 +19,11 @@ Route::get('/success-stories', function () {
     $stories = Story::active()->paginate(12);
     return view('frontend.pages.stories', compact('stories'));
 })->name('stories');
+
+// Help Center & Contact Us (Publicly available)
+Route::get('/help-center', [HelpSupportController::class, 'helpCenter'])->name('help.center');
+Route::get('/contact-us', [HelpSupportController::class, 'helpCenter'])->name('contact.us');
+Route::post('/help-center/submit', [HelpSupportController::class, 'submitHelp'])->name('help.submit');
 
 // Search Routes (Available for both authenticated candidates and visitors)
 Route::get('/search', [SearchController::class, 'index'])->name('search');
@@ -92,6 +98,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/bluetick-verification', [AuthController::class, 'showBlueTickVerification'])->name('bluetick.verify');
     Route::post('/api/bluetick/validate-aadhar', [AuthController::class, 'validateAadhar'])->name('bluetick.validate-aadhar');
     Route::post('/api/bluetick/submit', [AuthController::class, 'submitBlueTickVerification'])->name('bluetick.submit');
+
+    // Candidate Support & Tickets
+    Route::get('/support', [HelpSupportController::class, 'support'])->name('support.index');
+    Route::post('/support/ticket', [HelpSupportController::class, 'storeTicket'])->name('support.store');
 
     // Notifications API
     Route::post('/api/notifications/{id}/read', [AuthController::class, 'markNotificationRead'])->name('notifications.read');

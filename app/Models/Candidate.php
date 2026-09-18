@@ -232,4 +232,12 @@ class Candidate extends Authenticatable
     {
         return $this->hasOne(Referral::class, 'candidate_id');
     }
+
+    /**
+     * Support tickets created by this candidate
+     */
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'candidate_id')->orderBy('created_at', 'desc');
+    }
 }

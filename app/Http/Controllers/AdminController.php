@@ -2,19 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\HelpInquiryAdminReply;
+use App\Mail\TicketReplyCandidateNotification;
 use App\Models\Admin;
 use App\Models\Bluetick;
 use App\Models\Branch;
 use App\Models\Candidate;
 use App\Models\ConnectionRequest;
+use App\Models\Help;
 use App\Models\Notification;
 use App\Models\Referral;
 use App\Models\Story;
+use App\Models\Ticket;
 use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -1445,5 +1451,272 @@ class AdminController extends Controller
             'is_active' => (bool) $story->is_active,
             'message' => 'Story is now ' . ($story->is_active ? 'Active (Published)' : 'Inactive (Hidden)'),
         ]);
+    }
+
+    /* =========================================================================
+     * HELP & CONTACT INQUIRIES MANAGEMENT
+     * ========================================================================= */
+
+    /**
+     * List all Help & Contact Us inquiries
+     */
+    public function helps(Request $request)
+    {
+        $query = Help::query();
+
+        if ($request->filled('search')) {
+            $search = trim($request->input('search'));
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('mobile', 'like', "%{$search}%")
+                  ->orWhere('subject', 'like', "%{$search}%")
+                  ->orWhere('message', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('status') && $request->input('status') !== 'all') {
+            $query->where('status', $request->input('status'));
+        }
+
+        $counts = [
+            'total' => Help::count(),
+            'pending' => Help::where('status', 'pending')->count(),
+            'replied' => Help::where('status', 'replied')->count(),
+        ];
+
+        $helps = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+
+        return view('admin.help.index', compact('helps', 'counts'));
+    }
+
+    /**
+     * Get single help details via JSON
+     */
+    public function showHelp($id)
+    {
+        $help = Help::findOrFail($id);
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $help->id,
+                'name' => $help->name,
+                'email' => $help->email,
+                'country_code' => $help->country_code,
+                'mobile' => $help->mobile,
+                'full_phone' => $help->full_phone,
+                'subject' => $help->subject,
+                'message' => $help->message,
+                'status' => $help->status,
+                'reply_message' => $help->reply_message,
+                'replied_at' => $help->replied_at ? $help->replied_at->format('M d, Y h:i A') : null,
+                'created_at' => $help->created_at ? $help->created_at->format('M d, Y h:i A') : null,
+            ],
+        ]);
+    }
+
+    /**
+     * Admin reply to Help inquiry via email
+     */
+    public function replyHelp(Request $request, $id)
+    {
+        $help = Help::findOrFail($id);
+
+        $validated = $request->validate([
+            'reply_message' => 'required|string|min:5|max:5000',
+        ], [
+            'reply_message.required' => 'Please type a reply message.',
+            'reply_message.min' => 'Reply message must be at least 5 characters.',
+        ]);
+
+        $help->reply_message = $validated['reply_message'];
+        $help->status = 'replied';
+        $help->replied_at = Carbon::now();
+        $help->save();
+
+        // Send response email to candidate / user
+        try {
+            Mail::to($help->email)->send(new HelpInquiryAdminReply($help, $help->reply_message));
+        } catch (\Exception $e) {
+            Log::error("Failed to send help admin reply email: " . $e->getMessage());
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Reply sent successfully to ' . $help->email,
+                'data' => $help,
+            ]);
+        }
+
+        return redirect()->route('admin.helps.index')->with('success', 'Reply sent successfully to ' . $help->email);
+    }
+
+    /**
+     * Delete Help inquiry
+     */
+    public function destroyHelp($id)
+    {
+        $help = Help::findOrFail($id);
+        $help->delete();
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Help inquiry record deleted successfully.',
+            ]);
+        }
+
+        return redirect()->route('admin.helps.index')->with('success', 'Help inquiry record deleted successfully.');
+    }
+
+    /* =========================================================================
+     * CANDIDATE SUPPORT TICKETS MANAGEMENT
+     * ========================================================================= */
+
+    /**
+     * List all candidate support tickets
+     */
+    public function tickets(Request $request)
+    {
+        $query = Ticket::with('candidate');
+
+        if ($request->filled('search')) {
+            $search = trim($request->input('search'));
+            $query->where(function ($q) use ($search) {
+                $q->where('ticket_code', 'like', "%{$search}%")
+                  ->orWhere('subject', 'like', "%{$search}%")
+                  ->orWhere('message', 'like', "%{$search}%")
+                  ->orWhereHas('candidate', function ($cq) use ($search) {
+                      $cq->where('first_name', 'like', "%{$search}%")
+                         ->orWhere('last_name', 'like', "%{$search}%")
+                         ->orWhere('email', 'like', "%{$search}%")
+                         ->orWhere('mobile', 'like', "%{$search}%")
+                         ->orWhere('candidate_code', 'like', "%{$search}%")
+                         ->orWhere('profile_id', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($request->filled('status') && $request->input('status') !== 'all') {
+            $query->where('status', $request->input('status'));
+        }
+
+        if ($request->filled('priority') && $request->input('priority') !== 'all') {
+            $query->where('priority', $request->input('priority'));
+        }
+
+        $counts = [
+            'total' => Ticket::count(),
+            'open' => Ticket::where('status', 'open')->count(),
+            'in_progress' => Ticket::where('status', 'in_progress')->count(),
+            'resolved' => Ticket::where('status', 'resolved')->count(),
+            'closed' => Ticket::where('status', 'closed')->count(),
+            'urgent' => Ticket::where('priority', 'urgent')->whereIn('status', ['open', 'in_progress'])->count(),
+        ];
+
+        $tickets = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+
+        return view('admin.ticket.index', compact('tickets', 'counts'));
+    }
+
+    /**
+     * Get single ticket details via JSON
+     */
+    public function showTicket($id)
+    {
+        $ticket = Ticket::with('candidate')->findOrFail($id);
+        
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $ticket->id,
+                'ticket_code' => $ticket->ticket_code,
+                'priority' => $ticket->priority,
+                'status' => $ticket->status,
+                'subject' => $ticket->subject,
+                'message' => $ticket->message,
+                'screenshots' => $ticket->screenshot_urls,
+                'admin_reply' => $ticket->admin_reply,
+                'replied_at' => $ticket->replied_at ? $ticket->replied_at->format('M d, Y h:i A') : null,
+                'created_at' => $ticket->created_at ? $ticket->created_at->format('M d, Y h:i A') : null,
+                'candidate' => $ticket->candidate ? [
+                    'id' => $ticket->candidate->id,
+                    'name' => trim($ticket->candidate->first_name . ' ' . $ticket->candidate->last_name),
+                    'code' => $ticket->candidate->display_code,
+                    'email' => $ticket->candidate->email,
+                    'mobile' => $ticket->candidate->mobile,
+                    'photo' => $ticket->candidate->profile_picture ? asset('storage/' . $ticket->candidate->profile_picture) : 'https://ui-avatars.com/api/?name='.urlencode($ticket->candidate->first_name).'&background=4a0404&color=d4af37',
+                ] : null,
+            ],
+        ]);
+    }
+
+    /**
+     * Admin reply and update status of a Ticket
+     */
+    public function replyTicket(Request $request, $id)
+    {
+        $ticket = Ticket::with('candidate')->findOrFail($id);
+
+        $validated = $request->validate([
+            'status' => 'required|in:open,in_progress,resolved,closed',
+            'admin_reply' => 'required|string|min:5|max:5000',
+        ], [
+            'status.required' => 'Please select ticket status.',
+            'admin_reply.required' => 'Please provide a reply / resolution message.',
+        ]);
+
+        $ticket->status = $validated['status'];
+        $ticket->admin_reply = $validated['admin_reply'];
+        $ticket->replied_at = Carbon::now();
+        $ticket->save();
+
+        // Send resolution email to candidate
+        if ($ticket->candidate && !empty($ticket->candidate->email)) {
+            try {
+                Mail::to($ticket->candidate->email)->send(new TicketReplyCandidateNotification($ticket, $ticket->candidate, $ticket->admin_reply));
+            } catch (\Exception $e) {
+                Log::error("Failed to send ticket reply candidate email: " . $e->getMessage());
+            }
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Ticket [' . $ticket->ticket_code . '] updated and reply sent to candidate.',
+                'data' => $ticket,
+            ]);
+        }
+
+        return redirect()->route('admin.tickets.index')->with('success', 'Ticket [' . $ticket->ticket_code . '] updated and reply sent to candidate.');
+    }
+
+    /**
+     * Delete a Ticket
+     */
+    public function destroyTicket($id)
+    {
+        $ticket = Ticket::findOrFail($id);
+
+        // Delete screenshot files if any
+        if (!empty($ticket->screenshots) && is_array($ticket->screenshots)) {
+            foreach ($ticket->screenshots as $path) {
+                if ($path && !str_starts_with($path, 'http')) {
+                    Storage::disk('public')->delete($path);
+                }
+            }
+        }
+
+        $ticket->delete();
+
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Support ticket deleted successfully.',
+            ]);
+        }
+
+        return redirect()->route('admin.tickets.index')->with('success', 'Support ticket deleted successfully.');
     }
 }

@@ -23,10 +23,10 @@
                 </ul>
             </div>
             <div>
-                <h3 class="text-lg font-serif font-bold mb-4 text-rani-gold">Legal</h3>
+                <h3 class="text-lg font-serif font-bold mb-4 text-rani-gold">Legal & Support</h3>
                 <ul class="space-y-2 text-rani-gold-light/70">
-                    <li><a href="{{ route('privacy.policy') }}" class="hover:text-rani-gold transition-colors">Support</a></li>
-                    <li><a href="{{ route('privacy.policy') }}" class="hover:text-rani-gold transition-colors">Help Center</a></li>
+                    <li><a href="{{ route('support.index') }}" class="hover:text-rani-gold transition-colors">Support</a></li>
+                    <li><a href="{{ route('help.center') }}" class="hover:text-rani-gold transition-colors">Help Center</a></li>
                     <li><a href="{{ route('privacy.policy') }}" class="hover:text-rani-gold transition-colors">Privacy Policy</a></li>
                     <li><a href="{{ route('terms.conditions') }}" class="hover:text-rani-gold transition-colors">Terms & Conditions</a></li>
                 </ul>
