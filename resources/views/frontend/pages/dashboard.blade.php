@@ -154,9 +154,9 @@
             
             <!-- Activity Summary (Requirement 1 & 2) -->
             <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                    <h3 class="font-bold text-gray-800 font-serif text-lg">Your Activity Summary</h3>
-                    <span class="text-xs text-gray-400">Real-time stats</span>
+                <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-gray-100 flex items-center justify-between gap-2">
+                    <h3 class="font-bold text-gray-800 font-serif text-base sm:text-lg truncate">Your Activity Summary</h3>
+                    <span class="text-[11px] sm:text-xs text-gray-400 shrink-0 whitespace-nowrap">Real-time stats</span>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-gray-100">
                     <!-- Item 1: Pending Invitations (When someone gives me connection request) -->
@@ -208,25 +208,25 @@
             <!-- Improve your Profile Banner (Visible only if not blue tick verified) -->
             @if(!($candidate->is_bluetick_verified || ($candidateBluetick && (int)$candidateBluetick->is_accept === 1)))
             <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                    <h3 class="font-bold text-gray-800 font-serif text-lg">Improve your Profile</h3>
-                    <span class="text-xs font-semibold text-rani-primary">Trust & Safety</span>
+                <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-gray-100 flex items-center justify-between gap-2">
+                    <h3 class="font-bold text-gray-800 font-serif text-base sm:text-lg truncate">Improve your Profile</h3>
+                    <span class="text-xs font-semibold text-rani-primary shrink-0 whitespace-nowrap">Trust & Safety</span>
                 </div>
                 
                 @if($candidateBluetick && (int)$candidateBluetick->is_accept === 0)
                 <!-- 1. Pending Review State (24-48 hours) -->
-                <div class="p-6 flex flex-col sm:flex-row items-center gap-6 bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50">
+                <div class="p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50">
                     <div class="relative shrink-0">
-                        <div class="w-20 h-20 rounded-full bg-white shadow-md flex items-center justify-center border-4 border-amber-200">
-                            <svg class="w-10 h-10 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white shadow-md flex items-center justify-center border-4 border-amber-200">
+                            <svg class="w-8 h-8 sm:w-10 sm:h-10 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                     </div>
                     <div class="text-center sm:text-left flex-1">
                         <div class="flex items-center justify-center sm:justify-start gap-2 mb-1">
-                            <h4 class="font-bold text-gray-800 text-lg">Verification In Progress</h4>
+                            <h4 class="font-bold text-gray-800 text-base sm:text-lg">Verification In Progress</h4>
                             <span class="bg-amber-100 text-amber-800 text-xs px-2.5 py-0.5 rounded-full font-bold">24-48 Hours</span>
                         </div>
-                        <p class="text-sm text-gray-600 mb-3">Your Aadhaar card documents have been submitted and are currently being reviewed by our admin verification team.</p>
+                        <p class="text-xs sm:text-sm text-gray-600 mb-3">Your Aadhaar card documents have been submitted and are currently being reviewed by our admin verification team.</p>
                         <a href="{{ route('bluetick.verify') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-amber-900 bg-white border border-amber-200 px-4 py-2 rounded-xl hover:bg-amber-50 transition-colors shadow-xs">
                             View Verification Status &rarr;
                         </a>
@@ -234,15 +234,15 @@
                 </div>
                 @elseif($candidateBluetick && (int)$candidateBluetick->is_accept === 2)
                 <!-- 2. Rejected State -->
-                <div class="p-6 flex flex-col sm:flex-row items-center gap-6 bg-gradient-to-r from-red-50 via-pink-50 to-red-50">
+                <div class="p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 bg-gradient-to-r from-red-50 via-pink-50 to-red-50">
                     <div class="relative shrink-0">
-                        <div class="w-20 h-20 rounded-full bg-white shadow-md flex items-center justify-center border-4 border-red-200">
-                            <svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white shadow-md flex items-center justify-center border-4 border-red-200">
+                            <svg class="w-8 h-8 sm:w-10 sm:h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                         </div>
                     </div>
                     <div class="text-center sm:text-left flex-1">
-                        <h4 class="font-bold text-red-900 text-lg mb-1">Verification Needs Attention</h4>
-                        <p class="text-sm text-red-700 mb-3">{{ $candidateBluetick->admin_notes ?? 'Please upload clear photos of your Aadhaar card to get verified.' }}</p>
+                        <h4 class="font-bold text-red-900 text-base sm:text-lg mb-1">Verification Needs Attention</h4>
+                        <p class="text-xs sm:text-red-700 mb-3">{{ $candidateBluetick->admin_notes ?? 'Please upload clear photos of your Aadhaar card to get verified.' }}</p>
                         <a href="{{ route('bluetick.verify') }}" class="inline-flex items-center gap-2 bg-red-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl hover:bg-red-700 shadow-sm transition-all">
                             Re-submit Verification Documents
                         </a>
@@ -250,19 +250,19 @@
                 </div>
                 @else
                 <!-- 3. Default Not Verified State -->
-                <div class="p-6 flex flex-col sm:flex-row items-center gap-6 bg-gradient-to-r from-orange-50 via-pink-50 to-amber-50">
+                <div class="p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 bg-gradient-to-r from-orange-50 via-pink-50 to-amber-50">
                     <div class="relative shrink-0">
-                        <div class="w-20 h-20 rounded-full bg-white shadow-md flex items-center justify-center border-4 border-pink-100">
-                            <svg class="w-10 h-10 text-pink-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white shadow-md flex items-center justify-center border-4 border-pink-100">
+                            <svg class="w-8 h-8 sm:w-10 sm:h-10 text-pink-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                         </div>
-                        <div class="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1.5 border-2 border-white shadow-md">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        <div class="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1 sm:p-1.5 border-2 border-white shadow-md">
+                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
                     </div>
                     <div class="text-center sm:text-left flex-1">
-                        <h4 class="font-bold text-gray-800 text-lg mb-1">Blue Tick Verification</h4>
-                        <p class="text-sm text-gray-600 mb-4">Verify your profile with your Aadhaar Card to get up to 2x more matches and build 100% trust with prospective partners!</p>
-                        <a href="{{ route('bluetick.verify') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold text-sm px-6 py-2.5 rounded-xl hover:shadow-lg transform transition hover:-translate-y-0.5">
+                        <h4 class="font-bold text-gray-800 text-base sm:text-lg mb-1">Blue Tick Verification</h4>
+                        <p class="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">Verify your profile with your Aadhaar Card to get up to 2x more matches and build 100% trust with prospective partners!</p>
+                        <a href="{{ route('bluetick.verify') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold text-xs sm:text-sm px-5 sm:px-6 py-2 sm:py-2.5 rounded-xl hover:shadow-lg transform transition hover:-translate-y-0.5">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                             Apply for Blue Tick
                         </a>
@@ -274,26 +274,26 @@
 
             <!-- Matches Preview Section -->
             <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                    <div class="flex items-center gap-2">
-                        <h3 class="font-bold text-gray-800 font-serif text-lg">New Matches For You</h3>
+                <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-gray-100 flex justify-between items-center gap-2">
+                    <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                        <h3 class="font-bold text-gray-800 font-serif text-base sm:text-lg truncate">New Matches For You</h3>
                         @if(count($dashboardMatches) > 0)
-                            <span class="bg-rani-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ count($dashboardMatches) }} New</span>
+                            <span class="bg-rani-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 whitespace-nowrap">{{ count($dashboardMatches) }} New</span>
                         @endif
                     </div>
-                    <a href="{{ route('matches') }}" class="text-rani-primary text-sm font-semibold hover:underline flex items-center gap-1 group">
+                    <a href="{{ route('matches') }}" class="text-rani-primary text-xs sm:text-sm font-semibold hover:underline flex items-center gap-1 group shrink-0 whitespace-nowrap">
                         <span>See all</span>
-                        <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </a>
                 </div>
 
                 @if(count($dashboardMatches) > 0)
-                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-3.5 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
                         <template x-for="match in matches" :key="match.id">
-                            <div class="bg-white rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md transition-all p-4 flex flex-col justify-between group relative overflow-hidden">
+                            <div class="bg-white rounded-2xl border border-gray-200/80 shadow-xs hover:shadow-md transition-all p-3.5 sm:p-4 flex flex-col justify-between group relative overflow-hidden">
                                 
                                 <!-- Match Percentage Pill -->
-                                <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center justify-between mb-2.5 sm:mb-3">
                                     <span class="inline-flex items-center gap-1 bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs">
                                         <svg class="w-3 h-3 text-rani-gold" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
                                         <span x-text="match.match_score + '% Match'"></span>
@@ -310,9 +310,9 @@
                                 </div>
 
                                 <!-- Photo & Basic Info (Non-hyperlinked) -->
-                                <div class="flex items-center gap-3.5 mb-3">
+                                <div class="flex items-center gap-3 sm:gap-3.5 mb-2.5 sm:mb-3">
                                     <div class="relative shrink-0">
-                                        <img :src="match.photo" :alt="match.first_name" class="w-16 h-16 rounded-full object-cover border-2 border-rani-gold/40 shadow-xs">
+                                        <img :src="match.photo" :alt="match.first_name" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-rani-gold/40 shadow-xs">
                                         <template x-if="match.verified">
                                             <span class="absolute bottom-0 right-0 bg-gradient-to-tr from-blue-600 via-sky-500 to-sky-400 text-white rounded-full p-0.5 border border-white shadow-xs flex items-center justify-center" title="Blue Tick Verified">
                                                 <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
@@ -332,7 +332,7 @@
                                 </div>
 
                                 <!-- Match Highlights -->
-                                <div class="flex flex-wrap gap-1 mb-3.5">
+                                <div class="flex flex-wrap gap-1 mb-2.5 sm:mb-3.5">
                                     <template x-for="(reason, rIdx) in match.match_reasons" :key="rIdx">
                                         <span class="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md" x-text="reason"></span>
                                     </template>
