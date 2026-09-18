@@ -26,140 +26,140 @@
         <div class="heart-floating delay-5"></div>
     </div>
 
-    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="relative z-10 max-w-4xl mx-auto px-3 sm:px-6 lg:px-8">
         
         <!-- Navigation Breadcrumb -->
-        <div class="mb-6 flex items-center justify-between">
-            <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 text-white/80 hover:text-white text-xs font-semibold bg-black/30 hover:bg-black/50 px-4 py-2 rounded-xl backdrop-blur-sm transition-all shadow-sm">
+        <div class="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-2.5">
+            <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 sm:gap-2 text-white/90 hover:text-white text-xs font-semibold bg-black/30 hover:bg-black/50 px-3.5 sm:px-4 py-2 rounded-xl backdrop-blur-sm transition-all shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                Back to Dashboard
+                <span>Back to Dashboard</span>
             </a>
-            <div class="inline-flex items-center gap-1.5 bg-rani-gold/20 text-rani-gold border border-rani-gold/40 text-xs font-bold px-3 py-1.5 rounded-full">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+            <div class="inline-flex items-center gap-1.5 bg-rani-gold/20 text-rani-gold border border-rani-gold/40 text-[11px] sm:text-xs font-bold px-3 py-1.5 rounded-full">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                 <span>Trust & Safety Verification</span>
             </div>
         </div>
 
         <!-- Main Card -->
-        <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/60 overflow-hidden relative">
+        <div class="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl shadow-2xl border border-white/60 overflow-hidden relative mb-10">
             <!-- Accent Top Bar -->
-            <div class="h-2.5 bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold"></div>
+            <div class="h-2 sm:h-2.5 bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold"></div>
 
-            <div class="p-6 sm:p-10">
+            <div class="p-4 sm:p-8 md:p-10">
                 
                 <!-- Header -->
-                <div class="text-center max-w-2xl mx-auto mb-8">
-                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 mb-3 shadow-xs border border-blue-200">
-                        <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                <div class="text-center max-w-2xl mx-auto mb-6 sm:mb-8">
+                    <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-blue-50 text-blue-600 mb-3 shadow-xs border border-blue-200">
+                        <svg class="w-8 h-8 sm:w-9 sm:h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-bold font-serif text-rani-primary-dark">Blue Tick Verification</h1>
-                    <p class="text-xs sm:text-sm text-gray-600 mt-1.5">Verify your Government-issued Aadhaar Card to obtain the coveted verified badge, build trust, and receive up to 2x more matches.</p>
+                    <h1 class="text-xl sm:text-2xl md:text-3xl font-bold font-serif text-rani-primary-dark">Blue Tick Verification</h1>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1.5 leading-relaxed">Verify your Government-issued Aadhaar Card to obtain the coveted verified badge, build trust, and receive up to 2x more matches.</p>
                 </div>
 
                 <!-- Status Alerts -->
                 <template x-if="isVerified">
-                    <div class="p-6 rounded-2xl bg-gradient-to-r from-blue-50 via-sky-50 to-indigo-50 border border-blue-200 mb-8 flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
-                        <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-blue-600 via-sky-500 to-sky-400 text-white flex items-center justify-center shrink-0 shadow-md border-2 border-white">
-                            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                    <div class="p-4 sm:p-6 rounded-2xl bg-gradient-to-r from-blue-50 via-sky-50 to-indigo-50 border border-blue-200 mb-6 sm:mb-8 flex flex-col sm:flex-row items-center gap-4 sm:gap-5 text-center sm:text-left">
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-tr from-blue-600 via-sky-500 to-sky-400 text-white flex items-center justify-center shrink-0 shadow-md border-2 border-white">
+                            <svg class="w-7 h-7 sm:w-8 sm:h-8 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                         </div>
                         <div class="flex-1">
-                            <h3 class="text-base font-bold text-blue-900 flex items-center gap-1.5 justify-center sm:justify-start">
+                            <h3 class="text-sm sm:text-base font-bold text-blue-900 flex items-center gap-1.5 justify-center sm:justify-start">
                                 <span>Your Profile is Blue Tick Verified!</span>
-                                <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
                             </h3>
                             <p class="text-xs text-blue-700 mt-1">Your Aadhaar verification has been successfully approved by Rani Matrimonial Admin. Your profile badge is active across all matchmaking lists.</p>
                         </div>
-                        <a href="{{ route('dashboard') }}" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-colors">
+                        <a href="{{ route('dashboard') }}" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-colors text-center">
                             Return to Dashboard
                         </a>
                     </div>
                 </template>
 
                 <template x-if="isPending && !isVerified">
-                    <div class="p-6 rounded-2xl bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 border border-amber-200 mb-8 flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
-                        <div class="w-14 h-14 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <div class="p-4 sm:p-6 rounded-2xl bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 border border-amber-200 mb-6 sm:mb-8 flex flex-col sm:flex-row items-center gap-4 sm:gap-5 text-center sm:text-left">
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md">
+                            <svg class="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         <div class="flex-1">
-                            <h3 class="text-base font-bold text-amber-900">Verification Under Review (24-48 Hours)</h3>
+                            <h3 class="text-sm sm:text-base font-bold text-amber-900">Verification Under Review (24-48 Hours)</h3>
                             <p class="text-xs text-amber-700 mt-1">We have received your Aadhaar card documents. Our security verification team is currently verifying the details. You will receive an SMS and WhatsApp notification once approved.</p>
                         </div>
-                        <a href="{{ route('dashboard') }}" class="px-5 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs shadow-xs transition-colors">
+                        <a href="{{ route('dashboard') }}" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs shadow-xs transition-colors text-center">
                             Back to Dashboard
                         </a>
                     </div>
                 </template>
 
                 <template x-if="isRejected && !isVerified">
-                    <div class="p-5 rounded-2xl bg-red-50 border border-red-200 mb-8 flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <div class="p-4 sm:p-5 rounded-2xl bg-red-50 border border-red-200 mb-6 sm:mb-8 flex items-start gap-3.5 sm:gap-4">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-red-500 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                         </div>
                         <div>
-                            <h4 class="text-sm font-bold text-red-900">Previous Verification Request Rejected</h4>
-                            <p class="text-xs text-red-700 mt-0.5" x-text="existingBluetick && existingBluetick.admin_notes ? existingBluetick.admin_notes : 'The uploaded Aadhaar photos were unclear or did not match the registered profile details. Please re-submit valid documents below.'"></p>
+                            <h4 class="text-xs sm:text-sm font-bold text-red-900">Previous Verification Request Rejected</h4>
+                            <p class="text-[11px] sm:text-xs text-red-700 mt-0.5" x-text="existingBluetick && existingBluetick.admin_notes ? existingBluetick.admin_notes : 'The uploaded Aadhaar photos were unclear or did not match the registered profile details. Please re-submit valid documents below.'"></p>
                         </div>
                     </div>
                 </template>
 
                 <!-- Verification Form (Visible when not verified or when rejected) -->
-                <div x-show="!isVerified && !isPending" class="space-y-8">
+                <div x-show="!isVerified && !isPending" class="space-y-6 sm:space-y-8">
                     
                     <!-- Progress Steps Indicator -->
-                    <div class="flex items-center justify-between relative max-w-xl mx-auto mb-8">
-                        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gray-200 z-0"></div>
-                        <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-gradient-to-r from-rani-primary to-blue-600 transition-all duration-500 z-0"
-                             :style="'width: ' + (step === 1 ? '15%' : (step === 2 ? '50%' : '100%'))"></div>
+                    <div class="flex items-center justify-between relative max-w-xl mx-auto mb-6 sm:mb-8 px-2 sm:px-4">
+                        <div class="absolute left-6 right-6 top-5 -translate-y-1/2 h-1 bg-gray-200 z-0"></div>
+                        <div class="absolute left-6 top-5 -translate-y-1/2 h-1 bg-gradient-to-r from-rani-primary to-blue-600 transition-all duration-500 z-0"
+                             :style="'width: ' + (step === 1 ? '10%' : (step === 2 ? '48%' : 'calc(100% - 48px)'))"></div>
                         
                         <!-- Step 1 Dot -->
                         <div class="relative z-10 flex flex-col items-center">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-sm"
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-sm shrink-0"
                                  :class="step >= 1 && aadharVerified ? 'bg-emerald-500 text-white' : (step === 1 ? 'bg-rani-primary text-white ring-4 ring-rani-primary/20' : 'bg-gray-200 text-gray-600')">
                                 <template x-if="aadharVerified">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                 </template>
                                 <template x-if="!aadharVerified"><span>1</span></template>
                             </div>
-                            <span class="text-[11px] font-semibold text-gray-700 mt-1.5">Aadhaar No.</span>
+                            <span class="text-[10px] sm:text-[11px] font-semibold text-gray-700 mt-1.5 text-center whitespace-nowrap">Aadhaar No.</span>
                         </div>
 
                         <!-- Step 2 Dot -->
                         <div class="relative z-10 flex flex-col items-center">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-sm"
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-sm shrink-0"
                                  :class="frontPhoto ? 'bg-emerald-500 text-white' : (step === 2 ? 'bg-rani-primary text-white ring-4 ring-rani-primary/20' : 'bg-gray-200 text-gray-600')">
                                 <template x-if="frontPhoto">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                 </template>
                                 <template x-if="!frontPhoto"><span>2</span></template>
                             </div>
-                            <span class="text-[11px] font-semibold text-gray-700 mt-1.5">Front Side</span>
+                            <span class="text-[10px] sm:text-[11px] font-semibold text-gray-700 mt-1.5 text-center whitespace-nowrap">Front Side</span>
                         </div>
 
                         <!-- Step 3 Dot -->
                         <div class="relative z-10 flex flex-col items-center">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-sm"
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs transition-all shadow-sm shrink-0"
                                  :class="backPhoto ? 'bg-emerald-500 text-white' : (step === 3 ? 'bg-rani-primary text-white ring-4 ring-rani-primary/20' : 'bg-gray-200 text-gray-600')">
                                 <template x-if="backPhoto">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                 </template>
                                 <template x-if="!backPhoto"><span>3</span></template>
                             </div>
-                            <span class="text-[11px] font-semibold text-gray-700 mt-1.5">Back Side</span>
+                            <span class="text-[10px] sm:text-[11px] font-semibold text-gray-700 mt-1.5 text-center whitespace-nowrap">Back Side</span>
                         </div>
                     </div>
 
                     <!-- STEP 1: Enter & Validate Aadhaar Number -->
-                    <div class="p-6 rounded-2xl border transition-all"
+                    <div class="p-4 sm:p-6 rounded-2xl border transition-all"
                          :class="step === 1 ? 'border-rani-primary/40 bg-white shadow-md' : 'border-gray-200 bg-gray-50/50 opacity-95'">
                         
-                        <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center justify-between mb-3.5 sm:mb-4">
                             <div class="flex items-center gap-2">
-                                <span class="w-6 h-6 rounded-full bg-rani-primary text-white flex items-center justify-center text-xs font-bold">1</span>
-                                <h3 class="font-bold text-gray-800 text-sm sm:text-base">Enter 12-Digit Aadhaar Number</h3>
+                                <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-rani-primary text-white flex items-center justify-center text-xs font-bold shrink-0">1</span>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-base">Enter 12-Digit Aadhaar Number</h3>
                             </div>
                             <template x-if="aadharVerified">
-                                <span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
-                                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <span class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-emerald-700 bg-emerald-100 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full">
+                                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                                     Matched
                                 </span>
                             </template>
@@ -167,21 +167,21 @@
 
                         <div class="max-w-md">
                             <label class="block text-xs font-semibold text-gray-700 mb-1.5">Aadhaar Card Number</label>
-                            <div class="flex flex-col sm:flex-row gap-3">
+                            <div class="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
                                 <input type="text" 
                                        x-model="aadharInput" 
                                        @input="formatAadharInput($event)"
                                        :disabled="aadharVerified"
                                        placeholder="XXXX XXXX XXXX" 
                                        maxlength="14" 
-                                       class="flex-1 px-4 py-2.5 rounded-xl border text-sm font-mono tracking-widest text-gray-800 focus:outline-none focus:ring-2 focus:ring-rani-primary focus:border-transparent bg-white shadow-xs"
+                                       class="flex-1 px-3.5 sm:px-4 py-2.5 rounded-xl border text-xs sm:text-sm font-mono tracking-widest text-gray-800 focus:outline-none focus:ring-2 focus:ring-rani-primary focus:border-transparent bg-white shadow-xs"
                                        :class="aadharError ? 'border-red-400 bg-red-50/30' : 'border-gray-300'">
                                 
                                 <template x-if="!aadharVerified">
                                     <button type="button" 
                                             @click="verifyAadharNumber()" 
                                             :disabled="validatingAadhar || cleanAadhar.length !== 12"
-                                            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:shadow-md text-white text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 shrink-0">
+                                            class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:shadow-md text-white text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 shrink-0">
                                         <template x-if="validatingAadhar">
                                             <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                                         </template>
@@ -192,7 +192,7 @@
                                 <template x-if="aadharVerified">
                                     <button type="button" 
                                             @click="resetAadhar()" 
-                                            class="px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition-colors shrink-0">
+                                            class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold transition-colors shrink-0">
                                         Change
                                     </button>
                                 </template>
@@ -207,27 +207,27 @@
                     </div>
 
                     <!-- STEP 2: Front Side Photo Upload -->
-                    <div x-show="aadharVerified" x-transition class="p-6 rounded-2xl border transition-all"
+                    <div x-show="aadharVerified" x-transition class="p-4 sm:p-6 rounded-2xl border transition-all"
                          :class="step === 2 ? 'border-rani-primary/40 bg-white shadow-md' : 'border-gray-200 bg-gray-50/50 opacity-95'">
                         
-                        <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center justify-between mb-3.5 sm:mb-4">
                             <div class="flex items-center gap-2">
-                                <span class="w-6 h-6 rounded-full bg-rani-primary text-white flex items-center justify-center text-xs font-bold">2</span>
-                                <h3 class="font-bold text-gray-800 text-sm sm:text-base">Upload Front Side of Aadhaar Card</h3>
+                                <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-rani-primary text-white flex items-center justify-center text-xs font-bold shrink-0">2</span>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-base">Upload Front Side of Aadhaar Card</h3>
                             </div>
                             <template x-if="frontPhoto">
-                                <span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
-                                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <span class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-emerald-700 bg-emerald-100 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full">
+                                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                                     Front Uploaded
                                 </span>
                             </template>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-center">
                             <!-- Dropzone -->
                             <div>
-                                <label for="front_photo_input" class="border-2 border-dashed border-gray-300 hover:border-rani-primary rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer bg-gray-50 hover:bg-rani-primary/5 transition-all group">
-                                    <svg class="w-10 h-10 text-gray-400 group-hover:text-rani-primary transition-colors mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                <label for="front_photo_input" class="border-2 border-dashed border-gray-300 hover:border-rani-primary rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center text-center cursor-pointer bg-gray-50 hover:bg-rani-primary/5 transition-all group">
+                                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-gray-400 group-hover:text-rani-primary transition-colors mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                     <p class="text-xs font-bold text-gray-700 group-hover:text-rani-primary">Click to upload Aadhaar Front Image</p>
                                     <p class="text-[11px] text-gray-400 mt-1">JPEG, PNG, WebP up to 10MB</p>
                                     <input id="front_photo_input" type="file" accept="image/*" class="hidden" @change="handleFrontUpload($event)">
@@ -237,8 +237,8 @@
                             <!-- Preview -->
                             <div>
                                 <template x-if="frontPreview">
-                                    <div class="relative rounded-2xl overflow-hidden border-2 border-rani-gold/40 shadow-sm bg-gray-100 max-h-48 flex items-center justify-center group">
-                                        <img :src="frontPreview" alt="Front Aadhaar" class="max-h-48 w-full object-contain">
+                                    <div class="relative rounded-2xl overflow-hidden border-2 border-rani-gold/40 shadow-sm bg-gray-100 max-h-40 sm:max-h-48 flex items-center justify-center group">
+                                        <img :src="frontPreview" alt="Front Aadhaar" class="max-h-40 sm:max-h-48 w-full object-contain">
                                         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                                             <button type="button" @click="frontPhoto = null; frontPreview = null;" class="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 shadow-md">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -247,8 +247,8 @@
                                     </div>
                                 </template>
                                 <template x-if="!frontPreview">
-                                    <div class="h-44 border border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center text-gray-400 text-xs text-center p-4">
-                                        <svg class="w-8 h-8 text-gray-300 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    <div class="h-36 sm:h-44 border border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center text-gray-400 text-xs text-center p-4">
+                                        <svg class="w-7 h-7 sm:w-8 sm:h-8 text-gray-300 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                         Front Image Preview will appear here
                                     </div>
                                 </template>
@@ -257,27 +257,27 @@
                     </div>
 
                     <!-- STEP 3: Back Side Photo Upload -->
-                    <div x-show="frontPhoto" x-transition class="p-6 rounded-2xl border transition-all"
+                    <div x-show="frontPhoto" x-transition class="p-4 sm:p-6 rounded-2xl border transition-all"
                          :class="step === 3 ? 'border-rani-primary/40 bg-white shadow-md' : 'border-gray-200 bg-gray-50/50 opacity-95'">
                         
-                        <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center justify-between mb-3.5 sm:mb-4">
                             <div class="flex items-center gap-2">
-                                <span class="w-6 h-6 rounded-full bg-rani-primary text-white flex items-center justify-center text-xs font-bold">3</span>
-                                <h3 class="font-bold text-gray-800 text-sm sm:text-base">Upload Back Side of Aadhaar Card</h3>
+                                <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-rani-primary text-white flex items-center justify-center text-xs font-bold shrink-0">3</span>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-base">Upload Back Side of Aadhaar Card</h3>
                             </div>
                             <template x-if="backPhoto">
-                                <span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
-                                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                <span class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-emerald-700 bg-emerald-100 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full">
+                                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                                     Back Uploaded
                                 </span>
                             </template>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-center">
                             <!-- Dropzone -->
                             <div>
-                                <label for="back_photo_input" class="border-2 border-dashed border-gray-300 hover:border-rani-primary rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer bg-gray-50 hover:bg-rani-primary/5 transition-all group">
-                                    <svg class="w-10 h-10 text-gray-400 group-hover:text-rani-primary transition-colors mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                <label for="back_photo_input" class="border-2 border-dashed border-gray-300 hover:border-rani-primary rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center text-center cursor-pointer bg-gray-50 hover:bg-rani-primary/5 transition-all group">
+                                    <svg class="w-8 h-8 sm:w-10 sm:h-10 text-gray-400 group-hover:text-rani-primary transition-colors mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                     <p class="text-xs font-bold text-gray-700 group-hover:text-rani-primary">Click to upload Aadhaar Back Image</p>
                                     <p class="text-[11px] text-gray-400 mt-1">JPEG, PNG, WebP up to 10MB</p>
                                     <input id="back_photo_input" type="file" accept="image/*" class="hidden" @change="handleBackUpload($event)">
@@ -287,8 +287,8 @@
                             <!-- Preview -->
                             <div>
                                 <template x-if="backPreview">
-                                    <div class="relative rounded-2xl overflow-hidden border-2 border-rani-gold/40 shadow-sm bg-gray-100 max-h-48 flex items-center justify-center group">
-                                        <img :src="backPreview" alt="Back Aadhaar" class="max-h-48 w-full object-contain">
+                                    <div class="relative rounded-2xl overflow-hidden border-2 border-rani-gold/40 shadow-sm bg-gray-100 max-h-40 sm:max-h-48 flex items-center justify-center group">
+                                        <img :src="backPreview" alt="Back Aadhaar" class="max-h-40 sm:max-h-48 w-full object-contain">
                                         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                                             <button type="button" @click="backPhoto = null; backPreview = null;" class="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 shadow-md">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -297,8 +297,8 @@
                                     </div>
                                 </template>
                                 <template x-if="!backPreview">
-                                    <div class="h-44 border border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center text-gray-400 text-xs text-center p-4">
-                                        <svg class="w-8 h-8 text-gray-300 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    <div class="h-36 sm:h-44 border border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center text-gray-400 text-xs text-center p-4">
+                                        <svg class="w-7 h-7 sm:w-8 sm:h-8 text-gray-300 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                         Back Image Preview will appear here
                                     </div>
                                 </template>
@@ -307,17 +307,17 @@
                     </div>
 
                     <!-- Final Submission Button -->
-                    <div class="pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <p class="text-xs text-gray-500 max-w-md">
+                    <div class="pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+                        <p class="text-[11px] sm:text-xs text-gray-500 max-w-md text-center sm:text-left leading-relaxed">
                             🔒 <strong>Privacy Assured:</strong> Your Aadhaar details and card photos are strictly encrypted and used solely for identity verification purposes by authorized personnel.
                         </p>
 
                         <button type="button" 
                                 @click="submitVerificationForm()" 
                                 :disabled="!aadharVerified || !frontPhoto || !backPhoto || submitting"
-                                class="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:shadow-xl text-white font-bold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
+                                class="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-2xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:shadow-xl text-white font-bold text-xs sm:text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
                             <template x-if="submitting">
-                                <svg class="animate-spin w-5 h-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                <svg class="animate-spin w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             </template>
                             <span>Submit for Blue Tick Verification</span>
                         </button>

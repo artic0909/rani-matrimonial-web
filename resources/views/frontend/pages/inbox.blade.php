@@ -26,7 +26,7 @@
         <div class="heart-floating delay-3" style="left: 70%; animation-delay: 4s;"></div>
     </div>
 
-    <div class="relative z-10 max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8">
+    <div class="relative z-10 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         
         <!-- Main Container Card -->
         <div class="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl shadow-2xl border border-white/60 mb-10 overflow-hidden relative z-10">
@@ -35,14 +35,14 @@
             <div class="absolute top-0 left-0 w-full h-2 sm:h-2.5 bg-gradient-to-r from-rani-gold via-rani-primary to-rani-gold opacity-95"></div>
             
             <!-- Page Header & Filter Toolbar -->
-            <div class="px-4 sm:px-6 md:px-10 pt-5 sm:pt-8 pb-4 sm:pb-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-3.5 sm:gap-4">
+            <div class="px-4 sm:px-6 md:px-10 pt-4 sm:pt-6 pb-3.5 sm:pb-5 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
                 <div>
                     <div class="flex items-center gap-2.5 sm:gap-3">
                         <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-br from-rani-gold to-yellow-500 flex items-center justify-center text-rani-dark shadow-md shrink-0">
                             <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
                         </div>
                         <div>
-                            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold font-serif text-rani-primary-dark tracking-wide">Inbox & Requests</h1>
+                            <h1 class="text-lg sm:text-2xl md:text-3xl font-bold font-serif text-rani-primary-dark tracking-wide">Inbox & Requests</h1>
                             <p class="text-[11px] sm:text-xs text-gray-500 font-sans mt-0.5 leading-snug">Candidates who have expressed interest in connecting with your profile</p>
                         </div>
                     </div>
@@ -89,7 +89,7 @@
             </div>
 
             <!-- Inbox Feed Grid -->
-            <div class="p-3.5 sm:p-6 md:p-10">
+            <div class="p-3 sm:p-6 md:p-8">
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     <template x-for="match in filteredMatches" :key="match.id">

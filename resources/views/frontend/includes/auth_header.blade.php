@@ -236,7 +236,7 @@
                     </nav>
                 @elseif(request()->routeIs('inbox*'))
                     <!-- Inbox Sub Navigation -->
-                    <nav class="flex space-x-2 sm:space-x-4 min-w-full sm:min-w-0">
+                    <nav class="flex items-center space-x-2 sm:space-x-3 min-w-max">
                         <a href="{{ route('inbox', ['tab' => 'received']) }}" class="{{ $currentInboxTab === 'received' ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             <span>Received Interests</span>
                             @if($inboxPendingCount > 0)
@@ -247,6 +247,9 @@
                             <span>Accepted</span>
                         </a>
                         <a href="{{ route('inbox', ['tab' => 'declined']) }}" class="{{ $currentInboxTab === 'declined' ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
+                            <span>Declined</span>
+                        </a>
+                    </nav>
                 @elseif(request()->routeIs('wallet*'))
                     <!-- Wallet Sub Navigation (Recharge, All, Credit, Debit) -->
                     @php
@@ -255,7 +258,7 @@
                         $isCreditActive = request()->routeIs('wallet.credit') || request()->query('tab') === 'credit';
                         $isDebitActive = request()->routeIs('wallet.debit') || request()->query('tab') === 'debit';
                     @endphp
-                    <nav class="flex space-x-2 sm:space-x-3 min-w-full sm:min-w-0">
+                    <nav class="flex items-center space-x-2 sm:space-x-3 min-w-max">
                         <a href="{{ route('wallet', ['tab' => 'recharge']) }}" class="{{ $isRechargeActive ? 'bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white shadow-sm font-bold border border-rani-gold/40' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                             <span>Recharge</span>
@@ -275,7 +278,7 @@
                     </nav>
                 @else
                     <!-- Profile, Dashboard Sub Navigation -->
-                    <nav class="flex space-x-2 sm:space-x-4 min-w-full sm:min-w-0">
+                    <nav class="flex items-center space-x-2 sm:space-x-4 min-w-max">
                         <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             Dashboard
                         </a>
@@ -285,6 +288,10 @@
                         <a href="{{ route('my-photos') }}" class="{{ request()->routeIs('my-photos') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             My Photos
                         </a>
+                        <!-- <a href="{{ route('bluetick.verify') }}" class="{{ request()->routeIs('bluetick*') ? 'bg-blue-600 text-white shadow-sm font-bold' : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 {{ request()->routeIs('bluetick*') ? 'text-white' : 'text-blue-500' }}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                            <span>Blue Tick</span>
+                        </a> -->
                         <a href="{{ route('matches') }}" class="{{ request()->routeIs('matches*') ? 'bg-rani-primary text-white shadow-sm font-bold' : 'text-gray-600 hover:text-rani-primary hover:bg-gray-100/80 font-medium' }} text-xs sm:text-sm py-2 px-3.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5">
                             Matches
                         </a>
