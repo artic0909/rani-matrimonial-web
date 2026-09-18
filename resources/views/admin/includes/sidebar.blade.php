@@ -153,36 +153,6 @@
       </ul>
     </div>
 
-    <!-- Group: UI Components -->
-    <div class="sidebar-menu-section">
-      <div class="sidebar-menu-title">UI & Pages</div>
-      <ul class="sidebar-menu-list">
-        <li class="sidebar-menu-item">
-          <a href="{{ route('admin.tables.basic') }}" class="sidebar-menu-link {{ request()->routeIs('admin.tables.basic') ? 'active' : '' }}" id="menu-basictables" title="Basic Tables">
-            <i class="bi bi-table"></i>
-            <span>Basic Tables</span>
-          </a>
-        </li>
-        <li class="sidebar-menu-item">
-          <a href="{{ route('admin.ui.forms') }}" class="sidebar-menu-link {{ request()->routeIs('admin.ui.forms') ? 'active' : '' }}" id="menu-uiforms" title="Forms and Input">
-            <i class="bi bi-input-cursor-text"></i>
-            <span>Forms & Input</span>
-          </a>
-        </li>
-        <li class="sidebar-menu-item">
-          <a href="{{ route('admin.ui.buttons') }}" class="sidebar-menu-link {{ request()->routeIs('admin.ui.buttons') ? 'active' : '' }}" id="menu-uibuttons" title="Buttons">
-            <i class="bi bi-menu-button-wide-fill"></i>
-            <span>Buttons & Alerts</span>
-          </a>
-        </li>
-        <li class="sidebar-menu-item">
-          <a href="{{ route('admin.page.blank') }}" class="sidebar-menu-link {{ request()->routeIs('admin.page.blank') ? 'active' : '' }}" id="menu-blankpage" title="Blank Page">
-            <i class="bi bi-file-earmark"></i>
-            <span>Blank Page</span>
-          </a>
-        </li>
-      </ul>
-    </div>
   </div>
 
   <!-- Sidebar Profile Card (Dynamic Footer) -->
