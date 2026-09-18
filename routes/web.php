@@ -14,6 +14,11 @@ Route::get('/', function () {
     return view('frontend.pages.index', compact('stories'));
 })->name('login');
 
+// About Us Page (Publicly available)
+Route::get('/about', function () {
+    return view('frontend.pages.about');
+})->name('about');
+
 // Success Stories Page (Publicly available)
 Route::get('/success-stories', function () {
     $stories = Story::active()->paginate(12);

@@ -17,6 +17,7 @@
                 <h3 class="text-lg font-serif font-bold mb-4 text-rani-gold">Quick Links</h3>
                 <ul class="space-y-2 text-rani-gold-light/70">
                     <li><a href="{{ url('/') }}" class="hover:text-rani-gold transition-colors">Home</a></li>
+                    <li><a href="{{ route('about') }}" class="hover:text-rani-gold transition-colors">About Us</a></li>
                     <li><a href="{{ route('register.page') }}" class="hover:text-rani-gold transition-colors">Register Free</a></li>
                     <li><a href="{{ route('stories') }}" class="hover:text-rani-gold transition-colors">Success Stories</a></li>
                     <li><a href="{{ route('search') }}" class="hover:text-rani-gold transition-colors">Search Profiles</a></li>
