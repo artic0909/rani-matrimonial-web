@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
@@ -1202,16 +1203,25 @@ class AdminController extends Controller
      */
     public function storeStory(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'descriptions' => 'required|string',
             'couple_names' => 'nullable|string|max:255',
-            'wedding_date' => 'nullable|date',
+            'wedding_date' => 'nullable|string|max:50',
             'order' => 'nullable|integer',
-            'is_active' => 'nullable|in:0,1,true,false',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
-            'primary_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
+            'is_active' => 'nullable',
+            'primary_image' => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,svg,avif|max:20480',
+            'images.*' => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,svg,avif|max:20480',
         ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json([
+                'success' => false,
+                'message' => implode('<br>', $errors),
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
         $uploadedImages = [];
 
@@ -1232,16 +1242,26 @@ class AdminController extends Controller
             }
         }
 
-        // Fallback default sample images if none uploaded
+        // Parse wedding date flexibly (supporting DD/MM/YYYY, YYYY-MM-DD, etc.)
+        $weddingDate = null;
+        if ($request->filled('wedding_date')) {
+            try {
+                $rawDate = str_replace('/', '-', trim($request->input('wedding_date')));
+                $weddingDate = Carbon::parse($rawDate)->format('Y-m-d');
+            } catch (\Exception $e) {
+                $weddingDate = null;
+            }
+        }
+
         $imagesData = !empty($uploadedImages) ? json_encode($uploadedImages) : null;
 
         $story = Story::create([
             'title' => trim($request->input('title')),
             'couple_names' => $request->filled('couple_names') ? trim($request->input('couple_names')) : null,
-            'wedding_date' => $request->filled('wedding_date') ? $request->input('wedding_date') : null,
+            'wedding_date' => $weddingDate,
             'images' => $imagesData,
             'descriptions' => trim($request->input('descriptions')),
-            'is_active' => $request->has('is_active') ? (bool) $request->input('is_active') : true,
+            'is_active' => $request->has('is_active') ? true : false,
             'order' => (int) $request->input('order', 0),
         ]);
 
@@ -1288,16 +1308,25 @@ class AdminController extends Controller
     {
         $story = Story::findOrFail($id);
 
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'descriptions' => 'required|string',
             'couple_names' => 'nullable|string|max:255',
-            'wedding_date' => 'nullable|date',
+            'wedding_date' => 'nullable|string|max:50',
             'order' => 'nullable|integer',
-            'is_active' => 'nullable|in:0,1,true,false',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
-            'primary_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:10240',
+            'is_active' => 'nullable',
+            'primary_image' => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,svg,avif|max:20480',
+            'images.*' => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,svg,avif|max:20480',
         ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json([
+                'success' => false,
+                'message' => implode('<br>', $errors),
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
         $currentImages = [];
         if (!empty($story->images)) {
@@ -1330,13 +1359,24 @@ class AdminController extends Controller
             }
         }
 
+        // Parse wedding date flexibly
+        $weddingDate = $story->wedding_date ? $story->wedding_date->format('Y-m-d') : null;
+        if ($request->filled('wedding_date')) {
+            try {
+                $rawDate = str_replace('/', '-', trim($request->input('wedding_date')));
+                $weddingDate = Carbon::parse($rawDate)->format('Y-m-d');
+            } catch (\Exception $e) {
+                $weddingDate = null;
+            }
+        }
+
         $story->update([
             'title' => trim($request->input('title')),
             'couple_names' => $request->filled('couple_names') ? trim($request->input('couple_names')) : null,
-            'wedding_date' => $request->filled('wedding_date') ? $request->input('wedding_date') : null,
+            'wedding_date' => $weddingDate,
             'images' => !empty($currentImages) ? json_encode(array_values(array_unique($currentImages))) : $story->images,
             'descriptions' => trim($request->input('descriptions')),
-            'is_active' => $request->has('is_active') ? (bool) $request->input('is_active') : $story->is_active,
+            'is_active' => $request->has('is_active') ? true : false,
             'order' => (int) $request->input('order', $story->order),
         ]);
 

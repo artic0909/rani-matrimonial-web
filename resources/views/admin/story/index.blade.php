@@ -3,29 +3,35 @@
 @section('title', 'Success Stories Management - Rani Matrimonial Admin')
 
 @section('content')
-<div class="container-fluid py-4" x-data="storyManager()">
+<div class="container-fluid p-0">
   
-  <!-- Page Header -->
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+  <!-- START: Page Header Banner -->
+  <div class="page-header d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
     <div>
       <div class="d-flex align-items-center gap-2 mb-1">
-        <h1 class="h3 fw-bold text-gray-900 mb-0">Success Stories</h1>
-        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1">
-          <i class="bi bi-stars me-1"></i> Matchmaking Tales
+        <i class="bi bi-heart-pulse-fill fs-4" style="color: var(--brand-forest-medium);"></i>
+        <h1 class="page-title mb-0">Success Stories</h1>
+        <span class="badge-table success ms-2">
+          {{ number_format($counts['total']) }} Stories
         </span>
       </div>
-      <p class="text-muted small mb-0">Manage inspiring success stories of happy couples who found their forever partner on Rani Matrimonial.</p>
+      <p class="page-subtitle mb-0">Manage inspiring success stories of happy couples who found their life partner on Rani Matrimonial.</p>
     </div>
 
-    <div class="d-flex items-center gap-2">
-      <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2 shadow-sm rounded-3 px-3 py-2" @click="openCreateModal()">
-        <i class="bi bi-plus-circle-fill"></i>
+    <div class="d-flex align-items-center gap-2">
+      <a href="{{ route('admin.dashboard') }}" class="btn-custom btn-custom-light btn-custom-sm">
+        <i class="bi bi-arrow-left"></i>
+        <span>Dashboard</span>
+      </a>
+      <button type="button" class="btn-custom btn-custom-primary btn-custom-sm" data-bs-toggle="modal" data-bs-target="#createStoryModal">
+        <i class="bi bi-plus-lg"></i>
         <span>Add New Story</span>
       </button>
     </div>
   </div>
+  <!-- END: Page Header Banner -->
 
-  <!-- Metric Statistics Cards -->
+  <!-- START: Metric Statistics Cards -->
   <div class="row g-3 mb-4">
     <div class="col-6 col-lg-3">
       <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
@@ -34,7 +40,7 @@
             <span class="text-muted small text-uppercase fw-semibold tracking-wider d-block mb-1">Total Stories</span>
             <h3 class="fw-bold text-gray-900 mb-0">{{ number_format($counts['total']) }}</h3>
           </div>
-          <div class="w-12 h-12 rounded-3 bg-primary-subtle text-primary d-flex align-items-center justify-center fs-4">
+          <div class="w-12 h-12 rounded-3 bg-light text-success d-flex align-items-center justify-center fs-4" style="width: 46px; height: 46px; background-color: rgba(7, 47, 31, 0.08); color: var(--brand-forest-medium);">
             <i class="bi bi-journal-bookmark-fill"></i>
           </div>
         </div>
@@ -45,10 +51,10 @@
       <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
         <div class="card-body p-3.5 d-flex align-items-center justify-content-between">
           <div>
-            <span class="text-muted small text-uppercase fw-semibold tracking-wider d-block mb-1">Active / Published</span>
+            <span class="text-muted small text-uppercase fw-semibold tracking-wider d-block mb-1">Published (Live)</span>
             <h3 class="fw-bold text-success mb-0">{{ number_format($counts['active']) }}</h3>
           </div>
-          <div class="w-12 h-12 rounded-3 bg-success-subtle text-success d-flex align-items-center justify-center fs-4">
+          <div class="w-12 h-12 rounded-3 d-flex align-items-center justify-center fs-4" style="width: 46px; height: 46px; background-color: rgba(34, 197, 94, 0.12); color: var(--sys-green);">
             <i class="bi bi-check-circle-fill"></i>
           </div>
         </div>
@@ -59,10 +65,10 @@
       <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
         <div class="card-body p-3.5 d-flex align-items-center justify-content-between">
           <div>
-            <span class="text-muted small text-uppercase fw-semibold tracking-wider d-block mb-1">Hidden / Draft</span>
+            <span class="text-muted small text-uppercase fw-semibold tracking-wider d-block mb-1">Drafts / Hidden</span>
             <h3 class="fw-bold text-secondary mb-0">{{ number_format($counts['inactive']) }}</h3>
           </div>
-          <div class="w-12 h-12 rounded-3 bg-secondary-subtle text-secondary d-flex align-items-center justify-center fs-4">
+          <div class="w-12 h-12 rounded-3 d-flex align-items-center justify-center fs-4" style="width: 46px; height: 46px; background-color: rgba(108, 117, 125, 0.12); color: #6c757d;">
             <i class="bi bi-eye-slash-fill"></i>
           </div>
         </div>
@@ -76,259 +82,371 @@
             <span class="text-muted small text-uppercase fw-semibold tracking-wider d-block mb-1">Added This Month</span>
             <h3 class="fw-bold text-danger mb-0">{{ number_format($counts['this_month']) }}</h3>
           </div>
-          <div class="w-12 h-12 rounded-3 bg-danger-subtle text-danger d-flex align-items-center justify-center fs-4">
+          <div class="w-12 h-12 rounded-3 d-flex align-items-center justify-center fs-4" style="width: 46px; height: 46px; background-color: rgba(239, 68, 68, 0.12); color: var(--sys-red);">
             <i class="bi bi-heart-fill"></i>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <!-- END: Metric Statistics Cards -->
 
-  <!-- Filter Toolbar -->
-  <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
-    <div class="card-body p-3">
-      <form action="{{ route('admin.stories.index') }}" method="GET" class="row g-2 align-items-center">
-        <!-- Search Input -->
-        <div class="col-12 col-md-5 col-lg-6">
-          <div class="input-group input-group-sm">
-            <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
-            <input type="text" name="search" value="{{ $search }}" class="form-control bg-light border-0" placeholder="Search by title, couple names, story text...">
-          </div>
-        </div>
+  <!-- START: Main Stories Container (Table Card Custom) -->
+  <div class="table-card-custom mb-4">
+    
+    <!-- Header Controls & Filters -->
+    <div class="table-header-control">
+      <!-- Status Tabs -->
+      <div class="d-flex flex-wrap align-items-center gap-2 flex-grow-1">
+        <a href="{{ route('admin.stories.index', ['search' => $search, 'status' => 'all']) }}" 
+           class="btn-custom btn-custom-sm {{ ($status ?? 'all') === 'all' ? 'btn-custom-primary' : 'btn-custom-light' }}">
+          All Stories ({{ $counts['total'] }})
+        </a>
+        <a href="{{ route('admin.stories.index', ['search' => $search, 'status' => 'active']) }}" 
+           class="btn-custom btn-custom-sm {{ ($status ?? '') === 'active' ? 'btn-custom-primary' : 'btn-custom-light' }}">
+          <i class="bi bi-check2-circle"></i> Published ({{ $counts['active'] }})
+        </a>
+        <a href="{{ route('admin.stories.index', ['search' => $search, 'status' => 'inactive']) }}" 
+           class="btn-custom btn-custom-sm {{ ($status ?? '') === 'inactive' ? 'btn-custom-primary' : 'btn-custom-light' }}">
+          <i class="bi bi-eye-slash"></i> Hidden ({{ $counts['inactive'] }})
+        </a>
+      </div>
 
-        <!-- Status Filter -->
-        <div class="col-6 col-md-4 col-lg-3">
-          <select name="status" class="form-select form-select-sm bg-light border-0" onchange="this.form.submit()">
-            <option value="all" {{ $status === 'all' ? 'selected' : '' }}>All Status (Active & Inactive)</option>
-            <option value="active" {{ $status === 'active' ? 'selected' : '' }}>Active (Published)</option>
-            <option value="inactive" {{ $status === 'inactive' ? 'selected' : '' }}>Inactive (Hidden)</option>
-          </select>
-        </div>
-
-        <!-- Submit & Reset Buttons -->
-        <div class="col-6 col-md-3 col-lg-3 d-flex gap-2">
-          <button type="submit" class="btn btn-sm btn-primary flex-fill rounded-3">Filter</button>
-          @if(!empty($search) || $status !== 'all')
-            <a href="{{ route('admin.stories.index') }}" class="btn btn-sm btn-light rounded-3" title="Clear Filters">
-              <i class="bi bi-x-circle"></i>
-            </a>
+      <div class="d-flex align-items-center gap-2 ms-auto">
+        <!-- Search Box Form -->
+        <form method="GET" action="{{ route('admin.stories.index') }}" class="table-search-box m-0" style="min-width: 250px;">
+          @if(($status ?? 'all') !== 'all')
+            <input type="hidden" name="status" value="{{ $status }}">
           @endif
+          <i class="bi bi-search table-search-icon"></i>
+          <input type="text" 
+                 name="search" 
+                 class="table-search-input" 
+                 placeholder="Search story, couple name..." 
+                 value="{{ $search }}">
+        </form>
+
+        @if(!empty($search))
+          <a href="{{ route('admin.stories.index', ['status' => $status]) }}" class="btn-custom btn-custom-light btn-custom-sm" title="Clear search">
+            <i class="bi bi-x-lg"></i>
+          </a>
+        @endif
+
+        <!-- View Mode Switcher Buttons -->
+        <div class="btn-group btn-group-sm rounded-3 shadow-2xs" role="group">
+          <button type="button" class="btn btn-light btn-sm px-2.5 active" id="view-mode-table" title="Table View" onclick="switchViewMode('table')">
+            <i class="bi bi-list-ul"></i>
+          </button>
+          <button type="button" class="btn btn-light btn-sm px-2.5" id="view-mode-grid" title="Cards View" onclick="switchViewMode('grid')">
+            <i class="bi bi-grid-fill"></i>
+          </button>
         </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Stories Feed Grid -->
-  @if($stories->count() > 0)
-    <div class="row g-4 mb-4">
-      @foreach($stories as $story)
-        <div class="col-12 col-md-6 col-lg-4" id="story-card-{{ $story->id }}">
-          <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden story-card-item transition-all bg-white position-relative">
-            
-            <!-- Story Cover Image -->
-            <div class="position-relative" style="height: 220px; overflow: hidden; background-color: #1a0505;">
-              <img src="{{ $story->image_url }}" alt="{{ $story->title }}" class="w-100 h-100 object-fit-cover transition-transform duration-500 hover-scale">
-              
-              <!-- Top Gradient Overlay -->
-              <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient-to-t pointer-events-none" style="background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 60%, transparent 100%);"></div>
-
-              <!-- Top Left Status Badge -->
-              <div class="position-absolute top-3 start-3 z-2">
-                <span class="badge {{ $story->is_active ? 'bg-success text-white' : 'bg-secondary text-white' }} shadow-sm rounded-pill px-2.5 py-1 text-xs">
-                  {{ $story->is_active ? '● Published' : '○ Hidden' }}
-                </span>
-              </div>
-
-              <!-- Top Right Photo Count -->
-              <div class="position-absolute top-3 end-3 z-2">
-                <span class="badge bg-dark bg-opacity-75 text-warning border border-warning-subtle shadow-sm rounded-pill px-2.5 py-1 text-xs">
-                  <i class="bi bi-images me-1"></i> {{ count($story->gallery_images) }} Photos
-                </span>
-              </div>
-
-              <!-- Bottom Overlay Title & Couple -->
-              <div class="position-absolute bottom-3 start-3 end-3 z-2 text-white">
-                @if($story->couple_names)
-                  <span class="badge bg-danger bg-opacity-90 text-white rounded-pill px-2 py-0.5 text-xs mb-1">
-                    <i class="bi bi-heart-fill me-1"></i> {{ $story->couple_names }}
-                  </span>
-                @endif
-                <h5 class="fw-bold text-white mb-0 text-truncate font-serif">{{ $story->title }}</h5>
-              </div>
-            </div>
-
-            <!-- Card Body -->
-            <div class="card-body p-3.5 d-flex flex-column justify-content-between">
-              <div>
-                <!-- Wedding Date & Order -->
-                <div class="d-flex align-items-center justify-content-between text-muted small mb-2.5">
-                  @if($story->formatted_wedding_date)
-                    <span class="d-flex align-items-center gap-1">
-                      <i class="bi bi-calendar-heart text-danger"></i>
-                      <span>{{ $story->formatted_wedding_date }}</span>
-                    </span>
-                  @else
-                    <span class="text-muted">Story #{{ $story->id }}</span>
-                  @endif
-
-                  <span class="badge bg-light text-dark border">Order: {{ $story->order }}</span>
-                </div>
-
-                <!-- Description Snippet -->
-                <p class="text-muted small line-clamp-3 mb-3 leading-relaxed">
-                  {{ Str::limit(strip_tags($story->descriptions), 130) }}
-                </p>
-              </div>
-
-              <!-- Card Action Toolbar -->
-              <div class="pt-3 border-top d-flex align-items-center justify-content-between">
-                <!-- Status Toggle Switch -->
-                <div class="form-check form-switch mb-0" title="Toggle active/published status">
-                  <input class="form-check-input cursor-pointer" type="checkbox" role="switch" id="switch-{{ $story->id }}" {{ $story->is_active ? 'checked' : '' }} @change="toggleStatus({{ $story->id }})">
-                  <label class="form-check-label text-xs fw-semibold text-muted" for="switch-{{ $story->id }}">
-                    {{ $story->is_active ? 'Active' : 'Inactive' }}
-                  </label>
-                </div>
-
-                <!-- Action Buttons (View, Edit, Delete) -->
-                <div class="d-flex align-items-center gap-1.5">
-                  <button type="button" class="btn btn-sm btn-outline-info rounded-circle p-1.5" title="View Full Story" @click="viewStory({{ $story->id }})">
-                    <i class="bi bi-eye"></i>
-                  </button>
-
-                  <button type="button" class="btn btn-sm btn-outline-primary rounded-circle p-1.5" title="Edit Story" @click="openEditModal({{ $story->id }})">
-                    <i class="bi bi-pencil-square"></i>
-                  </button>
-
-                  <button type="button" class="btn btn-sm btn-outline-danger rounded-circle p-1.5" title="Delete Story" @click="deleteStory({{ $story->id }}, '{{ addslashes($story->title) }}')">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      @endforeach
-    </div>
-
-    <!-- Pagination -->
-    <div class="d-flex justify-content-center mt-4">
-      {{ $stories->links('pagination::bootstrap-5') }}
-    </div>
-  @else
-    <!-- Empty State -->
-    <div class="card border-0 shadow-sm rounded-4 text-center p-5 bg-white">
-      <div class="card-body">
-        <div class="w-16 h-16 rounded-circle bg-danger-subtle text-danger d-inline-flex align-items-center justify-center fs-1 mb-3">
-          <i class="bi bi-stars"></i>
-        </div>
-        <h4 class="fw-bold text-gray-800 font-serif">No Success Stories Found</h4>
-        <p class="text-muted small max-w-md mx-auto mb-4">
-          @if(!empty($search) || $status !== 'all')
-            No success stories match your current search criteria. Try clearing filters or creating a new story.
-          @else
-            No success stories have been created yet. Inspire potential brides and grooms by publishing your first success story!
-          @endif
-        </p>
-        <button type="button" class="btn btn-primary rounded-pill px-4 py-2" @click="openCreateModal()">
-          <i class="bi bi-plus-circle me-1.5"></i> Publish First Story
-        </button>
       </div>
     </div>
-  @endif
 
-  <!-- ================= CREATE / ADD STORY MODAL ================= -->
+    <!-- 1. TABLE VIEW -->
+    <div id="stories-table-view" class="table-responsive">
+      <table class="table-custom">
+        <thead>
+          <tr>
+            <th class="ps-4" style="width: 50px;">#</th>
+            <th>Story & Couple</th>
+            <th>Gallery Photos</th>
+            <th>Wedding / Event Date</th>
+            <th>Display Order</th>
+            <th>Status</th>
+            <th>Created Date</th>
+            <th class="text-center pe-4" style="width: 140px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse($stories as $story)
+            <tr id="story-row-{{ $story->id }}">
+              <td class="ps-4 text-muted fw-bold font-monospace">
+                {{ (($stories->currentPage() - 1) * $stories->perPage()) + $loop->iteration }}
+              </td>
+              <td>
+                <div class="table-user-cell">
+                  <div class="position-relative flex-shrink-0" style="width: 52px; height: 52px;">
+                    <img src="{{ $story->image_url }}" alt="{{ $story->title }}" class="w-100 h-100 rounded-3 object-fit-cover border shadow-2xs" onerror="this.src='{{ asset('img/bg-default.jpg') }}'">
+                  </div>
+                  <div>
+                    <a href="javascript:void(0)" class="table-user-name text-decoration-none d-block view-story-btn" data-id="{{ $story->id }}">
+                      {{ $story->title }}
+                    </a>
+                    <div class="table-user-sub">
+                      @if($story->couple_names)
+                        <span class="text-danger fw-semibold"><i class="bi bi-heart-fill me-1"></i>{{ $story->couple_names }}</span>
+                      @else
+                        <span class="text-muted">Story #{{ $story->id }}</span>
+                      @endif
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-1.5">
+                  <span class="badge bg-light text-dark border fw-bold rounded-pill px-2.5 py-1">
+                    <i class="bi bi-images text-warning me-1"></i> {{ count($story->gallery_images) }} Photos
+                  </span>
+                </div>
+              </td>
+              <td>
+                @if($story->formatted_wedding_date)
+                  <span class="fw-semibold" style="color: var(--text-main);">
+                    <i class="bi bi-calendar-heart text-danger me-1"></i> {{ $story->formatted_wedding_date }}
+                  </span>
+                @else
+                  <span class="text-muted small italic">Not specified</span>
+                @endif
+              </td>
+              <td>
+                <span class="badge bg-light text-secondary border font-monospace px-2 py-1">
+                  {{ $story->order }}
+                </span>
+              </td>
+              <td>
+                <div class="form-check form-switch mb-0 d-inline-block align-middle">
+                  <input class="form-check-input cursor-pointer toggle-status-btn" type="checkbox" role="switch" id="switch-table-{{ $story->id }}" data-id="{{ $story->id }}" {{ $story->is_active ? 'checked' : '' }}>
+                </div>
+                <span class="badge-table {{ $story->is_active ? 'success' : 'failed' }} ms-1" id="status-pill-{{ $story->id }}">
+                  {{ $story->is_active ? 'Published' : 'Hidden' }}
+                </span>
+              </td>
+              <td>
+                <div class="table-user-sub">{{ $story->created_at->format('M d, Y') }}</div>
+              </td>
+              <td class="text-center pe-4">
+                <div class="d-flex align-items-center justify-content-center gap-1.5">
+                  <button type="button" class="btn-custom btn-custom-light btn-custom-sm py-1 px-2 view-story-btn" title="View Story" data-id="{{ $story->id }}">
+                    <i class="bi bi-eye text-info"></i>
+                  </button>
+                  <button type="button" class="btn-custom btn-custom-light btn-custom-sm py-1 px-2 edit-story-btn" title="Edit Story" data-id="{{ $story->id }}">
+                    <i class="bi bi-pencil-square text-primary"></i>
+                  </button>
+                  <button type="button" class="btn-custom btn-custom-light btn-custom-sm py-1 px-2 delete-story-btn" title="Delete Story" data-id="{{ $story->id }}" data-title="{{ htmlspecialchars($story->title, ENT_QUOTES) }}">
+                    <i class="bi bi-trash text-danger"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          @empty
+            <tr>
+              <td colspan="8" class="text-center py-5 text-muted">
+                <div class="w-16 h-16 rounded-circle bg-light text-muted d-inline-flex align-items-center justify-center fs-2 mb-2">
+                  <i class="bi bi-heartbreak"></i>
+                </div>
+                <div class="fw-semibold fs-6">No Success Stories Found</div>
+                <p class="small text-muted mb-3">Try adjusting your search criteria or add a new success story.</p>
+                <button type="button" class="btn-custom btn-custom-primary btn-custom-sm" data-bs-toggle="modal" data-bs-target="#createStoryModal">
+                  <i class="bi bi-plus-lg"></i> Add New Story
+                </button>
+              </td>
+            </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 2. CARDS GRID VIEW (Alternative View Mode) -->
+    <div id="stories-grid-view" class="p-4 d-none">
+      <div class="row g-4">
+        @forelse($stories as $story)
+          <div class="col-12 col-md-6 col-lg-4" id="story-card-{{ $story->id }}">
+            <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden story-card-item transition-all bg-white position-relative">
+              
+              <!-- Story Cover Image -->
+              <div class="position-relative" style="height: 200px; overflow: hidden; background-color: #072F1F;">
+                <img src="{{ $story->image_url }}" alt="{{ $story->title }}" class="w-100 h-100 object-fit-cover transition-transform duration-500 hover-scale" onerror="this.src='{{ asset('img/bg-default.jpg') }}'">
+                
+                <!-- Overlay Gradient -->
+                <div class="position-absolute top-0 start-0 w-100 h-100 pointer-events-none" style="background: linear-gradient(to top, rgba(7, 47, 31, 0.9) 0%, rgba(7, 47, 31, 0.1) 60%, transparent 100%);"></div>
+
+                <!-- Top Badges -->
+                <div class="position-absolute top-3 start-3 z-2">
+                  <span class="badge-table {{ $story->is_active ? 'success' : 'failed' }} shadow-sm bg-white" id="grid-status-badge-{{ $story->id }}">
+                    {{ $story->is_active ? 'Published' : 'Hidden' }}
+                  </span>
+                </div>
+
+                <div class="position-absolute top-3 end-3 z-2">
+                  <span class="badge bg-dark bg-opacity-75 text-white border border-white border-opacity-25 rounded-pill px-2.5 py-1 text-xs">
+                    <i class="bi bi-images text-warning me-1"></i> {{ count($story->gallery_images) }}
+                  </span>
+                </div>
+
+                <!-- Bottom Title in Cover -->
+                <div class="position-absolute bottom-3 start-3 end-3 z-2 text-white">
+                  @if($story->couple_names)
+                    <span class="badge bg-danger bg-opacity-90 text-white rounded-pill px-2 py-0.5 text-xs mb-1">
+                      <i class="bi bi-heart-fill me-1"></i> {{ $story->couple_names }}
+                    </span>
+                  @endif
+                  <h6 class="fw-bold text-white mb-0 text-truncate font-serif">{{ $story->title }}</h6>
+                </div>
+              </div>
+
+              <!-- Card Body -->
+              <div class="card-body p-3.5 d-flex flex-column justify-content-between">
+                <div>
+                  <div class="d-flex align-items-center justify-content-between text-muted small mb-2">
+                    @if($story->formatted_wedding_date)
+                      <span class="text-danger fw-semibold"><i class="bi bi-calendar-heart me-1"></i>{{ $story->formatted_wedding_date }}</span>
+                    @else
+                      <span class="text-muted">Story #{{ $story->id }}</span>
+                    @endif
+                    <span class="badge bg-light text-muted border">Order: {{ $story->order }}</span>
+                  </div>
+                  <p class="text-muted small line-clamp-2 mb-3 leading-relaxed">
+                    {{ Str::limit(strip_tags($story->descriptions), 110) }}
+                  </p>
+                </div>
+
+                <!-- Card Footer Actions -->
+                <div class="pt-3 border-top d-flex align-items-center justify-content-between">
+                  <div class="form-check form-switch mb-0">
+                    <input class="form-check-input cursor-pointer toggle-status-btn" type="checkbox" role="switch" id="switch-grid-{{ $story->id }}" data-id="{{ $story->id }}" {{ $story->is_active ? 'checked' : '' }}>
+                    <label class="form-check-label text-xs fw-semibold text-muted" for="switch-grid-{{ $story->id }}">
+                      {{ $story->is_active ? 'Live' : 'Draft' }}
+                    </label>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-1.5">
+                    <button type="button" class="btn-custom btn-custom-light btn-custom-sm py-1 px-2 view-story-btn" title="View Story" data-id="{{ $story->id }}">
+                      <i class="bi bi-eye text-info"></i>
+                    </button>
+                    <button type="button" class="btn-custom btn-custom-light btn-custom-sm py-1 px-2 edit-story-btn" title="Edit Story" data-id="{{ $story->id }}">
+                      <i class="bi bi-pencil-square text-primary"></i>
+                    </button>
+                    <button type="button" class="btn-custom btn-custom-light btn-custom-sm py-1 px-2 delete-story-btn" title="Delete Story" data-id="{{ $story->id }}" data-title="{{ htmlspecialchars($story->title, ENT_QUOTES) }}">
+                      <i class="bi bi-trash text-danger"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        @empty
+          <div class="col-12 text-center py-5 text-muted">
+            <div class="fw-semibold">No stories available.</div>
+          </div>
+        @endforelse
+      </div>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="p-3 bg-white border-top d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 table-footer-control">
+      <div class="table-user-sub">
+        Showing {{ $stories->firstItem() ?? 0 }} to {{ $stories->lastItem() ?? 0 }} of {{ $stories->total() }} records
+      </div>
+      <div>
+        {{ $stories->links('pagination::bootstrap-5') }}
+      </div>
+    </div>
+
+  </div>
+  <!-- END: Main Stories Container -->
+
+  <!-- ==========================================
+       CREATE / ADD STORY MODAL
+       ========================================== -->
   <div class="modal fade" id="createStoryModal" tabindex="-1" aria-labelledby="createStoryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-        <form action="{{ route('admin.stories.store') }}" method="POST" enctype="multipart/form-data" @submit.prevent="submitCreateForm($event)">
+        <form id="createStoryForm" action="{{ route('admin.stories.store') }}" method="POST" enctype="multipart/form-data">
           @csrf
-          <div class="modal-header bg-gradient-to-r from-danger to-dark text-white border-0 py-3">
-            <h5 class="modal-title font-serif fw-bold d-flex align-items-center gap-2" id="createStoryModalLabel">
-              <i class="bi bi-stars text-warning"></i> Add New Success Story
-            </h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div class="modal-header border-bottom py-3 px-4" style="background-color: #F8FAF9;">
+            <div class="d-flex align-items-center gap-2">
+              <div class="w-8 h-8 rounded-circle d-flex align-items-center justify-center text-white" style="width: 34px; height: 34px; background-color: var(--brand-forest-medium);">
+                <i class="bi bi-plus-lg fs-6"></i>
+              </div>
+              <div>
+                <h5 class="modal-title fw-bold text-gray-900 mb-0" id="createStoryModalLabel">Add New Success Story</h5>
+                <p class="text-muted small mb-0">Publish a verified real matchmaking story to the website frontend.</p>
+              </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
-          <div class="modal-body p-4 bg-light">
+          <div class="modal-body p-4 bg-white">
             <div class="row g-3">
               
               <!-- Story Title -->
               <div class="col-12">
-                <label class="form-label fw-semibold text-gray-700 small">Story Title <span class="text-danger">*</span></label>
-                <input type="text" name="title" x-model="createData.title" class="form-control rounded-3" placeholder="e.g. Vikram & Ananya: Two Hearts United by Destiny" required>
+                <label class="form-label fw-bold text-dark small mb-1">Story Headline / Title <span class="text-danger">*</span></label>
+                <input type="text" name="title" class="form-control rounded-3" placeholder="e.g. Aditya & Neha: A Modern Fairytale of Shared Values" required>
               </div>
 
               <!-- Couple Names & Wedding Date -->
               <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold text-gray-700 small">Couple Names</label>
-                <input type="text" name="couple_names" x-model="createData.couple_names" class="form-control rounded-3" placeholder="e.g. Vikram Sharma & Ananya Verma">
+                <label class="form-label fw-bold text-dark small mb-1">Couple Names</label>
+                <input type="text" name="couple_names" class="form-control rounded-3" placeholder="e.g. Aditya Singhania & Neha Kapoor">
               </div>
 
               <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold text-gray-700 small">Wedding / Engagement Date</label>
-                <input type="date" name="wedding_date" x-model="createData.wedding_date" class="form-control rounded-3">
+                <label class="form-label fw-bold text-dark small mb-1">Wedding / Engagement Date</label>
+                <input type="date" name="wedding_date" class="form-control rounded-3">
               </div>
 
               <!-- Primary Couple Image -->
               <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold text-gray-700 small">Primary Featured Image <span class="text-danger">*</span></label>
-                <input type="file" name="primary_image" class="form-control rounded-3" accept="image/*" @change="previewPrimaryImage($event, 'create')" required>
-                <div class="form-text text-xs">Recommended: High quality horizontal or portrait image (JPEG, PNG, WebP up to 10MB)</div>
+                <label class="form-label fw-bold text-dark small mb-1">Primary Featured Photo <span class="text-danger">*</span></label>
+                <div class="p-3 border-2 border-dashed rounded-3 bg-light text-center cursor-pointer" onclick="$('#create_primary_image').click()" style="border-style: dashed !important; border-color: #CBD5E1;">
+                  <i class="bi bi-cloud-arrow-up fs-2 text-muted-green"></i>
+                  <div class="fw-semibold small text-gray-800 mt-1">Click to select primary cover photo</div>
+                  <div class="text-muted small" style="font-size: 11px;">JPEG, PNG, WebP (Max 10MB)</div>
+                </div>
+                <input type="file" name="primary_image" id="create_primary_image" class="d-none" accept="image/*" required>
                 
-                <!-- Primary Image Preview -->
-                <template x-if="createPrimaryPreview">
-                  <div class="mt-2 rounded-3 overflow-hidden border position-relative" style="height: 140px; background-color: #f8f9fa;">
-                    <img :src="createPrimaryPreview" class="w-100 h-100 object-fit-contain">
-                  </div>
-                </template>
+                <!-- Primary Image Preview Container -->
+                <div id="create_primary_preview_wrap" class="mt-2 rounded-3 overflow-hidden border d-none position-relative" style="height: 140px; background-color: #f8f9fa;">
+                  <img id="create_primary_preview_img" src="" class="w-100 h-100 object-fit-contain">
+                </div>
               </div>
 
               <!-- Additional Gallery Images -->
               <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold text-gray-700 small">Additional Gallery Photos (Optional)</label>
-                <input type="file" name="images[]" class="form-control rounded-3" accept="image/*" multiple @change="previewGalleryImages($event, 'create')">
-                <div class="form-text text-xs">Select multiple wedding or engagement photos.</div>
+                <label class="form-label fw-bold text-dark small mb-1">Additional Gallery Photos (Optional)</label>
+                <div class="p-3 border-2 border-dashed rounded-3 bg-light text-center cursor-pointer" onclick="$('#create_gallery_images').click()" style="border-style: dashed !important; border-color: #CBD5E1;">
+                  <i class="bi bi-images fs-2 text-muted-green"></i>
+                  <div class="fw-semibold small text-gray-800 mt-1">Click to select multiple gallery photos</div>
+                  <div class="text-muted small" style="font-size: 11px;">Select multiple wedding photos</div>
+                </div>
+                <input type="file" name="images[]" id="create_gallery_images" class="d-none" accept="image/*" multiple>
 
                 <!-- Gallery Preview Thumbnails -->
-                <div class="d-flex flex-wrap gap-2 mt-2" x-show="createGalleryPreviews.length > 0">
-                  <template x-for="(imgSrc, idx) in createGalleryPreviews" :key="idx">
-                    <div class="rounded-2 overflow-hidden border" style="width: 50px; height: 50px;">
-                      <img :src="imgSrc" class="w-100 h-100 object-fit-cover">
-                    </div>
-                  </template>
-                </div>
+                <div id="create_gallery_preview_wrap" class="d-flex flex-wrap gap-2 mt-2"></div>
               </div>
 
               <!-- Story Detailed Description -->
               <div class="col-12">
-                <label class="form-label fw-semibold text-gray-700 small">Story Narrative / Description <span class="text-danger">*</span></label>
-                <textarea name="descriptions" x-model="createData.descriptions" rows="5" class="form-control rounded-3" placeholder="Tell the romantic story of how the couple matched on Rani Matrimonial, their initial conversations, family meetings, and journey to marriage..." required></textarea>
+                <label class="form-label fw-bold text-dark small mb-1">Story Narrative / Description <span class="text-danger">*</span></label>
+                <textarea name="descriptions" rows="5" class="form-control rounded-3" placeholder="Share how the couple met, their conversations on Rani Matrimonial, family meetings, and wedding memories..." required></textarea>
               </div>
 
               <!-- Order & Active Status -->
               <div class="col-6">
-                <label class="form-label fw-semibold text-gray-700 small">Display Order</label>
-                <input type="number" name="order" x-model="createData.order" class="form-control rounded-3" value="0" min="0">
-                <div class="form-text text-xs">Lower numbers appear first on frontend.</div>
+                <label class="form-label fw-bold text-dark small mb-1">Display Order</label>
+                <input type="number" name="order" class="form-control rounded-3" value="0" min="0">
+                <div class="form-text text-muted" style="font-size: 11px;">Lower order numbers appear first on frontend.</div>
               </div>
 
               <div class="col-6 d-flex align-items-center pt-3">
                 <div class="form-check form-switch">
-                  <input class="form-check-input cursor-pointer" type="checkbox" name="is_active" value="1" id="create_is_active" checked x-model="createData.is_active">
-                  <label class="form-check-label fw-semibold text-gray-700 small" for="create_is_active">Publish on Frontend</label>
+                  <input class="form-check-input cursor-pointer" type="checkbox" name="is_active" value="1" id="create_is_active" checked>
+                  <label class="form-check-label fw-bold text-dark small" for="create_is_active">Publish immediately on frontend</label>
                 </div>
               </div>
 
             </div>
           </div>
 
-          <div class="modal-footer bg-white border-top py-3">
-            <button type="button" class="btn btn-light rounded-3 px-4" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-primary rounded-3 px-4 d-inline-flex align-items-center gap-2" :disabled="saving">
-              <span x-show="saving" class="spinner-border spinner-border-sm"></span>
-              <span x-text="saving ? 'Publishing...' : 'Publish Story'"></span>
+          <div class="modal-footer bg-light border-top py-3 px-4">
+            <button type="button" class="btn-custom btn-custom-light btn-custom-sm" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" id="createSubmitBtn" class="btn-custom btn-custom-primary btn-custom-sm d-inline-flex align-items-center gap-2">
+              <span class="spinner-border spinner-border-sm d-none" id="createSpinner"></span>
+              <span id="createText">Publish Story</span>
             </button>
           </div>
         </form>
@@ -336,91 +454,107 @@
     </div>
   </div>
 
-  <!-- ================= EDIT STORY MODAL ================= -->
+  <!-- ==========================================
+       EDIT STORY MODAL
+       ========================================== -->
   <div class="modal fade" id="editStoryModal" tabindex="-1" aria-labelledby="editStoryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-        <form @submit.prevent="submitEditForm($event)">
-          <div class="modal-header bg-gradient-to-r from-primary to-dark text-white border-0 py-3">
-            <h5 class="modal-title font-serif fw-bold d-flex align-items-center gap-2" id="editStoryModalLabel">
-              <i class="bi bi-pencil-square text-warning"></i> Edit Success Story
-            </h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <form id="editStoryForm" method="POST" enctype="multipart/form-data">
+          @csrf
+          <input type="hidden" name="_method" value="PUT">
+          <input type="hidden" id="edit_story_id" name="story_id">
+
+          <div class="modal-header border-bottom py-3 px-4" style="background-color: #F8FAF9;">
+            <div class="d-flex align-items-center gap-2">
+              <div class="w-8 h-8 rounded-circle d-flex align-items-center justify-center text-white" style="width: 34px; height: 34px; background-color: var(--brand-forest-medium);">
+                <i class="bi bi-pencil-square fs-6"></i>
+              </div>
+              <div>
+                <h5 class="modal-title fw-bold text-gray-900 mb-0" id="editStoryModalLabel">Edit Success Story</h5>
+                <p class="text-muted small mb-0">Modify story headline, couple details, photos, or published visibility.</p>
+              </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
-          <div class="modal-body p-4 bg-light">
+          <div class="modal-body p-4 bg-white">
             <div class="row g-3">
               
               <!-- Story Title -->
               <div class="col-12">
-                <label class="form-label fw-semibold text-gray-700 small">Story Title <span class="text-danger">*</span></label>
-                <input type="text" name="title" x-model="editData.title" class="form-control rounded-3" required>
+                <label class="form-label fw-bold text-dark small mb-1">Story Headline / Title <span class="text-danger">*</span></label>
+                <input type="text" name="title" id="edit_title" class="form-control rounded-3" required>
               </div>
 
               <!-- Couple Names & Wedding Date -->
               <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold text-gray-700 small">Couple Names</label>
-                <input type="text" name="couple_names" x-model="editData.couple_names" class="form-control rounded-3">
+                <label class="form-label fw-bold text-dark small mb-1">Couple Names</label>
+                <input type="text" name="couple_names" id="edit_couple_names" class="form-control rounded-3">
               </div>
 
               <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold text-gray-700 small">Wedding / Engagement Date</label>
-                <input type="date" name="wedding_date" x-model="editData.wedding_date" class="form-control rounded-3">
+                <label class="form-label fw-bold text-dark small mb-1">Wedding / Engagement Date</label>
+                <input type="date" name="wedding_date" id="edit_wedding_date" class="form-control rounded-3">
               </div>
 
               <!-- Primary Couple Image -->
               <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold text-gray-700 small">Replace Featured Image</label>
-                <input type="file" name="primary_image" class="form-control rounded-3" accept="image/*" @change="previewPrimaryImage($event, 'edit')">
+                <label class="form-label fw-bold text-dark small mb-1">Replace Primary Photo (Optional)</label>
+                <div class="p-3 border-2 border-dashed rounded-3 bg-light text-center cursor-pointer" onclick="$('#edit_primary_image').click()" style="border-style: dashed !important; border-color: #CBD5E1;">
+                  <i class="bi bi-cloud-arrow-up fs-2 text-muted-green"></i>
+                  <div class="fw-semibold small text-gray-800 mt-1">Click to replace primary cover photo</div>
+                  <div class="text-muted small" style="font-size: 11px;">Leave blank to keep existing photo</div>
+                </div>
+                <input type="file" name="primary_image" id="edit_primary_image" class="d-none" accept="image/*">
                 
-                <!-- Primary Image Current / Preview -->
-                <div class="mt-2 rounded-3 overflow-hidden border position-relative" style="height: 140px; background-color: #f8f9fa;">
-                  <img :src="editPrimaryPreview || editData.image_url" class="w-100 h-100 object-fit-contain">
+                <!-- Primary Image Current / Preview Container -->
+                <div class="mt-2 rounded-3 overflow-hidden border" style="height: 140px; background-color: #f8f9fa;">
+                  <img id="edit_primary_preview_img" src="" class="w-100 h-100 object-fit-contain">
                 </div>
               </div>
 
               <!-- Additional Gallery Images -->
               <div class="col-12 col-md-6">
-                <label class="form-label fw-semibold text-gray-700 small">Add More Gallery Photos</label>
-                <input type="file" name="images[]" class="form-control rounded-3" accept="image/*" multiple @change="previewGalleryImages($event, 'edit')">
-                
-                <!-- Current Gallery Thumbnails -->
-                <div class="d-flex flex-wrap gap-2 mt-2">
-                  <template x-for="(imgSrc, idx) in (editGalleryPreviews.length > 0 ? editGalleryPreviews : (editData.gallery_images || []))" :key="idx">
-                    <div class="rounded-2 overflow-hidden border" style="width: 50px; height: 50px;">
-                      <img :src="imgSrc" class="w-100 h-100 object-fit-cover">
-                    </div>
-                  </template>
+                <label class="form-label fw-bold text-dark small mb-1">Add More Gallery Photos (Optional)</label>
+                <div class="p-3 border-2 border-dashed rounded-3 bg-light text-center cursor-pointer" onclick="$('#edit_gallery_images').click()" style="border-style: dashed !important; border-color: #CBD5E1;">
+                  <i class="bi bi-images fs-2 text-muted-green"></i>
+                  <div class="fw-semibold small text-gray-800 mt-1">Click to upload more photos</div>
+                  <div class="text-muted small" style="font-size: 11px;">Appends new photos to current gallery</div>
                 </div>
+                <input type="file" name="images[]" id="edit_gallery_images" class="d-none" accept="image/*" multiple>
+
+                <!-- Existing & New Gallery Photos Wrap -->
+                <div id="edit_gallery_preview_wrap" class="d-flex flex-wrap gap-2 mt-2"></div>
               </div>
 
               <!-- Story Detailed Description -->
               <div class="col-12">
-                <label class="form-label fw-semibold text-gray-700 small">Story Narrative / Description <span class="text-danger">*</span></label>
-                <textarea name="descriptions" x-model="editData.descriptions" rows="5" class="form-control rounded-3" required></textarea>
+                <label class="form-label fw-bold text-dark small mb-1">Story Narrative / Description <span class="text-danger">*</span></label>
+                <textarea name="descriptions" id="edit_descriptions" rows="5" class="form-control rounded-3" required></textarea>
               </div>
 
               <!-- Order & Active Status -->
               <div class="col-6">
-                <label class="form-label fw-semibold text-gray-700 small">Display Order</label>
-                <input type="number" name="order" x-model="editData.order" class="form-control rounded-3" min="0">
+                <label class="form-label fw-bold text-dark small mb-1">Display Order</label>
+                <input type="number" name="order" id="edit_order" class="form-control rounded-3" min="0">
               </div>
 
               <div class="col-6 d-flex align-items-center pt-3">
                 <div class="form-check form-switch">
-                  <input class="form-check-input cursor-pointer" type="checkbox" id="edit_is_active" x-model="editData.is_active">
-                  <label class="form-check-label fw-semibold text-gray-700 small" for="edit_is_active">Publish on Frontend</label>
+                  <input class="form-check-input cursor-pointer" type="checkbox" name="is_active" value="1" id="edit_is_active">
+                  <label class="form-check-label fw-bold text-dark small" for="edit_is_active">Publish on Frontend</label>
                 </div>
               </div>
 
             </div>
           </div>
 
-          <div class="modal-footer bg-white border-top py-3">
-            <button type="button" class="btn btn-light rounded-3 px-4" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-primary rounded-3 px-4 d-inline-flex align-items-center gap-2" :disabled="saving">
-              <span x-show="saving" class="spinner-border spinner-border-sm"></span>
-              <span x-text="saving ? 'Saving...' : 'Update Story'"></span>
+          <div class="modal-footer bg-light border-top py-3 px-4">
+            <button type="button" class="btn-custom btn-custom-light btn-custom-sm" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" id="editSubmitBtn" class="btn-custom btn-custom-primary btn-custom-sm d-inline-flex align-items-center gap-2">
+              <span class="spinner-border spinner-border-sm d-none" id="editSpinner"></span>
+              <span id="editText">Update Story</span>
             </button>
           </div>
         </form>
@@ -428,313 +562,447 @@
     </div>
   </div>
 
-  <!-- ================= VIEW STORY DETAIL MODAL ================= -->
+  <!-- ==========================================
+       VIEW STORY MODAL
+       ========================================== -->
   <div class="modal fade" id="viewStoryModal" tabindex="-1" aria-labelledby="viewStoryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden" x-show="activeStory">
-        <div class="modal-header bg-dark text-white border-0 py-3">
+      <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+        
+        <div class="modal-header border-bottom py-3 px-4" style="background-color: #F8FAF9;">
           <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-stars text-warning fs-5"></i>
+            <div class="w-8 h-8 rounded-circle d-flex align-items-center justify-center text-white" style="width: 34px; height: 34px; background-color: var(--brand-forest-medium);">
+              <i class="bi bi-eye fs-6"></i>
+            </div>
             <div>
-              <h5 class="modal-title font-serif fw-bold text-white mb-0" x-text="activeStory ? activeStory.title : ''"></h5>
-              <span class="text-warning small text-xs font-mono" x-text="activeStory && activeStory.couple_names ? activeStory.couple_names : ''"></span>
+              <h5 class="modal-title fw-bold text-gray-900 mb-0" id="viewStoryModalLabel">Story Details</h5>
+              <p class="text-muted small mb-0">Preview how this story appears and read full matchmaking narrative.</p>
             </div>
           </div>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
-        <div class="modal-body p-4">
-          <!-- Main Photo Banner -->
-          <div class="rounded-4 overflow-hidden mb-4 border" style="max-height: 320px; background-color: #111;">
-            <img :src="activeStory ? activeStory.image_url : ''" class="w-100 h-100 object-fit-cover">
+        <div class="modal-body p-4 bg-white">
+          <!-- Featured Image -->
+          <div class="rounded-4 overflow-hidden border mb-3 position-relative shadow-sm" style="height: 280px; background-color: #072F1F;">
+            <img id="view_primary_img" src="" class="w-100 h-100 object-fit-cover">
+            <div class="position-absolute bottom-3 start-3">
+              <span id="view_couple_badge" class="badge bg-danger rounded-pill px-3 py-1.5 fs-7 shadow-sm"></span>
+            </div>
           </div>
 
-          <!-- Metadata Badges -->
-          <div class="d-flex flex-wrap items-center gap-3 mb-4 pb-3 border-bottom text-muted small">
-            <div class="d-flex align-items-center gap-1.5" x-show="activeStory && activeStory.formatted_wedding_date">
-              <i class="bi bi-calendar2-heart text-danger"></i>
-              <span x-text="'Wedding Date: ' + (activeStory ? activeStory.formatted_wedding_date : '')"></span>
-            </div>
+          <!-- Gallery Strip -->
+          <div id="view_gallery_strip" class="d-flex gap-2 overflow-x-auto pb-2 mb-3"></div>
 
-            <div class="d-flex align-items-center gap-1.5">
-              <i class="bi bi-clock-history text-primary"></i>
-              <span x-text="'Published: ' + (activeStory ? activeStory.created_at : '')"></span>
-            </div>
-
-            <div>
-              <span class="badge" :class="activeStory && activeStory.is_active ? 'bg-success' : 'bg-secondary'" x-text="activeStory && activeStory.is_active ? '● Published' : '○ Inactive'"></span>
-            </div>
+          <!-- Title & Meta -->
+          <h4 id="view_title" class="fw-bold text-gray-900 font-serif mb-2"></h4>
+          <div class="d-flex flex-wrap align-items-center gap-3 text-muted small mb-3 pb-3 border-bottom">
+            <span id="view_wedding_date"><i class="bi bi-calendar-heart text-danger me-1"></i> <span class="val"></span></span>
+            <span id="view_status_pill"></span>
+            <span id="view_created_at" class="text-muted"></span>
           </div>
 
           <!-- Full Narrative -->
-          <div class="text-gray-800 leading-relaxed font-sans" style="white-space: pre-line;" x-text="activeStory ? activeStory.descriptions : ''"></div>
-
-          <!-- Photo Gallery Strip (if multiple) -->
-          <div class="mt-4 pt-3 border-top" x-show="activeStory && activeStory.gallery_images && activeStory.gallery_images.length > 1">
-            <h6 class="fw-bold text-gray-700 small text-uppercase mb-2">Photo Gallery</h6>
-            <div class="d-flex gap-2 overflow-x-auto py-1">
-              <template x-for="(gImg, gIdx) in (activeStory ? activeStory.gallery_images : [])" :key="gIdx">
-                <a :href="gImg" target="_blank" class="rounded-3 overflow-hidden border flex-shrink-0" style="width: 80px; height: 80px;">
-                  <img :src="gImg" class="w-100 h-100 object-fit-cover">
-                </a>
-              </template>
-            </div>
+          <div class="bg-light p-3.5 rounded-3 border">
+            <h6 class="fw-bold mb-2" style="color: var(--brand-forest-medium);"><i class="bi bi-book-half me-1"></i> Full Story Narrative</h6>
+            <p id="view_descriptions" class="text-muted mb-0 leading-relaxed" style="white-space: pre-line; font-size: 0.925rem;"></p>
           </div>
         </div>
 
-        <div class="modal-footer bg-light border-0">
-          <button type="button" class="btn btn-secondary rounded-3 px-4" data-bs-dismiss="modal">Close</button>
+        <div class="modal-footer bg-light border-top py-2.5 px-4">
+          <button type="button" class="btn-custom btn-custom-light btn-custom-sm" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
   </div>
 
 </div>
+@endsection
 
-<!-- Alpine Story Manager JS Component -->
+@push('scripts')
 <script>
-function storyManager() {
-  return {
-    saving: false,
-    activeStory: null,
+// Switch between Table View and Cards Grid View
+function switchViewMode(mode) {
+  if (mode === 'grid') {
+    $('#stories-table-view').addClass('d-none');
+    $('#stories-grid-view').removeClass('d-none');
+    $('#view-mode-grid').addClass('active btn-primary text-white').removeClass('btn-light');
+    $('#view-mode-table').removeClass('active btn-primary text-white').addClass('btn-light');
+    localStorage.setItem('admin_stories_view_mode', 'grid');
+  } else {
+    $('#stories-grid-view').addClass('d-none');
+    $('#stories-table-view').removeClass('d-none');
+    $('#view-mode-table').addClass('active btn-primary text-white').removeClass('btn-light');
+    $('#view-mode-grid').removeClass('active btn-primary text-white').addClass('btn-light');
+    localStorage.setItem('admin_stories_view_mode', 'table');
+  }
+}
 
-    // Create Modal State
-    createModal: null,
-    createData: {
-      title: '',
-      couple_names: '',
-      wedding_date: '',
-      descriptions: '',
-      order: 0,
-      is_active: true
-    },
-    createPrimaryPreview: null,
-    createGalleryPreviews: [],
+$(document).ready(function() {
 
-    // Edit Modal State
-    editModal: null,
-    editStoryId: null,
-    editData: {
-      title: '',
-      couple_names: '',
-      wedding_date: '',
-      descriptions: '',
-      order: 0,
-      is_active: true,
-      image_url: '',
-      gallery_images: []
-    },
-    editPrimaryPreview: null,
-    editGalleryPreviews: [],
+  // Restore saved view mode preference
+  const savedViewMode = localStorage.getItem('admin_stories_view_mode');
+  if (savedViewMode === 'grid') {
+    switchViewMode('grid');
+  }
 
-    // View Modal State
-    viewModalInstance: null,
+  // CSRF Token setup for all AJAX requests
+  $.ajaxSetup({
+    headers: {
+      'X-CSRF-TOKEN': '{{ csrf_token() }}',
+      'Accept': 'application/json'
+    }
+  });
 
-    init() {
-      // Bootstrap Modals
-      if (document.getElementById('createStoryModal')) {
-        this.createModal = new bootstrap.Modal(document.getElementById('createStoryModal'));
-      }
-      if (document.getElementById('editStoryModal')) {
-        this.editModal = new bootstrap.Modal(document.getElementById('editStoryModal'));
-      }
-      if (document.getElementById('viewStoryModal')) {
-        this.viewModalInstance = new bootstrap.Modal(document.getElementById('viewStoryModal'));
-      }
-    },
-
-    openCreateModal() {
-      this.createData = {
-        title: '',
-        couple_names: '',
-        wedding_date: '',
-        descriptions: '',
-        order: 0,
-        is_active: true
-      };
-      this.createPrimaryPreview = null;
-      this.createGalleryPreviews = [];
-      this.createModal.show();
-    },
-
-    previewPrimaryImage(e, mode) {
-      const file = e.target.files[0];
-      if (!file) return;
+  // -------------------------------------------------------------
+  // 1. Create Modal - Photo Previews
+  // -------------------------------------------------------------
+  $('#create_primary_image').on('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
       const reader = new FileReader();
-      reader.onload = (event) => {
-        if (mode === 'create') {
-          this.createPrimaryPreview = event.target.result;
-        } else {
-          this.editPrimaryPreview = event.target.result;
-        }
+      reader.onload = function(event) {
+        $('#create_primary_preview_img').attr('src', event.target.result);
+        $('#create_primary_preview_wrap').removeClass('d-none');
       };
       reader.readAsDataURL(file);
-    },
+    } else {
+      $('#create_primary_preview_wrap').addClass('d-none');
+    }
+  });
 
-    previewGalleryImages(e, mode) {
-      const files = Array.from(e.target.files);
-      if (!files.length) return;
-      const previews = [];
-      let loaded = 0;
-      files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          previews.push(event.target.result);
-          loaded++;
-          if (loaded === files.length) {
-            if (mode === 'create') {
-              this.createGalleryPreviews = previews;
-            } else {
-              this.editGalleryPreviews = previews;
-            }
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-    },
+  $('#create_gallery_images').on('change', function(e) {
+    const files = Array.from(e.target.files);
+    const $wrap = $('#create_gallery_preview_wrap');
+    $wrap.empty();
 
-    async submitCreateForm(e) {
-      this.saving = true;
-      const form = e.target;
-      const formData = new FormData(form);
+    files.forEach(function(file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        $wrap.append(`
+          <div class="rounded-2 overflow-hidden border shadow-2xs" style="width: 54px; height: 54px;">
+            <img src="${event.target.result}" class="w-100 h-100 object-fit-cover">
+          </div>
+        `);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
 
-      try {
-        const res = await fetch('{{ route("admin.stories.store") }}', {
-          method: 'POST',
-          headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-          },
-          body: formData
-        });
+  // -------------------------------------------------------------
+  // 2. Submit Create Story Form (AJAX)
+  // -------------------------------------------------------------
+  $('#createStoryForm').on('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const $btn = $('#createSubmitBtn');
+    const $spinner = $('#createSpinner');
+    const $text = $('#createText');
 
-        const data = await res.json();
-        this.saving = false;
+    $btn.prop('disabled', true);
+    $spinner.removeClass('d-none');
+    $text.text('Publishing...');
 
-        if (data.success) {
-          this.createModal.hide();
+    $.ajax({
+      url: "{{ route('admin.stories.store') }}",
+      type: "POST",
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function(res) {
+        $btn.prop('disabled', false);
+        $spinner.addClass('d-none');
+        $text.text('Publish Story');
+
+        if (res.success) {
+          bootstrap.Modal.getInstance(document.getElementById('createStoryModal')).hide();
           Swal.fire({
             icon: 'success',
             title: 'Story Published!',
-            text: data.message,
+            text: res.message,
             timer: 1500,
             showConfirmButton: false
-          }).then(() => {
+          }).then(function() {
             window.location.reload();
           });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Validation Error',
-            text: data.message || 'Please check the required fields.'
-          });
         }
-      } catch (err) {
-        this.saving = false;
-        console.error(err);
+      },
+      error: function(xhr) {
+        $btn.prop('disabled', false);
+        $spinner.addClass('d-none');
+        $text.text('Publish Story');
+
+        let msg = 'Failed to publish story.';
+        if (xhr.responseJSON) {
+          if (xhr.responseJSON.errors) {
+            msg = Object.values(xhr.responseJSON.errors).flat().join('<br>');
+          } else if (xhr.responseJSON.message) {
+            msg = xhr.responseJSON.message;
+          }
+        }
+        Swal.fire({
+          icon: 'error',
+          title: 'Validation Error',
+          html: msg
+        });
+      }
+    });
+  });
+
+  // -------------------------------------------------------------
+  // 3. Open Edit Modal & Populate Data
+  // -------------------------------------------------------------
+  $(document).on('click', '.edit-story-btn', function() {
+    const storyId = $(this).data('id');
+    const editModalEl = document.getElementById('editStoryModal');
+    const editModal = new bootstrap.Modal(editModalEl);
+
+    $.ajax({
+      url: '/admin/stories/' + storyId,
+      type: 'GET',
+      success: function(res) {
+        if (res.success && res.story) {
+          const s = res.story;
+          $('#edit_story_id').val(s.id);
+          $('#edit_title').val(s.title);
+          $('#edit_couple_names').val(s.couple_names || '');
+          $('#edit_wedding_date').val(s.wedding_date || '');
+          $('#edit_descriptions').val(s.descriptions);
+          $('#edit_order').val(s.order || 0);
+          $('#edit_is_active').prop('checked', !!s.is_active);
+
+          // Primary image preview
+          $('#edit_primary_preview_img').attr('src', s.image_url);
+          $('#edit_primary_image').val('');
+
+          // Gallery previews
+          const $gWrap = $('#edit_gallery_preview_wrap');
+          $gWrap.empty();
+          if (s.gallery_images && s.gallery_images.length > 0) {
+            s.gallery_images.forEach(function(imgSrc) {
+              $gWrap.append(`
+                <div class="rounded-2 overflow-hidden border shadow-2xs" style="width: 54px; height: 54px;">
+                  <img src="${imgSrc}" class="w-100 h-100 object-fit-cover">
+                </div>
+              `);
+            });
+          }
+
+          editModal.show();
+        }
+      },
+      error: function() {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Failed to publish story. Please try again.'
+          text: 'Could not fetch story details.'
         });
       }
-    },
+    });
+  });
 
-    async openEditModal(storyId) {
-      this.editStoryId = storyId;
-      this.editPrimaryPreview = null;
-      this.editGalleryPreviews = [];
+  $('#edit_primary_image').on('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        $('#edit_primary_preview_img').attr('src', event.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
 
-      try {
-        const res = await fetch('/admin/stories/' + storyId, {
-          headers: { 'Accept': 'application/json' }
-        });
-        const data = await res.json();
+  // -------------------------------------------------------------
+  // 4. Submit Edit Story Form (AJAX)
+  // -------------------------------------------------------------
+  $('#editStoryForm').on('submit', function(e) {
+    e.preventDefault();
+    const storyId = $('#edit_story_id').val();
+    const formData = new FormData(this);
+    const $btn = $('#editSubmitBtn');
+    const $spinner = $('#editSpinner');
+    const $text = $('#editText');
 
-        if (data.success) {
-          this.editData = { ...data.story };
-          this.editModal.show();
-        }
-      } catch (err) {
-        console.error(err);
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Could not fetch story details.' });
-      }
-    },
+    $btn.prop('disabled', true);
+    $spinner.removeClass('d-none');
+    $text.text('Updating...');
 
-    async submitEditForm(e) {
-      this.saving = true;
-      const form = e.target;
-      const formData = new FormData(form);
-      formData.append('_method', 'PUT');
+    $.ajax({
+      url: '/admin/stories/' + storyId,
+      type: 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function(res) {
+        $btn.prop('disabled', false);
+        $spinner.addClass('d-none');
+        $text.text('Update Story');
 
-      try {
-        const res = await fetch('/admin/stories/' + this.editStoryId, {
-          method: 'POST',
-          headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-          },
-          body: formData
-        });
-
-        const data = await res.json();
-        this.saving = false;
-
-        if (data.success) {
-          this.editModal.hide();
+        if (res.success) {
+          bootstrap.Modal.getInstance(document.getElementById('editStoryModal')).hide();
           Swal.fire({
             icon: 'success',
-            title: 'Updated Successfully!',
-            text: data.message,
+            title: 'Story Updated!',
+            text: res.message,
             timer: 1500,
             showConfirmButton: false
-          }).then(() => {
+          }).then(function() {
             window.location.reload();
           });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: data.message || 'Failed to update story.'
-          });
         }
-      } catch (err) {
-        this.saving = false;
-        console.error(err);
+      },
+      error: function(xhr) {
+        $btn.prop('disabled', false);
+        $spinner.addClass('d-none');
+        $text.text('Update Story');
+
+        let msg = 'Failed to update story.';
+        if (xhr.responseJSON) {
+          if (xhr.responseJSON.errors) {
+            msg = Object.values(xhr.responseJSON.errors).flat().join('<br>');
+          } else if (xhr.responseJSON.message) {
+            msg = xhr.responseJSON.message;
+          }
+        }
         Swal.fire({
           icon: 'error',
-          title: 'Error',
-          text: 'An error occurred while updating story.'
+          title: 'Update Error',
+          html: msg
         });
       }
-    },
+    });
+  });
 
-    async viewStory(storyId) {
-      try {
-        const res = await fetch('/admin/stories/' + storyId, {
-          headers: { 'Accept': 'application/json' }
-        });
-        const data = await res.json();
-        if (data.success) {
-          this.activeStory = data.story;
-          this.viewModalInstance.show();
+  // -------------------------------------------------------------
+  // 5. View Full Story Modal
+  // -------------------------------------------------------------
+  $(document).on('click', '.view-story-btn', function() {
+    const storyId = $(this).data('id');
+    const viewModalEl = document.getElementById('viewStoryModal');
+    const viewModal = new bootstrap.Modal(viewModalEl);
+
+    $.ajax({
+      url: '/admin/stories/' + storyId,
+      type: 'GET',
+      success: function(res) {
+        if (res.success && res.story) {
+          const s = res.story;
+          $('#view_primary_img').attr('src', s.image_url);
+          $('#view_title').text(s.title);
+
+          if (s.couple_names) {
+            $('#view_couple_badge').text(s.couple_names).show();
+          } else {
+            $('#view_couple_badge').hide();
+          }
+
+          if (s.formatted_wedding_date) {
+            $('#view_wedding_date .val').text(s.formatted_wedding_date);
+            $('#view_wedding_date').show();
+          } else {
+            $('#view_wedding_date').hide();
+          }
+
+          if (s.is_active) {
+            $('#view_status_pill').html('<span class="badge-table success">Published</span>');
+          } else {
+            $('#view_status_pill').html('<span class="badge-table failed">Hidden</span>');
+          }
+
+          $('#view_created_at').text('Created: ' + s.created_at);
+          $('#view_descriptions').text(s.descriptions);
+
+          // Gallery strip
+          const $gStrip = $('#view_gallery_strip');
+          $gStrip.empty();
+          if (s.gallery_images && s.gallery_images.length > 1) {
+            s.gallery_images.forEach(function(img) {
+              $gStrip.append(`
+                <button type="button" class="btn p-0 rounded-2 overflow-hidden border cursor-pointer shrink-0 shadow-2xs" onclick="$('#view_primary_img').attr('src', '${img}')" style="width: 58px; height: 58px;">
+                  <img src="${img}" class="w-100 h-100 object-fit-cover">
+                </button>
+              `);
+            });
+            $gStrip.show();
+          } else {
+            $gStrip.hide();
+          }
+
+          viewModal.show();
         }
-      } catch (err) {
-        console.error(err);
       }
-    },
+    });
+  });
 
-    async toggleStatus(storyId) {
-      try {
-        const res = await fetch('/admin/stories/' + storyId + '/toggle-status', {
-          method: 'POST',
-          headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
+  // -------------------------------------------------------------
+  // 6. Delete Story with SweetAlert2 Confirmation
+  // -------------------------------------------------------------
+  $(document).on('click', '.delete-story-btn', function() {
+    const storyId = $(this).data('id');
+    const title = $(this).data('title') || 'this story';
+
+    Swal.fire({
+      title: 'Delete Success Story?',
+      html: `Are you sure you want to delete <strong>${title}</strong>? This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, Delete Story',
+      cancelButtonText: 'Cancel'
+    }).then(function(result) {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: '/admin/stories/' + storyId,
+          type: 'DELETE',
+          success: function(res) {
+            if (res.success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Deleted!',
+                text: res.message,
+                timer: 1500,
+                showConfirmButton: false
+              }).then(function() {
+                $('#story-row-' + storyId).fadeOut(400, function() { $(this).remove(); });
+                $('#story-card-' + storyId).fadeOut(400, function() { $(this).remove(); });
+              });
+            }
+          },
+          error: function() {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Could not delete story.'
+            });
           }
         });
-        const data = await res.json();
-        if (data.success) {
+      }
+    });
+  });
+
+  // -------------------------------------------------------------
+  // 7. Toggle Active Status Live (Switch)
+  // -------------------------------------------------------------
+  $(document).on('change', '.toggle-status-btn', function() {
+    const storyId = $(this).data('id');
+    const isChecked = $(this).is(':checked');
+    const $statusPill = $('#status-pill-' + storyId);
+    const $gridStatusBadge = $('#grid-status-badge-' + storyId);
+
+    $.ajax({
+      url: '/admin/stories/' + storyId + '/toggle-status',
+      type: 'POST',
+      success: function(res) {
+        if (res.success) {
+          if (res.is_active) {
+            $statusPill.removeClass('failed').addClass('success').text('Published');
+            $gridStatusBadge.removeClass('failed').addClass('success').text('Published');
+          } else {
+            $statusPill.removeClass('success').addClass('failed').text('Hidden');
+            $gridStatusBadge.removeClass('success').addClass('failed').text('Hidden');
+          }
+
           const Toast = Swal.mixin({
             toast: true,
             position: 'top-end',
@@ -743,76 +1011,42 @@ function storyManager() {
             timerProgressBar: true
           });
           Toast.fire({
-            icon: data.is_active ? 'success' : 'info',
-            title: data.message
+            icon: res.is_active ? 'success' : 'info',
+            title: res.message
           });
         }
-      } catch (err) {
-        console.error(err);
+      },
+      error: function() {
+        $('#switch-table-' + storyId).prop('checked', !isChecked);
+        $('#switch-grid-' + storyId).prop('checked', !isChecked);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to update story status.'
+        });
       }
-    },
+    });
+  });
 
-    deleteStory(storyId, title) {
-      Swal.fire({
-        title: 'Delete Success Story?',
-        html: `Are you sure you want to delete <strong>${title}</strong>? This action cannot be undone.`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Yes, Delete Story',
-        cancelButtonText: 'Cancel'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            const res = await fetch('/admin/stories/' + storyId, {
-              method: 'DELETE',
-              headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
-              }
-            });
-            const data = await res.json();
-            if (data.success) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Deleted!',
-                text: data.message,
-                timer: 1500,
-                showConfirmButton: false
-              }).then(() => {
-                const cardEl = document.getElementById('story-card-' + storyId);
-                if (cardEl) {
-                  cardEl.remove();
-                } else {
-                  window.location.reload();
-                }
-              });
-            }
-          } catch (err) {
-            console.error(err);
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Could not delete story.' });
-          }
-        }
-      });
-    }
-  };
-}
+});
 </script>
 
 <style>
 .story-card-item:hover {
   transform: translateY(-4px);
-  box-shadow: 0 14px 28px rgba(0,0,0,0.1) !important;
+  box-shadow: 0 14px 28px rgba(11, 19, 15, 0.08) !important;
 }
 .hover-scale:hover {
   transform: scale(1.04);
 }
-.line-clamp-3 {
+.line-clamp-2 {
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+.shadow-2xs {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
 </style>
-@endsection
+@endpush

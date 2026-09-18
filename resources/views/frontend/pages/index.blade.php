@@ -190,12 +190,82 @@
     </div>
 </section>
 
-<!-- Success Stories Showcase Section -->
+<!-- Success Stories Showcase Section (Carousel) -->
 @if(isset($stories) && $stories->count() > 0)
 <section class="py-24 bg-white relative overflow-hidden" x-data="{
     storyModalOpen: false,
     selectedStory: null,
     activePhotoIdx: 0,
+    currentIndex: 0,
+    totalItems: {{ $stories->count() }},
+    itemsPerView: 3,
+    autoplayInterval: null,
+    isHovered: false,
+    touchStartX: 0,
+    touchEndX: 0,
+
+    init() {
+        this.updateItemsPerView();
+        window.addEventListener('resize', () => this.updateItemsPerView());
+        this.startAutoplay();
+    },
+
+    updateItemsPerView() {
+        if (window.innerWidth < 640) {
+            this.itemsPerView = 1;
+        } else if (window.innerWidth < 1024) {
+            this.itemsPerView = 2;
+        } else {
+            this.itemsPerView = 3;
+        }
+        if (this.currentIndex > this.maxIndex()) {
+            this.currentIndex = this.maxIndex();
+        }
+    },
+
+    maxIndex() {
+        return Math.max(0, this.totalItems - this.itemsPerView);
+    },
+
+    totalPages() {
+        return this.maxIndex() + 1;
+    },
+
+    next() {
+        if (this.currentIndex >= this.maxIndex()) {
+            this.currentIndex = 0;
+        } else {
+            this.currentIndex++;
+        }
+    },
+
+    prev() {
+        if (this.currentIndex <= 0) {
+            this.currentIndex = this.maxIndex();
+        } else {
+            this.currentIndex--;
+        }
+    },
+
+    goTo(idx) {
+        this.currentIndex = Math.min(Math.max(0, idx), this.maxIndex());
+    },
+
+    startAutoplay() {
+        this.stopAutoplay();
+        this.autoplayInterval = setInterval(() => {
+            if (!this.storyModalOpen && !this.isHovered && this.totalItems > this.itemsPerView) {
+                this.next();
+            }
+        }, 5000);
+    },
+
+    stopAutoplay() {
+        if (this.autoplayInterval) {
+            clearInterval(this.autoplayInterval);
+            this.autoplayInterval = null;
+        }
+    },
 
     openStory(story) {
         this.selectedStory = story;
@@ -216,7 +286,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         <!-- Section Header -->
-        <div class="text-center mb-16">
+        <div class="text-center mb-12 sm:mb-16">
             <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rani-primary/10 border border-rani-gold/40 text-rani-primary font-bold text-xs uppercase tracking-widest mb-3 shadow-xs">
                 <i class="bi bi-stars text-rani-gold"></i>
                 Real Matches, Forever Bond
@@ -232,74 +302,125 @@
             </p>
         </div>
 
-        <!-- Stories Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
-            @foreach($stories as $story)
-                @php
-                    $storyPayload = [
-                        'id' => $story->id,
-                        'title' => $story->title,
-                        'couple_names' => $story->couple_names,
-                        'wedding_date' => $story->formatted_wedding_date,
-                        'image_url' => $story->image_url,
-                        'gallery_images' => $story->gallery_images,
-                        'descriptions' => $story->descriptions,
-                    ];
-                @endphp
-                <div class="bg-rani-light/40 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl border border-rani-gold/30 flex flex-col justify-between group hover:-translate-y-1.5 transition-all duration-500">
-                    
-                    <div>
-                        <!-- Cover Image Box -->
-                        <div class="relative h-60 sm:h-68 w-full overflow-hidden bg-black/60 cursor-pointer select-none"
-                             @click="openStory(@js($storyPayload))">
-                            <img src="{{ $story->image_url }}" alt="{{ $story->title }}" class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105">
-                            
-                            <!-- Gradient Overlay -->
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none"></div>
+        <!-- Stories Carousel Container -->
+        <div class="relative" 
+             @mouseenter="isHovered = true" 
+             @mouseleave="isHovered = false"
+             @touchstart="touchStartX = $event.changedTouches[0].screenX"
+             @touchend="touchEndX = $event.changedTouches[0].screenX; if (touchStartX - touchEndX > 45) next(); if (touchEndX - touchStartX > 45) prev();">
+            
+            <!-- Left Navigation Arrow Button -->
+            <button type="button" 
+                    @click="prev()" 
+                    x-show="totalItems > itemsPerView"
+                    class="absolute -left-2 sm:-left-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/95 hover:bg-white text-rani-primary shadow-xl border-2 border-rani-gold/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all group cursor-pointer"
+                    title="Previous Story">
+                <svg class="w-5 h-5 text-rani-primary group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
 
-                            <!-- Top Badges -->
-                            @if($story->couple_names)
-                                <div class="absolute top-3 left-3 z-10">
-                                    <span class="px-3 py-1 rounded-full bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white text-xs font-bold shadow-md border border-rani-gold/40 flex items-center gap-1.5">
-                                        <svg class="w-3.5 h-3.5 text-rani-gold fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
-                                        <span>{{ $story->couple_names }}</span>
-                                    </span>
+            <!-- Right Navigation Arrow Button -->
+            <button type="button" 
+                    @click="next()" 
+                    x-show="totalItems > itemsPerView"
+                    class="absolute -right-2 sm:-right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/95 hover:bg-white text-rani-primary shadow-xl border-2 border-rani-gold/40 flex items-center justify-center hover:scale-110 active:scale-95 transition-all group cursor-pointer"
+                    title="Next Story">
+                <svg class="w-5 h-5 text-rani-primary group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+
+            <!-- Carousel Track Viewport -->
+            <div class="overflow-hidden py-3 -mx-3 px-3">
+                <div class="flex transition-transform duration-500 ease-out"
+                     :style="`transform: translateX(-${currentIndex * (100 / itemsPerView)}%);`">
+                    @foreach($stories as $story)
+                        @php
+                            $storyPayload = [
+                                'id' => $story->id,
+                                'title' => $story->title,
+                                'couple_names' => $story->couple_names,
+                                'wedding_date' => $story->formatted_wedding_date,
+                                'image_url' => $story->image_url,
+                                'gallery_images' => $story->gallery_images,
+                                'descriptions' => $story->descriptions,
+                            ];
+                        @endphp
+                        <div class="w-full sm:w-1/2 lg:w-1/3 shrink-0 px-3 flex">
+                            <div class="bg-rani-light/40 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl border border-rani-gold/30 flex flex-col justify-between group hover:-translate-y-1.5 transition-all duration-500 w-full">
+                                
+                                <div>
+                                    <!-- Cover Image Box -->
+                                    <div class="relative h-60 sm:h-68 w-full overflow-hidden bg-black/60 cursor-pointer select-none"
+                                         @click="openStory(@js($storyPayload))">
+                                        <img src="{{ $story->image_url }}" alt="{{ $story->title }}" class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105">
+                                        
+                                        <!-- Gradient Overlay -->
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none"></div>
+
+                                        <!-- Top Badges -->
+                                        @if($story->couple_names)
+                                            <div class="absolute top-3 left-3 z-10">
+                                                <span class="px-3 py-1 rounded-full bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white text-xs font-bold shadow-md border border-rani-gold/40 flex items-center gap-1.5">
+                                                    <svg class="w-3.5 h-3.5 text-rani-gold fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+                                                    <span>{{ $story->couple_names }}</span>
+                                                </span>
+                                            </div>
+                                        @endif
+
+                                        <div class="absolute top-3 right-3 z-10">
+                                            <span class="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-sm text-rani-gold text-[11px] font-semibold flex items-center gap-1 border border-white/20">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                <span>{{ count($story->gallery_images) }} Photos</span>
+                                            </span>
+                                        </div>
+
+                                        <!-- Bottom Title in Box -->
+                                        <div class="absolute bottom-3 left-4 right-4 text-white z-10">
+                                            @if($story->formatted_wedding_date)
+                                                <p class="text-xs text-rani-gold font-serif italic mb-0.5">💍 Married on {{ $story->formatted_wedding_date }}</p>
+                                            @endif
+                                            <h3 class="text-lg font-serif font-bold text-white drop-shadow-md truncate">{{ $story->title }}</h3>
+                                        </div>
+                                    </div>
+
+                                    <!-- Excerpt Content -->
+                                    <div class="p-5 sm:p-6">
+                                        <p class="text-gray-600 text-sm leading-relaxed line-clamp-3 font-light mb-4">
+                                            {{ Str::limit(strip_tags($story->descriptions), 130) }}
+                                        </p>
+                                    </div>
                                 </div>
-                            @endif
 
-                            <!-- Bottom Title in Box -->
-                            <div class="absolute bottom-3 left-4 right-4 text-white z-10">
-                                @if($story->formatted_wedding_date)
-                                    <p class="text-xs text-rani-gold font-serif italic mb-0.5">💍 Married on {{ $story->formatted_wedding_date }}</p>
-                                @endif
-                                <h3 class="text-lg font-serif font-bold text-white drop-shadow-md truncate">{{ $story->title }}</h3>
+                                <!-- Action Button -->
+                                <div class="px-5 sm:px-6 pb-6 pt-0">
+                                    <button type="button" 
+                                            @click="openStory(@js($storyPayload))" 
+                                            class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white font-serif font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 group/btn border border-rani-gold/30">
+                                        <span>Read Story</span>
+                                        <svg class="w-3.5 h-3.5 text-rani-gold group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
-
-                        <!-- Excerpt Content -->
-                        <div class="p-5 sm:p-6">
-                            <p class="text-gray-600 text-sm leading-relaxed line-clamp-3 font-light mb-4">
-                                {{ Str::limit(strip_tags($story->descriptions), 130) }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Action Button -->
-                    <div class="px-5 sm:px-6 pb-6 pt-0">
-                        <button type="button" 
-                                @click="openStory(@js($storyPayload))" 
-                                class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white font-serif font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 group/btn border border-rani-gold/30">
-                            <span>Read Story</span>
-                            <svg class="w-3.5 h-3.5 text-rani-gold group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                        </button>
-                    </div>
-
+                    @endforeach
                 </div>
-            @endforeach
+            </div>
+
+            <!-- Carousel Pagination Indicators -->
+            <div class="flex items-center justify-center gap-2 mt-4 mb-10" x-show="totalItems > itemsPerView">
+                <template x-for="pIndex in totalPages()" :key="pIndex">
+                    <button type="button" 
+                            @click="goTo(pIndex - 1)" 
+                            class="h-2.5 rounded-full transition-all duration-300 cursor-pointer"
+                            :class="currentIndex === (pIndex - 1) ? 'w-8 bg-gradient-to-r from-rani-gold to-yellow-500 shadow-sm' : 'w-2.5 bg-rani-primary/20 hover:bg-rani-primary/40'"
+                            :title="'Go to slide ' + pIndex">
+                    </button>
+                </template>
+            </div>
+
         </div>
 
         <!-- View All Stories CTA -->
-        <div class="text-center">
+        <div class="text-center mt-2">
             <a href="{{ route('stories') }}" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-full border-2 border-rani-primary text-rani-primary-dark font-serif font-bold text-sm hover:bg-rani-primary hover:text-white transition-all shadow-sm hover:shadow-lg">
                 <span>View All Success Stories</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>

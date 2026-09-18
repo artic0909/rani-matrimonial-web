@@ -9,7 +9,7 @@ use App\Models\Story;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    $stories = Story::active()->take(6)->get();
+    $stories = Story::active()->take(9)->get();
     return view('frontend.pages.index', compact('stories'));
 })->name('login');
 
