@@ -787,148 +787,243 @@
                             </select>
                         </div>
                     </div>
-                </div>
-
-                <!-- Shimmer Loading Skeletons (2 Side by Side) -->
-                <div x-show="isLoading" class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                    <template x-for="i in 4" :key="i">
-                        <div class="bg-white rounded-2xl sm:rounded-3xl border border-gray-200/90 shadow-sm overflow-hidden animate-pulse">
-                            <div class="h-48 sm:h-52 bg-gray-200 relative">
-                                <div class="absolute top-2.5 left-2.5 w-16 h-4 bg-gray-300 rounded-full"></div>
-                                <div class="absolute top-2.5 right-2.5 w-7 h-7 bg-gray-300 rounded-full"></div>
-                            </div>
-                            <div class="p-3 sm:p-4 space-y-2.5">
-                                <div class="h-12 bg-gray-100 rounded-xl"></div>
-                                <div class="h-3.5 bg-gray-200 rounded w-3/4"></div>
-                                <div class="h-3 bg-gray-200 rounded w-1/2"></div>
-                                <div class="h-8 bg-gray-200 rounded-xl"></div>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-
-                <!-- Profile Cards Grid (2 Side by Side, Compact Height) -->
-                <div x-show="!isLoading && candidates.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                    <template x-for="match in candidates" :key="match.id">
-                        <div class="bg-white rounded-2xl sm:rounded-3xl border border-gray-200/90 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col justify-between group">
+                <!-- ================= GUEST VISITOR SKELETON WINDOW ================= -->
+                @if(!Auth::check())
+                <div class="space-y-4">
+                    <!-- 6 Realistic Locked Skeleton Cards Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                        @for($i = 1; $i <= 6; $i++)
+                        <div class="bg-white rounded-2xl sm:rounded-3xl border border-gray-200/90 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col justify-between group relative cursor-pointer"
+                             @click="guestModalOpen = true">
                             
                             <div>
-                                <!-- Image & Spotlight Badges Container (Click to open Photo Gallery Modal) -->
-                                <div class="relative h-48 sm:h-52 w-full overflow-hidden bg-gray-100 cursor-pointer group/photo select-none"
-                                     @click="openPhotoGallery(match, 0)"
-                                     title="Click to view profile photos">
-                                     
-                                    <img :src="match.photo" 
-                                         :alt="match.first_name" 
-                                         class="w-full h-full object-cover object-top transition-transform duration-700 group-hover/photo:scale-105">
+                                <!-- Image Skeleton Container with Locked Overlay -->
+                                <div class="relative h-48 sm:h-52 w-full overflow-hidden bg-gradient-to-br from-slate-200 via-slate-100 to-slate-200 animate-pulse flex items-center justify-center">
                                     
-                                    <!-- Top Gradient Overlay -->
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none"></div>
+                                    <!-- Central Locked Silhouette Avatar -->
+                                    <div class="text-center space-y-1.5 z-10">
+                                        <div class="w-14 h-14 sm:w-16 sm:h-16 mx-auto rounded-full bg-white/70 backdrop-blur-md border border-rani-gold/60 shadow-lg flex items-center justify-center text-rani-primary">
+                                            <svg class="w-7 h-7 sm:w-8 sm:h-8 text-rani-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                        </div>
+                                        <span class="text-[10px] font-bold font-sans text-gray-600 bg-white/80 px-2 py-0.5 rounded-full shadow-2xs">Photo Protected</span>
+                                    </div>
 
-                                    <!-- Top Left: Match Percentage Badge -->
+                                    <!-- Top Left: Match Badge -->
                                     <div class="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 z-10">
                                         <span class="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-rani-gold to-yellow-500 text-rani-dark text-[10px] font-bold shadow-md flex items-center gap-1 border border-white/40">
-                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                                            <span x-text="match.match_score + '% Match'"></span>
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                            <span>{{ 90 + ($i % 10) }}% Match</span>
                                         </span>
                                     </div>
 
-                                    <!-- Top Right: Shortlist Heart Action -->
-                                    @auth
-                                    <button type="button" 
-                                            @click.stop="toggleShortlist(match)"
-                                            class="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/80 hover:bg-white backdrop-blur-xs text-gray-700 hover:text-rose-600 shadow-md flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-20 cursor-pointer"
-                                            :class="match.is_shortlisted ? 'text-rose-600 bg-white ring-2 ring-rose-300' : ''"
-                                            :title="match.is_shortlisted ? 'Remove from Shortlist' : 'Add to Shortlist'">
-                                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" :fill="match.is_shortlisted ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                                    </button>
-                                    @endauth
-
-                                    <!-- Bottom Image Overlay Text: Name & ID -->
-                                    <div class="absolute bottom-2 left-2.5 right-2.5 sm:bottom-2.5 sm:left-3 sm:right-3 text-white z-10 flex items-end justify-between">
-                                        <div class="max-w-[70%]">
-                                            <a :href="match.token_url" class="group/name flex items-center gap-1.5 hover:text-rani-gold transition-colors" @click.stop>
-                                                <h3 class="text-base sm:text-lg font-bold font-serif drop-shadow-md truncate" x-text="match.first_name + ' ' + match.last_name"></h3>
-                                                <span x-show="match.verified" class="inline-flex items-center justify-center w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-gradient-to-tr from-blue-600 via-sky-500 to-sky-400 text-white shadow shrink-0" title="Blue Tick Verified Profile">
-                                                    <svg class="w-2 h-2 sm:w-2.5 sm:h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                                </span>
-                                            </a>
-                                            <div class="text-[10px] text-gray-200 font-mono mt-0.5">
-                                                <span x-text="'ID: ' + match.id"></span>
-                                            </div>
-                                        </div>
-
-                                        <!-- Photo Count Badge Indicator -->
-                                        <div class="shrink-0">
-                                            <span class="px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-xs text-white text-[9px] sm:text-[10px] font-semibold flex items-center gap-1 border border-white/20 group-hover/photo:bg-rani-primary group-hover/photo:border-rani-gold transition-colors shadow-sm">
-                                                <svg class="w-3 h-3 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                                <span x-text="(match.photos ? match.photos.length : 1) + ' Photos'"></span>
-                                            </span>
-                                        </div>
+                                    <!-- Top Right: Shortlist Heart -->
+                                    <div class="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/80 backdrop-blur-xs text-gray-400 shadow-md flex items-center justify-center">
+                                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                                     </div>
 
+                                    <!-- Bottom Image Bar -->
+                                    <div class="absolute bottom-2 left-2.5 right-2.5 sm:bottom-2.5 sm:left-3 sm:right-3 z-10 flex items-end justify-between">
+                                        <div class="w-1/2 space-y-1">
+                                            <div class="h-3.5 bg-gray-400/80 rounded w-full"></div>
+                                            <div class="h-2.5 bg-gray-300/80 rounded w-2/3"></div>
+                                        </div>
+                                        <span class="px-2 py-0.5 rounded-full bg-black/60 text-white text-[9px] font-semibold flex items-center gap-1 border border-white/20">
+                                            🔒 3 Photos
+                                        </span>
+                                    </div>
                                 </div>
 
-                                <!-- Card Bio & Particulars -->
-                                <div class="p-3 sm:p-3.5 space-y-2 sm:space-y-2.5">
-                                    
-                                    <!-- Basic Specs Grid -->
-                                    <div class="grid grid-cols-2 gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] text-gray-700 bg-gray-50/90 p-2 sm:p-2.5 rounded-xl border border-gray-100">
-                                        <div class="flex items-center gap-1 overflow-hidden">
-                                            <span class="text-gray-400 shrink-0">Age / Ht:</span>
-                                            <span class="font-bold truncate" x-text="match.age + ' yrs, ' + match.height"></span>
+                                <!-- Card Bio & Particulars Skeletons -->
+                                <div class="p-3 sm:p-3.5 space-y-2.5">
+                                    <!-- 4-Box Specs Grid -->
+                                    <div class="grid grid-cols-2 gap-1.5 p-2 rounded-xl bg-gray-50/90 border border-gray-100">
+                                        <div class="space-y-1">
+                                            <div class="h-2 bg-gray-200 rounded w-1/3"></div>
+                                            <div class="h-3 bg-gray-300 rounded w-3/4"></div>
                                         </div>
-                                        <div class="flex items-center gap-1 overflow-hidden">
-                                            <span class="text-gray-400 shrink-0">Religion:</span>
-                                            <span class="font-bold truncate" x-text="match.religion + (match.community && match.community !== 'All Communities' ? ', ' + match.community : '')"></span>
+                                        <div class="space-y-1">
+                                            <div class="h-2 bg-gray-200 rounded w-1/3"></div>
+                                            <div class="h-3 bg-gray-300 rounded w-4/5"></div>
                                         </div>
-                                        <div class="flex items-center gap-1 overflow-hidden">
-                                            <span class="text-gray-400 shrink-0">Tongue:</span>
-                                            <span class="font-bold truncate" x-text="match.mother_tongue"></span>
+                                        <div class="space-y-1">
+                                            <div class="h-2 bg-gray-200 rounded w-1/3"></div>
+                                            <div class="h-3 bg-gray-300 rounded w-2/3"></div>
                                         </div>
-                                        <div class="flex items-center gap-1 overflow-hidden">
-                                            <span class="text-gray-400 shrink-0">Diet:</span>
-                                            <span class="font-bold truncate" x-text="match.diet"></span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Career & Education -->
-                                    <div class="space-y-1 text-[10px] sm:text-[11px]">
-                                        <div class="flex items-start gap-1.5 text-gray-800">
-                                            <svg class="w-3.5 h-3.5 text-rani-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                            <div class="truncate">
-                                                <p class="font-bold text-gray-900 truncate" x-text="match.profession"></p>
-                                                <p class="text-gray-500 text-[10px] truncate" x-text="match.company_name + ' • ' + match.annual_income"></p>
-                                            </div>
-                                        </div>
-
-                                        <div class="flex items-center gap-1.5 text-gray-600">
-                                            <svg class="w-3.5 h-3.5 text-rani-gold shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
-                                            <span class="truncate" x-text="match.highest_qualification"></span>
-                                        </div>
-
-                                        <div class="flex items-center gap-1.5 text-gray-600">
-                                            <svg class="w-3.5 h-3.5 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                            <span class="truncate" x-text="match.city + ', ' + match.state"></span>
+                                        <div class="space-y-1">
+                                            <div class="h-2 bg-gray-200 rounded w-1/3"></div>
+                                            <div class="h-3 bg-gray-300 rounded w-1/2"></div>
                                         </div>
                                     </div>
 
-                                    <!-- Match Reasons Pill Badges -->
-                                    <div class="flex flex-wrap gap-1 pt-0.5">
-                                        <template x-for="reason in match.match_reasons" :key="reason">
-                                            <span class="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-rani-light text-rani-primary-dark border border-rani-gold/30 flex items-center gap-1">
-                                                <svg class="w-2.5 h-2.5 text-rani-primary" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-                                                <span x-text="reason"></span>
-                                            </span>
-                                        </template>
+                                    <!-- Career & Location Skeleton Bars -->
+                                    <div class="space-y-1.5">
+                                        <div class="h-3 bg-gray-200 rounded w-5/6"></div>
+                                        <div class="h-2.5 bg-gray-200 rounded w-2/3"></div>
+                                        <div class="h-2.5 bg-gray-200 rounded w-1/2"></div>
                                     </div>
 
+                                    <!-- Tags -->
+                                    <div class="flex gap-1.5 pt-1">
+                                        <div class="h-4 bg-rani-light/60 rounded-full w-20"></div>
+                                        <div class="h-4 bg-amber-50 rounded-full w-24"></div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Card Action Buttons -->
-                            <div class="p-2.5 sm:p-3 bg-gray-50/90 border-t border-gray-100 flex items-center">
-                                @auth
+                            <!-- Card Action Button -->
+                            <div class="p-2.5 sm:p-3 bg-gray-50/90 border-t border-gray-100">
+                                <button type="button" 
+                                        @click.stop="guestModalOpen = true" 
+                                        class="w-full py-2.5 px-3 rounded-xl sm:rounded-2xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5 bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white border border-rani-gold/40 cursor-pointer active:scale-98">
+                                    <svg class="w-3.5 h-3.5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                    <span>Register or Login to View Full Profile</span>
+                                </button>
+                            </div>
+
+                        </div>
+                        @endfor
+                    </div>
+                </div>
+                @else
+                <!-- ================= AUTHENTICATED REAL CANDIDATE PROFILES GRID ================= -->
+                <div>
+                    <!-- Shimmer Loading Skeletons for live filtering -->
+                    <div x-show="isLoading" class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                        <template x-for="i in 4" :key="i">
+                            <div class="bg-white rounded-2xl sm:rounded-3xl border border-gray-200/90 shadow-sm overflow-hidden animate-pulse">
+                                <div class="h-48 sm:h-52 bg-gray-200 relative">
+                                    <div class="absolute top-2.5 left-2.5 w-16 h-4 bg-gray-300 rounded-full"></div>
+                                    <div class="absolute top-2.5 right-2.5 w-7 h-7 bg-gray-300 rounded-full"></div>
+                                </div>
+                                <div class="p-3 sm:p-4 space-y-2.5">
+                                    <div class="h-12 bg-gray-100 rounded-xl"></div>
+                                    <div class="h-3.5 bg-gray-200 rounded w-3/4"></div>
+                                    <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                                    <div class="h-8 bg-gray-200 rounded-xl"></div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Profile Cards Grid (2 Side by Side, Compact Height) -->
+                    <div x-show="!isLoading && candidates.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                        <template x-for="match in candidates" :key="match.id">
+                            <div class="bg-white rounded-2xl sm:rounded-3xl border border-gray-200/90 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col justify-between group">
+                                
+                                <div>
+                                    <!-- Image & Spotlight Badges Container (Click to open Photo Gallery Modal) -->
+                                    <div class="relative h-48 sm:h-52 w-full overflow-hidden bg-gray-100 cursor-pointer group/photo select-none"
+                                         @click="openPhotoGallery(match, 0)"
+                                         title="Click to view profile photos">
+                                         
+                                        <img :src="match.photo" 
+                                             :alt="match.first_name" 
+                                             class="w-full h-full object-cover object-top transition-transform duration-700 group-hover/photo:scale-105">
+                                        
+                                        <!-- Top Gradient Overlay -->
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none"></div>
+
+                                        <!-- Top Left: Match Percentage Badge -->
+                                        <div class="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 z-10">
+                                            <span class="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-rani-gold to-yellow-500 text-rani-dark text-[10px] font-bold shadow-md flex items-center gap-1 border border-white/40">
+                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                                <span x-text="match.match_score + '% Match'"></span>
+                                            </span>
+                                        </div>
+
+                                        <!-- Top Right: Shortlist Heart Action -->
+                                        <button type="button" 
+                                                @click.stop="toggleShortlist(match)"
+                                                class="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/80 hover:bg-white backdrop-blur-xs text-gray-700 hover:text-rose-600 shadow-md flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-20 cursor-pointer"
+                                                :class="match.is_shortlisted ? 'text-rose-600 bg-white ring-2 ring-rose-300' : ''"
+                                                :title="match.is_shortlisted ? 'Remove from Shortlist' : 'Add to Shortlist'">
+                                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" :fill="match.is_shortlisted ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                                        </button>
+
+                                        <!-- Bottom Image Overlay Text: Name & ID -->
+                                        <div class="absolute bottom-2 left-2.5 right-2.5 sm:bottom-2.5 sm:left-3 sm:right-3 text-white z-10 flex items-end justify-between">
+                                            <div class="max-w-[70%]">
+                                                <a :href="match.token_url" class="group/name flex items-center gap-1.5 hover:text-rani-gold transition-colors" @click.stop>
+                                                    <h3 class="text-base sm:text-lg font-bold font-serif drop-shadow-md truncate" x-text="match.first_name + ' ' + match.last_name"></h3>
+                                                    <span x-show="match.verified" class="inline-flex items-center justify-center w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-gradient-to-tr from-blue-600 via-sky-500 to-sky-400 text-white shadow shrink-0" title="Blue Tick Verified Profile">
+                                                        <svg class="w-2 h-2 sm:w-2.5 sm:h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                                    </span>
+                                                </a>
+                                                <div class="text-[10px] text-gray-200 font-mono mt-0.5">
+                                                    <span x-text="'ID: ' + match.id"></span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Photo Count Badge Indicator -->
+                                            <div class="shrink-0">
+                                                <span class="px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-xs text-white text-[9px] sm:text-[10px] font-semibold flex items-center gap-1 border border-white/20 group-hover/photo:bg-rani-primary group-hover/photo:border-rani-gold transition-colors shadow-sm">
+                                                    <svg class="w-3 h-3 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                    <span x-text="(match.photos ? match.photos.length : 1) + ' Photos'"></span>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Card Bio & Particulars -->
+                                    <div class="p-3 sm:p-3.5 space-y-2 sm:space-y-2.5">
+                                        
+                                        <!-- Basic Specs Grid -->
+                                        <div class="grid grid-cols-2 gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] text-gray-700 bg-gray-50/90 p-2 sm:p-2.5 rounded-xl border border-gray-100">
+                                            <div class="flex items-center gap-1 overflow-hidden">
+                                                <span class="text-gray-400 shrink-0">Age / Ht:</span>
+                                                <span class="font-bold truncate" x-text="match.age + ' yrs, ' + match.height"></span>
+                                            </div>
+                                            <div class="flex items-center gap-1 overflow-hidden">
+                                                <span class="text-gray-400 shrink-0">Religion:</span>
+                                                <span class="font-bold truncate" x-text="match.religion + (match.community && match.community !== 'All Communities' ? ', ' + match.community : '')"></span>
+                                            </div>
+                                            <div class="flex items-center gap-1 overflow-hidden">
+                                                <span class="text-gray-400 shrink-0">Tongue:</span>
+                                                <span class="font-bold truncate" x-text="match.mother_tongue"></span>
+                                            </div>
+                                            <div class="flex items-center gap-1 overflow-hidden">
+                                                <span class="text-gray-400 shrink-0">Diet:</span>
+                                                <span class="font-bold truncate" x-text="match.diet"></span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Career & Education -->
+                                        <div class="space-y-1 text-[10px] sm:text-[11px]">
+                                            <div class="flex items-start gap-1.5 text-gray-800">
+                                                <svg class="w-3.5 h-3.5 text-rani-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                                <div class="truncate">
+                                                    <p class="font-bold text-gray-900 truncate" x-text="match.profession"></p>
+                                                    <p class="text-gray-500 text-[10px] truncate" x-text="match.company_name + ' • ' + match.annual_income"></p>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center gap-1.5 text-gray-600">
+                                                <svg class="w-3.5 h-3.5 text-rani-gold shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+                                                <span class="truncate" x-text="match.highest_qualification"></span>
+                                            </div>
+
+                                            <div class="flex items-center gap-1.5 text-gray-600">
+                                                <svg class="w-3.5 h-3.5 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                                <span class="truncate" x-text="match.city + ', ' + match.state"></span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Match Reasons Pill Badges -->
+                                        <div class="flex flex-wrap gap-1 pt-0.5">
+                                            <template x-for="reason in match.match_reasons" :key="reason">
+                                                <span class="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-rani-light text-rani-primary-dark border border-rani-gold/30 flex items-center gap-1">
+                                                    <svg class="w-2.5 h-2.5 text-rani-primary" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                                    <span x-text="reason"></span>
+                                                </span>
+                                            </template>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <!-- Card Action Buttons -->
+                                <div class="p-2.5 sm:p-3 bg-gray-50/90 border-t border-gray-100 flex items-center">
                                     <!-- Connect / Send Interest -->
                                     <template x-if="match.request_type === 'none'">
                                         <button type="button" 
@@ -952,38 +1047,34 @@
                                             <span>Mutual Match</span>
                                         </span>
                                     </template>
-                                @else
-                                    <a href="{{ route('register.page') }}" 
-                                       class="w-full py-2 sm:py-2.5 px-3 rounded-xl sm:rounded-2xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1 bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white border border-rani-gold/40 cursor-pointer">
-                                        <span>Register to View Profile</span>
-                                    </a>
-                                @endauth
+                                </div>
+
                             </div>
-
-                        </div>
-                    </template>
-                </div>
-
-                <!-- Empty State -->
-                <div x-show="!isLoading && candidates.length === 0" 
-                     class="bg-white/95 backdrop-blur-md rounded-3xl shadow-xl border border-white/60 p-8 sm:p-12 text-center space-y-4 max-w-xl mx-auto">
-                    
-                    <div class="w-20 h-20 mx-auto rounded-full bg-rani-light/80 border border-rani-gold/40 flex items-center justify-center text-rani-primary shadow-inner">
-                        <svg class="w-10 h-10 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </template>
                     </div>
 
-                    <h3 class="text-xl font-bold font-serif text-gray-900">No Matched Profiles Found</h3>
-                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-md mx-auto">
-                        We couldn't find any profiles matching your exact filter combination. Try clearing some filters or searching by broader criteria.
-                    </p>
+                    <!-- Empty State -->
+                    <div x-show="!isLoading && candidates.length === 0" 
+                         class="bg-white/95 backdrop-blur-md rounded-3xl shadow-xl border border-white/60 p-8 sm:p-12 text-center space-y-4 max-w-xl mx-auto">
+                        
+                        <div class="w-20 h-20 mx-auto rounded-full bg-rani-light/80 border border-rani-gold/40 flex items-center justify-center text-rani-primary shadow-inner">
+                            <svg class="w-10 h-10 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
 
-                    <button type="button" 
-                            @click="resetAllFilters()" 
-                            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all border border-rani-gold/40 cursor-pointer">
-                        <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                        <span>Reset All Filters</span>
-                    </button>
+                        <h3 class="text-xl font-bold font-serif text-gray-900">No Matched Profiles Found</h3>
+                        <p class="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-md mx-auto">
+                            We couldn't find any profiles matching your exact filter combination. Try clearing some filters or searching by broader criteria.
+                        </p>
+
+                        <button type="button" 
+                                @click="resetAllFilters()" 
+                                class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-rani-primary to-rani-primary-dark text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all border border-rani-gold/40 cursor-pointer">
+                            <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            <span>Reset All Filters</span>
+                        </button>
+                    </div>
                 </div>
+                @endif
 
             </div>
 
@@ -1492,11 +1583,115 @@
         </div>
     </template>
 
+    <!-- ================= GUEST GATEKEEPER POPUP MODAL (Without Login) ================= -->
+    @if(!Auth::check())
+    <template x-teleport="body">
+        <div x-show="guestModalOpen" 
+             x-cloak
+             class="fixed inset-0 z-[99999] flex items-center justify-center p-4 overflow-y-auto" 
+             style="display: none;">
+            
+            <!-- Dark Luxury Backdrop Blur -->
+            <div x-show="guestModalOpen"
+                 x-transition:enter="transition-opacity ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition-opacity ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 bg-black/80 backdrop-blur-md z-[99998]"></div>
+
+            <!-- Simple & Elegant Modal Window -->
+            <div x-show="guestModalOpen"
+                 x-transition:enter="transition ease-out duration-300 transform"
+                 x-transition:enter-start="opacity-0 scale-95 translate-y-3"
+                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-200 transform"
+                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 scale-95 translate-y-3"
+                 class="relative w-full max-w-md bg-gradient-to-b from-[#3D0817] via-[#2A040F] to-[#1A0209] border border-rani-gold/80 rounded-3xl p-6 sm:p-7 shadow-[0_20px_60px_rgba(0,0,0,0.85)] text-white z-[99999] overflow-hidden my-auto">
+                
+                <!-- Glowing Ambient Accent -->
+                <div class="absolute -top-20 -right-20 w-48 h-48 bg-amber-500/15 rounded-full blur-2xl pointer-events-none"></div>
+
+                <!-- Close Button -->
+                <button type="button" 
+                        @click="guestModalOpen = false" 
+                        class="absolute top-4 right-4 text-gray-400 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors z-20 cursor-pointer"
+                        title="Close">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+
+                <div class="relative z-10 text-center space-y-4 pt-1">
+                    
+                    <!-- Lock Icon -->
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-rani-gold/60 text-rani-gold flex items-center justify-center shadow-md">
+                        <svg class="w-7 h-7 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+
+                    <!-- Title & Short Subtitle -->
+                    <div class="space-y-1.5 px-2">
+                        <h2 class="text-xl sm:text-2xl font-serif font-bold text-white tracking-wide">
+                            Unlock Verified Profiles
+                        </h2>
+                        <p class="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                            Create a free account or log in to explore all verified profiles, view photos, and connect with matches.
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="space-y-2.5 pt-2">
+                        <!-- Create Account -->
+                        <a href="{{ route('register.page') }}" 
+                           class="w-full py-3 px-5 rounded-2xl bg-gradient-to-r from-rani-gold via-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-yellow-500 text-rani-dark font-bold text-sm shadow-md flex items-center justify-center gap-2 transform hover:-translate-y-0.5 active:translate-y-0 transition-all border border-amber-300 cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                            <span>Create Free Account</span>
+                        </a>
+
+                        <!-- Login -->
+                        <button type="button" 
+                                @click="guestModalOpen = false; $dispatch('open-login')" 
+                                class="w-full py-2.5 px-5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 hover:border-rani-gold/60 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer">
+                            <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                            <span>Already have an account? Log In</span>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Sticky Bottom Gatekeeper Banner (When popup modal is closed) -->
+        <div x-show="!guestModalOpen" 
+             x-transition
+             class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-2xl bg-gradient-to-r from-rani-dark via-rani-primary-dark to-rani-dark border-2 border-rani-gold/80 rounded-2xl p-3 sm:p-4 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-white">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-rani-gold/20 text-rani-gold flex items-center justify-center shrink-0 border border-rani-gold/40">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                </div>
+                <div>
+                    <p class="text-xs sm:text-sm font-bold font-serif text-white">Unlock All 1,000+ Verified Profiles</p>
+                    <p class="text-[10px] text-gray-300">Create an account or log in to view full candidate details</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <button type="button" @click="$dispatch('open-login')" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-white transition-colors cursor-pointer">Log In</button>
+                <a href="{{ route('register.page') }}" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-rani-gold to-yellow-500 hover:from-yellow-400 hover:to-amber-500 text-rani-dark text-xs font-black shadow-md hover:scale-105 transition-all cursor-pointer">Register Free</a>
+            </div>
+        </div>
+    </template>
+    @endif
+
 </div>
 
 <script>
 window.searchManager = function() {
     return {
+        isGuest: {{ Auth::check() ? 'false' : 'true' }},
+        guestModalOpen: {{ Auth::check() ? 'false' : 'true' }},
+
         masterData: {
             religions: @json($religions ?? []),
             countries: @json($countries ?? []),
@@ -1556,6 +1751,12 @@ window.searchManager = function() {
         activePhotoIndex: 0,
 
         initSearch() {
+            if (this.isGuest) {
+                this.totalCount = '1,000+';
+                this.isLoading = false;
+                this.guestModalOpen = true;
+                return;
+            }
             this.fetchResults();
         },
 
@@ -1641,6 +1842,10 @@ window.searchManager = function() {
         },
 
         resetAllFilters() {
+            if (this.isGuest) {
+                this.guestModalOpen = true;
+                return;
+            }
             this.filters = {
                 keyword: '',
                 gender: 'all',
@@ -1680,6 +1885,10 @@ window.searchManager = function() {
         },
 
         async fetchResults() {
+            if (this.isGuest) {
+                this.guestModalOpen = true;
+                return;
+            }
             this.isLoading = true;
 
             try {

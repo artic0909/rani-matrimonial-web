@@ -90,6 +90,8 @@
         });
     }
 }" @scroll.window="scrolled = (window.pageYOffset > 20)" 
+    @open-login.window="showLogin = true; loginStep = 1; authError = '';"
+    @open-register.window="showRegister = true; registerStep = 1; authError = '';"
     class="fixed w-full top-0 z-50 transition-all duration-300"
     :class="{ 'bg-rani-light shadow-md py-2': scrolled, 'bg-transparent py-4': !scrolled }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
