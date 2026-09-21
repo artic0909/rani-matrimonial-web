@@ -156,7 +156,6 @@
                         </label>
                         <div class="flex gap-2">
                             <select name="country_code" class="w-24 sm:w-32 py-2.5 sm:py-3 px-2 rounded-xl border border-gray-300 bg-gray-50 text-xs sm:text-sm font-bold text-gray-700 focus:border-rani-primary focus:ring-2 focus:ring-rani-primary/20 transition shrink-0">
-                                <option value="+91" {{ old('country_code', '+91') == '+91' ? 'selected' : '' }}>🇮🇳 +91</option>
                                 <option value="+1" {{ old('country_code', '+1') == '+1' ? 'selected' : '' }}>🇺🇸 +1</option>
                                 <option value="+44" {{ old('country_code', '+44') == '+44' ? 'selected' : '' }}>🇬🇧 +44</option>
                                 <option value="+971" {{ old('country_code', '+971') == '+971' ? 'selected' : '' }}>🇦🇪 +971</option>
@@ -166,6 +165,7 @@
                                 <option value="+966" {{ old('country_code', '+966') == '+966' ? 'selected' : '' }}>🇸🇦 +966</option>
                                 <option value="+974" {{ old('country_code', '+974') == '+974' ? 'selected' : '' }}>🇶🇦 +974</option>
                                 <option value="+1-CA" {{ old('country_code', '+1-CA') == '+1-CA' ? 'selected' : '' }}>🇨🇦 +1</option>
+                                <option value="+91" {{ old('country_code', '+91') == '+91' ? 'selected' : '' }}>🇮🇳 +91</option>
                             </select>
                             <div class="relative flex-1 min-w-0">
                                 <input type="tel" id="mobile" name="mobile" required
