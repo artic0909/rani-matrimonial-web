@@ -51,7 +51,7 @@
 
     // Trigger momentary blur shield
     let shieldTimeout = null;
-    function triggerPrivacyShield(duration = 1400, message = '🔒 Inspect & screenshots are restricted for privacy.') {
+    function triggerPrivacyShield(duration = 1400, message = 'Inspect & screenshots are restricted for privacy.') {
         document.body.classList.add('privacy-shield-active');
         showPrivacyToast(message);
 
@@ -73,7 +73,7 @@
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
-        showPrivacyToast('🔒 Right-click is restricted for candidate privacy & security.');
+        showPrivacyToast('Right-click is restricted for candidate privacy & security.');
         return false;
     }
 
@@ -104,7 +104,7 @@
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();
-            showPrivacyToast('🔒 Developer Tools inspection is restricted.');
+            showPrivacyToast('Developer Tools inspection is restricted.');
             return false;
         }
 
@@ -230,7 +230,7 @@
             return true;
         }
         e.preventDefault();
-        showPrivacyToast('🔒 Copying text & photos is protected.');
+        showPrivacyToast('Copying text & photos is protected.');
         return false;
     }, { capture: true });
 
