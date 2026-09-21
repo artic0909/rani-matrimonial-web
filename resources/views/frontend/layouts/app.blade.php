@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Ranimatrimonial - Find your perfect life partner. Uniting souls across India.">
-    <title>@yield('title', 'Ranimatrimonial | Find Your Perfect Partner')</title>
+    <title>@yield('title', 'Rani Matrimonial | Find Your Perfect Partner - 100% Verified Matchmaking')</title>
+
+    @include('frontend.includes.seo')
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,5 +56,6 @@
     </main>
 
     @include('frontend.includes.footer')
+    @include('frontend.includes.script')
 </body>
 </html>

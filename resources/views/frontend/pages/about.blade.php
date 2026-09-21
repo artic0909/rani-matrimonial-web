@@ -1,6 +1,58 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'About Us | Rani Matrimonial - Where Soulmates Meet')
+@section('title', 'About Us | Rani Matrimonial - Trusted Indian Matchmaking Platform')
+@section('meta_description', 'Learn about Rani Matrimonial, managed by Sumatra Sales Private Limited. Discover our royal heritage, mission, 100% verified matchmaking standards, and dedication to uniting souls.')
+@section('meta_keywords', 'about rani matrimonial, sumatra sales private limited, trusted matrimony india, verified brides grooms, royal matchmaking, marriage bureau india, authentic matrimony')
+@section('canonical_url', route('about'))
+@section('og_type', 'website')
+@section('og_title', 'About Rani Matrimonial | Uniting Souls with Honor and Trust')
+@section('og_description', 'Explore Rani Matrimonial\'s heritage, vision, 100% verified matchmaking standards, and dedicated support for brides, grooms, and families across India.')
+@section('og_image', asset('img/hero.png'))
+
+@section('schema')
+@php
+    $aboutSchema = [
+        '@context' => 'https://schema.org',
+        '@graph' => [
+            [
+                '@type' => 'AboutPage',
+                '@id' => route('about') . '/#webpage',
+                'url' => route('about'),
+                'name' => 'About Rani Matrimonial - Where Soulmates Meet',
+                'description' => 'Learn about Rani Matrimonial, managed by Sumatra Sales Private Limited. Discover our mission, core values, 100% verified matchmaking process, and royal heritage.',
+                'isPartOf' => [
+                    '@id' => url('/') . '/#website'
+                ],
+                'breadcrumb' => [
+                    '@id' => route('about') . '/#breadcrumb'
+                ],
+                'inLanguage' => 'en-IN'
+            ],
+            [
+                '@type' => 'BreadcrumbList',
+                '@id' => route('about') . '/#breadcrumb',
+                'itemListElement' => [
+                    [
+                        '@type' => 'ListItem',
+                        'position' => 1,
+                        'name' => 'Home',
+                        'item' => url('/')
+                    ],
+                    [
+                        '@type' => 'ListItem',
+                        'position' => 2,
+                        'name' => 'About Us',
+                        'item' => route('about')
+                    ]
+                ]
+            ]
+        ]
+    ];
+@endphp
+<script type="application/ld+json">
+{!! json_encode($aboutSchema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
+</script>
+@endsection
 
 @section('content')
 <div class="relative min-h-[100svh] pt-28 md:pt-36 pb-20 overflow-x-hidden">

@@ -1,6 +1,94 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Success Stories | Rani Matrimonial')
+@section('title', 'Success Stories & Happy Couples | Rani Matrimonial')
+@section('meta_description', 'Read real matrimonial success stories and testimonials of happy couples who found their soulmates on Rani Matrimonial. Real couples, real love stories.')
+@section('meta_keywords', 'matrimonial success stories, real marriage stories, rani matrimonial reviews, happy couples, wedding stories india, matrimony testimonials, bride groom stories, arranged marriage stories')
+@section('canonical_url', route('stories'))
+@section('og_type', 'website')
+@section('og_title', 'Matrimonial Success Stories | Rani Matrimonial')
+@section('og_description', 'Witness how two souls, guided by destiny and trust on Rani Matrimonial, found their everlasting happiness together.')
+@section('og_image', $stories->count() > 0 && $stories->first()->image_url ? $stories->first()->image_url : asset('img/hero.png'))
+
+@section('schema')
+@php
+    $graph = [
+        [
+            '@type' => 'CollectionPage',
+            '@id' => route('stories') . '/#webpage',
+            'url' => route('stories'),
+            'name' => 'Matrimonial Success Stories | Rani Matrimonial',
+            'description' => 'Read real matrimonial success stories and testimonials of happy couples who found their soulmates on Rani Matrimonial.',
+            'isPartOf' => [
+                '@id' => url('/') . '/#website'
+            ],
+            'breadcrumb' => [
+                '@id' => route('stories') . '/#breadcrumb'
+            ],
+            'inLanguage' => 'en-IN'
+        ],
+        [
+            '@type' => 'BreadcrumbList',
+            '@id' => route('stories') . '/#breadcrumb',
+            'itemListElement' => [
+                [
+                    '@type' => 'ListItem',
+                    'position' => 1,
+                    'name' => 'Home',
+                    'item' => url('/')
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 2,
+                    'name' => 'Success Stories',
+                    'item' => route('stories')
+                ]
+            ]
+        ]
+    ];
+
+    if ($stories->count() > 0) {
+        $itemList = [
+            '@type' => 'ItemList',
+            '@id' => route('stories') . '/#itemlist',
+            'name' => 'Rani Matrimonial Happy Couples',
+            'itemListElement' => []
+        ];
+
+        foreach ($stories->take(10) as $index => $s) {
+            $item = [
+                '@type' => 'ListItem',
+                'position' => $index + 1,
+                'item' => [
+                    '@type' => 'CreativeWork',
+                    'name' => $s->title,
+                    'headline' => $s->couple_names ?: $s->title,
+                    'image' => $s->image_url,
+                    'description' => Str::limit(strip_tags($s->descriptions), 200),
+                    'publisher' => [
+                        '@id' => url('/') . '/#organization'
+                    ]
+                ]
+            ];
+
+            if ($s->wedding_date) {
+                $item['item']['datePublished'] = $s->wedding_date->format('Y-m-d');
+            }
+
+            $itemList['itemListElement'][] = $item;
+        }
+
+        $graph[] = $itemList;
+    }
+
+    $storiesSchema = [
+        '@context' => 'https://schema.org',
+        '@graph' => $graph
+    ];
+@endphp
+<script type="application/ld+json">
+{!! json_encode($storiesSchema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
+</script>
+@endsection
 
 @section('content')
 <div class="relative min-h-[100svh] pt-28 md:pt-36 pb-20 overflow-x-hidden" x-data="{

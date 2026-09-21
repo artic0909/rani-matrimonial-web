@@ -68,13 +68,12 @@
         }, duration);
     }
 
-    // ================= 1. ABSOLUTE RIGHT-CLICK BLOCK (TEMPORARILY COMMENTED FOR TESTING RESPONSIVENESS) =================
-    /*
+    // ================= 1. ABSOLUTE RIGHT-CLICK BLOCK =================
     function blockContextMenu(e) {
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
-        showPrivacyToast('🔒 Right-click inspect is disabled for candidate security.');
+        showPrivacyToast('🔒 Right-click is restricted for candidate privacy & security.');
         return false;
     }
 
@@ -82,7 +81,6 @@
     document.addEventListener('contextmenu', blockContextMenu, { capture: true, passive: false });
     document.documentElement.addEventListener('contextmenu', blockContextMenu, { capture: true, passive: false });
     document.oncontextmenu = function() { return false; };
-    */
 
     // ================= 2. PREVENT IMAGE / MEDIA DRAGGING =================
     document.addEventListener('dragstart', function(e) {
