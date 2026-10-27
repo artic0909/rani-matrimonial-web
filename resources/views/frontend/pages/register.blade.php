@@ -127,6 +127,7 @@
         maritalStatuses: {{ Js::from($maritalStatuses) }},
         heights: {{ Js::from($heights) }},
         diets: {{ Js::from($diets) }},
+        qualifications: {{ Js::from($qualifications) }},
         incomes: {{ Js::from($incomes) }},
         workingWiths: {{ Js::from($workingWiths) }},
         hobbies: {{ Js::from($hobbies) }}
@@ -571,11 +572,9 @@
                                 <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Highest Qualification</label>
                                 <select name="highest_qualification" x-model="formData.highest_qualification" required class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base">
                                     <option value="" disabled>Select Qualification</option>
-                                    <option value="B.E / B.Tech">B.E / B.Tech</option>
-                                    <option value="B.A">B.A</option>
-                                    <option value="MBA">MBA</option>
-                                    <option value="PhD">PhD</option>
-                                    <option value="Medical">Medical</option>
+                                    <template x-for="q in masterData.qualifications" :key="q.id">
+                                        <option :value="q.name" x-text="q.name"></option>
+                                    </template>
                                 </select>
                             </div>
                             <div>
@@ -833,6 +832,7 @@
                 maritalStatuses: config.maritalStatuses || [],
                 heights: config.heights || [],
                 diets: config.diets || [],
+                qualifications: config.qualifications || [],
                 incomes: config.incomes || [],
                 workingWiths: config.workingWiths || [],
                 hobbies: config.hobbies || []

@@ -15,6 +15,7 @@ use App\Models\Hobby;
 use App\Models\Income;
 use App\Models\MaritalStatus;
 use App\Models\Notification;
+use App\Models\Qualification;
 use App\Models\Referral;
 use App\Models\Religion;
 use App\Models\Shortlisted;
@@ -351,6 +352,7 @@ class AuthController extends Controller
         $maritalStatuses = MaritalStatus::all();
         $heights = Height::all();
         $diets = Diet::all();
+        $qualifications = Qualification::all();
         $incomes = Income::all();
         $workingWiths = WorkingWith::all();
         $hobbies = Hobby::all();
@@ -361,6 +363,7 @@ class AuthController extends Controller
             'maritalStatuses',
             'heights',
             'diets',
+            'qualifications',
             'incomes',
             'workingWiths',
             'hobbies'
