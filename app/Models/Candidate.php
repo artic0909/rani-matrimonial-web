@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 class Candidate extends Authenticatable
 {
+    use HasApiTokens;
+
     protected $fillable = [
         'candidate_code', 'profile_id',
         'mobile', 'profile_for', 'gender', 'first_name', 'last_name', 'dob', 'religion',
