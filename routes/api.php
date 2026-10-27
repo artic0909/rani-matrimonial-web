@@ -30,8 +30,8 @@ Route::get('/registration-options', [AuthController::class, 'registrationOptions
 Route::post('/register', [AuthController::class, 'registerFinal']);
 Route::post('/register/final', [AuthController::class, 'registerFinal'])->name('register.final');
 
-// Protected Routes (Sanctum Authenticated Candidates)
-Route::middleware('auth:sanctum')->group(function () {
+// Protected Routes (Token Authenticated Candidates)
+Route::middleware(\App\Http\Middleware\AuthenticateApiToken::class)->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // Candidate Dashboard
