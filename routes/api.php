@@ -16,18 +16,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Public Authentication & Pre-registration Endpoints
-Route::post('/send-otp', [AuthController::class, 'sendOtp']);
-Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
-Route::post('/check-user-exists', [AuthController::class, 'checkUserExists']);
+Route::post('/send-otp', [AuthController::class, 'sendOtp'])->name('send.otp');
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.otp');
+Route::post('/check-user-exists', [AuthController::class, 'checkUserExists'])->name('check.user.exists');
 
 // Registration Flows
-Route::post('/send-registration-otp', [AuthController::class, 'sendRegistrationOtp']);
-Route::post('/verify-registration-otp', [AuthController::class, 'verifyRegistrationOtp']);
-Route::post('/send-selfie-link', [AuthController::class, 'sendSelfieLink']);
-Route::post('/save-phone-selfie', [AuthController::class, 'savePhoneSelfie']);
-Route::get('/check-selfie-status', [AuthController::class, 'checkSelfieStatus']);
-Route::get('/registration-options', [AuthController::class, 'registrationOptions']);
+Route::post('/send-registration-otp', [AuthController::class, 'sendRegistrationOtp'])->name('send.registration.otp');
+Route::post('/verify-registration-otp', [AuthController::class, 'verifyRegistrationOtp'])->name('verify.registration.otp');
+Route::post('/send-selfie-link', [AuthController::class, 'sendSelfieLink'])->name('send.selfie.link');
+Route::post('/save-phone-selfie', [AuthController::class, 'savePhoneSelfie'])->name('save.phone.selfie');
+Route::get('/check-selfie-status', [AuthController::class, 'checkSelfieStatus'])->name('check.selfie.status');
+Route::get('/registration-options', [AuthController::class, 'registrationOptions'])->name('registration.options');
 Route::post('/register', [AuthController::class, 'registerFinal']);
+Route::post('/register/final', [AuthController::class, 'registerFinal'])->name('register.final');
 
 // Protected Routes (Sanctum Authenticated Candidates)
 Route::middleware('auth:sanctum')->group(function () {

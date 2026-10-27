@@ -43,20 +43,9 @@ Route::get('/terms-and-conditions', function () {
     return view('frontend.pages.terms_conditions');
 })->name('terms.conditions');
 
-// Candidate Auth Routes
-Route::post('/api/send-otp', [AuthController::class, 'sendOtp'])->name('send.otp');
-Route::post('/api/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.otp');
-Route::post('/api/check-user-exists', [AuthController::class, 'checkUserExists'])->name('check.user.exists');
-Route::post('/api/send-registration-otp', [AuthController::class, 'sendRegistrationOtp'])->name('send.registration.otp');
-Route::post('/api/verify-registration-otp', [AuthController::class, 'verifyRegistrationOtp'])->name('verify.registration.otp');
-Route::post('/api/send-selfie-link', [AuthController::class, 'sendSelfieLink'])->name('send.selfie.link');
-
+// Candidate Registration Pages & Web Logout
 Route::get('/register/selfie-capture', [AuthController::class, 'showSelfieCapture'])->name('register.selfie.capture');
-Route::post('/api/save-phone-selfie', [AuthController::class, 'savePhoneSelfie'])->name('save.phone.selfie');
-Route::get('/api/check-selfie-status', [AuthController::class, 'checkSelfieStatus'])->name('check.selfie.status');
-
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register.page');
-Route::post('/api/register/final', [AuthController::class, 'registerFinal'])->name('register.final');
 Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Candidate Dashboard, Profile, Photos, Wallet & Matches
