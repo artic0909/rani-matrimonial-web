@@ -136,7 +136,7 @@ class AuthController extends Controller
     {
         // Support checking either (email+mobile) or (aadhar_number)
         if ($request->has('aadhar_number')) {
-            $request->validate(['aadhar_number' => 'required|digits:12']);
+            $request->validate(['aadhar_number' => 'required|regex:/^[0-9]{1,25}$/']);
             $exists = Candidate::where('aadhar_number', $request->aadhar_number)->first();
             if ($exists) {
                 return response()->json(['exists' => true, 'message' => 'This Aadhar Number is already registered.']);
@@ -375,7 +375,7 @@ class AuthController extends Controller
             'gender' => 'required|string',
             'first_name' => 'required|string',
             'last_name' => 'required|string',
-            'aadhar_number' => 'required|digits:12|unique:candidates,aadhar_number',
+            'aadhar_number' => 'required|regex:/^[0-9]{1,25}$/|unique:candidates,aadhar_number',
             'dob' => 'required|date',
             'religion' => 'required|string',
             'community' => 'required|string',

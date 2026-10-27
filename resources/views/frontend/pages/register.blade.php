@@ -332,7 +332,7 @@
 
                                 <div>
                                     <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Aadhar Number</label>
-                                    <input type="text" x-model="formData.aadhar_number" placeholder="12-digit Aadhar Number" maxlength="12"
+                                    <input type="text" x-model="formData.aadhar_number" placeholder="Aadhar Number (up to 25 digits)" maxlength="25"
                                         class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base"
                                         @input="formData.aadhar_number = $event.target.value.replace(/[^0-9]/g, '')">
                                 </div>
@@ -988,7 +988,7 @@
                 
                 if (this.step === 3) {
                     if (!this.formData.first_name || !this.formData.last_name) return this.showError("First name and Last name are required.");
-                    if (!this.formData.aadhar_number || this.formData.aadhar_number.toString().length !== 12) return this.showError("Please enter a valid 12-digit Aadhar Number.");
+                    if (!this.formData.aadhar_number || this.formData.aadhar_number.toString().length > 25) return this.showError("Aadhar number must be up to 25 digits.");
                     
                     fetch('/api/check-user-exists', {
                         method: 'POST',
