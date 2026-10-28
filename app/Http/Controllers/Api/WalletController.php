@@ -395,7 +395,7 @@ class WalletController extends Controller
         ]);
 
         /** @var Candidate $candidate */
-        $candidate = Auth::user() ?? Auth::guard('web')->user();
+        $candidate = $request->user() ?? Auth::user();
         if (! $candidate) {
             return response()->json([
                 'success' => false,
@@ -480,7 +480,7 @@ class WalletController extends Controller
         }
 
         /** @var Candidate $candidate */
-        $candidate = Auth::user() ?? Auth::guard('web')->user();
+        $candidate = $request->user() ?? Auth::user();
         if (! $candidate) {
             return response()->json([
                 'success' => false,
