@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             MasterDataSeeder::class,
             CandidateDummySeeder::class,
             FemaleCandidateSeeder::class,
+            MuslimCandidateSeeder::class,
             StorySeeder::class,
         ]);
     }
