@@ -48,6 +48,7 @@ return [
         'whatsapp_number' => env('TWILIO_WHATSAPP_NUMBER'),
         'otp_template_sid' => env('TWILIO_WHATSAPP_TEMPLATE_SID', 'HX669abffc47f8e40515248108fed98ad8'),
         'selfie_template_sid' => env('TWILIO_WHATSAPP_SELFIE_TEMPLATE_SID', 'HXd39d659900b66de60aa305cb61de868c'),
+        'welcome_template_sid' => env('TWILIO_WHATSAPP_WELCOME_TEMPLATE_SID', 'HX05336e99a055aea550db5d5e69e6fbf0'),
         'bluetick_template_sid' => 'HX50f78c16ddaa58da573eb2f500f18505',
     ],
 

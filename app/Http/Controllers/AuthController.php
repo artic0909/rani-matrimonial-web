@@ -548,30 +548,36 @@ class AuthController extends Controller
 
         // Send Welcome WhatsApp Message
         try {
-            $apiKey = env('TWILIO_SID');
-            $apiSecret = env('TWILIO_AUTH_TOKEN');
-            $accountSid = env('TWILIO_ACCOUNT_SID');
-            $twilioNumber = env('TWILIO_WHATSAPP_NUMBER');
+            $apiKey = config('services.twilio.sid') ?: env('TWILIO_SID');
+            $apiSecret = config('services.twilio.auth_token') ?: env('TWILIO_AUTH_TOKEN');
+            $accountSid = config('services.twilio.account_sid') ?: env('TWILIO_ACCOUNT_SID');
+            $twilioNumber = config('services.twilio.whatsapp_number') ?: env('TWILIO_WHATSAPP_NUMBER');
 
             if ($apiKey && $apiSecret && $accountSid && $twilioNumber) {
                 $twilio = new Client($apiKey, $apiSecret, $accountSid);
-                $formattedMobile = 'whatsapp:+91'.ltrim($candidate->mobile, '0');
+                $cleanCandidateMobile = substr(preg_replace('/[^0-9]/', '', (string) $candidate->mobile), -10);
+                $formattedMobile = 'whatsapp:+91' . $cleanCandidateMobile;
+                $fromNumber = str_starts_with($twilioNumber, 'whatsapp:') ? $twilioNumber : 'whatsapp:' . $twilioNumber;
 
-                $templateSid = 'HX05336e99a055aea550db5d5e69e6fbf0';
+                $templateSid = config('services.twilio.welcome_template_sid') ?: (env('TWILIO_WHATSAPP_WELCOME_TEMPLATE_SID') ?: 'HX05336e99a055aea550db5d5e69e6fbf0');
 
-                $twilio->messages->create(
+                $message = $twilio->messages->create(
                     $formattedMobile,
                     [
-                        'from' => $twilioNumber,
+                        'from' => $fromNumber,
                         'contentSid' => $templateSid,
                         'contentVariables' => json_encode([
                             '1' => $candidate->first_name,
                         ]),
                     ]
                 );
+
+                \Log::info("Welcome WhatsApp Message sent to {$formattedMobile}, Twilio SID: {$message->sid}");
+            } else {
+                \Log::warning("Twilio credentials incomplete for Welcome WhatsApp message to candidate {$candidate->id}");
             }
         } catch (\Exception $e) {
-            \Log::error('Welcome WhatsApp Message Error: '.$e->getMessage());
+            \Log::error('Welcome WhatsApp Message Error: ' . $e->getMessage());
         }
 
         // Send New Candidate Registration Notification Email to Admin
