@@ -53,6 +53,14 @@ class Candidate extends Authenticatable
         'is_active' => true,
     ];
 
+    /**
+     * Disable remember_token since candidates table does not have this column.
+     */
+    public function getRememberTokenName(): string
+    {
+        return '';
+    }
+
     protected static function booted(): void
     {
         static::creating(function ($candidate) {

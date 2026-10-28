@@ -128,7 +128,7 @@ class AuthController extends Controller
             return response()->json(['success' => false, 'message' => 'Candidate record not found.'], 404);
         }
 
-        Auth::guard('web')->login($candidate, true);
+        Auth::guard('web')->login($candidate);
         if ($request->hasSession()) {
             $request->session()->regenerate();
         }

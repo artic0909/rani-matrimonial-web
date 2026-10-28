@@ -336,7 +336,7 @@ class AuthController extends Controller
 
         // Support session login for web requests if session exists
         if ($request->hasSession()) {
-            Auth::guard('web')->login($candidate, true);
+            Auth::guard('web')->login($candidate);
             $request->session()->regenerate();
         }
 
@@ -853,7 +853,7 @@ class AuthController extends Controller
 
         // Support session login for web requests if session exists
         if ($request->hasSession()) {
-            Auth::guard('web')->login($candidate, true);
+            Auth::guard('web')->login($candidate);
             $request->session()->regenerate();
         }
 
