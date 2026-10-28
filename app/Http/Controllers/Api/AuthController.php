@@ -650,6 +650,7 @@ class AuthController extends Controller
             'profile_for' => 'required|string',
             'gender' => 'required|string',
             'first_name' => 'required|string',
+            'middle_name' => 'nullable|string',
             'last_name' => 'required|string',
             'aadhar_number' => 'required|digits:12|unique:candidates,aadhar_number',
             'dob' => 'required|date',

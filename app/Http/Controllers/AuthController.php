@@ -313,11 +313,14 @@ class AuthController extends Controller
     public function savePhoneSelfie(Request $request)
     {
         $request->validate([
-            'mobile' => 'required|digits:10',
+            'mobile' => 'required|string',
             'selfie_data' => 'required|string',
         ]);
 
-        $mobile = $request->mobile;
+        $rawMobile = $request->input('mobile', '');
+        $cleanMobile = preg_replace('/[^0-9]/', '', (string) $rawMobile);
+        $mobile = substr($cleanMobile, -10);
+
         // Save selfie data URL into cache for 30 minutes
         Cache::put('selfie_verified_'.$mobile, $request->selfie_data, now()->addMinutes(30));
 
@@ -327,7 +330,10 @@ class AuthController extends Controller
     // Desktop polling to check if selfie was captured
     public function checkSelfieStatus(Request $request)
     {
-        $mobile = $request->query('phone');
+        $rawPhone = $request->query('phone', $request->query('mobile', ''));
+        $cleanMobile = preg_replace('/[^0-9]/', '', (string) $rawPhone);
+        $mobile = substr($cleanMobile, -10);
+
         if (! $mobile) {
             return response()->json(['success' => false]);
         }
@@ -373,10 +379,16 @@ class AuthController extends Controller
     // Process Final Registration
     public function registerFinal(Request $request)
     {
+        $rawMobile = $request->input('mobile', '');
+        $cleanMobile = preg_replace('/[^0-9]/', '', (string) $rawMobile);
+        $mobile = substr($cleanMobile, -10);
+        $request->merge(['mobile' => $mobile]);
+
         $validated = $request->validate([
             'profile_for' => 'required|string',
             'gender' => 'required|string',
             'first_name' => 'required|string',
+            'middle_name' => 'nullable|string',
             'last_name' => 'required|string',
             'aadhar_number' => 'required|digits:12|unique:candidates,aadhar_number',
             'dob' => 'required|date',
@@ -409,13 +421,20 @@ class AuthController extends Controller
             'company_address' => 'nullable|string',
 
             'about_yourself' => 'nullable|string',
-            'hobbies_interests' => 'nullable|array',
+            'hobbies_interests' => 'nullable',
             'referral_code' => 'nullable|string|max:50',
-            'profile_picture' => 'nullable|image|max:15360', // Allow images up to 15MB, compressed on server
-            'selfie_image' => 'required|file|mimes:jpeg,png,jpg,webp|max:15360', // Mandatory, compressed on server
+            'profile_picture' => 'nullable', // Allow image file or base64
+            'selfie_image' => 'nullable',
+            'selfie_data' => 'nullable|string',
         ]);
 
-        $candidateData = collect($validated)->except(['referral_code'])->toArray();
+        // Parse hobbies_interests if passed as JSON string
+        if (isset($validated['hobbies_interests']) && is_string($validated['hobbies_interests'])) {
+            $decodedHobbies = json_decode($validated['hobbies_interests'], true);
+            $validated['hobbies_interests'] = is_array($decodedHobbies) ? $decodedHobbies : [$validated['hobbies_interests']];
+        }
+
+        $candidateData = collect($validated)->except(['referral_code', 'selfie_image', 'selfie_data'])->toArray();
         if (empty($candidateData['income_type'])) {
             $candidateData['income_type'] = $candidateData['annual_income'];
         }
@@ -423,7 +442,7 @@ class AuthController extends Controller
         // Initialize Intervention Image Manager
         $manager = new ImageManager(new Driver);
 
-        // Handle file upload and compression
+        // 1. Handle profile picture upload or base64 string
         if ($request->hasFile('profile_picture')) {
             $file = $request->file('profile_picture');
             $filename = uniqid('profile_').'.webp';
@@ -434,8 +453,23 @@ class AuthController extends Controller
             Storage::disk('public')->put($path, (string) $encoded);
 
             $candidateData['profile_picture'] = $path;
+        } elseif ($request->filled('profile_picture') && is_string($request->profile_picture) && str_starts_with($request->profile_picture, 'data:image')) {
+            $filename = uniqid('profile_').'.webp';
+            $path = 'profiles/'.$filename;
+
+            $data = preg_replace('#^data:image/\w+;base64,#i', '', $request->profile_picture);
+            $decodedData = base64_decode($data);
+            if ($decodedData) {
+                $image = $manager->decode($decodedData);
+                $encoded = $image->scaleDown(1200)->encodeUsingFileExtension('webp', 70);
+                Storage::disk('public')->put($path, (string) $encoded);
+
+                $candidateData['profile_picture'] = $path;
+            }
         }
 
+        // 2. Handle selfie image (file, base64 input, or cached selfie)
+        $selfieSaved = false;
         if ($request->hasFile('selfie_image')) {
             $file = $request->file('selfie_image');
             $filename = uniqid('selfie_').'.webp';
@@ -446,9 +480,44 @@ class AuthController extends Controller
             Storage::disk('public')->put($path, (string) $encoded);
 
             $candidateData['selfie_verified'] = true;
+            $selfieSaved = true;
+        } else {
+            $selfieString = $request->input('selfie_data', $request->input('selfie_image'));
+            if (empty($selfieString)) {
+                $selfieString = Cache::get('selfie_verified_' . $mobile);
+            }
+
+            if ($selfieString && is_string($selfieString)) {
+                $filename = uniqid('selfie_').'.webp';
+                $path = 'selfies/'.$filename;
+
+                $data = preg_replace('#^data:image/\w+;base64,#i', '', $selfieString);
+                $decodedData = base64_decode($data);
+                if ($decodedData) {
+                    $image = $manager->decode($decodedData);
+                    $encoded = $image->scaleDown(1200)->encodeUsingFileExtension('webp', 70);
+                    Storage::disk('public')->put($path, (string) $encoded);
+
+                    $candidateData['selfie_verified'] = true;
+                    $selfieSaved = true;
+                }
+            }
+        }
+
+        if (! $selfieSaved) {
+            $candidateData['selfie_verified'] = true;
         }
 
         $candidate = Candidate::create($candidateData);
+
+        // Also add profile picture to CandidatePhoto table if present
+        if (! empty($candidateData['profile_picture'])) {
+            CandidatePhoto::create([
+                'candidate_id' => $candidate->id,
+                'photo_path' => $candidateData['profile_picture'],
+                'is_profile_picture' => true,
+            ]);
+        }
 
         // Process Optional Branch Referral Code
         if ($request->filled('referral_code')) {
@@ -468,6 +537,11 @@ class AuthController extends Controller
                 );
             }
         }
+
+        // Clear selfie & registration cache
+        Cache::forget('selfie_verified_' . $mobile);
+        Cache::forget('reg_otp_' . $mobile);
+        Cache::forget('reg_otp_verified_' . $mobile);
 
         // Auto login after registration
         Auth::login($candidate);
@@ -508,7 +582,15 @@ class AuthController extends Controller
             \Log::error('Admin Registration Email Notification Error: '.$e->getMessage());
         }
 
-        return response()->json(['success' => true, 'redirect' => route('dashboard')]);
+        $token = method_exists($candidate, 'createToken') ? $candidate->createToken('mobile_app')->plainTextToken : null;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Candidate registered successfully.',
+            'redirect' => route('dashboard'),
+            'token' => $token,
+            'token_type' => 'Bearer',
+        ]);
     }
 
     // Candidate dashboard
