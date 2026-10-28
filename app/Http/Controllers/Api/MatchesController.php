@@ -1173,6 +1173,11 @@ class MatchesController extends Controller
             $isAccepted = in_array($c->id, $acceptedCandidateIds) || in_array($profileCode, $acceptedCandidateIds) || in_array((string)$c->id, $acceptedCandidateIds);
             $isReceived = in_array($c->id, $receivedInterestIds) || in_array($profileCode, $receivedInterestIds) || in_array((string)$c->id, $receivedInterestIds);
             $isSent = in_array($profileCode, $sentInterestIds) || in_array((string) $c->id, $sentInterestIds) || in_array($c->id, $sentInterestIds);
+            $isShortlisted = in_array($profileCode, $shortlistedIds)
+                || in_array((string) $c->id, $shortlistedIds)
+                || in_array($c->id, $shortlistedIds)
+                || (!empty($c->candidate_code) && in_array((string)$c->candidate_code, $shortlistedIds))
+                || (!empty($c->profile_id) && in_array((string)$c->profile_id, $shortlistedIds));
 
             $requestType = $isAccepted ? 'accepted' : ($isReceived ? 'received' : ($isSent ? 'sent' : 'none'));
 
@@ -1246,6 +1251,7 @@ class MatchesController extends Controller
                 'is_accepted' => $isAccepted,
                 'is_interest_sent' => $isSent,
                 'is_interest_received' => $isReceived,
+                'is_shortlisted' => $isShortlisted,
                 'request_type' => $requestType,
                 'details' => $fullDetails,
             ];
@@ -1256,15 +1262,15 @@ class MatchesController extends Controller
 
         // Filter based on tab
         if ($tab === 'shortlisted') {
-            $filtered = array_filter($pool, fn ($m) => in_array($m['id'], $shortlistedIds) || in_array((string)$m['db_id'], $shortlistedIds) || in_array($m['db_id'], $shortlistedIds));
+            $filtered = array_filter($pool, fn ($m) => !empty($m['is_shortlisted']));
         } elseif ($tab === 'accepted') {
             $filtered = array_filter($pool, fn ($m) => $m['is_accepted'] || $m['request_type'] === 'accepted');
         } elseif ($tab === 'my_matches') {
             // 'my_matches' ONLY contains candidates user sent interest to and not yet accepted
             $filtered = array_filter($pool, fn ($m) => $m['request_type'] === 'sent' && ! $m['is_accepted']);
         } else {
-            // Today's Picks: ONLY fresh recommendations that haven't been contacted or accepted
-            $filtered = array_filter($pool, fn ($m) => ! $m['is_accepted'] && $m['request_type'] === 'none');
+            // Today's Picks (NEW tab): ONLY fresh recommendations that haven't been contacted, accepted, or shortlisted
+            $filtered = array_filter($pool, fn ($m) => ! $m['is_accepted'] && $m['request_type'] === 'none' && empty($m['is_shortlisted']));
         }
 
         return array_values($filtered);
