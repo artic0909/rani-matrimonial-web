@@ -109,7 +109,10 @@ class AuthController extends Controller
     {
         $request->validate(['otp' => 'required|digits:4']);
 
-        $mobile = Session::get('otp_mobile');
+        $rawMobile = $request->input('mobile', Session::get('otp_mobile'));
+        $cleanMobile = preg_replace('/[^0-9]/', '', (string) $rawMobile);
+        $mobile = substr($cleanMobile, -10);
+
         $code = Session::get('otp_code');
         $cacheCode = $mobile ? Cache::get('login_otp_' . $mobile) : null;
 
@@ -125,7 +128,10 @@ class AuthController extends Controller
             return response()->json(['success' => false, 'message' => 'Candidate record not found.'], 404);
         }
 
-        Auth::login($candidate);
+        Auth::guard('web')->login($candidate, true);
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
 
         Session::forget(['otp_mobile', 'otp_code']);
 

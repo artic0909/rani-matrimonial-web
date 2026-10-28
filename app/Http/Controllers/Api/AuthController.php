@@ -336,7 +336,8 @@ class AuthController extends Controller
 
         // Support session login for web requests if session exists
         if ($request->hasSession()) {
-            Auth::login($candidate);
+            Auth::guard('web')->login($candidate, true);
+            $request->session()->regenerate();
         }
 
         // Generate Sanctum plain text token for mobile app
@@ -852,7 +853,8 @@ class AuthController extends Controller
 
         // Support session login for web requests if session exists
         if ($request->hasSession()) {
-            Auth::login($candidate);
+            Auth::guard('web')->login($candidate, true);
+            $request->session()->regenerate();
         }
 
         // Generate Sanctum plain text token for mobile app

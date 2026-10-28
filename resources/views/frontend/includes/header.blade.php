@@ -586,7 +586,10 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({ otp: otpCode })
+                    body: JSON.stringify({ 
+                        otp: otpCode,
+                        mobile: this.loginMobile
+                    })
                 })
                 .then(res => res.json())
                 .then(data => {
@@ -646,7 +649,10 @@
                 fetch('/api/verify-registration-otp', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                    body: JSON.stringify({ otp: this.registerOtp })
+                    body: JSON.stringify({ 
+                        otp: this.registerOtp,
+                        mobile: this.registerData.mobile
+                    })
                 })
                 .then(res => res.json())
                 .then(data => {
