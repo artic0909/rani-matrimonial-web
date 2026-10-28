@@ -1,0 +1,596 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\Candidate;
+use App\Models\Wallet;
+use App\Models\WalletTransaction;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class WalletController extends Controller
+{
+    /**
+     * Display candidate's royal wallet data
+     */
+    public function index(Request $request)
+    {
+        /** @var Candidate $candidate */
+        $candidate = $request->user() ?? Auth::user();
+        if (!$candidate) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
+        }
+
+        $wallet = $candidate->getOrCreateWallet();
+
+        // Calculate summary metrics
+        $totalCredit = (float) $wallet->transactions()
+            ->where('type', 'credit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $totalDebit = (float) $wallet->transactions()
+            ->where('type', 'debit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        // Fetch recent transactions
+        $recentTransactions = $wallet->transactions()->orderByDesc('id')->limit(10)->get();
+
+        $rechargePlans = [
+            ['id' => 1, 'amount' => 500, 'label' => 'Starter Pack', 'bonus' => '0% Bonus', 'popular' => false],
+            ['id' => 2, 'amount' => 1000, 'label' => 'Royal Standard', 'bonus' => '+₹100 Extra', 'popular' => true],
+            ['id' => 3, 'amount' => 2500, 'label' => 'Elite Privilege', 'bonus' => '+₹350 Extra', 'popular' => false],
+            ['id' => 4, 'amount' => 5000, 'label' => 'Imperial Crown', 'bonus' => '+₹1000 Extra', 'popular' => false],
+        ];
+
+        return response()->json([
+            'success' => true,
+            'wallet' => [
+                'id' => $wallet->wallet_id,
+                'avl_balance' => (float) $wallet->avl_balance,
+                'formatted_balance' => '₹ ' . number_format($wallet->avl_balance, 2),
+                'total_credit' => $totalCredit,
+                'total_debit' => $totalDebit,
+            ],
+            'recharge_plans' => $rechargePlans,
+            'recent_transactions' => $recentTransactions,
+        ]);
+    }
+
+    /**
+     * Get paginated transactions with filtering by type (all/credit/debit) and search
+     */
+    public function transactions(Request $request)
+    {
+        /** @var Candidate $candidate */
+        $candidate = $request->user() ?? Auth::user();
+        if (!$candidate) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
+        }
+
+        $wallet = $candidate->getOrCreateWallet();
+
+        $type = $request->query('type'); // 'credit', 'debit', or null
+        $query = $wallet->transactions()->orderByDesc('id');
+
+        if ($type === 'credit' || $type === 'debit') {
+            $query->where('type', $type);
+        }
+
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('transaction_id', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%")
+                  ->orWhere('payment_method', 'like', "%{$search}%");
+            });
+        }
+
+        $transactions = $query->paginate(20);
+
+        return response()->json([
+            'success' => true,
+            'transactions' => $transactions,
+        ]);
+    }
+
+    /**
+     * Display candidate's All Transactions Statement Page
+     */
+    public function allView(Request $request)
+    {
+        /** @var Candidate $candidate */
+        $candidate = $request->user() ?? Auth::user();
+        $wallet = $candidate->getOrCreateWallet();
+
+        $totalCredit = (float) $wallet->transactions()
+            ->where('type', 'credit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $totalDebit = (float) $wallet->transactions()
+            ->where('type', 'debit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $query = $wallet->transactions()->orderByDesc('id');
+
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('transaction_id', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%")
+                  ->orWhere('payment_method', 'like', "%{$search}%");
+            });
+        }
+
+        $allTransactions = $query->paginate(15)->withQueryString();
+
+        return view('frontend.pages.wallet_all', compact(
+            'candidate',
+            'wallet',
+            'totalCredit',
+            'totalDebit',
+            'allTransactions'
+        ));
+    }
+
+    /**
+     * Display candidate's Credit / Deposits Page
+     */
+    public function creditView(Request $request)
+    {
+        /** @var Candidate $candidate */
+        $candidate = $request->user() ?? Auth::user();
+        $wallet = $candidate->getOrCreateWallet();
+
+        $totalCredit = (float) $wallet->transactions()
+            ->where('type', 'credit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $totalDebit = (float) $wallet->transactions()
+            ->where('type', 'debit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $query = $wallet->transactions()->where('type', 'credit')->orderByDesc('id');
+
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('transaction_id', 'like', "%{$search}%")
+                  ->orWhere('payment_method', 'like', "%{$search}%");
+            });
+        }
+
+        $creditTransactions = $query->paginate(15)->withQueryString();
+
+        return view('frontend.pages.wallet_credit', compact(
+            'candidate',
+            'wallet',
+            'totalCredit',
+            'totalDebit',
+            'creditTransactions'
+        ));
+    }
+
+    /**
+     * Display candidate's Debit / Spends Page
+     */
+    public function debitView(Request $request)
+    {
+        /** @var Candidate $candidate */
+        $candidate = $request->user() ?? Auth::user();
+        $wallet = $candidate->getOrCreateWallet();
+
+        $totalCredit = (float) $wallet->transactions()
+            ->where('type', 'credit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $totalDebit = (float) $wallet->transactions()
+            ->where('type', 'debit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $query = $wallet->transactions()->where('type', 'debit')->orderByDesc('id');
+
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('transaction_id', 'like', "%{$search}%")
+                  ->orWhere('category', 'like', "%{$search}%");
+            });
+        }
+
+        $debitTransactions = $query->paginate(15)->withQueryString();
+
+        return view('frontend.pages.wallet_debit', compact(
+            'candidate',
+            'wallet',
+            'totalCredit',
+            'totalDebit',
+            'debitTransactions'
+        ));
+    }
+
+    /**
+     * Download or view official transaction PDF receipt
+     */
+    public function downloadReceipt(Request $request, $id)
+    {
+        /** @var Candidate $candidate */
+        $candidate = $request->user() ?? Auth::user();
+        $wallet = $candidate->getOrCreateWallet();
+
+        $transaction = $wallet->transactions()->where('id', $id)->firstOrFail();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.transaction_receipt', [
+            'candidate' => $candidate,
+            'wallet' => $wallet,
+            'transaction' => $transaction,
+        ]);
+
+        $pdf->setPaper('a4', 'portrait');
+
+        $filename = 'Receipt-' . ($transaction->transaction_id ?? $transaction->id) . '.pdf';
+
+        if ($request->query('view') == '1' || $request->query('preview') == '1') {
+            return $pdf->stream($filename);
+        }
+
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Add funds / Recharge wallet via AJAX
+     */
+    public function addMoney(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:1|max:100000',
+            'payment_method' => 'nullable|string|max:50',
+            'custom_note' => 'nullable|string|max:255',
+        ]);
+
+        /** @var Candidate $candidate */
+        $candidate = $request->user() ?? Auth::user();
+        $wallet = $candidate->getOrCreateWallet();
+
+        $amount = (float) $request->amount;
+        $method = $request->payment_method ?? 'UPI';
+        $title = 'Wallet Top-up';
+        $desc = $request->custom_note ?? ('Recharge via '.$method);
+
+        $transaction = $wallet->credit(
+            amount: $amount,
+            title: $title,
+            description: $desc,
+            category: 'Recharge',
+            paymentMethod: $method
+        );
+
+        $totalCredit = (float) $wallet->transactions()
+            ->where('type', 'credit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $totalDebit = (float) $wallet->transactions()
+            ->where('type', 'debit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        return response()->json([
+            'success' => true,
+            'message' => '₹'.number_format($amount, 2).' successfully added to your wallet!',
+            'wallet' => [
+                'id' => $wallet->wallet_id,
+                'avl_balance' => (float) $wallet->avl_balance,
+                'formatted_balance' => '₹ '.number_format($wallet->avl_balance, 2),
+                'total_credit' => $totalCredit,
+                'total_debit' => $totalDebit,
+            ],
+            'transaction' => [
+                'id' => $transaction->id,
+                'transaction_id' => $transaction->transaction_id,
+                'type' => $transaction->type,
+                'amount' => (float) $transaction->amount,
+                'balance_after' => (float) $transaction->balance_after,
+                'title' => $transaction->title,
+                'description' => $transaction->description,
+                'category' => $transaction->category,
+                'status' => $transaction->status,
+                'payment_method' => $transaction->payment_method,
+                'created_at_formatted' => $transaction->created_at->format('d M Y, h:i A'),
+            ],
+        ]);
+    }
+
+    /**
+     * Debit funds / Spend simulation (e.g. unlocking contact or booster)
+     */
+    public function spendMoney(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:1',
+            'title' => 'required|string|max:100',
+            'category' => 'nullable|string|max:50',
+        ]);
+
+        /** @var Candidate $candidate */
+        $candidate = $request->user() ?? Auth::user();
+        $wallet = $candidate->getOrCreateWallet();
+
+        $amount = (float) $request->amount;
+
+        if ($wallet->avl_balance < $amount) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Insufficient wallet balance. Please recharge your wallet.',
+            ], 422);
+        }
+
+        $transaction = $wallet->debit(
+            amount: $amount,
+            title: $request->title,
+            description: $request->description ?? 'Service charge deducted from wallet',
+            category: $request->category ?? 'Service',
+            paymentMethod: 'Wallet Balance'
+        );
+
+        $totalCredit = (float) $wallet->transactions()
+            ->where('type', 'credit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $totalDebit = (float) $wallet->transactions()
+            ->where('type', 'debit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        return response()->json([
+            'success' => true,
+            'message' => '₹'.number_format($amount, 2).' debited successfully.',
+            'wallet' => [
+                'id' => $wallet->wallet_id,
+                'avl_balance' => (float) $wallet->avl_balance,
+                'formatted_balance' => '₹ '.number_format($wallet->avl_balance, 2),
+                'total_credit' => $totalCredit,
+                'total_debit' => $totalDebit,
+            ],
+            'transaction' => [
+                'id' => $transaction->id,
+                'transaction_id' => $transaction->transaction_id,
+                'type' => $transaction->type,
+                'amount' => (float) $transaction->amount,
+                'balance_after' => (float) $transaction->balance_after,
+                'title' => $transaction->title,
+                'description' => $transaction->description,
+                'category' => $transaction->category,
+                'status' => $transaction->status,
+                'payment_method' => $transaction->payment_method,
+                'created_at_formatted' => $transaction->created_at->format('d M Y, h:i A'),
+            ],
+        ]);
+    }
+
+    /**
+     * Create Razorpay Order for Wallet Recharge
+     */
+    public function createRazorpayOrder(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:1|max:100000',
+        ]);
+
+        /** @var Candidate $candidate */
+        $candidate = Auth::user() ?? Auth::guard('web')->user();
+        if (! $candidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated session. Please log in again.',
+            ], 401);
+        }
+
+        $amount = (float) $request->amount;
+        $amountInPaise = (int) round($amount * 100);
+
+        $key = config('services.razorpay.key') ?: env('RAZORPAY_KEY');
+        $secret = config('services.razorpay.secret') ?: env('RAZORPAY_SECRET');
+
+        if (empty($key) || empty($secret)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Razorpay payment gateway credentials are not configured.',
+            ], 500);
+        }
+
+        try {
+            $api = new \Razorpay\Api\Api($key, $secret);
+            $receiptId = 'rm_w_' . $candidate->id . '_' . time();
+
+            $order = $api->order->create([
+                'receipt' => $receiptId,
+                'amount' => $amountInPaise,
+                'currency' => 'INR',
+                'notes' => [
+                    'candidate_id' => (string) $candidate->id,
+                    'candidate_code' => $candidate->display_code,
+                    'purpose' => 'Wallet Recharge',
+                ],
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'key' => $key,
+                'order_id' => $order['id'],
+                'amount' => $order['amount'],
+                'currency' => $order['currency'] ?? 'INR',
+                'name' => 'Rani Matrimonial',
+                'description' => 'Royal Wallet Top-up (₹' . number_format($amount, 2) . ')',
+                'prefill' => [
+                    'name' => trim(($candidate->first_name ?? '') . ' ' . ($candidate->last_name ?? '')),
+                    'contact' => $candidate->phone ?? ($candidate->mobile ?? ''),
+                    'email' => $candidate->email ?? '',
+                ],
+                'theme' => [
+                    'color' => '#750000',
+                ],
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Razorpay Create Order Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to initialize payment: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Verify Razorpay Payment Signature and Credit Wallet Balance
+     */
+    public function verifyRazorpayPayment(Request $request)
+    {
+        $request->validate([
+            'razorpay_payment_id' => 'required|string',
+            'razorpay_order_id' => 'required|string',
+            'razorpay_signature' => 'required|string',
+            'amount' => 'required|numeric|min:1',
+        ]);
+
+        $key = config('services.razorpay.key') ?: env('RAZORPAY_KEY');
+        $secret = config('services.razorpay.secret') ?: env('RAZORPAY_SECRET');
+
+        if (empty($key) || empty($secret)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Razorpay credentials not configured.',
+            ], 500);
+        }
+
+        /** @var Candidate $candidate */
+        $candidate = Auth::user() ?? Auth::guard('web')->user();
+        if (! $candidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated session. Please log in again.',
+            ], 401);
+        }
+        $wallet = $candidate->getOrCreateWallet();
+
+        $paymentId = $request->razorpay_payment_id;
+        $orderId = $request->razorpay_order_id;
+        $signature = $request->razorpay_signature;
+        $amount = (float) $request->amount;
+
+        // Idempotency: Check if transaction already processed for this payment ID
+        $existingTxn = \App\Models\WalletTransaction::where('description', 'like', '%' . $paymentId . '%')->first();
+        if ($existingTxn) {
+            $totalCredit = (float) $wallet->transactions()->where('type', 'credit')->where('status', 'completed')->sum('amount');
+            $totalDebit = (float) $wallet->transactions()->where('type', 'debit')->where('status', 'completed')->sum('amount');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment already verified and credited!',
+                'wallet' => [
+                    'id' => $wallet->wallet_id,
+                    'avl_balance' => (float) $wallet->avl_balance,
+                    'formatted_balance' => '₹ ' . number_format($wallet->avl_balance, 2),
+                    'total_credit' => $totalCredit,
+                    'total_debit' => $totalDebit,
+                ],
+                'transaction' => [
+                    'id' => $existingTxn->id,
+                    'transaction_id' => $existingTxn->transaction_id,
+                    'type' => $existingTxn->type,
+                    'amount' => (float) $existingTxn->amount,
+                    'balance_after' => (float) $existingTxn->balance_after,
+                    'title' => $existingTxn->title,
+                    'description' => $existingTxn->description,
+                    'category' => $existingTxn->category,
+                    'status' => $existingTxn->status,
+                    'payment_method' => $existingTxn->payment_method,
+                    'created_at_formatted' => $existingTxn->created_at->format('d M Y, h:i A'),
+                ],
+            ]);
+        }
+
+        // Verify Razorpay Signature
+        try {
+            $api = new \Razorpay\Api\Api($key, $secret);
+            $attributes = [
+                'razorpay_order_id' => $orderId,
+                'razorpay_payment_id' => $paymentId,
+                'razorpay_signature' => $signature,
+            ];
+            $api->utility->verifyPaymentSignature($attributes);
+        } catch (\Razorpay\Api\Errors\SignatureVerificationError $e) {
+            \Log::warning('Razorpay Signature Verification Failed: ' . $e->getMessage() . ' for payment ' . $paymentId);
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid payment signature. Verification failed.',
+            ], 400);
+        } catch (\Exception $e) {
+            \Log::error('Razorpay Verification Exception: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Signature verification error: ' . $e->getMessage(),
+            ], 400);
+        }
+
+        // Credit to candidate's wallet
+        $transaction = $wallet->credit(
+            amount: $amount,
+            title: 'Wallet Recharge',
+            description: 'Razorpay Payment ID: ' . $paymentId . ' (Order: ' . $orderId . ')',
+            category: 'Recharge',
+            paymentMethod: 'Razorpay'
+        );
+
+        $totalCredit = (float) $wallet->transactions()
+            ->where('type', 'credit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $totalDebit = (float) $wallet->transactions()
+            ->where('type', 'debit')
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        return response()->json([
+            'success' => true,
+            'message' => '₹' . number_format($amount, 2) . ' successfully added to your wallet via Razorpay!',
+            'wallet' => [
+                'id' => $wallet->wallet_id,
+                'avl_balance' => (float) $wallet->avl_balance,
+                'formatted_balance' => '₹ ' . number_format($wallet->avl_balance, 2),
+                'total_credit' => $totalCredit,
+                'total_debit' => $totalDebit,
+            ],
+            'transaction' => [
+                'id' => $transaction->id,
+                'transaction_id' => $transaction->transaction_id,
+                'type' => $transaction->type,
+                'amount' => (float) $transaction->amount,
+                'balance_after' => (float) $transaction->balance_after,
+                'title' => $transaction->title,
+                'description' => $transaction->description,
+                'category' => $transaction->category,
+                'status' => $transaction->status,
+                'payment_method' => $transaction->payment_method,
+                'created_at_formatted' => $transaction->created_at->format('d M Y, h:i A'),
+            ],
+        ]);
+    }
+}

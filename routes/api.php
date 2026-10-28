@@ -1,6 +1,11 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\HelpSupportController;
+use App\Http\Controllers\Api\InboxController;
+use App\Http\Controllers\Api\MatchesController;
+use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\WalletController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,6 +35,11 @@ Route::get('/registration-options', [AuthController::class, 'registrationOptions
 Route::post('/register', [AuthController::class, 'registerFinal']);
 Route::post('/register/final', [AuthController::class, 'registerFinal'])->name('register.final');
 
+// Public Help & Stories
+Route::get('/help-center', [HelpSupportController::class, 'helpCenter']);
+Route::post('/help-center/submit', [HelpSupportController::class, 'submitHelp']);
+Route::get('/success-stories', [HelpSupportController::class, 'stories']);
+
 // Protected Routes (Token Authenticated Candidates)
 Route::middleware(\App\Http\Middleware\AuthenticateApiToken::class)->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -39,7 +49,7 @@ Route::middleware(\App\Http\Middleware\AuthenticateApiToken::class)->group(funct
 
     // Candidate Profile
     Route::get('/my-profile', [AuthController::class, 'myProfile']);
-    Route::get('/user', [AuthController::class, 'myProfile']); // standard /api/user alias
+    Route::get('/user', [AuthController::class, 'myProfile']); // standard alias
     Route::post('/update-profile', [AuthController::class, 'updateProfile']);
     Route::post('/upload-profile-picture', [AuthController::class, 'uploadProfilePicture']);
 
@@ -58,4 +68,33 @@ Route::middleware(\App\Http\Middleware\AuthenticateApiToken::class)->group(funct
 
     // Notifications
     Route::post('/notifications/{id}/read', [AuthController::class, 'markNotificationRead']);
+
+    // Matches & Connections
+    Route::get('/matches', [MatchesController::class, 'index']);
+    Route::get('/matches/profile/{id}', [MatchesController::class, 'showProfile']);
+    Route::post('/matches/send-interest', [MatchesController::class, 'sendInterest']);
+    Route::post('/matches/respond-interest', [MatchesController::class, 'respondInterest']);
+    Route::post('/matches/toggle-shortlist', [MatchesController::class, 'toggleShortlist']);
+    Route::post('/matches/shortlist', [MatchesController::class, 'toggleShortlist']);
+    Route::post('/matches/request-whatsapp-chat', [MatchesController::class, 'requestWhatsAppChat']);
+    Route::post('/matches/respond-whatsapp-chat', [MatchesController::class, 'respondWhatsAppChat']);
+
+    // Inbox
+    Route::get('/inbox', [InboxController::class, 'index']);
+
+    // Search & Filters
+    Route::get('/search/options', [SearchController::class, 'options']);
+    Route::post('/search/filter', [SearchController::class, 'filter']);
+
+    // Royal Wallet
+    Route::get('/wallet', [WalletController::class, 'index']);
+    Route::get('/wallet/transactions', [WalletController::class, 'transactions']);
+    Route::post('/wallet/add-money', [WalletController::class, 'addMoney']);
+    Route::post('/wallet/spend-money', [WalletController::class, 'spendMoney']);
+    Route::post('/wallet/razorpay/create-order', [WalletController::class, 'createRazorpayOrder']);
+    Route::post('/wallet/razorpay/verify-payment', [WalletController::class, 'verifyRazorpayPayment']);
+
+    // Support & Tickets
+    Route::get('/support/tickets', [HelpSupportController::class, 'support']);
+    Route::post('/support/tickets/create', [HelpSupportController::class, 'storeTicket']);
 });
