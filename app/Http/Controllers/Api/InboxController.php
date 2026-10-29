@@ -19,7 +19,13 @@ class InboxController extends Controller
     public function index(Request $request)
     {
         /** @var Candidate $candidate */
-        $candidate = Auth::user();
+        $candidate = $request->user() ?? Auth::user();
+        if (! $candidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated session. Please log in again.',
+            ], 401);
+        }
         $subTab = $request->query('tab', 'received');
         if (! in_array($subTab, ['received', 'sent', 'accepted', 'declined'])) {
             $subTab = 'received';
