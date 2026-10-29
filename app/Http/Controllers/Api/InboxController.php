@@ -21,38 +21,57 @@ class InboxController extends Controller
         /** @var Candidate $candidate */
         $candidate = Auth::user();
         $subTab = $request->query('tab', 'received');
-        if (! in_array($subTab, ['received', 'accepted', 'declined'])) {
+        if (! in_array($subTab, ['received', 'sent', 'accepted', 'declined'])) {
             $subTab = 'received';
         }
 
-        // Fetch received connection requests ordered by latest updated_at
+        // 1. Received connection requests (where receiver is current candidate)
         $receivedRequests = ConnectionRequest::where('receiver_id', $candidate->id)
             ->orderBy('updated_at', 'desc')
             ->get();
-
-        // Get the latest single request record per unique sender
         $latestPerSender = $receivedRequests->groupBy('sender_id')->map(fn ($group) => $group->first());
-
-        $pendingRequests = $latestPerSender->where('status', 'pending');
-        $acceptedRequests = $latestPerSender->where('status', 'accepted');
+        $pendingReceivedRequests = $latestPerSender->where('status', 'pending');
         $declinedRequests = $latestPerSender->where('status', 'declined');
 
-        // Build list of received match profiles
-        $receivedMatches = [];
-        $seenSenderIds = [];
+        // 2. Sent connection requests (where sender is current candidate)
+        $sentRequests = ConnectionRequest::where('sender_id', $candidate->id)
+            ->orderBy('updated_at', 'desc')
+            ->get();
+        $latestPerReceiver = $sentRequests->groupBy('receiver_id')->map(fn ($group) => $group->first());
+        $pendingSentRequests = $latestPerReceiver->where('status', 'pending');
+
+        // 3. Accepted connection requests (where candidate is either receiver or sender)
+        $acceptedRequests = ConnectionRequest::where('status', 'accepted')
+            ->where(function ($q) use ($candidate) {
+                $q->where('receiver_id', $candidate->id)
+                    ->orWhere('sender_id', $candidate->id);
+            })
+            ->orderBy('updated_at', 'desc')
+            ->get();
+        // Unique per other partner
+        $acceptedGrouped = $acceptedRequests->groupBy(function ($cr) use ($candidate) {
+            return $cr->sender_id === $candidate->id ? $cr->receiver_id : $cr->sender_id;
+        })->map(fn ($group) => $group->first());
+
+        // Target requests for the requested tab
         $targetRequests = match ($subTab) {
-            'accepted' => $acceptedRequests,
+            'sent' => $pendingSentRequests,
+            'accepted' => $acceptedGrouped,
             'declined' => $declinedRequests,
-            default => $pendingRequests,
+            default => $pendingReceivedRequests,
         };
 
+        $connectionMatches = [];
+        $seenPartnerIds = [];
+
         foreach ($targetRequests as $cr) {
-            if (in_array($cr->sender_id, $seenSenderIds)) {
+            $otherCandidateId = ($cr->sender_id === $candidate->id) ? $cr->receiver_id : $cr->sender_id;
+            if (in_array($otherCandidateId, $seenPartnerIds)) {
                 continue;
             }
-            $seenSenderIds[] = $cr->sender_id;
+            $seenPartnerIds[] = $otherCandidateId;
 
-            $sender = Candidate::with(['photos', 'bluetick'])->find($cr->sender_id);
+            $sender = Candidate::with(['photos', 'bluetick'])->find($otherCandidateId);
             if (! $sender) {
                 continue;
             }
@@ -89,6 +108,7 @@ class InboxController extends Controller
             // Compatibility Score
             $matchResult = $this->calculateMatchScore($candidate, $sender);
             $isAccepted = ($cr->status === 'accepted');
+            $isSentByMe = ($cr->sender_id === $candidate->id);
 
             // Check WhatsApp chat request status
             $wpChatRequest = WhatsAppChatRequest::where(function ($q) use ($candidate, $sender) {
@@ -129,7 +149,13 @@ class InboxController extends Controller
                 'hobbies' => is_array($sender->hobbies_interests) ? $sender->hobbies_interests : ['Travelling', 'Reading', 'Music', 'Fitness'],
             ];
 
-            $receivedMatches[] = [
+            $badge = $isAccepted
+                ? 'Accepted Connection'
+                : ($isSentByMe
+                    ? '📤 Request Sent'
+                    : ($cr->status === 'declined' ? 'Declined' : '📥 Received Interest'));
+
+            $connectionMatches[] = [
                 'id' => $profileCode,
                 'db_id' => $sender->id,
                 'connection_id' => $cr->id,
@@ -151,11 +177,13 @@ class InboxController extends Controller
                 'photos' => $allPhotos,
                 'match_score' => $matchResult['score'],
                 'match_reasons' => array_slice($matchResult['reasons'], 0, 3),
-                'badge' => $isAccepted ? 'Accepted Connection' : '📥 Received Interest',
+                'badge' => $badge,
                 'verified' => (bool) ($sender->bluetick && (int) $sender->bluetick->is_accept === 1),
                 'received_ago' => $cr->created_at ? $cr->created_at->diffForHumans() : 'Recently',
                 'status' => $cr->status,
                 'is_accepted' => $isAccepted,
+                'is_sent_by_me' => $isSentByMe,
+                'is_received_by_me' => ! $isSentByMe,
                 'wp_chat_status' => $wpChatStatus,
                 'is_wp_chat_accepted' => $isWpChatAccepted,
                 'is_wp_chat_received_by_me' => $isWpChatReceivedByMe,
@@ -165,17 +193,19 @@ class InboxController extends Controller
         }
 
         $counts = [
-            'pending' => $pendingRequests->count(),
-            'accepted' => $acceptedRequests->count(),
+            'received' => $pendingReceivedRequests->count(),
+            'pending' => $pendingReceivedRequests->count(),
+            'sent' => $pendingSentRequests->count(),
+            'accepted' => $acceptedGrouped->count(),
             'declined' => $declinedRequests->count(),
-            'total' => $latestPerSender->count(),
+            'total' => $pendingReceivedRequests->count() + $pendingSentRequests->count() + $acceptedGrouped->count(),
         ];
 
         return response()->json([
             'success' => true,
             'tab' => $subTab,
             'counts' => $counts,
-            'requests' => $receivedMatches,
+            'requests' => $connectionMatches,
         ]);
     }
 
