@@ -42,7 +42,7 @@
                         </div>
                         <div>
                             <h1 class="text-lg sm:text-2xl md:text-3xl font-bold font-serif text-rani-primary-dark tracking-wide">My Wallet</h1>
-                            <p class="text-[10px] sm:text-xs text-gray-500 font-sans mt-0.5">Exclusive privilege card & digital balance</p>
+                            <p class="text-[10px] sm:text-xs text-gray-500 font-sans mt-0.5">Exclusive digital balance card</p>
                         </div>
                     </div>
                 </div>
@@ -85,7 +85,7 @@
                                                     <span class="text-xs sm:text-base md:text-lg font-serif italic font-bold text-white tracking-wide">Rani</span>
                                                     <span class="text-[8px] sm:text-[10px] md:text-xs font-serif text-rani-gold tracking-widest ml-1 uppercase">matrimonial</span>
                                                 </div>
-                                                <p class="text-[6.5px] sm:text-[8px] md:text-[9px] uppercase tracking-[0.12em] sm:tracking-[0.2em] text-rani-gold/90 font-mono font-semibold">Privilege Card</p>
+                                                <p class="text-[6.5px] sm:text-[8px] md:text-[9px] uppercase tracking-[0.12em] sm:tracking-[0.2em] text-rani-gold/90 font-mono font-semibold">Digital Card</p>
                                             </div>
                                         </div>
 
