@@ -24,7 +24,13 @@ class MatchesController extends Controller
     public function index(Request $request)
     {
         /** @var Candidate $candidate */
-        $candidate = Auth::user();
+        $candidate = $request->user() ?? Auth::user();
+        if (! $candidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated session. Please log in again.',
+            ], 401);
+        }
         $tab = $request->query('tab', 'todays');
         if (! in_array($tab, ['todays', 'shortlisted', 'my_matches', 'accepted'])) {
             $tab = 'todays';
@@ -201,7 +207,13 @@ class MatchesController extends Controller
     public function showProfile(Request $request, string $id)
     {
         /** @var Candidate $candidate */
-        $candidate = Auth::user();
+        $candidate = $request->user() ?? Auth::user();
+        if (! $candidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated session. Please log in again.',
+            ], 401);
+        }
 
         // 1. Try to resolve via dynamic encrypted token
         $profile = self::resolveProfileFromToken($id);
@@ -373,14 +385,24 @@ class MatchesController extends Controller
         ]);
 
         /** @var Candidate $candidate */
-        $candidate = Auth::user();
+        $candidate = $request->user() ?? Auth::user();
+        if (! $candidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated session. Please log in again.',
+            ], 401);
+        }
+
         $profileId = $request->profile_id;
 
         // Locate receiver candidate
-        $targetCandidate = Candidate::where('profile_id', $profileId)
-            ->orWhere('candidate_code', $profileId)
-            ->orWhere('id', is_numeric($profileId) ? $profileId : 0)
-            ->first();
+        $targetCandidate = self::resolveProfileFromToken($profileId);
+        if (! $targetCandidate) {
+            $targetCandidate = Candidate::where('profile_id', $profileId)
+                ->orWhere('candidate_code', $profileId)
+                ->orWhere('id', is_numeric($profileId) ? $profileId : 0)
+                ->first();
+        }
 
         if ($targetCandidate) {
             if (!($targetCandidate->is_active ?? true)) {
@@ -488,7 +510,13 @@ class MatchesController extends Controller
         ]);
 
         /** @var Candidate $candidate */
-        $candidate = Auth::user();
+        $candidate = $request->user() ?? Auth::user();
+        if (! $candidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated session. Please log in again.',
+            ], 401);
+        }
         $profileId = $request->profile_id;
         $action = $request->action;
 
@@ -766,7 +794,13 @@ class MatchesController extends Controller
         ]);
 
         /** @var Candidate $candidate */
-        $candidate = Auth::user();
+        $candidate = $request->user() ?? Auth::user();
+        if (! $candidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated session. Please log in again.',
+            ], 401);
+        }
         $profileId = $request->profile_id;
 
         $targetCandidate = self::resolveProfileFromToken($profileId);
@@ -844,7 +878,13 @@ class MatchesController extends Controller
         ]);
 
         /** @var Candidate $candidate */
-        $candidate = Auth::user();
+        $candidate = $request->user() ?? Auth::user();
+        if (! $candidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated session. Please log in again.',
+            ], 401);
+        }
         $profileId = $request->profile_id;
         $action = $request->action;
 
@@ -1030,7 +1070,13 @@ class MatchesController extends Controller
         ]);
 
         /** @var Candidate $candidate */
-        $candidate = Auth::user();
+        $candidate = $request->user() ?? Auth::user();
+        if (! $candidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated session. Please log in again.',
+            ], 401);
+        }
         $profileId = $request->profile_id;
 
         $targetCandidate = Candidate::where('profile_id', $profileId)

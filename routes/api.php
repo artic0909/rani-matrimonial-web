@@ -72,12 +72,12 @@ Route::middleware(\App\Http\Middleware\AuthenticateApiToken::class)->group(funct
     // Matches & Connections
     Route::get('/matches', [MatchesController::class, 'index']);
     Route::get('/matches/profile/{id}', [MatchesController::class, 'showProfile']);
-    Route::post('/matches/send-interest', [MatchesController::class, 'sendInterest']);
-    Route::post('/matches/respond-interest', [MatchesController::class, 'respondInterest']);
-    Route::post('/matches/toggle-shortlist', [MatchesController::class, 'toggleShortlist']);
+    Route::post('/matches/send-interest', [MatchesController::class, 'sendInterest'])->name('matches.send-interest');
+    Route::post('/matches/respond-interest', [MatchesController::class, 'respondInterest'])->name('matches.respond-interest');
+    Route::post('/matches/toggle-shortlist', [MatchesController::class, 'toggleShortlist'])->name('matches.shortlist');
     Route::post('/matches/shortlist', [MatchesController::class, 'toggleShortlist']);
-    Route::post('/matches/request-whatsapp-chat', [MatchesController::class, 'requestWhatsAppChat']);
-    Route::post('/matches/respond-whatsapp-chat', [MatchesController::class, 'respondWhatsAppChat']);
+    Route::post('/matches/request-whatsapp-chat', [MatchesController::class, 'requestWhatsAppChat'])->name('matches.request-whatsapp-chat');
+    Route::post('/matches/respond-whatsapp-chat', [MatchesController::class, 'respondWhatsAppChat'])->name('matches.respond-whatsapp-chat');
 
     // Inbox
     Route::get('/inbox', [InboxController::class, 'index']);
@@ -89,10 +89,10 @@ Route::middleware(\App\Http\Middleware\AuthenticateApiToken::class)->group(funct
     // Royal Wallet
     Route::get('/wallet', [WalletController::class, 'index']);
     Route::get('/wallet/transactions', [WalletController::class, 'transactions']);
-    Route::post('/wallet/add-money', [WalletController::class, 'addMoney']);
-    Route::post('/wallet/spend-money', [WalletController::class, 'spendMoney']);
-    Route::post('/wallet/razorpay/create-order', [WalletController::class, 'createRazorpayOrder']);
-    Route::post('/wallet/razorpay/verify-payment', [WalletController::class, 'verifyRazorpayPayment']);
+    Route::post('/wallet/add-money', [WalletController::class, 'addMoney'])->name('wallet.add-money');
+    Route::post('/wallet/spend-money', [WalletController::class, 'spendMoney'])->name('wallet.spend-money');
+    Route::post('/wallet/razorpay/create-order', [WalletController::class, 'createRazorpayOrder'])->name('wallet.razorpay.create-order');
+    Route::post('/wallet/razorpay/verify-payment', [WalletController::class, 'verifyRazorpayPayment'])->name('wallet.razorpay.verify-payment');
 
     // Support & Tickets
     Route::get('/support/tickets', [HelpSupportController::class, 'support']);

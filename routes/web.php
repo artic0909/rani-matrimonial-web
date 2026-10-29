@@ -57,11 +57,6 @@ Route::middleware('auth')->group(function () {
     // Matches Routes
     Route::get('/matches', [MatchesController::class, 'index'])->name('matches');
     Route::get('/profile/{id}', [MatchesController::class, 'showProfile'])->name('matches.view-profile');
-    Route::post('/api/matches/send-interest', [MatchesController::class, 'sendInterest'])->name('matches.send-interest');
-    Route::post('/api/matches/respond-interest', [MatchesController::class, 'respondInterest'])->name('matches.respond-interest');
-    Route::post('/api/matches/shortlist', [MatchesController::class, 'toggleShortlist'])->name('matches.shortlist');
-    Route::post('/api/matches/request-whatsapp-chat', [MatchesController::class, 'requestWhatsAppChat'])->name('matches.request-whatsapp-chat');
-    Route::post('/api/matches/respond-whatsapp-chat', [MatchesController::class, 'respondWhatsAppChat'])->name('matches.respond-whatsapp-chat');
 
     // Inbox Routes (Received Connection Requests)
     Route::get('/inbox', [InboxController::class, 'index'])->name('inbox');
@@ -72,10 +67,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/wallet/credit', [WalletController::class, 'creditView'])->name('wallet.credit');
     Route::get('/wallet/debit', [WalletController::class, 'debitView'])->name('wallet.debit');
     Route::get('/wallet/transaction/{id}/receipt', [WalletController::class, 'downloadReceipt'])->name('wallet.transaction.receipt');
-    Route::post('/api/wallet/add-money', [WalletController::class, 'addMoney'])->name('wallet.add-money');
-    Route::post('/api/wallet/razorpay/create-order', [WalletController::class, 'createRazorpayOrder'])->name('wallet.razorpay.create-order');
-    Route::post('/api/wallet/razorpay/verify-payment', [WalletController::class, 'verifyRazorpayPayment'])->name('wallet.razorpay.verify-payment');
-    Route::post('/api/wallet/spend-money', [WalletController::class, 'spendMoney'])->name('wallet.spend-money');
 
     // Profile Updates
     Route::post('/api/my-profile/update', [AuthController::class, 'updateProfile'])->name('profile.update');
