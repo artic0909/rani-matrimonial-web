@@ -21,7 +21,7 @@ class MatchesController extends Controller
     /**
      * Format a storage/public path into a fully qualified URL.
      */
-    protected function formatUrl(?string $path): ?string
+    public static function formatUrl(?string $path): ?string
     {
         if (empty($path)) {
             return null;

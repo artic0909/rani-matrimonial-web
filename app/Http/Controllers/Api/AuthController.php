@@ -1646,25 +1646,24 @@ class AuthController extends Controller
         /** @var Candidate $candidate */
         $candidate = $request->user();
 
-        // Clean up broken/orphaned photo records
-        $existingPhotos = CandidatePhoto::where('candidate_id', $candidate->id)->get();
-        foreach ($existingPhotos as $photoItem) {
-            if (! Storage::disk('public')->exists($photoItem->photo_path)) {
-                $photoItem->delete();
-            }
-        }
+        // Auto-sync candidate's active profile picture into candidate_photos if set
+        if (! empty($candidate->profile_picture)) {
+            $pic = $candidate->profile_picture;
+            $cleanPic = ltrim(preg_replace('/^\/?(storage\/)?/', '', $pic), '/');
 
-        // Auto-sync candidate's active profile picture into candidate_photos
-        if ($candidate->profile_picture && Storage::disk('public')->exists($candidate->profile_picture)) {
             $existingProfilePhoto = CandidatePhoto::where('candidate_id', $candidate->id)
-                ->where('photo_path', $candidate->profile_picture)
+                ->where(function ($q) use ($pic, $cleanPic) {
+                    $q->where('photo_path', $pic)
+                      ->orWhere('photo_path', $cleanPic)
+                      ->orWhere('is_profile_picture', true);
+                })
                 ->first();
 
             if (! $existingProfilePhoto) {
                 CandidatePhoto::where('candidate_id', $candidate->id)->update(['is_profile_picture' => false]);
                 CandidatePhoto::create([
                     'candidate_id' => $candidate->id,
-                    'photo_path' => $candidate->profile_picture,
+                    'photo_path' => $cleanPic,
                     'is_profile_picture' => true,
                 ]);
             } else {
@@ -1688,6 +1687,18 @@ class AuthController extends Controller
                 'created_at' => $photo->created_at ? $photo->created_at->diffForHumans() : '',
             ];
         })->values();
+
+        // If gallery is still empty but candidate has a profile picture, include it as primary photo
+        if ($formattedPhotos->isEmpty() && ! empty($candidate->profile_picture)) {
+            $formattedPhotos = collect([
+                [
+                    'id' => 'profile_pic',
+                    'url' => $this->formatUrl($candidate->profile_picture),
+                    'is_profile_picture' => true,
+                    'created_at' => 'Active',
+                ],
+            ]);
+        }
 
         return response()->json([
             'success' => true,
