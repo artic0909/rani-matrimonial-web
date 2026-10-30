@@ -11,6 +11,12 @@ class Candidate extends Authenticatable
 {
     use HasApiTokens;
 
+    /**
+     * The access token the user is using for the current API request.
+     * Declaring this prevents Eloquent from attempting to write 'accessToken' to the database.
+     */
+    protected $accessToken;
+
     protected $fillable = [
         'candidate_code', 'profile_id',
         'mobile', 'fcm_token', 'profile_for', 'gender', 'first_name', 'last_name', 'dob', 'religion',

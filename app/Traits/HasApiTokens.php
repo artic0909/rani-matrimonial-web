@@ -8,6 +8,14 @@ use Illuminate\Support\Str;
 trait HasApiTokens
 {
     /**
+     * The access token the user is using for the current request.
+     * Declaring this property prevents Eloquent from treating it as a database column.
+     *
+     * @var mixed
+     */
+    protected $accessToken;
+
+    /**
      * Access token relationship or mock for personal access tokens.
      */
     public function tokens()
