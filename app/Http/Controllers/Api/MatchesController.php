@@ -19,6 +19,34 @@ use Twilio\Rest\Client;
 class MatchesController extends Controller
 {
     /**
+     * Format a storage/public path into a fully qualified URL.
+     */
+    protected function formatUrl(?string $path): ?string
+    {
+        if (empty($path)) {
+            return null;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        if (str_starts_with($path, 'data:image')) {
+            return $path;
+        }
+
+        if (str_starts_with($path, 'storage/')) {
+            return url($path);
+        }
+
+        if (str_starts_with($path, 'img/') || str_starts_with($path, 'logo.png')) {
+            return url($path);
+        }
+
+        return url('storage/' . ltrim($path, '/'));
+    }
+
+    /**
      * Display Matches page with dynamically filtered sub-tabs
      */
     public function index(Request $request)
