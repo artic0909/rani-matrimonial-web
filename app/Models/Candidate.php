@@ -13,7 +13,7 @@ class Candidate extends Authenticatable
 
     protected $fillable = [
         'candidate_code', 'profile_id',
-        'mobile', 'profile_for', 'gender', 'first_name', 'last_name', 'dob', 'religion',
+        'mobile', 'fcm_token', 'profile_for', 'gender', 'first_name', 'last_name', 'dob', 'religion',
         'email', 'community', 'sub_community', 'country', 'state', 'city',
         'police_st', 'pincode',
         'marital_status', 'height', 'diet', 'highest_qualification', 'college_name',

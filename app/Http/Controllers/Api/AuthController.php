@@ -1354,6 +1354,32 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Save Device FCM Token for OS-level Push Notifications.
+     */
+    public function saveFcmToken(Request $request): JsonResponse
+    {
+        $request->validate([
+            'fcm_token' => 'required|string',
+        ]);
+
+        /** @var Candidate $candidate */
+        $candidate = $request->user() ?? Auth::user();
+        if (! $candidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated session.',
+            ], 401);
+        }
+
+        $candidate->update(['fcm_token' => $request->input('fcm_token')]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'FCM Token registered successfully.',
+        ]);
+    }
+
     // ==========================================
     // PROFILE MANAGEMENT
     // ==========================================

@@ -25,7 +25,7 @@ class NotificationService
         ?string $actionUrl = null,
         ?string $badge = null
     ): Notification {
-        return Notification::create([
+        $notif = Notification::create([
             'candidate_id' => $candidateId,
             'sender_id' => $senderId,
             'type' => $type,
@@ -37,6 +37,66 @@ class NotificationService
             'is_read' => false,
             'is_dismissed' => false,
         ]);
+
+        // Dispatch OS-level Remote Push Notification if candidate has registered an FCM device token
+        self::dispatchFcmPushNotification($candidateId, $title, $message, [
+            'type' => $type,
+            'notification_id' => (string) $notif->id,
+            'action_url' => $actionUrl ?? '',
+            'badge' => $badge ?? '',
+            'photo' => $photo ?? '',
+        ]);
+
+        return $notif;
+    }
+
+    /**
+     * Dispatch OS-level Remote Push Notification via Firebase Cloud Messaging (FCM).
+     */
+    public static function dispatchFcmPushNotification(
+        int $candidateId,
+        string $title,
+        string $body,
+        array $data = []
+    ): void {
+        try {
+            $candidate = Candidate::find($candidateId);
+            if (! $candidate || empty($candidate->fcm_token)) {
+                return;
+            }
+
+            $serverKey = config('services.firebase.server_key') ?: env('FIREBASE_SERVER_KEY');
+            if (empty($serverKey)) {
+                Log::info("FCM push skipped for candidate #{$candidateId} (FIREBASE_SERVER_KEY not yet in .env)");
+                return;
+            }
+
+            $payload = [
+                'to' => $candidate->fcm_token,
+                'priority' => 'high',
+                'notification' => [
+                    'title' => $title,
+                    'body' => $body,
+                    'sound' => 'default',
+                    'badge' => 1,
+                    'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                ],
+                'data' => array_merge($data, [
+                    'title' => $title,
+                    'body' => $body,
+                    'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                ]),
+            ];
+
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'Authorization' => 'key=' . $serverKey,
+                'Content-Type' => 'application/json',
+            ])->post('https://fcm.googleapis.com/fcm/send', $payload);
+
+            Log::info("FCM push response for candidate #{$candidateId}: " . $response->body());
+        } catch (\Exception $e) {
+            Log::error('FCM Push Dispatch Error: ' . $e->getMessage());
+        }
     }
 
     /**

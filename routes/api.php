@@ -66,7 +66,8 @@ Route::middleware(\App\Http\Middleware\AuthenticateApiToken::class)->group(funct
     Route::post('/validate-aadhar', [AuthController::class, 'validateAadhar']);
     Route::post('/submit-bluetick-verification', [AuthController::class, 'submitBlueTickVerification']);
 
-    // Notifications
+    // Notifications & Push
+    Route::post('/save-fcm-token', [AuthController::class, 'saveFcmToken']);
     Route::post('/notifications/clear-all', [AuthController::class, 'clearAllNotifications']);
     Route::post('/notifications/{id}/read', [AuthController::class, 'markNotificationRead']);
 
