@@ -67,6 +67,7 @@ Route::middleware(\App\Http\Middleware\AuthenticateApiToken::class)->group(funct
     Route::post('/submit-bluetick-verification', [AuthController::class, 'submitBlueTickVerification']);
 
     // Notifications
+    Route::post('/notifications/clear-all', [AuthController::class, 'clearAllNotifications']);
     Route::post('/notifications/{id}/read', [AuthController::class, 'markNotificationRead']);
 
     // Matches & Connections

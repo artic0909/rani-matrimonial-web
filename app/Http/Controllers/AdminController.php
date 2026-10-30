@@ -466,15 +466,17 @@ class AdminController extends Controller
 
         $candidate = $bluetick->candidate;
         if ($candidate) {
+            $candidate->update(['is_bluetick_verified' => true]);
+
             // Create in-app notification for candidate
             NotificationService::createNotification(
                 $candidate->id,
-                'bluetick_status',
+                'bluetick_verified',
                 'Blue Tick Verified! 🎉',
-                'Congratulations! Your Aadhaar verification has been approved by Rani Matrimonial Admin. Your profile now carries the genuine Blue Tick Verified badge.',
+                'Congratulations! Your Aadhaar verification has been accepted by admin of Rani Matrimonial. Now your account is verified.',
                 null,
                 asset('logo.png'),
-                route('my-profile'),
+                '/profile',
                 'Verified'
             );
         }

@@ -1290,9 +1290,27 @@ class AuthController extends Controller
     public function markNotificationRead(Request $request, $id): JsonResponse
     {
         /** @var Candidate $candidate */
-        $candidate = $request->user();
+        $candidate = $request->user() ?? Auth::user();
+        if (! $candidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated session.',
+            ], 401);
+        }
 
-        $notification = Notification::where('candidate_id', $candidate->id)->find($id);
+        if ($id === 'all' || $id === 'clear-all') {
+            Notification::where('candidate_id', $candidate->id)->update([
+                'is_read' => true,
+                'is_dismissed' => true,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'All notifications cleared.',
+            ]);
+        }
+
+        $notification = Notification::where('candidate_id', $candidate->id)->where('id', $id)->first();
         if ($notification) {
             $notification->is_read = true;
             $notification->is_dismissed = true;
@@ -1309,6 +1327,31 @@ class AuthController extends Controller
             'success' => false,
             'message' => 'Notification not found.',
         ], 404);
+    }
+
+    /**
+     * Clear all notifications for authenticated candidate.
+     */
+    public function clearAllNotifications(Request $request): JsonResponse
+    {
+        /** @var Candidate $candidate */
+        $candidate = $request->user() ?? Auth::user();
+        if (! $candidate) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated session.',
+            ], 401);
+        }
+
+        Notification::where('candidate_id', $candidate->id)->update([
+            'is_read' => true,
+            'is_dismissed' => true,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'All notifications cleared.',
+        ]);
     }
 
     // ==========================================

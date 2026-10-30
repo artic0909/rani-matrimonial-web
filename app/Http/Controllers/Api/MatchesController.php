@@ -485,6 +485,22 @@ class MatchesController extends Controller
             // Send WhatsApp notification carrying sender's name and profile details
             $this->dispatchConnectionRequestWhatsApp($candidate, $targetCandidate);
 
+            // Create in-app notification for receiver
+            try {
+                \App\Services\NotificationService::createNotification(
+                    $targetCandidate->id,
+                    'connection_request',
+                    trim($candidate->first_name . ' ' . ($candidate->last_name ?? '')),
+                    'sent you a connection request.',
+                    $candidate->id,
+                    $this->formatUrl($candidate->profile_picture ?: 'img/female/correct1.png'),
+                    '/inbox?tab=received',
+                    'Interest'
+                );
+            } catch (\Exception $ne) {
+                \Illuminate\Support\Facades\Log::warning('In-app notification error: ' . $ne->getMessage());
+            }
+
             return response()->json([
                 'success' => true,
                 'status' => 'pending',
@@ -585,6 +601,22 @@ class MatchesController extends Controller
 
             // Always dispatch Acceptance WhatsApp Notification (Template: HXd6d0204ec25374a29cc5f3b818eccd69) to the requester
             $this->dispatchRequestAcceptedWhatsApp($candidate, $requester);
+
+            // Create in-app notification for requester
+            try {
+                \App\Services\NotificationService::createNotification(
+                    $requester->id,
+                    'connection_accepted',
+                    trim($candidate->first_name . ' ' . ($candidate->last_name ?? '')),
+                    'accepted your connection request! You are now connected.',
+                    $candidate->id,
+                    $this->formatUrl($candidate->profile_picture ?: 'img/female/correct1.png'),
+                    '/matches?tab=accepted',
+                    'Connected'
+                );
+            } catch (\Exception $ne) {
+                \Illuminate\Support\Facades\Log::warning('In-app notification error: ' . $ne->getMessage());
+            }
 
             return response()->json([
                 'success' => true,
@@ -859,6 +891,22 @@ class MatchesController extends Controller
         // Dispatch WhatsApp notification via Twilio Meta Template
         $this->dispatchWhatsAppChatRequestNotification($candidate, $targetCandidate);
 
+        // Create in-app notification for receiver
+        try {
+            \App\Services\NotificationService::createNotification(
+                $targetCandidate->id,
+                'whatsapp_request',
+                trim($candidate->first_name . ' ' . ($candidate->last_name ?? '')),
+                'requested a direct WhatsApp chat with you.',
+                $candidate->id,
+                $this->formatUrl($candidate->profile_picture ?: 'img/female/correct1.png'),
+                '/inbox',
+                'WhatsApp'
+            );
+        } catch (\Exception $ne) {
+            \Illuminate\Support\Facades\Log::warning('In-app notification error: ' . $ne->getMessage());
+        }
+
         return response()->json([
             'success' => true,
             'status' => 'pending',
@@ -927,6 +975,22 @@ class MatchesController extends Controller
         // When accepted, dispatch WhatsApp Chat Acceptance notification (Template: HX795c717c904849c2869c1c5dea6b2d52) to the requester
         if ($action === 'accept') {
             $this->dispatchWhatsAppChatAcceptedNotification($candidate, $targetCandidate);
+
+            // Create in-app notification for requester
+            try {
+                \App\Services\NotificationService::createNotification(
+                    $targetCandidate->id,
+                    'whatsapp_accepted',
+                    trim($candidate->first_name . ' ' . ($candidate->last_name ?? '')),
+                    'accepted your WhatsApp chat request! Direct WhatsApp chat is now unlocked.',
+                    $candidate->id,
+                    $this->formatUrl($candidate->profile_picture ?: 'img/female/correct1.png'),
+                    '/matches/profile/' . $candidate->getDisplayCodeAttribute(),
+                    'WhatsApp'
+                );
+            } catch (\Exception $ne) {
+                \Illuminate\Support\Facades\Log::warning('In-app notification error: ' . $ne->getMessage());
+            }
         }
 
         $cleanMobile = preg_replace('/[^0-9]/', '', $targetCandidate->mobile ?? '');
