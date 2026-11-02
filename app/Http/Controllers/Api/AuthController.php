@@ -1704,6 +1704,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
+            'photos' => $formattedPhotos,
             'data' => [
                 'profile_picture_url' => $this->formatUrl($candidate->profile_picture),
                 'photo_privacy' => $candidate->photo_privacy ?? 'all',
@@ -1727,6 +1728,14 @@ class AuthController extends Controller
             $files = is_array($uploaded) ? $uploaded : [$uploaded];
         } elseif ($request->hasFile('photo')) {
             $files = [$request->file('photo')];
+        } else {
+            foreach ($request->allFiles() as $fileItem) {
+                if (is_array($fileItem)) {
+                    $files = array_merge($files, $fileItem);
+                } elseif ($fileItem instanceof \Illuminate\Http\UploadedFile) {
+                    $files[] = $fileItem;
+                }
+            }
         }
 
         if (empty($files)) {
@@ -1752,7 +1761,7 @@ class AuthController extends Controller
 
         $manager = new ImageManager(new Driver);
         $uploadedPhotos = [];
-        $hasProfilePic = $candidate->profile_picture && Storage::disk('public')->exists($candidate->profile_picture);
+        $hasProfilePic = ! empty($candidate->profile_picture);
 
         foreach ($files as $index => $file) {
             if (! $file->isValid()) {
@@ -1791,6 +1800,9 @@ class AuthController extends Controller
             'success' => true,
             'message' => count($uploadedPhotos) . ' photo(s) uploaded successfully.',
             'photos' => $uploadedPhotos,
+            'data' => [
+                'photos' => $uploadedPhotos,
+            ],
         ]);
     }
 
