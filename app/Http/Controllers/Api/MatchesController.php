@@ -152,7 +152,7 @@ class MatchesController extends Controller
             default => $shortlistedMatches,
         };
 
-        // Counts for tabs
+        // Counts for tabs (full counts across categories)
         $counts = [
             'todays' => count($todaysMatches),
             'shortlisted' => count($shortlistedMatches),
@@ -161,11 +161,24 @@ class MatchesController extends Controller
             'near_me' => count($nearMeMatches),
         ];
 
+        // Paginate filtered matches strictly in batches of 10 so DB payload is light & performant
+        $page = max(1, (int) $request->query('page', 1));
+        $perPage = max(1, (int) $request->query('per_page', 10));
+        $totalMatches = count($matches);
+        $lastPage = max(1, (int) ceil($totalMatches / $perPage));
+        $offset = ($page - 1) * $perPage;
+        $paginatedMatches = array_slice($matches, $offset, $perPage);
+
         return response()->json([
             'success' => true,
             'tab' => $tab,
             'counts' => $counts,
-            'matches' => array_values($matches),
+            'total' => $totalMatches,
+            'current_page' => $page,
+            'last_page' => $lastPage,
+            'per_page' => $perPage,
+            'has_more' => $page < $lastPage,
+            'matches' => array_values($paginatedMatches),
             'shortlisted_ids' => $shortlistedIds,
             'sent_interest_ids' => $sentInterestIds,
             'received_interest_ids' => $receivedInterestIds,
