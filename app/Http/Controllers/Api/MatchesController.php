@@ -60,7 +60,7 @@ class MatchesController extends Controller
             ], 401);
         }
         $tab = $request->query('tab', 'todays');
-        if (! in_array($tab, ['todays', 'shortlisted', 'my_matches', 'accepted'])) {
+        if (! in_array($tab, ['todays', 'shortlisted', 'my_matches', 'accepted', 'near_me'])) {
             $tab = 'todays';
         }
 
@@ -68,17 +68,25 @@ class MatchesController extends Controller
         $userGender = strtolower(trim($candidate->gender ?? ''));
         $targetGender = ($userGender === 'male' || $userGender === 'man') ? 'Female' : 'Male';
 
-        // Load shortlisted profile IDs from database
+        // Load shortlisted profile IDs from database ordered latest first
         $rawShortlisted = Shortlisted::where('candidate_id', $candidate->id)
-            ->pluck('profile_id')
-            ->toArray();
+            ->orderBy('id', 'desc')
+            ->get(['id', 'profile_id', 'created_at']);
         $shortlistedIds = [];
-        foreach ($rawShortlisted as $sid) {
-            $shortlistedIds[] = (string) $sid;
+        $shortlistIdOrder = [];
+        foreach ($rawShortlisted as $item) {
+            $sid = (string) $item->profile_id;
+            $shortlistedIds[] = $sid;
+            $shortlistIdOrder[$sid] = $item->id;
             $sc = Candidate::where('profile_id', $sid)->orWhere('candidate_code', $sid)->orWhere('id', is_numeric($sid) ? $sid : 0)->first();
             if ($sc) {
-                $shortlistedIds[] = $sc->getDisplayCodeAttribute();
-                $shortlistedIds[] = (string) $sc->id;
+                $code = $sc->getDisplayCodeAttribute();
+                $idStr = (string) $sc->id;
+                $shortlistedIds[] = $code;
+                $shortlistedIds[] = $idStr;
+                $shortlistIdOrder[$code] = $item->id;
+                $shortlistIdOrder[$idStr] = $item->id;
+                $shortlistIdOrder[$sc->id] = $item->id;
             }
         }
         $shortlistedIds = array_values(array_unique($shortlistedIds));
@@ -128,17 +136,19 @@ class MatchesController extends Controller
         }
         $acceptedProfileCodes = array_values(array_unique($acceptedProfileCodes));
 
-        // Full pool for dynamic counts
-        $allMatches = $this->getMatchesData($candidate, $targetGender, 'my_matches', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds);
-        $todaysMatches = $this->getMatchesData($candidate, $targetGender, 'todays', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds);
-        $acceptedMatches = $this->getMatchesData($candidate, $targetGender, 'accepted', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds);
-        $shortlistedMatches = $this->getMatchesData($candidate, $targetGender, 'shortlisted', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds);
+        // Full pool for dynamic counts (with latest-first ordering and shortlist order map)
+        $allMatches = $this->getMatchesData($candidate, $targetGender, 'my_matches', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds, $shortlistIdOrder);
+        $todaysMatches = $this->getMatchesData($candidate, $targetGender, 'todays', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds, $shortlistIdOrder);
+        $acceptedMatches = $this->getMatchesData($candidate, $targetGender, 'accepted', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds, $shortlistIdOrder);
+        $shortlistedMatches = $this->getMatchesData($candidate, $targetGender, 'shortlisted', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds, $shortlistIdOrder);
+        $nearMeMatches = $this->getMatchesData($candidate, $targetGender, 'near_me', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds, $shortlistIdOrder);
 
         // Filtered matches for the active tab
         $matches = match ($tab) {
             'my_matches' => $allMatches,
             'todays' => $todaysMatches,
             'accepted' => $acceptedMatches,
+            'near_me' => $nearMeMatches,
             default => $shortlistedMatches,
         };
 
@@ -148,6 +158,7 @@ class MatchesController extends Controller
             'shortlisted' => count($shortlistedMatches),
             'my_matches' => count($allMatches),
             'accepted' => count($acceptedMatches),
+            'near_me' => count($nearMeMatches),
         ];
 
         return response()->json([
@@ -1222,14 +1233,16 @@ class MatchesController extends Controller
         array $shortlistedIds = [],
         array $sentInterestIds = [],
         array $receivedInterestIds = [],
-        array $acceptedCandidateIds = []
+        array $acceptedCandidateIds = [],
+        array $shortlistIdOrder = []
     ): array {
         $query = Candidate::with(['photos', 'bluetick'])
             ->where(function ($q) {
                 $q->where('is_active', true)->orWhereNull('is_active');
             })
             ->where('gender', $targetGender)
-            ->where('id', '!=', $candidate->id);
+            ->where('id', '!=', $candidate->id)
+            ->orderBy('id', 'desc');
 
         // Determine candidate's religion matching criteria
         $userReligion = trim($candidate->religion ?? '');
@@ -1395,20 +1408,42 @@ class MatchesController extends Controller
             ];
         }
 
-        // Sort pool by match_score descending so top matching profiles show first
-        usort($pool, fn ($a, $b) => $b['match_score'] <=> $a['match_score']);
-
-        // Filter based on tab
+        // Filter based on tab and guarantee latest data appears 1st
         if ($tab === 'shortlisted') {
             $filtered = array_filter($pool, fn ($m) => !empty($m['is_shortlisted']));
+            // Sort by shortlist timestamp/id descending (latest shortlisted candidate appears 1st)
+            usort($filtered, function ($a, $b) use ($shortlistIdOrder) {
+                $orderA = $shortlistIdOrder[$a['id']] ?? ($shortlistIdOrder[(string) $a['db_id']] ?? ($shortlistIdOrder[$a['db_id']] ?? 0));
+                $orderB = $shortlistIdOrder[$b['id']] ?? ($shortlistIdOrder[(string) $b['db_id']] ?? ($shortlistIdOrder[$b['db_id']] ?? 0));
+                if ($orderA !== $orderB) {
+                    return $orderB <=> $orderA;
+                }
+                return ($b['db_id'] ?? 0) <=> ($a['db_id'] ?? 0);
+            });
         } elseif ($tab === 'accepted') {
             $filtered = array_filter($pool, fn ($m) => $m['is_accepted'] || $m['request_type'] === 'accepted');
+            usort($filtered, fn ($a, $b) => ($b['db_id'] ?? 0) <=> ($a['db_id'] ?? 0));
+        } elseif ($tab === 'near_me') {
+            $myCity = strtolower(trim($candidate->city ?? $candidate->district ?? ''));
+            $myState = strtolower(trim($candidate->state ?? ''));
+            $filtered = array_filter($pool, function ($m) use ($myCity, $myState) {
+                if (!empty($m['is_shortlisted'])) return false;
+                $cCity = strtolower(trim($m['city'] ?? ''));
+                $cState = strtolower(trim($m['state'] ?? ''));
+                if (!empty($myCity) && (str_contains($cCity, $myCity) || str_contains($myCity, $cCity))) return true;
+                if (!empty($myState) && (str_contains($cState, $myState) || str_contains($myState, $cState))) return true;
+                return false;
+            });
+            usort($filtered, fn ($a, $b) => ($b['db_id'] ?? 0) <=> ($a['db_id'] ?? 0));
         } elseif ($tab === 'my_matches') {
             // 'my_matches' ONLY contains candidates user sent interest to and not yet accepted
             $filtered = array_filter($pool, fn ($m) => $m['request_type'] === 'sent' && ! $m['is_accepted']);
+            usort($filtered, fn ($a, $b) => ($b['db_id'] ?? 0) <=> ($a['db_id'] ?? 0));
         } else {
             // Today's Picks (NEW tab): ONLY fresh recommendations that haven't been contacted, accepted, or shortlisted
             $filtered = array_filter($pool, fn ($m) => ! $m['is_accepted'] && $m['request_type'] === 'none' && empty($m['is_shortlisted']));
+            // Sort newest candidate registered 1st (Requirement A: matches screen latest data 1st)
+            usort($filtered, fn ($a, $b) => ($b['db_id'] ?? 0) <=> ($a['db_id'] ?? 0));
         }
 
         return array_values($filtered);

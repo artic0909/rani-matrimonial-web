@@ -31,27 +31,30 @@ class InboxController extends Controller
             $subTab = 'received';
         }
 
-        // 1. Received connection requests (where receiver is current candidate)
+        // 1. Received connection requests (where receiver is current candidate, latest first)
         $receivedRequests = ConnectionRequest::where('receiver_id', $candidate->id)
+            ->orderBy('id', 'desc')
             ->orderBy('updated_at', 'desc')
             ->get();
         $latestPerSender = $receivedRequests->groupBy('sender_id')->map(fn ($group) => $group->first());
         $pendingReceivedRequests = $latestPerSender->where('status', 'pending');
         $declinedRequests = $latestPerSender->where('status', 'declined');
 
-        // 2. Sent connection requests (where sender is current candidate)
+        // 2. Sent connection requests (where sender is current candidate, latest first)
         $sentRequests = ConnectionRequest::where('sender_id', $candidate->id)
+            ->orderBy('id', 'desc')
             ->orderBy('updated_at', 'desc')
             ->get();
         $latestPerReceiver = $sentRequests->groupBy('receiver_id')->map(fn ($group) => $group->first());
         $pendingSentRequests = $latestPerReceiver->where('status', 'pending');
 
-        // 3. Accepted connection requests (where candidate is either receiver or sender)
+        // 3. Accepted connection requests (where candidate is either receiver or sender, latest first)
         $acceptedRequests = ConnectionRequest::where('status', 'accepted')
             ->where(function ($q) use ($candidate) {
                 $q->where('receiver_id', $candidate->id)
                     ->orWhere('sender_id', $candidate->id);
             })
+            ->orderBy('id', 'desc')
             ->orderBy('updated_at', 'desc')
             ->get();
         // Unique per other partner
@@ -197,6 +200,11 @@ class InboxController extends Controller
                 'details' => $fullDetails,
             ];
         }
+
+        // Strictly guarantee latest connection request appears 1st (Requirement A: received, sent, accepted, declined)
+        usort($connectionMatches, function ($a, $b) {
+            return ($b['connection_id'] ?? 0) <=> ($a['connection_id'] ?? 0);
+        });
 
         $counts = [
             'received' => $pendingReceivedRequests->count(),
