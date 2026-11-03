@@ -562,10 +562,29 @@ class SearchController extends Controller
         $acceptedMap = [];
 
         if ($currentCandidate) {
-            $shortlistedCodes = Shortlisted::where('candidate_id', $currentCandidate->id)
+            $rawShortlisted = Shortlisted::where('candidate_id', $currentCandidate->id)
                 ->pluck('profile_id')
                 ->map(fn ($v) => (string) $v)
                 ->toArray();
+            $shortlistedCodes = [];
+            foreach ($rawShortlisted as $sid) {
+                $shortlistedCodes[] = (string) $sid;
+                $sc = Candidate::where('profile_id', $sid)
+                    ->orWhere('candidate_code', $sid)
+                    ->orWhere('id', is_numeric($sid) ? $sid : 0)
+                    ->first();
+                if ($sc) {
+                    $shortlistedCodes[] = (string) $sc->id;
+                    $shortlistedCodes[] = $sc->getDisplayCodeAttribute();
+                    if (! empty($sc->candidate_code)) {
+                        $shortlistedCodes[] = (string) $sc->candidate_code;
+                    }
+                    if (! empty($sc->profile_id)) {
+                        $shortlistedCodes[] = (string) $sc->profile_id;
+                    }
+                }
+            }
+            $shortlistedCodes = array_values(array_filter(array_unique($shortlistedCodes)));
 
             $connections = ConnectionRequest::where(function ($q) use ($currentCandidate) {
                 $q->where('sender_id', $currentCandidate->id)
