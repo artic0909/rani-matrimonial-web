@@ -1430,6 +1430,7 @@ class AuthController extends Controller
         $rules = [];
 
         switch ($section) {
+            case 'extended':
             case 'all':
                 $rules = [
                     'gender' => 'nullable|string|in:Male,Female,male,female',
