@@ -1634,8 +1634,11 @@ class AuthController extends Controller
      */
     public function uploadProfilePicture(Request $request): JsonResponse
     {
+        ini_set('memory_limit', '512M');
+        set_time_limit(300);
+
         $request->validate([
-            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,webp|max:15360',
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,webp,heic,heif|max:51200',
         ]);
 
         /** @var Candidate $candidate */
@@ -1648,7 +1651,7 @@ class AuthController extends Controller
         $path = 'profiles/' . $filename;
 
         $image = $manager->decodePath($file->getRealPath());
-        $encoded = $image->scaleDown(1200)->encodeUsingFileExtension('webp', 70);
+        $encoded = $image->scaleDown(1200, 1200)->encodeUsingFileExtension('webp', 75);
         Storage::disk('public')->put($path, (string) $encoded);
 
         $oldProfilePath = $candidate->profile_picture;
@@ -1831,7 +1834,7 @@ class AuthController extends Controller
             $path = 'gallery/' . $filename;
 
             $image = $manager->decodePath($file->getRealPath());
-            $encoded = $image->scaleDown(1600)->encodeUsingFileExtension('webp', 75);
+            $encoded = $image->scaleDown(1600, 1600)->encodeUsingFileExtension('webp', 75);
             Storage::disk('public')->put($path, (string) $encoded);
 
             $isFirst = (! $hasProfilePic && $index === 0 && $currentCount === 0);
@@ -1870,9 +1873,12 @@ class AuthController extends Controller
      */
     public function cropGalleryPhoto(Request $request): JsonResponse
     {
+        ini_set('memory_limit', '512M');
+        set_time_limit(300);
+
         $request->validate([
             'photo_id' => 'required|integer',
-            'photo' => 'required|image|mimes:jpeg,png,jpg,webp|max:15360',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,webp,heic,heif|max:51200',
             'set_as_profile' => 'nullable|boolean',
         ]);
 
@@ -1892,7 +1898,7 @@ class AuthController extends Controller
         $path = 'gallery/' . $filename;
 
         $image = $manager->decodePath($file->getRealPath());
-        $encoded = $image->scaleDown(1600)->encodeUsingFileExtension('webp', 75);
+        $encoded = $image->scaleDown(1600, 1600)->encodeUsingFileExtension('webp', 75);
         Storage::disk('public')->put($path, (string) $encoded);
 
         $oldPath = $photo->photo_path;

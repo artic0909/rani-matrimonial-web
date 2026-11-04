@@ -455,7 +455,7 @@ class AuthController extends Controller
             $path = 'profiles/'.$filename;
 
             $image = $manager->decodePath($file->getRealPath());
-            $encoded = $image->scaleDown(1200)->encodeUsingFileExtension('webp', 70);
+            $encoded = $image->scaleDown(1200, 1200)->encodeUsingFileExtension('webp', 75);
             Storage::disk('public')->put($path, (string) $encoded);
 
             $candidateData['profile_picture'] = $path;
@@ -467,7 +467,7 @@ class AuthController extends Controller
             $decodedData = base64_decode($data);
             if ($decodedData) {
                 $image = $manager->decode($decodedData);
-                $encoded = $image->scaleDown(1200)->encodeUsingFileExtension('webp', 70);
+                $encoded = $image->scaleDown(1200, 1200)->encodeUsingFileExtension('webp', 75);
                 Storage::disk('public')->put($path, (string) $encoded);
 
                 $candidateData['profile_picture'] = $path;
@@ -482,7 +482,7 @@ class AuthController extends Controller
             $path = 'selfies/'.$filename;
 
             $image = $manager->decodePath($file->getRealPath());
-            $encoded = $image->scaleDown(1200)->encodeUsingFileExtension('webp', 70);
+            $encoded = $image->scaleDown(1200, 1200)->encodeUsingFileExtension('webp', 75);
             Storage::disk('public')->put($path, (string) $encoded);
 
             $candidateData['selfie_verified'] = true;
@@ -501,7 +501,7 @@ class AuthController extends Controller
                 $decodedData = base64_decode($data);
                 if ($decodedData) {
                     $image = $manager->decode($decodedData);
-                    $encoded = $image->scaleDown(1200)->encodeUsingFileExtension('webp', 70);
+                    $encoded = $image->scaleDown(1200, 1200)->encodeUsingFileExtension('webp', 75);
                     Storage::disk('public')->put($path, (string) $encoded);
 
                     $candidateData['selfie_verified'] = true;
@@ -1122,8 +1122,11 @@ class AuthController extends Controller
     // Upload Profile Picture via AJAX
     public function uploadProfilePicture(Request $request)
     {
+        ini_set('memory_limit', '512M');
+        set_time_limit(300);
+
         $request->validate([
-            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,webp|max:15360',
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,webp,heic,heif|max:51200',
         ]);
 
         $candidate = Auth::user();
@@ -1135,7 +1138,7 @@ class AuthController extends Controller
         $path = 'profiles/'.$filename;
 
         $image = $manager->decodePath($file->getRealPath());
-        $encoded = $image->scaleDown(1200)->encodeUsingFileExtension('webp', 70);
+        $encoded = $image->scaleDown(1200, 1200)->encodeUsingFileExtension('webp', 75);
         Storage::disk('public')->put($path, (string) $encoded);
 
         $oldProfilePath = $candidate->profile_picture;
@@ -1299,7 +1302,7 @@ class AuthController extends Controller
             $path = 'gallery/'.$filename;
 
             $image = $manager->decodePath($file->getRealPath());
-            $encoded = $image->scaleDown(1600)->encodeUsingFileExtension('webp', 75);
+            $encoded = $image->scaleDown(1600, 1600)->encodeUsingFileExtension('webp', 75);
             Storage::disk('public')->put($path, (string) $encoded);
 
             $isFirst = (! $hasProfilePic && $index === 0 && $currentCount === 0);
@@ -1333,9 +1336,12 @@ class AuthController extends Controller
     // Crop an existing gallery / album photo
     public function cropGalleryPhoto(Request $request)
     {
+        ini_set('memory_limit', '512M');
+        set_time_limit(300);
+
         $request->validate([
             'photo_id' => 'required|integer',
-            'photo' => 'required|image|mimes:jpeg,png,jpg,webp|max:15360',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,webp,heic,heif|max:51200',
             'set_as_profile' => 'nullable|boolean',
         ]);
 
@@ -1354,7 +1360,7 @@ class AuthController extends Controller
         $path = 'gallery/'.$filename;
 
         $image = $manager->decodePath($file->getRealPath());
-        $encoded = $image->scaleDown(1600)->encodeUsingFileExtension('webp', 75);
+        $encoded = $image->scaleDown(1600, 1600)->encodeUsingFileExtension('webp', 75);
         Storage::disk('public')->put($path, (string) $encoded);
 
         $oldPath = $photo->photo_path;

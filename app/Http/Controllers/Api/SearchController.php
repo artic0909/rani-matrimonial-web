@@ -146,7 +146,7 @@ class SearchController extends Controller
      */
     public function filter(Request $request)
     {
-        $currentCandidate = $request->user() ?? Auth::user();
+        $currentCandidate = $request->user('sanctum') ?? $request->user() ?? Auth::guard('sanctum')->user() ?? Auth::user();
 
         $query = Candidate::with(['photos', 'bluetick'])
             ->where(function ($q) {
@@ -156,6 +156,15 @@ class SearchController extends Controller
         // Exclude logged in user
         if ($currentCandidate) {
             $query->where('id', '!=', $currentCandidate->id);
+            if (! empty($currentCandidate->candidate_code)) {
+                $query->where('candidate_code', '!=', $currentCandidate->candidate_code);
+            }
+        }
+        if ($request->filled('candidate_id')) {
+            $query->where('id', '!=', $request->input('candidate_id'));
+        }
+        if ($request->filled('candidate_code')) {
+            $query->where('candidate_code', '!=', $request->input('candidate_code'));
         }
 
         // 1. Keyword / Profile ID / Name

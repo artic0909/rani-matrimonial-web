@@ -1104,11 +1104,60 @@
             prevStep() {
                 if (this.step > 1) this.step--;
             },
-            handleFileUpload(e) {
+            compressedProfileFile: null,
+            async handleFileUpload(e) {
                 const file = e.target.files[0];
                 if (file) {
                     this.imagePreview = URL.createObjectURL(file);
+                    try {
+                        this.compressedProfileFile = await this.compressImage(file);
+                    } catch (_) {
+                        this.compressedProfileFile = file;
+                    }
                 }
+            },
+            compressImage(file, maxDim = 1200, quality = 0.8) {
+                if (!file || !file.type || !file.type.startsWith('image/')) return Promise.resolve(file);
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            try {
+                                const canvas = document.createElement('canvas');
+                                let width = img.width;
+                                let height = img.height;
+                                if (width > maxDim || height > maxDim) {
+                                    if (width > height) {
+                                        height = Math.round((height * maxDim) / width);
+                                        width = maxDim;
+                                    } else {
+                                        width = Math.round((width * maxDim) / height);
+                                        height = maxDim;
+                                    }
+                                }
+                                canvas.width = width;
+                                canvas.height = height;
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0, width, height);
+                                canvas.toBlob((blob) => {
+                                    if (blob) {
+                                        const compFile = new File([blob], 'profile_' + Date.now() + '.webp', { type: 'image/webp' });
+                                        resolve(compFile);
+                                    } else {
+                                        resolve(file);
+                                    }
+                                }, 'image/webp', quality);
+                            } catch (_) {
+                                resolve(file);
+                            }
+                        };
+                        img.onerror = () => resolve(file);
+                        img.src = e.target.result;
+                    };
+                    reader.onerror = () => resolve(file);
+                    reader.readAsDataURL(file);
+                });
             },
             startOtpTimer(seconds = 30) {
                 this.otpCountdown = seconds;
@@ -1303,7 +1352,9 @@
                         fd.append(key, this.formData[key]);
                     }
                 }
-                if (this.$refs.fileInput && this.$refs.fileInput.files[0]) {
+                if (this.compressedProfileFile) {
+                    fd.append('profile_picture', this.compressedProfileFile);
+                } else if (this.$refs.fileInput && this.$refs.fileInput.files[0]) {
                     fd.append('profile_picture', this.$refs.fileInput.files[0]);
                 }
                 // Construct dob field as expected by backend

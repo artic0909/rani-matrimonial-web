@@ -1736,7 +1736,9 @@ window.searchManager = function() {
             manglik: 'all',
             has_photo: false,
             verified_only: false,
-            sort_by: 'latest'
+            sort_by: 'latest',
+            candidate_id: {{ Auth::check() ? Auth::id() : 'null' }},
+            candidate_code: '{{ Auth::check() ? (Auth::user()->candidate_code ?? '') : '' }}'
         },
 
         candidates: [],
@@ -1904,8 +1906,15 @@ window.searchManager = function() {
 
                 const data = await response.json();
                 if (data.success) {
-                    this.candidates = data.candidates || [];
-                    this.totalCount = data.count || 0;
+                    const myId = {{ Auth::check() ? Auth::id() : 0 }};
+                    const myCode = '{{ Auth::check() ? (Auth::user()->candidate_code ?? "") : "" }}';
+                    const list = data.candidates || [];
+                    this.candidates = list.filter(c => {
+                        if (myId && (c.id == myId || c.db_id == myId)) return false;
+                        if (myCode && (c.candidate_code == myCode || c.profile_id == myCode)) return false;
+                        return true;
+                    });
+                    this.totalCount = this.candidates.length;
                 }
             } catch (err) {
                 console.error('Search Filter Error:', err);
