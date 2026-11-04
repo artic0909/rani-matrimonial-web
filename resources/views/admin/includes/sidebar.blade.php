@@ -76,6 +76,18 @@
           </a>
         </li>
         <li class="sidebar-menu-item">
+          <a href="{{ route('admin.delete-requests.index') }}" class="sidebar-menu-link {{ request()->routeIs('admin.delete-requests*') ? 'active' : '' }}" id="menu-delete-requests" title="Account Deletion Requests">
+            <i class="bi bi-person-x-fill text-danger"></i>
+            <span>Delete Requests</span>
+            @php
+              $pendingDeletesCount = \App\Models\DeleteAccountRequest::where('status', 'pending')->count();
+            @endphp
+            @if($pendingDeletesCount > 0)
+              <span class="badge bg-danger rounded-pill ms-auto small" style="font-size: 10px;">{{ $pendingDeletesCount }}</span>
+            @endif
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
           <a href="{{ route('admin.profile') }}" class="sidebar-menu-link {{ request()->routeIs('admin.profile*') ? 'active' : '' }}" id="menu-profile" title="Admin Profile & Settings">
             <i class="bi bi-person-gear"></i>
             <span>Profile & Settings</span>

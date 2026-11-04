@@ -99,4 +99,8 @@ Route::middleware(\App\Http\Middleware\AuthenticateApiToken::class)->group(funct
     // Support & Tickets
     Route::get('/support/tickets', [HelpSupportController::class, 'support']);
     Route::post('/support/tickets/create', [HelpSupportController::class, 'storeTicket']);
+
+    // Account Deletion Request
+    Route::get('/account/delete-request', [AuthController::class, 'getDeleteAccountRequest']);
+    Route::post('/account/delete-request', [AuthController::class, 'submitDeleteAccountRequest']);
 });

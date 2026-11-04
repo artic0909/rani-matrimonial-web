@@ -50,6 +50,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/tickets/{id}/reply', [AdminController::class, 'replyTicket'])->name('tickets.reply');
         Route::delete('/tickets/{id}', [AdminController::class, 'destroyTicket'])->name('tickets.destroy');
 
+        // Account Deletion Requests Management
+        Route::get('/delete-requests', [AdminController::class, 'deleteRequests'])->name('delete-requests.index');
+        Route::post('/delete-requests/{id}/approve', [AdminController::class, 'approveDeleteRequest'])->name('delete-requests.approve');
+        Route::post('/delete-requests/{id}/reject', [AdminController::class, 'rejectDeleteRequest'])->name('delete-requests.reject');
+        Route::delete('/delete-requests/{id}', [AdminController::class, 'destroyDeleteRequest'])->name('delete-requests.destroy');
+
         // Admin Profile & Security Settings
         Route::get('/profile', [AdminController::class, 'profileSettings'])->name('profile');
         Route::post('/profile', [AdminController::class, 'updateProfile'])->name('profile.update');

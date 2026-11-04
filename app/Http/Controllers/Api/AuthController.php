@@ -11,6 +11,7 @@ use App\Models\Candidate;
 use App\Models\CandidatePhoto;
 use App\Models\ConnectionRequest;
 use App\Models\Country;
+use App\Models\DeleteAccountRequest;
 use App\Models\Diet;
 use App\Models\Height;
 use App\Models\Hobby;
@@ -888,6 +889,10 @@ class AuthController extends Controller
             ->where('status', 'pending')
             ->count();
 
+        $sentInvitationsCount = ConnectionRequest::where('sender_id', $candidate->id)
+            ->where('status', 'pending')
+            ->count();
+
         $acceptedInvitationsCount = ConnectionRequest::where('status', 'accepted')
             ->where(function ($q) use ($candidate) {
                 $q->where('sender_id', $candidate->id)
@@ -1069,6 +1074,7 @@ class AuthController extends Controller
                     'new_matches_count' => count($todaysMatches),
                     'total_matches_count' => count($todaysMatches),
                     'pending_invitations_count' => $pendingInvitationsCount,
+                    'sent_invitations_count' => $sentInvitationsCount,
                     'accepted_invitations_count' => $acceptedInvitationsCount,
                     'shortlisted_count' => $shortlistedCount,
                     'recent_visitors_count' => $recentVisitorsCount,
@@ -2016,6 +2022,67 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Photo privacy settings updated successfully.',
+        ]);
+    }
+
+    /**
+     * Get candidate's latest delete account request status.
+     */
+    public function getDeleteAccountRequest(Request $request): JsonResponse
+    {
+        /** @var Candidate $candidate */
+        $candidate = $request->user();
+        $requestData = DeleteAccountRequest::where('candidate_id', $candidate->id)
+            ->latest()
+            ->first();
+
+        return response()->json([
+            'success' => true,
+            'has_request' => $requestData !== null,
+            'request' => $requestData,
+        ]);
+    }
+
+    /**
+     * Submit a delete account request with a reason.
+     */
+    public function submitDeleteAccountRequest(Request $request): JsonResponse
+    {
+        $request->validate([
+            'reason' => 'required|string|min:5|max:2000',
+        ], [
+            'reason.required' => 'Please provide a reason for deleting your account.',
+            'reason.min' => 'Reason must be at least 5 characters.',
+        ]);
+
+        /** @var Candidate $candidate */
+        $candidate = $request->user();
+
+        // Check if there is already a pending request
+        $existing = DeleteAccountRequest::where('candidate_id', $candidate->id)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($existing) {
+            $existing->update([
+                'reason' => $request->reason,
+            ]);
+            $deleteReq = $existing;
+        } else {
+            $deleteReq = DeleteAccountRequest::create([
+                'candidate_id' => $candidate->id,
+                'reason' => $request->reason,
+                'status' => 'pending',
+            ]);
+        }
+
+        // Immediately deactivate candidate profile so it disappears from public matchmaking search
+        $candidate->update(['is_active' => false]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your account deletion request has been submitted successfully and is under review. Your profile has been deactivated and hidden from public searches.',
+            'request' => $deleteReq,
         ]);
     }
 }

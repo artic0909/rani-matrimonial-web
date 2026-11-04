@@ -257,4 +257,17 @@ class Candidate extends Authenticatable
     {
         return $this->hasMany(Ticket::class, 'candidate_id')->orderBy('created_at', 'desc');
     }
+
+    /**
+     * Account deletion requests created by this candidate
+     */
+    public function deleteAccountRequests(): HasMany
+    {
+        return $this->hasMany(DeleteAccountRequest::class, 'candidate_id')->orderBy('created_at', 'desc');
+    }
+
+    public function latestDeleteAccountRequest(): HasOne
+    {
+        return $this->hasOne(DeleteAccountRequest::class, 'candidate_id')->latestOfMany();
+    }
 }

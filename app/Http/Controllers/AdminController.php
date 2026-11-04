@@ -9,6 +9,7 @@ use App\Models\Bluetick;
 use App\Models\Branch;
 use App\Models\Candidate;
 use App\Models\ConnectionRequest;
+use App\Models\DeleteAccountRequest;
 use App\Models\Help;
 use App\Models\Notification;
 use App\Models\Referral;
@@ -1720,5 +1721,120 @@ class AdminController extends Controller
         }
 
         return redirect()->route('admin.tickets.index')->with('success', 'Support ticket deleted successfully.');
+    }
+
+    /**
+     * =========================================================================
+     * ACCOUNT DELETION REQUESTS MANAGEMENT
+     * =========================================================================
+     */
+
+    /**
+     * List all candidate account deletion requests
+     */
+    public function deleteRequests(Request $request)
+    {
+        $query = DeleteAccountRequest::with('candidate');
+
+        if ($request->filled('status') && in_array($request->status, ['pending', 'approved', 'rejected'])) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('search')) {
+            $search = trim($request->input('search'));
+            $query->where(function ($q) use ($search) {
+                $q->where('reason', 'like', "%{$search}%")
+                    ->orWhereHas('candidate', function ($sub) use ($search) {
+                        $sub->where('first_name', 'like', "%{$search}%")
+                            ->orWhere('last_name', 'like', "%{$search}%")
+                            ->orWhere('profile_id', 'like', "%{$search}%")
+                            ->orWhere('candidate_code', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $requests = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        $counts = [
+            'total' => DeleteAccountRequest::count(),
+            'pending' => DeleteAccountRequest::where('status', 'pending')->count(),
+            'approved' => DeleteAccountRequest::where('status', 'approved')->count(),
+            'rejected' => DeleteAccountRequest::where('status', 'rejected')->count(),
+        ];
+
+        return view('admin.delete_requests.index', compact('requests', 'counts'));
+    }
+
+    /**
+     * Approve Account Deletion Request
+     */
+    public function approveDeleteRequest(Request $request, $id)
+    {
+        $delReq = DeleteAccountRequest::findOrFail($id);
+        $delReq->status = 'approved';
+        $delReq->admin_notes = $request->input('admin_notes', 'Account deletion approved by administrator.');
+        $delReq->reviewed_at = now();
+        $delReq->save();
+
+        // Deactivate the candidate account
+        if ($delReq->candidate) {
+            $delReq->candidate->is_active = false;
+            $delReq->candidate->save();
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Account deletion request approved successfully.',
+            ]);
+        }
+
+        return redirect()->route('admin.delete-requests.index')->with('success', 'Account deletion request approved successfully.');
+    }
+
+    /**
+     * Reject Account Deletion Request
+     */
+    public function rejectDeleteRequest(Request $request, $id)
+    {
+        $delReq = DeleteAccountRequest::findOrFail($id);
+        $delReq->status = 'rejected';
+        $delReq->admin_notes = $request->input('admin_notes', 'Account deletion rejected by administrator.');
+        $delReq->reviewed_at = now();
+        $delReq->save();
+
+        // Reactivate candidate account if needed
+        if ($delReq->candidate) {
+            $delReq->candidate->is_active = true;
+            $delReq->candidate->save();
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Account deletion request rejected. Candidate profile reactivated.',
+            ]);
+        }
+
+        return redirect()->route('admin.delete-requests.index')->with('success', 'Account deletion request rejected. Candidate profile reactivated.');
+    }
+
+    /**
+     * Destroy Delete Account Request Record
+     */
+    public function destroyDeleteRequest(Request $request, $id)
+    {
+        $delReq = DeleteAccountRequest::findOrFail($id);
+        $delReq->delete();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Delete request record removed successfully.',
+            ]);
+        }
+
+        return redirect()->route('admin.delete-requests.index')->with('success', 'Delete request record removed successfully.');
     }
 }
