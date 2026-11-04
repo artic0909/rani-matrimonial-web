@@ -1,14 +1,14 @@
 <footer class="relative z-10 bg-[#1f0103] text-white border-t-2 border-[#d4af37] mt-auto overflow-hidden">
-    <!-- Ambient Red Faded Glow behind hands on Desktop -->
-    <div class="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-[550px] lg:w-[700px] h-[320px] pointer-events-none select-none z-0">
-        <div class="absolute right-4 top-8 w-[420px] lg:w-[500px] h-[220px] rounded-full bg-[radial-gradient(ellipse_at_center,_rgba(180,20,40,0.55)_0%,_rgba(117,0,0,0.32)_40%,_transparent_75%)] blur-3xl"></div>
+    <!-- Ambient Red Faded Glow behind hands on right side -->
+    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-[380px] sm:w-[500px] lg:w-[700px] h-[300px] sm:h-[320px] pointer-events-none select-none z-0">
+        <div class="absolute right-0 top-8 w-[320px] sm:w-[420px] lg:w-[520px] h-[200px] sm:h-[220px] rounded-full bg-[radial-gradient(ellipse_at_center,_rgba(180,20,40,0.55)_0%,_rgba(117,0,0,0.3)_40%,_transparent_75%)] blur-3xl"></div>
     </div>
 
-    <!-- Desktop Right-Side Couple Hands Image (Bilateral left & right feathering so no cut is visible) -->
-    <div class="hidden lg:flex absolute right-0 bottom-0 pointer-events-none select-none z-0 items-end justify-end overflow-hidden">
+    <!-- Right-Side Romantic Couple Hands Image (Anchored to right bottom, bigger size) -->
+    <div class="absolute right-0 bottom-0 pointer-events-none select-none z-0 flex items-end justify-end overflow-hidden">
         <img src="{{ asset('img/footer-img.png') }}" 
              alt="Rani Matrimonial" 
-             class="h-[240px] xl:h-[285px] w-auto max-w-none object-contain object-right-bottom [mask-image:linear-gradient(to_right,transparent_0%,transparent_10%,black_30%,black_75%,transparent_92%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,transparent_10%,black_30%,black_75%,transparent_92%,transparent_100%)] transition-opacity duration-300" />
+             class="h-[230px] sm:h-[260px] md:h-[290px] lg:h-[320px] xl:h-[340px] w-auto max-w-none object-contain object-right-bottom opacity-85 sm:opacity-95 lg:opacity-100 transition-opacity duration-300" />
     </div>
 
     <!-- Top & Main Content Section -->
@@ -71,17 +71,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Mobile & Tablet Centered Romance Graphic ("thik thak middle" with seamless left & right fade) -->
-    <div class="relative z-10 flex lg:hidden items-center justify-center -mt-2 mb-4 px-4 overflow-hidden">
-        <div class="relative max-w-sm sm:max-w-md w-full flex items-center justify-center">
-            <!-- Ambient Warm Red Glow behind centered hands -->
-            <div class="absolute inset-0 m-auto w-44 sm:w-56 h-20 sm:h-24 rounded-full bg-[radial-gradient(ellipse_at_center,_rgba(180,20,40,0.5)_0%,_rgba(117,0,0,0.25)_45%,_transparent_72%)] blur-2xl pointer-events-none"></div>
-            <img src="{{ asset('img/footer-img.png') }}" 
-                 alt="Rani Matrimonial" 
-                 class="relative z-10 w-full h-auto max-h-[130px] sm:max-h-[165px] object-contain pointer-events-none select-none [mask-image:linear-gradient(to_right,transparent_0%,transparent_8%,black_25%,black_75%,transparent_92%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,transparent_8%,black_25%,black_75%,transparent_92%,transparent_100%)]" />
         </div>
     </div>
 
