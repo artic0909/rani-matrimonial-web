@@ -5,12 +5,13 @@
 @section('content')
 
 <!-- Hero Section -->
-<section class="relative min-h-[100svh] flex flex-col justify-start md:justify-end overflow-x-hidden overflow-y-auto pt-28 md:pt-32 pb-16 md:pb-24">
+<section class="relative min-h-[100svh] flex flex-col justify-center md:justify-end overflow-hidden pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-14 md:pb-20 bg-[#2d0208]">
     <!-- Background Image -->
+    <div class="absolute inset-0 z-0 bg-[#2d0208]"></div>
     <div class="absolute inset-0 z-0 bg-cover bg-top bg-no-repeat" style="background-image: url('{{ asset('img/hero.png') }}');"></div>
     
-    <!-- Maroon/Gold Gradient Overlay (Reduced Opacity) -->
-    <div class="absolute inset-0 z-0 bg-gradient-to-t from-rani-dark/80 via-rani-primary-dark/20 to-transparent"></div>
+    <!-- Maroon/Gold Gradient Overlay (Smoothly blends to dark maroon at bottom) -->
+    <div class="absolute inset-0 z-0 bg-gradient-to-t from-black/90 via-rani-dark/50 md:via-rani-primary-dark/20 to-transparent"></div>
 
     <!-- Floating Sweet Gestures (Hearts) -->
     <div class="heart-container">
@@ -26,15 +27,15 @@
     </div>
 
     <!-- Decorative Royal Borders & Accents -->
-    <div class="absolute inset-4 md:inset-8 border-2 border-rani-gold/30 rounded-3xl pointer-events-none z-0"></div>
+    <div class="absolute inset-3 sm:inset-4 md:inset-8 border-2 border-rani-gold/30 rounded-2xl sm:rounded-3xl pointer-events-none z-0"></div>
     
     <!-- Content -->
-    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 md:mt-auto">
-        <div class="text-center space-y-4 mb-8 md:mb-10">
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-auto md:mt-auto">
+        <div class="text-center space-y-3 sm:space-y-4 mb-6 sm:mb-8 md:mb-10">
             <h1 class="text-3xl sm:text-4xl md:text-6xl font-serif font-bold text-white leading-tight var(--animate-fade-in-up) tracking-wide drop-shadow-lg">
                 Choose Your <span class="text-rani-gold">Forever</span>
             </h1>
-            <p class="text-base sm:text-lg md:text-xl text-gray-200 font-light var(--animate-fade-in-up) drop-shadow-md" style="animation-delay: 0.2s;">
+            <p class="text-sm sm:text-base md:text-xl text-gray-200 font-light var(--animate-fade-in-up) drop-shadow-md" style="animation-delay: 0.2s;">
                 Find love on your terms with millions of verified profiles
             </p>
         </div>
@@ -144,9 +145,9 @@
 </section>
 
 <!-- Features / How it works -->
-<section class="py-24 bg-rani-light relative">
+<section class="py-12 sm:py-16 md:py-24 bg-rani-light relative">
     <!-- Top ornamental divider -->
-    <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-rani-primary-dark via-rani-gold to-rani-primary-dark"></div>
+    <div class="absolute top-0 left-0 w-full h-1.5 sm:h-2 bg-gradient-to-r from-rani-primary-dark via-rani-gold to-rani-primary-dark"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
@@ -192,7 +193,7 @@
 
 
 <!-- App Download Section (Using user provided section-bg.png with mob1, mob4, mob2) -->
-<section class="relative bg-[#46020c] bg-cover bg-center bg-no-repeat text-white overflow-hidden min-h-[460px] lg:h-[480px] xl:h-[510px] flex items-center" 
+<section class="relative bg-[#46020c] bg-cover bg-bottom lg:bg-center bg-no-repeat text-white overflow-hidden min-h-[420px] sm:min-h-[450px] lg:h-[480px] xl:h-[510px] flex items-center" 
          style="background-image: url('{{ asset('img/section-bg.png') }}');">
 
     <!-- Desktop Couple Image (Positioned in Center, shifted comfortably towards the phones) -->
@@ -218,18 +219,47 @@
              class="h-[84%] xl:h-[87%] w-auto max-w-none object-contain object-bottom -ml-[13%] xl:-ml-[15%] relative z-10 drop-shadow-xl transform rotate-6 origin-bottom transition-transform duration-300" />
     </div>
 
-    <!-- Main Content Container -->
-    <div class="w-full max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-10 h-full relative z-30">
-        <div class="h-full flex flex-col justify-center py-10 lg:py-6">
+    <!-- Mobile Visual Background Layer (Couple + 3 Phones in BACK layer for mobile, clearly visible) -->
+    <div class="lg:hidden absolute bottom-0 inset-x-0 z-10 flex items-end justify-center pointer-events-none select-none overflow-hidden h-[75%] sm:h-[80%] max-h-[320px] px-2">
+        <!-- Couple on Left -->
+        <div class="w-[46%] sm:w-[42%] max-w-[200px] shrink-0 -mr-6 sm:-mr-8 relative z-10 flex items-end opacity-85 sm:opacity-90 transition-opacity">
+            <img src="{{ asset('img/section-couple.png') }}" 
+                 alt="Rani Matrimonial Couple" 
+                 class="w-full h-auto object-contain object-bottom drop-shadow-2xl" />
+        </div>
+
+        <!-- 3-Phones Cluster on Right -->
+        <div class="w-[58%] sm:w-[52%] max-w-[260px] flex items-end justify-center relative z-20 shrink-0 px-1 opacity-90 sm:opacity-95 transition-opacity">
+            <!-- mob1.png (left, tilted) -->
+            <img src="{{ asset('img/mob1.png') }}" 
+                 alt="Rani App Wallet" 
+                 class="w-[36%] h-auto object-contain object-bottom -mr-[13%] relative z-10 drop-shadow-xl transform -rotate-6 origin-bottom" />
+            <!-- mob4.png (center, straight, in front) -->
+            <img src="{{ asset('img/mob4.png') }}" 
+                 alt="Rani Matrimonial App" 
+                 class="w-[46%] h-auto object-contain object-bottom relative z-20 drop-shadow-2xl" />
+            <!-- mob2.png (right, tilted) -->
+            <img src="{{ asset('img/mob2.png') }}" 
+                 alt="Rani App Matches" 
+                 class="w-[36%] h-auto object-contain object-bottom -ml-[13%] relative z-10 drop-shadow-xl transform rotate-6 origin-bottom" />
+        </div>
+    </div>
+
+    <!-- Mobile Subtle Gradient (Light subtle shade at top for text readability, 100% transparent at bottom so images are vivid) -->
+    <div class="lg:hidden absolute inset-0 z-15 bg-gradient-to-b from-black/60 via-black/25 to-transparent pointer-events-none"></div>
+
+    <!-- Main Content Container (Foreground Layer z-20) -->
+    <div class="w-full max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-10 h-full relative z-20 py-8 sm:py-10 lg:py-6 flex items-center">
+        <div class="w-full">
             
-            <!-- Left Side Content Column (Width ~35% on desktop) -->
-            <div class="w-full lg:w-[35%] xl:w-[34%] space-y-4 xl:space-y-4.5 text-center lg:text-left">
+            <!-- Left Side Content Column (Width ~35% on desktop, centered on mobile) -->
+            <div class="w-full lg:w-[35%] xl:w-[34%] space-y-3.5 sm:space-y-4 xl:space-y-4.5 text-center lg:text-left">
                 
                 <!-- Logo & Brand Header -->
                 <div class="flex items-center justify-center lg:justify-start gap-2.5">
-                    <img src="{{ asset('logo.png') }}" alt="Rani Matrimonial" class="h-10 sm:h-11 w-auto rounded-full shadow-md border border-rani-gold/40" />
+                    <img src="{{ asset('logo.png') }}" alt="Rani Matrimonial" class="h-9 sm:h-11 w-auto rounded-full shadow-md border border-rani-gold/40" />
                     <div>
-                        <div class="flex items-baseline leading-none">
+                        <div class="flex items-baseline leading-none justify-center lg:justify-start">
                             <span class="text-2xl sm:text-[26px] font-serif italic font-bold text-white tracking-wide">Rani</span>
                             <span class="text-lg sm:text-xl font-serif text-rani-gold tracking-wider ml-1 font-normal">Matrimonial</span>
                         </div>
@@ -244,7 +274,7 @@
                 <!-- Headline -->
                 <div class="space-y-1">
                     <h2 class="text-2xl sm:text-3xl lg:text-[34px] xl:text-[38px] font-serif font-bold text-white leading-[1.15] tracking-tight">
-                        Download the <br />
+                        Download the <br class="hidden sm:inline" />
                         <span class="text-[#f5b041] font-extrabold drop-shadow-md">Rani Matrimonial App</span>
                     </h2>
                     <p class="text-xs sm:text-[13px] text-gray-200/90 font-light leading-relaxed max-w-md mx-auto lg:mx-0">
@@ -252,41 +282,66 @@
                     </p>
                 </div>
 
-                <!-- 5 Feature Badges (Single horizontal row with 5 outline items, responsive for all screens) -->
-                <div class="grid grid-cols-5 gap-1 sm:gap-1.5 md:gap-2 max-w-md sm:max-w-lg mx-auto lg:mx-0">
-                    <!-- 1. Verified Profiles -->
-                    <div class="flex flex-col items-center justify-center p-1 sm:p-1.5 md:p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs text-center min-w-0">
-                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                        <span class="text-[7.5px] min-[380px]:text-[8px] sm:text-[9px] xl:text-[10px] leading-tight text-white/95 font-medium mt-0.5 sm:mt-1">Verified<br>Profiles</span>
+                <!-- 5 Feature Badges (Desktop/Tablet: 5 Cards in a row; Mobile: 2 clean rows of stylish pill chips) -->
+                <!-- Mobile Badges Layout (< sm: 2 stylish wrapped rows with full readability) -->
+                <div class="flex flex-wrap items-center justify-center gap-1.5 max-w-sm mx-auto sm:hidden">
+                    <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-white/20 bg-white/10 backdrop-blur-xs text-white">
+                        <svg class="w-3 h-3 text-[#f5b041] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        <span class="text-[10px] font-medium leading-none">Verified Profiles</span>
                     </div>
-
-                    <!-- 2. Smart Matching -->
-                    <div class="flex flex-col items-center justify-center p-1 sm:p-1.5 md:p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs text-center min-w-0">
-                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        <span class="text-[7.5px] min-[380px]:text-[8px] sm:text-[9px] xl:text-[10px] leading-tight text-white/95 font-medium mt-0.5 sm:mt-1">Smart<br>Matching</span>
+                    <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-white/20 bg-white/10 backdrop-blur-xs text-white">
+                        <svg class="w-3 h-3 text-[#f5b041] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <span class="text-[10px] font-medium leading-none">Smart Matching</span>
                     </div>
-
-                    <!-- 3. Safe & Secure Communication -->
-                    <div class="flex flex-col items-center justify-center p-1 sm:p-1.5 md:p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs text-center min-w-0">
-                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                        <span class="text-[7px] min-[380px]:text-[7.5px] sm:text-[8.5px] xl:text-[9.5px] leading-tight text-white/95 font-medium mt-0.5 sm:mt-1">Safe & Secure<br>Communication</span>
+                    <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-white/20 bg-white/10 backdrop-blur-xs text-white">
+                        <svg class="w-3 h-3 text-[#f5b041] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        <span class="text-[10px] font-medium leading-none">Safe & Secure</span>
                     </div>
-
-                    <!-- 4. Family Friendly -->
-                    <div class="flex flex-col items-center justify-center p-1 sm:p-1.5 md:p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs text-center min-w-0">
-                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        <span class="text-[7.5px] min-[380px]:text-[8px] sm:text-[9px] xl:text-[10px] leading-tight text-white/95 font-medium mt-0.5 sm:mt-1">Family<br>Friendly</span>
+                    <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-white/20 bg-white/10 backdrop-blur-xs text-white">
+                        <svg class="w-3 h-3 text-[#f5b041] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        <span class="text-[10px] font-medium leading-none">Family Friendly</span>
                     </div>
-
-                    <!-- 5. Dedicated Support -->
-                    <div class="flex flex-col items-center justify-center p-1 sm:p-1.5 md:p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs text-center min-w-0">
-                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                        <span class="text-[7.5px] min-[380px]:text-[8px] sm:text-[9px] xl:text-[10px] leading-tight text-white/95 font-medium mt-0.5 sm:mt-1">Dedicated<br>Support</span>
+                    <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-white/20 bg-white/10 backdrop-blur-xs text-white">
+                        <svg class="w-3 h-3 text-[#f5b041] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <span class="text-[10px] font-medium leading-none">Dedicated Support</span>
                     </div>
                 </div>
 
-                <!-- White Card: Get the App Now with store buttons (Clean design without QR) -->
-                <div class="inline-flex flex-col sm:flex-row items-center gap-2.5 sm:gap-4 bg-white rounded-2xl px-4 sm:px-5 py-2.5 sm:py-3 shadow-2xl border border-gray-100 text-gray-900 mx-auto lg:mx-0">
+                <!-- Desktop / Tablet Badges Layout (>= sm: 5 columns from reference banner) -->
+                <div class="hidden sm:grid sm:grid-cols-5 gap-1.5 md:gap-2 max-w-lg mx-auto lg:mx-0">
+                    <!-- 1. Verified Profiles -->
+                    <div class="flex flex-col items-center justify-center p-1.5 md:p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs text-center min-w-0">
+                        <svg class="w-4 h-4 md:w-4.5 md:h-4.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        <span class="text-[8.5px] xl:text-[9.5px] leading-tight text-white/95 font-medium mt-1">Verified<br>Profiles</span>
+                    </div>
+
+                    <!-- 2. Smart Matching -->
+                    <div class="flex flex-col items-center justify-center p-1.5 md:p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs text-center min-w-0">
+                        <svg class="w-4 h-4 md:w-4.5 md:h-4.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <span class="text-[8.5px] xl:text-[9.5px] leading-tight text-white/95 font-medium mt-1">Smart<br>Matching</span>
+                    </div>
+
+                    <!-- 3. Safe & Secure Communication -->
+                    <div class="flex flex-col items-center justify-center p-1.5 md:p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs text-center min-w-0">
+                        <svg class="w-4 h-4 md:w-4.5 md:h-4.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        <span class="text-[8px] xl:text-[9px] leading-tight text-white/95 font-medium mt-1">Safe & Secure<br>Communication</span>
+                    </div>
+
+                    <!-- 4. Family Friendly -->
+                    <div class="flex flex-col items-center justify-center p-1.5 md:p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs text-center min-w-0">
+                        <svg class="w-4 h-4 md:w-4.5 md:h-4.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        <span class="text-[8.5px] xl:text-[9.5px] leading-tight text-white/95 font-medium mt-1">Family<br>Friendly</span>
+                    </div>
+
+                    <!-- 5. Dedicated Support -->
+                    <div class="flex flex-col items-center justify-center p-1.5 md:p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs text-center min-w-0">
+                        <svg class="w-4 h-4 md:w-4.5 md:h-4.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <span class="text-[8.5px] xl:text-[9.5px] leading-tight text-white/95 font-medium mt-1">Dedicated<br>Support</span>
+                    </div>
+                </div>
+
+                <!-- White Card: Get the App Now with store buttons -->
+                <div class="inline-flex flex-col sm:flex-row items-center gap-2 sm:gap-3.5 bg-white rounded-2xl px-4 sm:px-5 py-2.5 sm:py-3 shadow-2xl border border-gray-100 text-gray-900 mx-auto lg:mx-0">
                     <div class="text-center sm:text-left">
                         <p class="font-serif font-bold text-xs sm:text-sm md:text-base text-gray-900 tracking-tight leading-none">Get the App Now</p>
                         <p class="text-[9px] sm:text-[10px] text-gray-500 font-sans mt-0.5 hidden sm:block">Available for iOS & Android</p>
@@ -317,32 +372,6 @@
                     </div>
                 </div>
 
-            </div>
-
-            <!-- Mobile Visual Composition (Shown only on < lg: couple on left shifted right, 3 phones on right with diagonal tilt, safe padding) -->
-            <div class="flex lg:hidden items-end justify-center w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto mt-6 pt-2 px-2 overflow-visible">
-                <!-- Couple on Left -->
-                <div class="w-[44%] shrink-0 -mr-5 sm:-mr-7 relative z-10">
-                    <img src="{{ asset('img/section-couple.png') }}" 
-                         alt="Rani Matrimonial Couple" 
-                         class="w-full h-auto object-contain drop-shadow-xl pointer-events-none select-none" />
-                </div>
-
-                <!-- 3-Phones Cluster on Right (Shifted with padding so mob2 is never cut) -->
-                <div class="w-[60%] flex items-end justify-center relative z-20 shrink-0 px-2 sm:px-3">
-                    <!-- mob1.png (left, tilted) -->
-                    <img src="{{ asset('img/mob1.png') }}" 
-                         alt="Rani App Wallet" 
-                         class="w-[36%] h-auto object-contain -mr-[12%] relative z-10 drop-shadow-lg transform -rotate-6 origin-bottom pointer-events-none select-none transition-transform" />
-                    <!-- mob4.png (center, straight, in front) -->
-                    <img src="{{ asset('img/mob4.png') }}" 
-                         alt="Rani Matrimonial App" 
-                         class="w-[46%] h-auto object-contain relative z-20 drop-shadow-xl pointer-events-none select-none" />
-                    <!-- mob2.png (right, tilted, fully visible with no clipping) -->
-                    <img src="{{ asset('img/mob2.png') }}" 
-                         alt="Rani App Matches" 
-                         class="w-[36%] h-auto object-contain -ml-[12%] relative z-10 drop-shadow-lg transform rotate-6 origin-bottom pointer-events-none select-none transition-transform" />
-                </div>
             </div>
 
         </div>
