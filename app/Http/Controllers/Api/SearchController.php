@@ -146,7 +146,15 @@ class SearchController extends Controller
      */
     public function filter(Request $request)
     {
-        $currentCandidate = $request->user('sanctum') ?? $request->user() ?? Auth::guard('sanctum')->user() ?? Auth::user();
+        $currentCandidate = $request->user() ?? Auth::user() ?? $request->user('sanctum') ?? Auth::guard('sanctum')->user();
+        if (! $currentCandidate && $request->filled('candidate_id')) {
+            $currentCandidate = Candidate::find($request->input('candidate_id'));
+        }
+        if (! $currentCandidate && $request->filled('candidate_code')) {
+            $currentCandidate = Candidate::where('candidate_code', $request->input('candidate_code'))
+                ->orWhere('profile_id', $request->input('candidate_code'))
+                ->first();
+        }
 
         $query = Candidate::with(['photos', 'bluetick'])
             ->where(function ($q) {
@@ -601,14 +609,31 @@ class SearchController extends Controller
             })->get();
 
             foreach ($connections as $conn) {
-                $otherId = ($conn->sender_id === $currentCandidate->id) ? $conn->receiver_id : $conn->sender_id;
+                $isSender = ((string) $conn->sender_id === (string) $currentCandidate->id);
+                $otherId = $isSender ? $conn->receiver_id : $conn->sender_id;
+
+                $otherKeys = [(string) $otherId, (int) $otherId];
+                $otherCand = Candidate::find($otherId);
+                if ($otherCand) {
+                    $otherKeys[] = $otherCand->getDisplayCodeAttribute();
+                    if (! empty($otherCand->candidate_code)) $otherKeys[] = (string) $otherCand->candidate_code;
+                    if (! empty($otherCand->profile_id)) $otherKeys[] = (string) $otherCand->profile_id;
+                }
+                $otherKeys = array_values(array_filter(array_unique($otherKeys)));
+
                 if ($conn->status === 'accepted') {
-                    $acceptedMap[$otherId] = true;
+                    foreach ($otherKeys as $k) {
+                        $acceptedMap[$k] = true;
+                    }
                 } elseif ($conn->status === 'pending') {
-                    if ($conn->sender_id === $currentCandidate->id) {
-                        $sentRequestMap[$otherId] = true;
+                    if ($isSender) {
+                        foreach ($otherKeys as $k) {
+                            $sentRequestMap[$k] = true;
+                        }
                     } else {
-                        $receivedRequestMap[$otherId] = true;
+                        foreach ($otherKeys as $k) {
+                            $receivedRequestMap[$k] = true;
+                        }
                     }
                 }
             }
@@ -658,9 +683,24 @@ class SearchController extends Controller
                              in_array($c->candidate_code ?? '', $shortlistedCodes) ||
                              in_array($c->profile_id ?? '', $shortlistedCodes);
 
-            $isAccepted = isset($acceptedMap[$c->id]);
-            $isSentByMe = isset($sentRequestMap[$c->id]);
-            $isReceivedByMe = isset($receivedRequestMap[$c->id]);
+            $candKeys = [
+                $c->id,
+                (string) $c->id,
+                $c->getDisplayCodeAttribute(),
+                $c->candidate_code ?? '',
+                $c->profile_id ?? '',
+            ];
+            $candKeys = array_values(array_filter(array_unique($candKeys)));
+
+            $isAccepted = false;
+            $isSentByMe = false;
+            $isReceivedByMe = false;
+
+            foreach ($candKeys as $k) {
+                if (isset($acceptedMap[$k])) $isAccepted = true;
+                if (isset($sentRequestMap[$k])) $isSentByMe = true;
+                if (isset($receivedRequestMap[$k])) $isReceivedByMe = true;
+            }
 
             $requestType = 'none';
             if ($isAccepted) {
