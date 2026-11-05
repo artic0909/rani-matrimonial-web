@@ -80,7 +80,7 @@
         .content-container {
             position: relative;
             z-index: 10;
-            padding: 110pt 32pt 0pt 32pt;
+            padding: 136pt 32pt 0pt 32pt;
         }
 
         /* Header Split Table (Left: Sumatra Sales Details, Right: Reserved for Pre-Printed TAX INVOICE Badge) */
