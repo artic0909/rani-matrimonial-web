@@ -432,7 +432,7 @@
                     <div class="meta-line">17, Ranihati - Amta Road, Ranihati, Howrah, West Bengal - 711322</div>
                     <div class="meta-line"><strong>CIN:</strong> U51909WB2020PTC237800</div>
                     <div class="meta-line"><strong>GSTIN:</strong> 19ABDCS8853N1ZG</div>
-                    <div class="meta-line"><strong>Phone:</strong> +91 6292237200 / 201 / 202 / 207</div>
+                    <div class="meta-line"><strong>Phone:</strong> +91 6292237202</div>
                     <div class="meta-line"><strong>Email:</strong> sumatra.sales2424@gmail.com</div>
                 </td>
                 <td class="divider-col">
