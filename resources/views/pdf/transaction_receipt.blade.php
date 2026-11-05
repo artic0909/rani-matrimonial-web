@@ -13,6 +13,15 @@
     $amountFormatted = number_format((float) $transaction->amount, 2);
     $itemDesc = $transaction->title ?: ($transaction->type === 'credit' ? 'Wallet Recharge (Topup)' : 'Service Charge');
     $customerPhone = $candidate->mobile ?? $candidate->phone ?? 'N/A';
+    $paymentId = null;
+    if (!empty($transaction->payment_id)) {
+        $paymentId = $transaction->payment_id;
+    } elseif (!empty($transaction->description) && preg_match('/(?:Payment ID|pay_|Order ID)[:\s]+([a-zA-Z0-9_-]+)/i', $transaction->description, $pm)) {
+        $paymentId = $pm[1];
+    }
+    if (empty($paymentId)) {
+        $paymentId = $transaction->transaction_id ? ('#' . $transaction->transaction_id) : ('TXN-' . str_pad($transaction->id, 6, '0', STR_PAD_LEFT));
+    }
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -485,6 +494,13 @@
                         <span class="card-label">Mobile :</span>
                         <span class="card-val">{{ $customerPhone }}</span>
                     </td>
+                    <td class="col-half">
+                        <span class="card-label">Payment ID :</span>
+                        <span class="card-val" style="font-size: 10px; font-family: monospace; color: #111111;">{{ $paymentId }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-half"></td>
                     <td class="col-half">
                         <span class="card-label">Payment Status :</span>
                         <span class="paid-pill">PAID</span>
