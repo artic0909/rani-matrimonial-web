@@ -994,6 +994,15 @@ class AuthController extends Controller
             $receivedInterestIds,
             $acceptedCandidateIds
         );
+        $allMatches = $matchesController->getMatchesData(
+            $candidate,
+            $targetGender,
+            'my_matches',
+            $shortlistedIds,
+            $sentInterestIds,
+            $receivedInterestIds,
+            $acceptedCandidateIds
+        );
 
         $dashboardMatches = array_slice($todaysMatches, 0, 4);
 
@@ -1071,8 +1080,8 @@ class AuthController extends Controller
                     'status' => $wallet->status,
                 ],
                 'metrics' => [
-                    'new_matches_count' => count($todaysMatches),
-                    'total_matches_count' => count($todaysMatches),
+                    'new_matches_count' => count($allMatches),
+                    'total_matches_count' => count($allMatches),
                     'pending_invitations_count' => $pendingInvitationsCount,
                     'sent_invitations_count' => $sentInvitationsCount,
                     'accepted_invitations_count' => $acceptedInvitationsCount,

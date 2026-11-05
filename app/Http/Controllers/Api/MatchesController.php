@@ -145,7 +145,7 @@ class MatchesController extends Controller
 
         // Filtered matches for the active tab
         $matches = match ($tab) {
-            'my_matches' => $allMatches,
+            'my_matches', 'new' => $allMatches,
             'todays' => $todaysMatches,
             'accepted' => $acceptedMatches,
             'near_me' => $nearMeMatches,
@@ -157,6 +157,7 @@ class MatchesController extends Controller
             'todays' => count($todaysMatches),
             'shortlisted' => count($shortlistedMatches),
             'my_matches' => count($allMatches),
+            'new' => count($allMatches),
             'accepted' => count($acceptedMatches),
             'near_me' => count($nearMeMatches),
         ];
