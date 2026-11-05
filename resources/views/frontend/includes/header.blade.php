@@ -69,28 +69,152 @@
         </div>
     </div>
 
-    <!-- Mobile Menu -->
-    <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="md:hidden absolute w-full bg-rani-light shadow-2xl border-t border-rani-gold/30" style="display: none;">
-        <div class="px-4 pt-2 pb-6 space-y-1">
-            <a href="{{ route('search') }}" class="flex items-center gap-2 px-3 py-3 rounded-md text-base font-serif font-semibold {{ request()->routeIs('search*') ? 'text-rani-primary bg-rani-primary/10' : 'text-rani-primary-dark hover:bg-rani-primary/5 hover:text-rani-primary' }}">
-                <svg class="w-5 h-5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                <span>Search Profiles</span>
+    <!-- Mobile Sidebar Drawer Backdrop -->
+    <div x-show="mobileMenuOpen" 
+         x-transition:enter="transition-opacity ease-linear duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition-opacity ease-linear duration-300"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         @click="mobileMenuOpen = false"
+         class="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 md:hidden"
+         style="display: none;">
+    </div>
+
+    <!-- Mobile Sidebar Drawer Panel (Sliding in from Right) -->
+    <div x-show="mobileMenuOpen" 
+         x-transition:enter="transition transform ease-in-out duration-300"
+         x-transition:enter-start="translate-x-full"
+         x-transition:enter-end="translate-x-0"
+         x-transition:leave="transition transform ease-in-out duration-300"
+         x-transition:leave-start="translate-x-0"
+         x-transition:leave-end="translate-x-full"
+         @keydown.escape.window="mobileMenuOpen = false"
+         class="fixed inset-y-0 right-0 z-50 w-[85%] max-w-sm bg-gradient-to-b from-[#1f0103] via-[#2d0208] to-[#170003] text-white shadow-2xl flex flex-col justify-between border-l border-rani-gold/30 md:hidden overflow-hidden"
+         style="display: none;">
+        
+        <!-- Sidebar Top / Brand & Close Button -->
+        <div class="p-5 border-b border-rani-gold/20 flex items-center justify-between bg-black/25">
+            <a href="/" @click="mobileMenuOpen = false" class="flex items-center gap-2.5">
+                <img src="{{ asset('logo.png') }}" alt="Ranimatrimonial" class="h-10 w-auto rounded-full shadow border border-rani-gold/40" />
+                <div class="flex items-baseline">
+                    <span class="text-2xl font-serif italic font-bold tracking-wide text-white">Rani</span>
+                    <span class="text-base font-serif text-rani-gold tracking-wider ml-1">matrimonial</span>
+                </div>
             </a>
-            <a href="{{ route('about') }}" class="block px-3 py-3 rounded-md text-base font-serif font-medium {{ request()->routeIs('about*') ? 'text-rani-primary font-bold bg-rani-primary/10' : 'text-rani-primary-dark' }} hover:bg-rani-primary/5 hover:text-rani-primary">About</a>
-            <a href="{{ route('help.center') }}" class="block px-3 py-3 rounded-md text-base font-serif font-medium {{ request()->routeIs('help.center*') ? 'text-rani-primary font-bold' : 'text-rani-primary-dark' }} hover:bg-rani-primary/5 hover:text-rani-primary">Help</a>
-            <a href="{{ route('stories') }}" class="block px-3 py-3 rounded-md text-base font-serif font-medium {{ request()->routeIs('stories*') ? 'text-rani-primary font-bold' : 'text-rani-primary-dark' }} hover:bg-rani-primary/5 hover:text-rani-primary">Success Stories</a>
-            <div class="mt-4 pt-4 border-t border-rani-gold/30 flex flex-col gap-3">
-                @auth
-                    <a href="{{ route('dashboard') }}" class="block w-full text-center px-4 py-2 text-base font-medium text-rani-primary">My Dashboard</a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="block w-full text-center px-4 py-2 text-base font-medium text-red-600">Logout</button>
-                    </form>
-                @else
-                    <a href="#" @click.prevent="openLoginModal()" class="block w-full text-center px-4 py-2 text-base font-medium text-rani-primary">Log in</a>
-                    <a href="{{ route('register.page') }}" class="block w-full text-center px-4 py-2 border border-rani-gold rounded-full shadow-sm text-base font-medium text-white bg-gradient-to-r from-rani-primary to-rani-primary-dark">Register Now</a>
-                @endauth
+            <button @click="mobileMenuOpen = false" 
+                    type="button" 
+                    aria-label="Close menu"
+                    class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-rani-gold flex items-center justify-center transition-transform hover:scale-110 active:scale-95 focus:outline-none">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Sidebar Body / Navigation Links & User Status -->
+        <div class="flex-1 overflow-y-auto px-5 py-6 space-y-6">
+            @auth
+                <!-- Authenticated User Profile Card -->
+                <div class="p-4 rounded-2xl bg-white/5 border border-rani-gold/30 flex items-center gap-3.5 shadow-inner">
+                    <img src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->first_name).'&background=D4AF37&color=fff' }}" 
+                         alt="Profile" 
+                         class="w-12 h-12 rounded-full border-2 border-rani-gold object-cover shadow">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-serif font-bold text-white truncate">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</p>
+                        <p class="text-xs text-rani-gold flex items-center gap-1.5 mt-0.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
+                            <span>Verified Member</span>
+                        </p>
+                    </div>
+                </div>
+            @endauth
+
+            <!-- Navigation Links -->
+            <div class="space-y-1.5">
+                <div class="px-2 pb-1 text-[11px] uppercase tracking-wider text-rani-gold/70 font-semibold font-serif">Navigation</div>
+
+                <a href="{{ route('search') }}" 
+                   @click="mobileMenuOpen = false"
+                   class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-base font-serif font-medium transition-all duration-200 {{ request()->routeIs('search*') ? 'bg-rani-gold text-rani-dark font-bold shadow-md' : 'text-gray-200 hover:bg-white/10 hover:text-rani-gold' }}">
+                    <svg class="w-5 h-5 {{ request()->routeIs('search*') ? 'text-rani-dark' : 'text-rani-gold' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <span>Search Profiles</span>
+                </a>
+
+                <a href="{{ route('stories') }}" 
+                   @click="mobileMenuOpen = false"
+                   class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-base font-serif font-medium transition-all duration-200 {{ request()->routeIs('stories*') ? 'bg-rani-gold text-rani-dark font-bold shadow-md' : 'text-gray-200 hover:bg-white/10 hover:text-rani-gold' }}">
+                    <svg class="w-5 h-5 {{ request()->routeIs('stories*') ? 'text-rani-dark' : 'text-rani-gold' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                    <span>Success Stories</span>
+                </a>
+
+                <a href="{{ route('about') }}" 
+                   @click="mobileMenuOpen = false"
+                   class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-base font-serif font-medium transition-all duration-200 {{ request()->routeIs('about*') ? 'bg-rani-gold text-rani-dark font-bold shadow-md' : 'text-gray-200 hover:bg-white/10 hover:text-rani-gold' }}">
+                    <svg class="w-5 h-5 {{ request()->routeIs('about*') ? 'text-rani-dark' : 'text-rani-gold' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>About Us</span>
+                </a>
+
+                <a href="{{ route('help.center') }}" 
+                   @click="mobileMenuOpen = false"
+                   class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-base font-serif font-medium transition-all duration-200 {{ request()->routeIs('help.center*') ? 'bg-rani-gold text-rani-dark font-bold shadow-md' : 'text-gray-200 hover:bg-white/10 hover:text-rani-gold' }}">
+                    <svg class="w-5 h-5 {{ request()->routeIs('help.center*') ? 'text-rani-dark' : 'text-rani-gold' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                    <span>Help & Support</span>
+                </a>
             </div>
+
+            @auth
+                <!-- User Links -->
+                <div class="pt-4 border-t border-rani-gold/20 space-y-1.5">
+                    <div class="px-2 pb-1 text-[11px] uppercase tracking-wider text-rani-gold/70 font-semibold font-serif">Account</div>
+                    <a href="{{ route('dashboard') }}" 
+                       @click="mobileMenuOpen = false"
+                       class="flex items-center gap-3.5 px-4 py-3 rounded-xl text-base font-serif font-medium text-gray-200 hover:bg-white/10 hover:text-rani-gold transition-colors">
+                        <svg class="w-5 h-5 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        <span>My Dashboard</span>
+                    </a>
+                </div>
+            @endauth
+        </div>
+
+        <!-- Sidebar Footer / Auth CTAs or Logout -->
+        <div class="p-5 border-t border-rani-gold/20 bg-black/35 space-y-3">
+            @auth
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" 
+                            class="w-full py-3 px-4 rounded-xl bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 font-medium text-sm flex items-center justify-center gap-2 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <span>Logout</span>
+                    </button>
+                </form>
+            @else
+                <button type="button" 
+                        @click="mobileMenuOpen = false; openLoginModal();" 
+                        class="w-full py-3 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-rani-gold/40 font-serif font-bold text-sm flex items-center justify-center gap-2 transition-all">
+                    <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                    <span>Log In</span>
+                </button>
+                <a href="{{ route('register.page') }}" 
+                   @click="mobileMenuOpen = false"
+                   class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white border border-rani-gold font-serif font-bold text-sm shadow-lg flex items-center justify-center gap-2 transition-all">
+                    <span>Register Free</span>
+                    <svg class="w-4 h-4 text-rani-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                </a>
+            @endauth
+
+            <p class="text-center text-[11px] text-rani-gold-light/40 font-serif italic pt-1">
+                Rani Matrimonial • Find Your Forever Partner
+            </p>
         </div>
     </div>
 

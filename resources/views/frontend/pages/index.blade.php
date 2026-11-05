@@ -190,6 +190,214 @@
     </div>
 </section>
 
+
+<!-- App Download Section (Exact 1:1 match to reference banner) -->
+<section class="relative bg-gradient-to-r from-[#3b010a] via-[#4d0411] to-[#360109] text-white overflow-hidden border-y-2 border-[#d4af37] min-h-[440px] lg:h-[420px] xl:h-[460px] flex items-center">
+    
+    <!-- Top-Right Traditional Indian Wedding Floral Mandala (Exact placement from reference) -->
+    <div class="absolute -top-12 -right-12 lg:-top-16 lg:-right-16 w-64 h-64 lg:w-96 lg:h-96 opacity-25 pointer-events-none select-none z-0">
+        <svg viewBox="0 0 200 200" class="w-full h-full text-[#d4af37] fill-current">
+            <g transform="translate(100, 100)">
+                @for ($i = 0; $i < 16; $i++)
+                    <path d="M 0 0 C 15 -35, 30 -55, 0 -95 C -30 -55, -15 -35, 0 0" transform="rotate({{ $i * 22.5 }})" opacity="0.85"/>
+                    <circle cx="0" cy="-80" r="3.5" transform="rotate({{ $i * 22.5 }})"/>
+                @endfor
+                @for ($i = 0; $i < 16; $i++)
+                    <path d="M 0 0 C 10 -20, 20 -35, 0 -60 C -20 -35, -10 -20, 0 0" transform="rotate({{ $i * 22.5 + 11.25 }})" opacity="0.6"/>
+                @endfor
+                <circle cx="0" cy="0" r="36" fill="none" stroke="currentColor" stroke-width="2"/>
+                <circle cx="0" cy="0" r="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2,3"/>
+                <circle cx="0" cy="0" r="16" fill="currentColor" opacity="0.4"/>
+            </g>
+        </svg>
+    </div>
+
+    <!-- Bottom-Left Golden Curved Accent (Exact from reference) -->
+    <div class="absolute bottom-0 left-0 w-44 sm:w-56 lg:w-72 h-24 sm:h-32 lg:h-40 pointer-events-none select-none z-0">
+        <svg viewBox="0 0 250 140" preserveAspectRatio="none" class="w-full h-full">
+            <defs>
+                <linearGradient id="goldSwooshL" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#b8860b" />
+                    <stop offset="40%" stop-color="#f5d061" />
+                    <stop offset="80%" stop-color="#d4af37" />
+                    <stop offset="100%" stop-color="#aa7c11" />
+                </linearGradient>
+            </defs>
+            <path d="M 0,55 Q 70,125 250,140 L 0,140 Z" fill="url(#goldSwooshL)" opacity="0.95" />
+            <path d="M 0,38 Q 80,120 250,132" fill="none" stroke="#fff4cc" stroke-width="2.5" opacity="0.75" />
+        </svg>
+    </div>
+
+    <!-- Bottom-Right Golden Curved Accent (Exact from reference) -->
+    <div class="absolute bottom-0 right-0 w-44 sm:w-56 lg:w-72 h-24 sm:h-32 lg:h-40 pointer-events-none select-none z-0">
+        <svg viewBox="0 0 250 140" preserveAspectRatio="none" class="w-full h-full">
+            <defs>
+                <linearGradient id="goldSwooshR" x1="100%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" stop-color="#b8860b" />
+                    <stop offset="40%" stop-color="#f5d061" />
+                    <stop offset="80%" stop-color="#d4af37" />
+                    <stop offset="100%" stop-color="#aa7c11" />
+                </linearGradient>
+            </defs>
+            <path d="M 250,55 Q 180,125 0,140 L 250,140 Z" fill="url(#goldSwooshR)" opacity="0.95" />
+            <path d="M 250,38 Q 170,120 0,132" fill="none" stroke="#fff4cc" stroke-width="2.5" opacity="0.75" />
+        </svg>
+    </div>
+
+    <!-- Desktop Couple Image (Positioned in CENTER, standing tall bottom-aligned) -->
+    <img src="{{ asset('img/section-couple.png') }}" 
+         alt="Rani Matrimonial Couple" 
+         class="hidden lg:block absolute bottom-0 left-[34%] xl:left-[35%] h-[86%] xl:h-[90%] w-auto max-w-none object-contain object-bottom z-10 pointer-events-none select-none drop-shadow-2xl" />
+
+    <!-- Desktop 3-Phones Cluster (mob4 in middle, mob1 on left, mob2 on right) -->
+    <div class="hidden lg:flex absolute bottom-0 right-0 xl:right-3 h-[94%] xl:h-[98%] items-end justify-end pointer-events-none select-none z-20">
+        <!-- Left Phone: mob1.png -->
+        <img src="{{ asset('img/mob1.png') }}" 
+             alt="Rani App Wallet" 
+             class="h-[84%] xl:h-[87%] w-auto max-w-none object-contain object-bottom -mr-[13%] xl:-mr-[15%] relative z-10 drop-shadow-xl" />
+
+        <!-- Center Phone: mob4.png (Taller, in front) -->
+        <img src="{{ asset('img/mob4.png') }}" 
+             alt="Rani Matrimonial App" 
+             class="h-full w-auto max-w-none object-contain object-bottom relative z-20 drop-shadow-2xl" />
+
+        <!-- Right Phone: mob2.png -->
+        <img src="{{ asset('img/mob2.png') }}" 
+             alt="Rani App Matches" 
+             class="h-[84%] xl:h-[87%] w-auto max-w-none object-contain object-bottom -ml-[13%] xl:-ml-[15%] relative z-10 drop-shadow-xl" />
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="w-full max-w-[1480px] mx-auto px-4 sm:px-6 lg:px-10 h-full relative z-30">
+        <div class="h-full flex flex-col justify-center py-10 lg:py-6">
+            
+            <!-- Left Side Content Column (Width ~36% on desktop) -->
+            <div class="w-full lg:w-[36%] xl:w-[35%] space-y-4 xl:space-y-4.5 text-center lg:text-left">
+                
+                <!-- Logo & Brand Header -->
+                <div class="flex items-center justify-center lg:justify-start gap-2.5">
+                    <img src="{{ asset('logo.png') }}" alt="Rani Matrimonial" class="h-10 sm:h-11 w-auto rounded-full shadow-md border border-rani-gold/40" />
+                    <div>
+                        <div class="flex items-baseline leading-none">
+                            <span class="text-2xl sm:text-[26px] font-serif italic font-bold text-white tracking-wide">Rani</span>
+                            <span class="text-lg sm:text-xl font-serif text-rani-gold tracking-wider ml-1 font-normal">Matrimonial</span>
+                        </div>
+                        <p class="text-[9px] sm:text-[10px] text-rani-gold-light/90 font-serif tracking-widest uppercase flex items-center justify-center lg:justify-start gap-1.5 mt-1">
+                            <span class="w-3.5 h-[1px] bg-rani-gold/60 inline-block"></span>
+                            <span>Find Your Forever Partner</span>
+                            <span class="w-3.5 h-[1px] bg-rani-gold/60 inline-block"></span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Headline -->
+                <div class="space-y-1">
+                    <h2 class="text-2xl sm:text-3xl lg:text-[34px] xl:text-[38px] font-serif font-bold text-white leading-[1.15] tracking-tight">
+                        Download the <br />
+                        <span class="text-[#f5b041] font-extrabold drop-shadow-md">Rani Matrimonial App</span>
+                    </h2>
+                    <p class="text-xs sm:text-[13px] text-gray-200/90 font-light leading-relaxed max-w-md mx-auto lg:mx-0">
+                        Find verified matches, connect safely, and take your relationship journey forward – anytime, anywhere.
+                    </p>
+                </div>
+
+                <!-- 5 Feature Badges (Single horizontal row with 5 outline items) -->
+                <div class="grid grid-cols-5 gap-1.5 sm:gap-2 max-w-md sm:max-w-lg mx-auto lg:mx-0">
+                    <!-- 1. Verified Profiles -->
+                    <div class="flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs text-center min-w-0">
+                        <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        <span class="text-[8px] sm:text-[9px] xl:text-[10px] leading-tight text-white/95 font-medium mt-1">Verified<br>Profiles</span>
+                    </div>
+
+                    <!-- 2. Smart Matching -->
+                    <div class="flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs text-center min-w-0">
+                        <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <span class="text-[8px] sm:text-[9px] xl:text-[10px] leading-tight text-white/95 font-medium mt-1">Smart<br>Matching</span>
+                    </div>
+
+                    <!-- 3. Safe & Secure Communication -->
+                    <div class="flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs text-center min-w-0">
+                        <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        <span class="text-[8px] sm:text-[9px] xl:text-[10px] leading-tight text-white/95 font-medium mt-1">Safe & Secure<br>Communication</span>
+                    </div>
+
+                    <!-- 4. Family Friendly -->
+                    <div class="flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs text-center min-w-0">
+                        <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        <span class="text-[8px] sm:text-[9px] xl:text-[10px] leading-tight text-white/95 font-medium mt-1">Family<br>Friendly</span>
+                    </div>
+
+                    <!-- 5. Dedicated Support -->
+                    <div class="flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-xs text-center min-w-0">
+                        <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <span class="text-[8px] sm:text-[9px] xl:text-[10px] leading-tight text-white/95 font-medium mt-1">Dedicated<br>Support</span>
+                    </div>
+                </div>
+
+                <!-- White Card: Get the App Now with store buttons (Clean design without QR) -->
+                <div class="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-4 bg-white rounded-2xl px-5 py-3 shadow-2xl border border-gray-100 text-gray-900 mx-auto lg:mx-0">
+                    <div class="text-center sm:text-left">
+                        <p class="font-serif font-bold text-sm sm:text-base text-gray-900 tracking-tight leading-none">Get the App Now</p>
+                        <p class="text-[10px] text-gray-500 font-sans mt-0.5 hidden sm:block">Available for iOS & Android</p>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <!-- Google Play Button -->
+                        <a href="#" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-black hover:bg-gray-800 text-white rounded-lg transition-transform hover:scale-105 shadow-xs">
+                            <svg class="w-4 h-4 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3.609 1.814L13.792 12 3.61 22.186a1.996 1.996 0 0 1-.61-1.42V3.234c0-.54.22-1.03.61-1.42zM15.207 13.414l2.585 2.586-11.66 6.643 9.075-9.229zm0-2.828L6.132 1.357l11.66 6.643-2.585 2.586zm1.414 1.414l3.784-2.155a1.5 1.5 0 0 1 0 2.628l-3.784 2.155-1.414-1.414 1.414-1.214z"/>
+                            </svg>
+                            <div class="text-left leading-none">
+                                <div class="text-[7px] uppercase tracking-wider text-gray-300 font-sans">GET IT ON</div>
+                                <div class="text-[11px] font-bold font-sans mt-0.5">Google Play</div>
+                            </div>
+                        </a>
+
+                        <!-- App Store Button -->
+                        <a href="#" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-black hover:bg-gray-800 text-white rounded-lg transition-transform hover:scale-105 shadow-xs">
+                            <svg class="w-4 h-4 text-white shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.85-.9.04-1.99.6-2.63 1.35-.57.65-1.07 1.71-.93 2.73 1.01.08 2.03-.49 2.64-1.23z"/>
+                            </svg>
+                            <div class="text-left leading-none">
+                                <div class="text-[7px] uppercase tracking-wider text-gray-300 font-sans">Download on the</div>
+                                <div class="text-[11px] font-bold font-sans mt-0.5">App Store</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Mobile Visual Composition (Shown only on < lg: couple on left, 3 phones on right) -->
+            <div class="flex lg:hidden items-end justify-center w-full max-w-md mx-auto mt-6 pt-2 px-1">
+                <!-- Couple on Left -->
+                <div class="w-[44%] shrink-0 -mr-5 relative z-10">
+                    <img src="{{ asset('img/section-couple.png') }}" 
+                         alt="Rani Matrimonial Couple" 
+                         class="w-full h-auto object-contain drop-shadow-xl pointer-events-none select-none" />
+                </div>
+
+                <!-- 3-Phones Cluster on Right (mob1 left, mob4 center, mob2 right) -->
+                <div class="w-[62%] flex items-end justify-center relative z-20 shrink-0">
+                    <!-- mob1.png (left) -->
+                    <img src="{{ asset('img/mob1.png') }}" 
+                         alt="Rani App Wallet" 
+                         class="w-[36%] h-auto object-contain -mr-[12%] relative z-10 drop-shadow-lg pointer-events-none select-none" />
+                    <!-- mob4.png (center) -->
+                    <img src="{{ asset('img/mob4.png') }}" 
+                         alt="Rani Matrimonial App" 
+                         class="w-[46%] h-auto object-contain relative z-20 drop-shadow-xl pointer-events-none select-none" />
+                    <!-- mob2.png (right) -->
+                    <img src="{{ asset('img/mob2.png') }}" 
+                         alt="Rani App Matches" 
+                         class="w-[36%] h-auto object-contain -ml-[12%] relative z-10 drop-shadow-lg pointer-events-none select-none" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
 <!-- Success Stories Showcase Section (Carousel) -->
 @if(isset($stories) && $stories->count() > 0)
 <section class="py-24 bg-white relative overflow-hidden" x-data="{
@@ -429,6 +637,9 @@
 
     </div>
 
+
+    
+
     <!-- ================= FULL STORY READING MODAL ================= -->
     <template x-teleport="body">
         <div x-show="storyModalOpen" 
@@ -536,6 +747,8 @@
 
 </section>
 @endif
+
+
 
 <!-- Trust & Stats Section -->
 <section class="py-20 bg-rani-primary-dark text-white relative overflow-hidden border-y border-rani-gold/40">
