@@ -13,6 +13,19 @@
     $amountFormatted = number_format($amountRaw, 2);
     $itemDesc = $transaction->title ?: ($transaction->type === 'credit' ? 'Wallet Recharge (Topup)' : 'Service Charge');
     $customerPhone = $candidate->mobile ?? $candidate->phone ?? 'N/A';
+
+    $isRecharge = ($transaction->type === 'credit') || (strtolower($transaction->category ?? '') === 'recharge');
+    $baseAmount = $amountRaw;
+    $platformFee = 0.0;
+    if ($isRecharge && $amountRaw > 0) {
+        if (!empty($transaction->description) && preg_match('/Platform Fee.*?₹?\s*([0-9.]+)/i', $transaction->description, $pfm)) {
+            $platformFee = (float) $pfm[1];
+            $baseAmount = round($amountRaw - $platformFee, 2);
+        } else {
+            $baseAmount = round($amountRaw / 1.02, 2);
+            $platformFee = round($amountRaw - $baseAmount, 2);
+        }
+    }
     
     $paymentId = null;
     if (!empty($transaction->payment_id)) {
@@ -434,6 +447,34 @@
                 </tr>
             </thead>
             <tbody>
+            @if($isRecharge)
+                <tr>
+                    <td style="text-align: center; font-weight: bold; color: #5B0000;">1</td>
+                    <td style="text-align: left;">
+                        <strong>Wallet Recharge (Topup)</strong>
+                        @if($transaction->transaction_id)
+                            <div style="font-size: 7.5pt; color: #777777; margin-top: 2pt;">Transaction Ref: #{{ $transaction->transaction_id }}</div>
+                        @endif
+                    </td>
+                    <td style="text-align: center; color: #555555;">998311</td>
+                    <td style="text-align: center;">1</td>
+                    <td style="text-align: right; font-weight: bold; color: #111111;">
+                        <span class="rupee">&#8377;</span> {{ number_format($baseAmount, 2) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; font-weight: bold; color: #5B0000;">2</td>
+                    <td style="text-align: left;">
+                        <strong>Platform Fee (2%)</strong>
+                        <div style="font-size: 7.5pt; color: #777777; margin-top: 2pt;">Payment gateway and digital platform processing charges</div>
+                    </td>
+                    <td style="text-align: center; color: #555555;">998311</td>
+                    <td style="text-align: center;">1</td>
+                    <td style="text-align: right; font-weight: bold; color: #111111;">
+                        <span class="rupee">&#8377;</span> {{ number_format($platformFee, 2) }}
+                    </td>
+                </tr>
+            @else
                 <tr>
                     <td style="text-align: center; font-weight: bold; color: #5B0000;">1</td>
                     <td style="text-align: left;">
@@ -448,6 +489,7 @@
                         <span class="rupee">&#8377;</span> {{ $amountFormatted }}
                     </td>
                 </tr>
+            @endif
             </tbody>
         </table>
 
@@ -475,6 +517,24 @@
                 <!-- Right: Calculations Table -->
                 <td class="calc-col">
                     <table class="calc-table">
+                    @if($isRecharge)
+                        <tr>
+                            <td class="calc-lbl">Recharge Subtotal:</td>
+                            <td class="calc-val"><span class="rupee">&#8377;</span> {{ number_format($baseAmount, 2) }}</td>
+                        </tr>
+                        <tr>
+                            <td class="calc-lbl">Platform Fee (2%):</td>
+                            <td class="calc-val"><span class="rupee">&#8377;</span> {{ number_format($platformFee, 2) }}</td>
+                        </tr>
+                        <tr>
+                            <td class="calc-lbl">GST (18% Inclusive):</td>
+                            <td class="calc-val" style="color: #666666;">Included</td>
+                        </tr>
+                        <tr class="grand-total-row">
+                            <td class="calc-lbl">Grand Total (Wallet Added):</td>
+                            <td class="calc-val"><span class="rupee">&#8377;</span> {{ $amountFormatted }}</td>
+                        </tr>
+                    @else
                         <tr>
                             <td class="calc-lbl">Subtotal (Taxable):</td>
                             <td class="calc-val"><span class="rupee">&#8377;</span> {{ $amountFormatted }}</td>
@@ -491,6 +551,7 @@
                             <td class="calc-lbl">Grand Total:</td>
                             <td class="calc-val"><span class="rupee">&#8377;</span> {{ $amountFormatted }}</td>
                         </tr>
+                    @endif
                     </table>
                 </td>
             </tr>

@@ -572,11 +572,19 @@ class WalletController extends Controller
             ], 400);
         }
 
-        // Credit to candidate's wallet
+        $amount = (float) $request->amount;
+        $baseAmount = $request->filled('base_amount') 
+            ? (float) $request->base_amount 
+            : round($amount / 1.02, 2);
+        $platformFee = $request->filled('platform_fee') 
+            ? (float) $request->platform_fee 
+            : round($amount - $baseAmount, 2);
+
+        // Credit to candidate's wallet (the entire paid amount including 2% is credited to wallet)
         $transaction = $wallet->credit(
             amount: $amount,
             title: 'Wallet Recharge',
-            description: 'Razorpay Payment ID: ' . $paymentId . ' (Order: ' . $orderId . ')',
+            description: 'Razorpay Payment ID: ' . $paymentId . ' (Order: ' . $orderId . ') | Platform Fee (2%): ₹' . number_format($platformFee, 2),
             category: 'Recharge',
             paymentMethod: 'Razorpay'
         );
