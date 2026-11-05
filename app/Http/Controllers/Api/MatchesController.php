@@ -60,7 +60,7 @@ class MatchesController extends Controller
             ], 401);
         }
         $tab = $request->query('tab', 'todays');
-        if (! in_array($tab, ['todays', 'shortlisted', 'my_matches', 'accepted', 'near_me'])) {
+        if (! in_array($tab, ['todays', 'new', 'all', 'shortlisted', 'my_matches', 'accepted', 'near_me'])) {
             $tab = 'todays';
         }
 
@@ -145,8 +145,8 @@ class MatchesController extends Controller
 
         // Filtered matches for the active tab
         $matches = match ($tab) {
-            'my_matches', 'new' => $allMatches,
-            'todays' => $todaysMatches,
+            'todays', 'new', 'all' => $todaysMatches,
+            'my_matches' => $allMatches,
             'accepted' => $acceptedMatches,
             'near_me' => $nearMeMatches,
             default => $shortlistedMatches,
@@ -155,9 +155,10 @@ class MatchesController extends Controller
         // Counts for tabs (full counts across categories)
         $counts = [
             'todays' => count($todaysMatches),
+            'new' => count($todaysMatches),
+            'all' => count($todaysMatches),
+            'my_matches' => count($todaysMatches),
             'shortlisted' => count($shortlistedMatches),
-            'my_matches' => count($allMatches),
-            'new' => count($allMatches),
             'accepted' => count($acceptedMatches),
             'near_me' => count($nearMeMatches),
         ];

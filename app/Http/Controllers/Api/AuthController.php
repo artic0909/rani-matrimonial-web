@@ -1080,8 +1080,8 @@ class AuthController extends Controller
                     'status' => $wallet->status,
                 ],
                 'metrics' => [
-                    'new_matches_count' => count($allMatches),
-                    'total_matches_count' => count($allMatches),
+                    'new_matches_count' => count($todaysMatches),
+                    'total_matches_count' => count($todaysMatches),
                     'pending_invitations_count' => $pendingInvitationsCount,
                     'sent_invitations_count' => $sentInvitationsCount,
                     'accepted_invitations_count' => $acceptedInvitationsCount,
