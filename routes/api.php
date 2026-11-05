@@ -91,6 +91,8 @@ Route::middleware(\App\Http\Middleware\AuthenticateApiToken::class)->group(funct
     // Royal Wallet
     Route::get('/wallet', [WalletController::class, 'index']);
     Route::get('/wallet/transactions', [WalletController::class, 'transactions']);
+    Route::get('/wallet/transaction/{id}/invoice', [WalletController::class, 'downloadReceipt']);
+    Route::get('/wallet/transaction/{id}/receipt', [WalletController::class, 'downloadReceipt']);
     Route::post('/wallet/add-money', [WalletController::class, 'addMoney'])->name('wallet.add-money');
     Route::post('/wallet/spend-money', [WalletController::class, 'spendMoney'])->name('wallet.spend-money');
     Route::post('/wallet/razorpay/create-order', [WalletController::class, 'createRazorpayOrder'])->name('wallet.razorpay.create-order');
@@ -104,3 +106,6 @@ Route::middleware(\App\Http\Middleware\AuthenticateApiToken::class)->group(funct
     Route::get('/account/delete-request', [AuthController::class, 'getDeleteAccountRequest']);
     Route::post('/account/delete-request', [AuthController::class, 'submitDeleteAccountRequest']);
 });
+
+// Public / Token-authenticated Invoice Download for browser links
+Route::get('/wallet/transaction/{id}/download-invoice', [WalletController::class, 'downloadReceiptPublic']);

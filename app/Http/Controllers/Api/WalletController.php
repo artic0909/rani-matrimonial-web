@@ -226,15 +226,29 @@ class WalletController extends Controller
     }
 
     /**
-     * Download or view official transaction PDF receipt
+     * Download or view official transaction PDF receipt / tax invoice
      */
     public function downloadReceipt(Request $request, $id)
     {
-        /** @var Candidate $candidate */
+        /** @var Candidate|null $candidate */
         $candidate = $request->user() ?? Auth::user();
+        if (!$candidate && $request->filled('token')) {
+            $tokenObj = \Laravel\Sanctum\PersonalAccessToken::findToken($request->query('token'));
+            if ($tokenObj && $tokenObj->tokenable instanceof \App\Models\Candidate) {
+                $candidate = $tokenObj->tokenable;
+            }
+        }
+
+        if (!$candidate) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
+        }
+
         $wallet = $candidate->getOrCreateWallet();
 
-        $transaction = $wallet->transactions()->where('id', $id)->firstOrFail();
+        $transaction = $wallet->transactions()->where('id', $id)->first();
+        if (!$transaction) {
+            $transaction = $wallet->transactions()->where('transaction_id', $id)->firstOrFail();
+        }
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.transaction_receipt', [
             'candidate' => $candidate,
@@ -244,13 +258,22 @@ class WalletController extends Controller
 
         $pdf->setPaper('a4', 'portrait');
 
-        $filename = 'Receipt-' . ($transaction->transaction_id ?? $transaction->id) . '.pdf';
+        $invNo = 'RANI-INV-' . $transaction->created_at->format('Y') . '-' . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
+        $filename = 'Invoice-' . $invNo . '.pdf';
 
         if ($request->query('view') == '1' || $request->query('preview') == '1') {
             return $pdf->stream($filename);
         }
 
         return $pdf->download($filename);
+    }
+
+    /**
+     * Public download receipt wrapper for direct browser URLs
+     */
+    public function downloadReceiptPublic(Request $request, $id)
+    {
+        return $this->downloadReceipt($request, $id);
     }
 
     /**
