@@ -11,7 +11,8 @@
     }
     $paymentMethod = $transaction->payment_method ?? 'Online Payment';
     $amountFormatted = number_format((float) $transaction->amount, 2);
-    $itemDesc = $transaction->title ?: ($transaction->type === 'credit' ? 'Royal Wallet Recharge (Topup)' : 'Service Charge');
+    $itemDesc = $transaction->title ?: ($transaction->type === 'credit' ? 'Wallet Recharge (Topup)' : 'Service Charge');
+    $customerPhone = $candidate->mobile ?? $candidate->phone ?? 'N/A';
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +28,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'DejaVu Sans', sans-serif;
         }
         body {
             background-color: #FAF7F2;
@@ -38,36 +39,30 @@
             position: relative;
         }
 
+        .rupee {
+            font-family: 'DejaVu Sans', sans-serif;
+            font-weight: normal;
+        }
+
         /* 1. Header Banner */
         .top-banner {
             width: 100%;
             background: #650000;
             color: #FFFFFF;
-            padding: 16px 24px 14px 24px;
+            padding: 18px 24px 16px 24px;
             text-align: center;
             border-bottom: 3px solid #D4AF37;
-            position: relative;
-        }
-        .header-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .mandala-corner {
-            width: 45px;
-            height: 45px;
-            opacity: 0.75;
         }
         .brand-crest {
-            width: 54px;
-            height: 54px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             border: 2px solid #D4AF37;
             display: block;
-            margin: 0 auto 4px auto;
+            margin: 0 auto 5px auto;
             background-color: #FAF7F2;
         }
         .brand-title {
-            font-family: 'DejaVu Serif', Georgia, serif;
             font-size: 26px;
             font-weight: bold;
             color: #FFFFFF;
@@ -75,23 +70,22 @@
             line-height: 1.1;
         }
         .brand-tagline {
-            font-family: 'DejaVu Serif', Georgia, serif;
             font-size: 11px;
             color: #E5B842;
             letter-spacing: 1px;
-            margin-top: 3px;
+            margin-top: 4px;
         }
 
         /* Container */
         .content-wrap {
-            padding: 14px 24px 10px 24px;
+            padding: 16px 26px 14px 26px;
         }
 
         /* 2. Company Info & Tax Invoice Badge */
         .company-invoice-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
         .company-col {
             width: 62%;
@@ -104,8 +98,8 @@
             text-align: center;
         }
         .divider-line {
-            height: 100px;
-            width: 1px;
+            height: 95px;
+            width: 1.5px;
             background-color: #D4AF37;
             margin: 0 auto;
         }
@@ -118,13 +112,13 @@
 
         .company-subtitle {
             font-size: 10px;
-            color: #555555;
+            color: #666666;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 2px;
         }
         .company-name {
-            font-size: 14.5px;
+            font-size: 15px;
             font-weight: bold;
             color: #1A1A1A;
             margin-bottom: 5px;
@@ -132,7 +126,7 @@
         .meta-line {
             font-size: 9.5px;
             color: #333333;
-            margin-bottom: 2.5px;
+            margin-bottom: 3px;
             line-height: 1.35;
         }
         .meta-line strong {
@@ -144,59 +138,50 @@
             background-color: #650000;
             border: 2px solid #D4AF37;
             border-radius: 12px;
-            padding: 10px 18px;
+            padding: 12px 20px;
             display: inline-block;
             text-align: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
         .tax-invoice-shield .tax-text {
             font-size: 14px;
             font-weight: bold;
             color: #E5B842;
-            letter-spacing: 2px;
-            line-height: 1.1;
+            letter-spacing: 3px;
+            line-height: 1;
         }
         .tax-invoice-shield .inv-text {
             font-size: 18px;
             font-weight: bold;
             color: #FFFFFF;
-            letter-spacing: 2.5px;
-            line-height: 1.15;
-            margin-top: 1px;
-        }
-        .laurel-branch {
-            font-size: 14px;
-            color: #D4AF37;
-            letter-spacing: 3px;
-            margin-top: 4px;
-            text-align: center;
+            letter-spacing: 2px;
+            line-height: 1.2;
+            margin-top: 3px;
         }
 
-        /* 3. Customer Info Box (Cream Rounded Card) */
+        /* 3. Customer Info & Invoice Metadata Card */
         .cust-meta-card {
             background-color: #FFFFFF;
-            border: 1px solid #D8C7B0;
+            border: 1.2px solid #E5D7C2;
             border-radius: 12px;
-            padding: 10px 14px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+            padding: 12px 16px;
+            margin-bottom: 14px;
         }
         .cust-meta-table {
             width: 100%;
             border-collapse: collapse;
         }
         .cust-meta-table td {
-            vertical-align: top;
-            padding: 2.5px 4px;
-            font-size: 10px;
+            padding: 4.5px 6px;
+            font-size: 10.5px;
+            vertical-align: middle;
         }
-        .cust-meta-table td.col-half {
+        .col-half {
             width: 50%;
         }
         .card-label {
-            color: #4A4A4A;
-            font-weight: 500;
-            width: 125px;
+            color: #555555;
+            font-weight: 600;
+            width: 120px;
             display: inline-block;
         }
         .card-val {
@@ -208,7 +193,7 @@
             color: #FFFFFF;
             font-size: 9px;
             font-weight: bold;
-            padding: 2px 9px;
+            padding: 2.5px 10px;
             border-radius: 10px;
             display: inline-block;
             letter-spacing: 0.5px;
@@ -217,8 +202,7 @@
         /* 4. Billing Details Ribbon */
         .ribbon-wrap {
             text-align: center;
-            margin: 8px 0 10px 0;
-            position: relative;
+            margin: 10px 0 12px 0;
         }
         .ribbon-table {
             width: 100%;
@@ -240,7 +224,7 @@
             text-transform: uppercase;
             letter-spacing: 1.5px;
             padding: 5px 22px;
-            border-radius: 16px;
+            border-radius: 14px;
             border: 1.5px solid #D4AF37;
             display: inline-block;
             white-space: nowrap;
@@ -254,19 +238,19 @@
             border: 1px solid #D8C7B0;
             border-radius: 8px;
             overflow: hidden;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         .bill-table th {
             background-color: #650000;
             color: #FFFFFF;
             font-size: 10px;
             font-weight: bold;
-            padding: 8px 10px;
+            padding: 8px 12px;
             border: 1px solid #650000;
             letter-spacing: 0.5px;
         }
         .bill-table td {
-            padding: 9px 10px;
+            padding: 10px 12px;
             font-size: 10.5px;
             color: #1A1A1A;
             border: 1px solid #EFE8DE;
@@ -276,39 +260,39 @@
         .text-left { text-align: left; }
         .text-right { text-align: right; }
 
-        /* Calculation & Rings Section */
+        /* Calculation Section */
         .summary-wrap {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
         .summary-wrap td {
             vertical-align: middle;
         }
-        .rings-art {
+        .seal-art {
             width: 48%;
             text-align: center;
             padding-right: 14px;
         }
-        .rings-art-box {
+        .seal-art-box {
             display: inline-block;
             background-color: #FFFFFF;
-            border: 1px dashed #D4AF37;
-            border-radius: 12px;
-            padding: 8px 16px;
+            border: 1px solid #D4AF37;
+            border-radius: 10px;
+            padding: 12px 18px;
             text-align: center;
         }
-        .rings-icon {
-            font-size: 26px;
-            line-height: 1;
-            color: #D4AF37;
-        }
-        .rings-subtext {
-            font-size: 9px;
-            color: #650000;
+        .seal-title {
+            font-size: 11px;
             font-weight: bold;
+            color: #650000;
             letter-spacing: 0.5px;
-            margin-top: 3px;
+        }
+        .seal-subtext {
+            font-size: 8.5px;
+            color: #777777;
+            margin-top: 4px;
+            line-height: 1.3;
         }
 
         .calc-col {
@@ -319,12 +303,12 @@
             border-collapse: collapse;
         }
         .calc-table td {
-            padding: 3.5px 6px;
+            padding: 4px 6px;
             font-size: 11px;
         }
         .calc-lbl {
             font-weight: bold;
-            color: #2D2D2D;
+            color: #333333;
             width: 42%;
         }
         .calc-sep {
@@ -338,38 +322,34 @@
             color: #1A1A1A;
             width: 52%;
         }
-        .grand-total-row {
-            background-color: #650000;
-            color: #FFFFFF;
-            border-radius: 8px;
-        }
         .grand-total-box {
             background-color: #650000;
             border: 1.5px solid #D4AF37;
             border-radius: 8px;
-            padding: 7px 10px;
-            margin-top: 4px;
+            padding: 8px 12px;
+            margin-top: 5px;
         }
         .grand-total-box td {
             color: #FFFFFF !important;
-            font-size: 13.5px !important;
+            font-size: 13px !important;
             font-weight: bold !important;
             padding: 0;
         }
         .grand-total-box .calc-val {
             color: #E5B842 !important;
+            font-size: 14px !important;
         }
 
-        /* 6. Thank you pill */
+        /* 6. Thank you callout */
         .thank-you-pill {
             text-align: center;
-            margin: 6px auto 12px auto;
-            width: 82%;
+            margin: 6px auto 14px auto;
+            width: 78%;
             background-color: #FFFFFF;
             border: 1.5px solid #D4AF37;
-            border-radius: 20px;
-            padding: 6px 16px;
-            font-size: 11px;
+            border-radius: 18px;
+            padding: 7px 18px;
+            font-size: 11.5px;
             font-weight: bold;
             color: #650000;
             letter-spacing: 0.4px;
@@ -380,7 +360,7 @@
             width: 100%;
             background: #650000;
             color: #FFFFFF;
-            padding: 12px 24px;
+            padding: 14px 24px;
             border-top: 2.5px solid #D4AF37;
             position: absolute;
             bottom: 0;
@@ -390,28 +370,27 @@
             width: 100%;
             border-collapse: collapse;
         }
-        .footer-couple-col {
-            width: 18%;
+        .footer-brand-col {
+            width: 22%;
             vertical-align: middle;
             text-align: center;
             border-right: 1px solid rgba(212, 175, 55, 0.4);
-            padding-right: 10px;
+            padding-right: 12px;
         }
-        .couple-symbol {
-            font-size: 26px;
-            color: #E5B842;
-            line-height: 1;
-        }
-        .couple-text {
-            font-size: 8.5px;
-            color: #E5B842;
+        .footer-brand-title {
+            font-size: 12px;
+            color: #FFFFFF;
             font-weight: bold;
+        }
+        .footer-brand-tagline {
+            font-size: 8px;
+            color: #E5B842;
             margin-top: 2px;
         }
         .footer-badges-col {
-            width: 82%;
+            width: 78%;
             vertical-align: middle;
-            padding-left: 12px;
+            padding-left: 14px;
         }
         .badges-table {
             width: 100%;
@@ -423,42 +402,23 @@
             vertical-align: top;
             padding: 0 4px;
         }
-        .badge-icon {
-            font-size: 16px;
-            color: #E5B842;
-            display: block;
-            margin-bottom: 2px;
-            line-height: 1;
-        }
         .badge-label {
-            font-size: 7.8px;
+            font-size: 8px;
             color: #FFFFFF;
             font-weight: 600;
-            line-height: 1.2;
+            line-height: 1.25;
         }
     </style>
 </head>
 <body>
 
-    <!-- 1. Top Royal Burgundy Arch Banner -->
+    <!-- 1. Top Royal Burgundy Banner -->
     <div class="top-banner">
-        <table class="header-table">
-            <tr>
-                <td style="width: 50px; text-align: left; vertical-align: middle;">
-                    <div style="font-size: 24px; color: #D4AF37;">&#10047;</div>
-                </td>
-                <td style="text-align: center; vertical-align: middle;">
-                    @if($logoBase64)
-                        <img src="{{ $logoBase64 }}" alt="Rani Logo" class="brand-crest">
-                    @endif
-                    <div class="brand-title">Rani Matrimonial</div>
-                    <div class="brand-tagline">&#8212; Find Your Forever Partner &#8212;</div>
-                </td>
-                <td style="width: 50px; text-align: right; vertical-align: middle;">
-                    <div style="font-size: 24px; color: #D4AF37;">&#10047;</div>
-                </td>
-            </tr>
-        </table>
+        @if($logoBase64)
+            <img src="{{ $logoBase64 }}" alt="Rani Logo" class="brand-crest">
+        @endif
+        <div class="brand-title">Rani Matrimonial</div>
+        <div class="brand-tagline">- Find Your Forever Partner -</div>
     </div>
 
     <div class="content-wrap">
@@ -469,11 +429,11 @@
                 <td class="company-col">
                     <div class="company-subtitle">A Brand of</div>
                     <div class="company-name">Sumatra Sales Private Limited</div>
-                    <div class="meta-line">&#128205; 17, Ranihati &ndash; Amta Road, Ranihati, Howrah, West Bengal &ndash; 711322</div>
-                    <div class="meta-line">&#127970; <strong>CIN:</strong> U51909WB2020PTC237800</div>
-                    <div class="meta-line">&#128176; <strong>GSTIN:</strong> 19ABDCS8853N1ZG</div>
-                    <div class="meta-line">&#128222; +91 6292237200 / 201 / 202 / 207</div>
-                    <div class="meta-line">&#9993; sumatra.sales2424@gmail.com</div>
+                    <div class="meta-line">17, Ranihati - Amta Road, Ranihati, Howrah, West Bengal - 711322</div>
+                    <div class="meta-line"><strong>CIN:</strong> U51909WB2020PTC237800</div>
+                    <div class="meta-line"><strong>GSTIN:</strong> 19ABDCS8853N1ZG</div>
+                    <div class="meta-line"><strong>Phone:</strong> +91 6292237200 / 201 / 202 / 207</div>
+                    <div class="meta-line"><strong>Email:</strong> sumatra.sales2424@gmail.com</div>
                 </td>
                 <td class="divider-col">
                     <div class="divider-line"></div>
@@ -483,7 +443,6 @@
                         <div class="tax-text">TAX</div>
                         <div class="inv-text">INVOICE</div>
                     </div>
-                    <div class="laurel-branch">&#10048; &#10047; &#10048;</div>
                 </td>
             </tr>
         </table>
@@ -493,41 +452,41 @@
             <table class="cust-meta-table">
                 <tr>
                     <td class="col-half">
-                        <span class="card-label">&#128100; Customer Name :</span>
+                        <span class="card-label">Customer Name :</span>
                         <span class="card-val">{{ $customerName }}</span>
                     </td>
                     <td class="col-half">
-                        <span class="card-label">&#128196; Invoice No. :</span>
+                        <span class="card-label">Invoice No. :</span>
                         <span class="card-val">{{ $invNo }}</span>
                     </td>
                 </tr>
                 <tr>
                     <td class="col-half">
-                        <span class="card-label">&#129658; Customer ID :</span>
+                        <span class="card-label">Customer ID :</span>
                         <span class="card-val">{{ $customerCode }}</span>
                     </td>
                     <td class="col-half">
-                        <span class="card-label">&#128197; Invoice Date :</span>
+                        <span class="card-label">Invoice Date :</span>
                         <span class="card-val">{{ $invDate }}</span>
                     </td>
                 </tr>
                 <tr>
                     <td class="col-half">
-                        <span class="card-label">&#9993; Email :</span>
+                        <span class="card-label">Email :</span>
                         <span class="card-val">{{ $candidate->email ?? 'N/A' }}</span>
                     </td>
                     <td class="col-half">
-                        <span class="card-label">&#128179; Payment Method :</span>
+                        <span class="card-label">Payment Method :</span>
                         <span class="card-val">{{ $paymentMethod }}</span>
                     </td>
                 </tr>
                 <tr>
                     <td class="col-half">
-                        <span class="card-label">&#128222; Mobile :</span>
-                        <span class="card-val">{{ $candidate->phone ?? 'N/A' }}</span>
+                        <span class="card-label">Mobile :</span>
+                        <span class="card-val">{{ $customerPhone }}</span>
                     </td>
                     <td class="col-half">
-                        <span class="card-label">&#9989; Payment Status :</span>
+                        <span class="card-label">Payment Status :</span>
                         <span class="paid-pill">PAID</span>
                     </td>
                 </tr>
@@ -540,7 +499,7 @@
                 <tr>
                     <td style="width: 32%;"><div class="ribbon-line"></div></td>
                     <td style="width: 36%; text-align: center;">
-                        <span class="ribbon-badge">&#9670; BILLING DETAILS &#9670;</span>
+                        <span class="ribbon-badge">BILLING DETAILS</span>
                     </td>
                     <td style="width: 32%;"><div class="ribbon-line"></div></td>
                 </tr>
@@ -554,7 +513,7 @@
                     <th style="width: 12%;" class="text-center">Sl. No.</th>
                     <th style="width: 56%;" class="text-left">Description</th>
                     <th style="width: 14%;" class="text-center">Qty</th>
-                    <th style="width: 18%;" class="text-right">Amount (&#8377;)</th>
+                    <th style="width: 18%;" class="text-right">Amount (<span class="rupee">&#8377;</span>)</th>
                 </tr>
             </thead>
             <tbody>
@@ -567,7 +526,7 @@
                         @endif
                     </td>
                     <td class="text-center">1</td>
-                    <td class="text-right" style="font-weight: bold;">&#8377; {{ $amountFormatted }}</td>
+                    <td class="text-right" style="font-weight: bold;"><span class="rupee">&#8377;</span> {{ $amountFormatted }}</td>
                 </tr>
             </tbody>
         </table>
@@ -575,11 +534,11 @@
         <!-- Summary & Calculation -->
         <table class="summary-wrap">
             <tr>
-                <td class="rings-art">
-                    <div class="rings-art-box">
-                        <div class="rings-icon">&#128141; &#128142;</div>
-                        <div class="rings-subtext">Forever In Royal Bond</div>
-                        <div style="font-size: 8px; color: #888888; margin-top: 1px;">Official Computer Generated Invoice</div>
+                <td class="seal-art">
+                    <div class="seal-art-box">
+                        <div class="seal-title">Rani Matrimonial</div>
+                        <div class="seal-subtext">Official Computer Generated Tax Invoice</div>
+                        <div class="seal-subtext" style="color: #650000; font-weight: bold; margin-top: 3px;">Sumatra Sales Private Limited</div>
                     </div>
                 </td>
                 <td class="calc-col">
@@ -587,12 +546,12 @@
                         <tr>
                             <td class="calc-lbl">Subtotal</td>
                             <td class="calc-sep">:</td>
-                            <td class="calc-val">&#8377; {{ $amountFormatted }}</td>
+                            <td class="calc-val"><span class="rupee">&#8377;</span> {{ $amountFormatted }}</td>
                         </tr>
                         <tr>
                             <td class="calc-lbl">Discount</td>
                             <td class="calc-sep">:</td>
-                            <td class="calc-val">&#8377; 0.00</td>
+                            <td class="calc-val"><span class="rupee">&#8377;</span> 0.00</td>
                         </tr>
                     </table>
                     <div class="grand-total-box">
@@ -600,7 +559,7 @@
                             <tr>
                                 <td style="width: 42%;">Grand Total</td>
                                 <td style="width: 6%; text-align: center;">:</td>
-                                <td class="calc-val" style="width: 52%; text-align: right;">&#8377; {{ $amountFormatted }}</td>
+                                <td class="calc-val" style="width: 52%; text-align: right;"><span class="rupee">&#8377;</span> {{ $amountFormatted }}</td>
                             </tr>
                         </table>
                     </div>
@@ -610,7 +569,7 @@
 
         <!-- 6. Thank You Callout -->
         <div class="thank-you-pill">
-            &#10022; Thank you for choosing Rani Matrimonial! &#10022;
+            Thank you for choosing Rani Matrimonial!
         </div>
 
     </div>
@@ -619,31 +578,26 @@
     <div class="bottom-banner">
         <table class="footer-table">
             <tr>
-                <td class="footer-couple-col">
-                    <div class="couple-symbol">&#9829;</div>
-                    <div class="couple-text">Happy Marriages</div>
+                <td class="footer-brand-col">
+                    <div class="footer-brand-title">Rani Matrimonial</div>
+                    <div class="footer-brand-tagline">Find Your Forever Partner</div>
                 </td>
                 <td class="footer-badges-col">
                     <table class="badges-table">
                         <tr>
                             <td class="badge-cell">
-                                <span class="badge-icon">&#10004;</span>
                                 <span class="badge-label">Verified<br>Profiles</span>
                             </td>
                             <td class="badge-cell">
-                                <span class="badge-icon">&#128274;</span>
                                 <span class="badge-label">Safe &amp; Secure<br>Communication</span>
                             </td>
                             <td class="badge-cell">
-                                <span class="badge-icon">&#128269;</span>
                                 <span class="badge-label">Smart<br>Matching</span>
                             </td>
                             <td class="badge-cell">
-                                <span class="badge-icon">&#129309;</span>
                                 <span class="badge-label">Family<br>Friendly</span>
                             </td>
                             <td class="badge-cell">
-                                <span class="badge-icon">&#127911;</span>
                                 <span class="badge-label">Dedicated<br>Support</span>
                             </td>
                         </tr>
