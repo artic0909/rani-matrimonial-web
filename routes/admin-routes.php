@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\MasterDataController;
+use App\Http\Controllers\Admin\ExecutivePartnerController;
+use App\Http\Controllers\Admin\GroundPartnerController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -20,12 +22,33 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/candidates/{id}/toggle-status', [AdminController::class, 'toggleCandidateStatus'])->name('candidates.toggle-status');
         Route::get('/transactions', [AdminController::class, 'transactions'])->name('transactions.index');
         Route::get('/transactions/{id}/receipt', [AdminController::class, 'downloadTransactionReceipt'])->name('transactions.receipt');
+        // Branches
         Route::get('/branches', [AdminController::class, 'branches'])->name('branches.index');
         Route::post('/branches', [AdminController::class, 'storeBranch'])->name('branches.store');
         Route::get('/branches/{id}', [AdminController::class, 'showBranch'])->name('branches.show');
         Route::put('/branches/{id}', [AdminController::class, 'updateBranch'])->name('branches.update');
         Route::post('/branches/{id}/toggle-status', [AdminController::class, 'toggleBranchStatus'])->name('branches.toggle-status');
         Route::delete('/branches/{id}', [AdminController::class, 'destroyBranch'])->name('branches.destroy');
+
+        // Executive Partners (EP) Management
+        Route::get('/executive-partners', [ExecutivePartnerController::class, 'index'])->name('executive-partners.index');
+        Route::post('/executive-partners', [ExecutivePartnerController::class, 'store'])->name('executive-partners.store');
+        Route::get('/executive-partners/{id}', [ExecutivePartnerController::class, 'show'])->name('executive-partners.show');
+        Route::put('/executive-partners/{id}', [ExecutivePartnerController::class, 'update'])->name('executive-partners.update');
+        Route::post('/executive-partners/{id}/toggle-status', [ExecutivePartnerController::class, 'toggleStatus'])->name('executive-partners.toggle-status');
+        Route::delete('/executive-partners/{id}', [ExecutivePartnerController::class, 'destroy'])->name('executive-partners.destroy');
+
+        // Ground Partners (GP) Management
+        Route::get('/ground-partners', [GroundPartnerController::class, 'index'])->name('ground-partners.index');
+        Route::post('/ground-partners', [GroundPartnerController::class, 'store'])->name('ground-partners.store');
+        Route::get('/ground-partners/{id}', [GroundPartnerController::class, 'show'])->name('ground-partners.show');
+        Route::put('/ground-partners/{id}', [GroundPartnerController::class, 'update'])->name('ground-partners.update');
+        Route::post('/ground-partners/{id}/toggle-status', [GroundPartnerController::class, 'toggleStatus'])->name('ground-partners.toggle-status');
+        Route::delete('/ground-partners/{id}', [GroundPartnerController::class, 'destroy'])->name('ground-partners.destroy');
+
+        // Shorthand redirect aliases for /admin/ep and /admin/gp
+        Route::redirect('/ep', '/admin/executive-partners');
+        Route::redirect('/gp', '/admin/ground-partners');
         Route::get('/blueticks', [AdminController::class, 'bluetickRequests'])->name('blueticks');
         Route::post('/bluetick/{id}/approve', [AdminController::class, 'approveBluetick'])->name('bluetick.approve');
         Route::post('/bluetick/{id}/reject', [AdminController::class, 'rejectBluetick'])->name('bluetick.reject');

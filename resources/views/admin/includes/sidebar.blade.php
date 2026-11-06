@@ -40,6 +40,18 @@
           </a>
         </li>
         <li class="sidebar-menu-item">
+          <a href="{{ route('admin.executive-partners.index') }}" class="sidebar-menu-link {{ request()->routeIs('admin.executive-partners*') ? 'active' : '' }}" id="menu-executive-partners" title="Executive Partners (EP)">
+            <i class="bi bi-person-badge-fill text-primary"></i>
+            <span>Executive Partners (EP)</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="{{ route('admin.ground-partners.index') }}" class="sidebar-menu-link {{ request()->routeIs('admin.ground-partners*') ? 'active' : '' }}" id="menu-ground-partners" title="Ground Partners (GP)">
+            <i class="bi bi-geo-alt-fill text-info"></i>
+            <span>Ground Partners (GP)</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
           <a href="{{ route('admin.blueticks') }}" class="sidebar-menu-link {{ request()->routeIs('admin.blueticks*') ? 'active' : '' }}" id="menu-blueticks" title="Blue Tick Requests">
             <i class="bi bi-patch-check-fill text-warning"></i>
             <span>Blue Tick Requests</span>
