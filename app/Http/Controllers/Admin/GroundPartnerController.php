@@ -51,7 +51,7 @@ class GroundPartnerController extends Controller
             'eps_count' => GroundPartner::distinct('ep_id')->count('ep_id'),
         ];
 
-        $executivePartners = ExecutivePartner::orderBy('name')->get(['id', 'name', 'code', 'status']);
+        $executivePartners = ExecutivePartner::where('status', 'active')->orderBy('name')->get(['id', 'name', 'code', 'status']);
 
         return view('admin.ground_partner.index', compact('partners', 'executivePartners', 'counts', 'search', 'status', 'epId'));
     }

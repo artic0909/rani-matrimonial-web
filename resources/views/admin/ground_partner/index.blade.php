@@ -116,14 +116,18 @@
         <!-- Filter by Executive Partner (EP) -->
         <div class="d-flex align-items-center gap-1.5">
           <label class="small text-muted fw-bold text-nowrap d-none d-sm-inline"><i class="bi bi-filter"></i> EP:</label>
-          <select class="form-select form-select-sm rounded-3" style="width: 200px;" onchange="filterByEp(this.value)">
-            <option value="all" {{ ($epId ?? 'all') === 'all' ? 'selected' : '' }}>All Executive Partners</option>
-            @foreach($executivePartners as $epItem)
-              <option value="{{ $epItem->id }}" {{ (string)$epId === (string)$epItem->id ? 'selected' : '' }}>
-                {{ $epItem->name }} ({{ $epItem->code }})
-              </option>
-            @endforeach
-          </select>
+          <div style="min-width: 220px;">
+            <select id="filter_ep_select" class="form-select form-select-sm select2" data-placeholder="All Executive Partners">
+              <option value="all" {{ ($epId ?? 'all') === 'all' ? 'selected' : '' }}>All Executive Partners</option>
+              @foreach($executivePartners as $epItem)
+                @if(strtolower((string)$epItem->status) === 'active')
+                  <option value="{{ $epItem->id }}" {{ (string)$epId === (string)$epItem->id ? 'selected' : '' }}>
+                    {{ $epItem->name }} ({{ $epItem->code }})
+                  </option>
+                @endif
+              @endforeach
+            </select>
+          </div>
         </div>
 
         <!-- Search Box Form -->
@@ -298,12 +302,14 @@
         <div class="modal-body p-4">
           <div class="mb-3">
             <label class="form-label fw-bold small text-muted text-uppercase">Assigned Executive Partner (EP) <span class="text-danger">*</span></label>
-            <select name="ep_id" class="form-select" required>
-              <option value="" disabled selected>-- Select Executive Partner --</option>
+            <select name="ep_id" id="create_gp_ep_id" class="form-select select2 w-100" data-placeholder="-- Search & Select Executive Partner --" required>
+              <option value=""></option>
               @foreach($executivePartners as $epItem)
-                <option value="{{ $epItem->id }}" {{ (string)$epId === (string)$epItem->id ? 'selected' : '' }}>
-                  {{ $epItem->name }} ({{ $epItem->code }})
-                </option>
+                @if(strtolower((string)$epItem->status) === 'active')
+                  <option value="{{ $epItem->id }}" {{ (string)$epId === (string)$epItem->id ? 'selected' : '' }}>
+                    {{ $epItem->name }} ({{ $epItem->code }})
+                  </option>
+                @endif
               @endforeach
             </select>
           </div>
@@ -366,11 +372,14 @@
         <div class="modal-body p-4">
           <div class="mb-3">
             <label class="form-label fw-bold small text-muted text-uppercase">Assigned Executive Partner (EP) <span class="text-danger">*</span></label>
-            <select id="edit_gp_ep_id" name="ep_id" class="form-select" required>
+            <select id="edit_gp_ep_id" name="ep_id" class="form-select select2 w-100" data-placeholder="-- Search & Select Executive Partner --" required>
+              <option value=""></option>
               @foreach($executivePartners as $epItem)
-                <option value="{{ $epItem->id }}">
-                  {{ $epItem->name }} ({{ $epItem->code }})
-                </option>
+                @if(strtolower((string)$epItem->status) === 'active')
+                  <option value="{{ $epItem->id }}">
+                    {{ $epItem->name }} ({{ $epItem->code }})
+                  </option>
+                @endif
               @endforeach
             </select>
           </div>
@@ -471,6 +480,17 @@ $(document).ready(function() {
         });
     });
 
+    // Filter by EP select2 change
+    $('#filter_ep_select').on('change', function() {
+        filterByEp($(this).val());
+    });
+
+    // Reset Create Modal when hidden
+    $('#createGpModal').on('hidden.bs.modal', function() {
+        $('#createGpForm')[0].reset();
+        $('#create_gp_ep_id').val('').trigger('change');
+    });
+
     // Populate Edit Modal
     $(document).on('click', '.edit-gp-btn', function() {
         var id = $(this).data('id');
@@ -481,11 +501,11 @@ $(document).ready(function() {
         var status = $(this).data('status');
 
         $('#edit_gp_id').val(id);
-        $('#edit_gp_ep_id').val(epId);
         $('#edit_gp_name').val(name);
         $('#edit_gp_code').val(code);
         $('#edit_gp_mobile').val(mobile);
         $('#edit_gp_status').val(status);
+        $('#edit_gp_ep_id').val(epId).trigger('change');
 
         $('#editGpForm').attr('action', "{{ url('admin/ground-partners') }}/" + id);
         $('#editGpModal').modal('show');
