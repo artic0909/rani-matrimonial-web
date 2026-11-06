@@ -56,6 +56,7 @@ class SearchController extends Controller
             'Marwari', 'Sindhi', 'Konkani', 'Kashmiri', 'Nepali', 'English'
         ];
         $bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+        $familyTypes = ['Joint Family', 'Nuclear Family', 'Other'];
         $familyFinancialStatuses = ['Rich / Affluent', 'Upper Middle Class', 'Middle Class', 'Modest'];
         $residencyStatuses = ['Citizen', 'Permanent Resident', 'Work Permit', 'Student Visa', 'Temporary Visa'];
         $profileFors = ['Self', 'Son', 'Daughter', 'Brother', 'Sister', 'Friend', 'Relative'];
@@ -79,6 +80,7 @@ class SearchController extends Controller
             'hobbies' => $hobbies,
             'mother_tongues' => $motherTongues,
             'blood_groups' => $bloodGroups,
+            'family_types' => $familyTypes,
             'family_financial_statuses' => $familyFinancialStatuses,
             'residency_statuses' => $residencyStatuses,
             'profile_fors' => $profileFors,

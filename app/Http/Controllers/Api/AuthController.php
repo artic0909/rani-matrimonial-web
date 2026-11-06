@@ -169,6 +169,7 @@ class AuthController extends Controller
             'brothers_count' => $candidate->brothers_count,
             'sisters_count' => $candidate->sisters_count,
             'family_financial_status' => $candidate->family_financial_status,
+            'family_type' => $candidate->family_type,
 
             // Partner Preferences
             'pref_age_min' => $candidate->pref_age_min,
@@ -963,19 +964,46 @@ class AuthController extends Controller
             })
             ->count();
 
-        // 2. Profile Completeness Calculation
-        $criticalFields = [
-            'first_name', 'last_name', 'dob', 'gender', 'religion', 'community',
-            'city', 'state', 'highest_qualification', 'profession', 'annual_income',
-            'about_yourself', 'profile_picture', 'selfie_verified', 'pref_age_min', 'pref_religion',
-        ];
-        $filledCount = 0;
-        foreach ($criticalFields as $f) {
-            if (! empty($candidate->$f)) {
-                $filledCount++;
-            }
-        }
-        $profileCompleteness = (int) round(($filledCount / count($criticalFields)) * 100);
+        // 2. Comprehensive Profile Completeness Calculation
+        $score = 0;
+        // Basic & Identity (25%)
+        if (!empty($candidate->first_name) && !empty($candidate->last_name)) $score += 6;
+        if (!empty($candidate->gender) && !empty($candidate->dob)) $score += 6;
+        if (!empty($candidate->marital_status)) $score += 4;
+        if (!empty($candidate->height)) $score += 4;
+        if (!empty($candidate->profile_picture)) $score += 5;
+
+        // Religious & Cultural (10%)
+        if (!empty($candidate->religion)) $score += 4;
+        if (!empty($candidate->community)) $score += 3;
+        if (!empty($candidate->mother_tongue) || !empty($candidate->gothra)) $score += 3;
+
+        // Location & Contact (10%)
+        if (!empty($candidate->city) && !empty($candidate->state)) $score += 5;
+        if (!empty($candidate->pincode) || !empty($candidate->full_address)) $score += 5;
+
+        // Education & Profession (15%)
+        if (!empty($candidate->highest_qualification)) $score += 5;
+        if (!empty($candidate->profession) && !empty($candidate->annual_income)) $score += 5;
+        if (!empty($candidate->working_with) || !empty($candidate->company_name) || !empty($candidate->college_name)) $score += 5;
+
+        // Family Details (15%)
+        if (!empty($candidate->father_profession)) $score += 4;
+        if (!empty($candidate->mother_profession)) $score += 4;
+        if (!empty($candidate->family_type)) $score += 4;
+        if (!empty($candidate->family_location) || !empty($candidate->family_financial_status)) $score += 3;
+
+        // Astro / Horoscope (10%)
+        if (!empty($candidate->manglik)) $score += 4;
+        if (!empty($candidate->time_of_birth) || !empty($candidate->city_of_birth)) $score += 6;
+
+        // About & Lifestyle (15%)
+        if (!empty($candidate->about_yourself) && strlen(trim($candidate->about_yourself)) >= 20) $score += 7;
+        if (!empty($candidate->diet)) $score += 3;
+        if (!empty($candidate->blood_group)) $score += 2;
+        if (!empty($candidate->hobbies_interests)) $score += 3;
+
+        $profileCompleteness = min(100, max(20, $score));
 
         // 3. Dynamic Matches for Dashboard
         $userGender = strtolower(trim($candidate->gender ?? ''));
@@ -1623,6 +1651,7 @@ class AuthController extends Controller
                     'brothers_count' => 'nullable|integer|min:0|max:20',
                     'sisters_count' => 'nullable|integer|min:0|max:20',
                     'family_financial_status' => 'nullable|string|max:100',
+                    'family_type' => 'nullable|string|max:100',
                 ];
                 break;
             case 'partner_preferences':

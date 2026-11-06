@@ -539,6 +539,11 @@
                     </div>
 
                     <div class="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-100">
+                        <span class="text-[11px] sm:text-xs font-bold text-gray-400 block">Family Type</span>
+                        <strong class="text-sm sm:text-base text-gray-800 font-bold mt-0.5 sm:mt-1 block break-words">{{ $profile->family_type ?: 'Joint Family' }}</strong>
+                    </div>
+
+                    <div class="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-gray-50 border border-gray-100">
                         <span class="text-[11px] sm:text-xs font-bold text-gray-400 block">Financial Status</span>
                         <strong class="text-sm sm:text-base text-gray-800 font-bold mt-0.5 sm:mt-1 block break-words">{{ $profile->family_financial_status ?: 'Upper Middle Class' }}</strong>
                     </div>

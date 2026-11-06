@@ -252,6 +252,17 @@
                                 <input type="text" x-model="formData.family_location" placeholder="e.g. Kolkata, West Bengal" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
                             </div>
                             <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Family Type</label>
+                                <select x-model="formData.family_type" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
+                                    <option value="">Select Family Type</option>
+                                    <option value="Joint Family">Joint Family</option>
+                                    <option value="Nuclear Family">Nuclear Family</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">Financial Status</label>
                                 <select x-model="formData.family_financial_status" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-rani-primary/20 focus:border-rani-primary text-gray-800 transition-all">
                                     <option value="">Select Status</option>
@@ -502,6 +513,7 @@ window.profileEditor = function(config = {}) {
             brothers_count: @json($candidate->brothers_count ?? ''),
             sisters_count: @json($candidate->sisters_count ?? ''),
             family_location: @json($candidate->family_location ?? ''),
+            family_type: @json($candidate->family_type ?? ''),
             family_financial_status: @json($candidate->family_financial_status ?? ''),
             
             // Education & Career

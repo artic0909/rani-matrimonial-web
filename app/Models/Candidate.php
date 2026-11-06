@@ -36,7 +36,7 @@ class Candidate extends Authenticatable
         // Astro Details
         'manglik', 'time_of_birth', 'city_of_birth',
         // Family Details
-        'mother_profession', 'father_profession', 'family_location', 'sisters_count', 'brothers_count', 'family_financial_status',
+        'mother_profession', 'father_profession', 'family_location', 'sisters_count', 'brothers_count', 'family_financial_status', 'family_type',
         // Education & Career
         'annual_income', 'working_with',
         // Location
