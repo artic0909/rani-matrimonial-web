@@ -159,7 +159,8 @@ class SearchController extends Controller
         $query = Candidate::with(['photos', 'bluetick'])
             ->where(function ($q) {
                 $q->where('is_active', true)->orWhereNull('is_active');
-            });
+            })
+            ->where('mobile', '!=', '6292237200'); // Never show dummy test profile in public search results
 
         // Exclude logged in user
         if ($currentCandidate) {

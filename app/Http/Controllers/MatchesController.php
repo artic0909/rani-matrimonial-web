@@ -217,6 +217,11 @@ class MatchesController extends Controller
 
         $profile->loadMissing(['photos', 'bluetick']);
 
+        // Hide Play Store test dummy account from public view
+        if ($profile->mobile === '6292237200' && ($candidate->mobile ?? '') !== '6292237200') {
+            abort(404, 'Candidate profile not found.');
+        }
+
         // Check connection status
         $connection = ConnectionRequest::where(function ($q) use ($candidate, $profile) {
             $q->where('sender_id', $candidate->id)->where('receiver_id', $profile->id);
@@ -1097,7 +1102,8 @@ class MatchesController extends Controller
                 $q->where('is_active', true)->orWhereNull('is_active');
             })
             ->where('gender', $targetGender)
-            ->where('id', '!=', $candidate->id);
+            ->where('id', '!=', $candidate->id)
+            ->where('mobile', '!=', '6292237200'); // Hide dummy test profile from other members
 
         // Determine candidate's religion matching criteria
         $userReligion = trim($candidate->religion ?? '');

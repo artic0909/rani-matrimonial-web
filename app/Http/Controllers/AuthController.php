@@ -66,6 +66,16 @@ class AuthController extends Controller
             return response()->json(['success' => false, 'message' => 'Mobile number not registered.'], 404);
         }
 
+        // Dummy test login check for Play Store review team
+        if ($mobile === '6292237200') {
+            $otp = '1111';
+            Session::put('otp_mobile', $mobile);
+            Session::put('otp_code', '1111');
+            Cache::put('login_otp_' . $mobile, '1111', now()->addDays(30));
+
+            return response()->json(['success' => true, 'message' => 'OTP sent to +91 ' . $mobile]);
+        }
+
         $otp = rand(1000, 9999);
 
         try {
@@ -117,7 +127,10 @@ class AuthController extends Controller
         $code = Session::get('otp_code');
         $cacheCode = $mobile ? Cache::get('login_otp_' . $mobile) : null;
 
-        if ($request->otp !== (string)$code && $request->otp !== (string)$cacheCode) {
+        // Dummy test login check for Play Store review team
+        $isDummyTester = ($mobile === '6292237200' && (string) $request->otp === '1111');
+
+        if (! $isDummyTester && $request->otp !== (string)$code && $request->otp !== (string)$cacheCode) {
             return response()->json(['success' => false, 'message' => 'Invalid OTP. Please try again.'], 400);
         }
 
@@ -185,6 +198,19 @@ class AuthController extends Controller
             ], 422);
         }
 
+        // Dummy test check for Play Store review team
+        if ($mobile === '6292237200') {
+            $otp = '1111';
+            Session::put('reg_otp_code', '1111');
+            Session::put('reg_otp_mobile', $mobile);
+            Cache::put('reg_otp_' . $mobile, '1111', now()->addDays(30));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'OTP sent to +91 ' . $mobile,
+            ]);
+        }
+
         $otp = rand(1000, 9999);
 
         try {
@@ -245,7 +271,10 @@ class AuthController extends Controller
 
         $cacheCode = $mobile ? (string) Cache::get('reg_otp_' . $mobile) : null;
 
-        if ($enteredOtp !== $sessionCode && $enteredOtp !== $cacheCode) {
+        // Dummy test check for Play Store review team
+        $isDummyTester = ($mobile === '6292237200' && (string) $enteredOtp === '1111');
+
+        if (! $isDummyTester && $enteredOtp !== $sessionCode && $enteredOtp !== $cacheCode) {
             return response()->json(['success' => false, 'message' => 'Invalid or expired OTP. Please try again.'], 400);
         }
 
