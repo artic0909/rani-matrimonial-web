@@ -741,6 +741,8 @@ class SearchController extends Controller
                 'is_shortlisted' => $isShortlisted,
                 'is_accepted' => $isAccepted,
                 'request_type' => $requestType,
+                'photo_privacy' => $c->photo_privacy ?? 'Visible to all Members (Recommended)',
+                'album_privacy' => $c->album_privacy ?? 'Visible to all Members',
                 'token_url' => route('matches.view-profile', ['id' => MatchesController::generateProfileToken($c)]),
             ];
         });

@@ -193,6 +193,8 @@ class InboxController extends Controller
                 'is_accepted' => $isAccepted,
                 'is_sent_by_me' => $isSentByMe,
                 'is_received_by_me' => ! $isSentByMe,
+                'photo_privacy' => $sender->photo_privacy ?? 'Visible to all Members (Recommended)',
+                'album_privacy' => $sender->album_privacy ?? 'Visible to all Members',
                 'wp_chat_status' => $wpChatStatus,
                 'is_wp_chat_accepted' => $isWpChatAccepted,
                 'is_wp_chat_received_by_me' => $isWpChatReceivedByMe,

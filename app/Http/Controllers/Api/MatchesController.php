@@ -410,6 +410,8 @@ class MatchesController extends Controller
                 'pref_religion' => $profile->pref_religion,
                 'pref_community' => $profile->pref_community,
                 'pref_city' => $profile->pref_city,
+                'photo_privacy' => $profile->photo_privacy ?? 'Visible to all Members (Recommended)',
+                'album_privacy' => $profile->album_privacy ?? 'Visible to all Members',
             ],
             'photos' => $allPhotos,
             'status' => [
@@ -1419,6 +1421,8 @@ class MatchesController extends Controller
                 'is_interest_received' => $isReceived,
                 'is_shortlisted' => $isShortlisted,
                 'request_type' => $requestType,
+                'photo_privacy' => $c->photo_privacy ?? 'Visible to all Members (Recommended)',
+                'album_privacy' => $c->album_privacy ?? 'Visible to all Members',
                 'details' => $fullDetails,
             ];
         }
