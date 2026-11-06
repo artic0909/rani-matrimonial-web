@@ -161,25 +161,13 @@ class MatchesController extends Controller
         }
         $acceptedProfileCodes = array_values(array_unique($acceptedProfileCodes));
 
-        // Filtered matches for the active tab (computed ONLY for the requested tab)
-        $matches = $this->getMatchesData($candidate, $targetGender, $tab, $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds, $shortlistIdOrder);
+        // Filtered matches and stable counts computed from authoritative pool
+        $pool = $this->getMatchesPool($candidate, $targetGender, $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds);
+        $matches = $this->filterMatchesPool($pool, $tab, $candidate, $shortlistIdOrder);
 
-        // Lightweight dynamic counts
         $shortlistedCount = count($rawShortlisted);
         $acceptedCount = count($acceptedConnections);
-        $todaysCount = in_array($tab, ['todays', 'new', 'all'])
-            ? count($matches)
-            : Candidate::where(function($q) { $q->where('is_active', true)->orWhereNull('is_active'); })->where('gender', $targetGender)->where('id', '!=', $candidate->id)->count();
-
-        $counts = [
-            'todays' => $todaysCount,
-            'new' => $todaysCount,
-            'all' => $todaysCount,
-            'my_matches' => $todaysCount,
-            'shortlisted' => $shortlistedCount,
-            'accepted' => $acceptedCount,
-            'near_me' => ($tab === 'near_me') ? count($matches) : $todaysCount,
-        ];
+        $counts = $this->computePoolCounts($pool, $candidate, $shortlistedCount, $acceptedCount);
 
         // Paginate filtered matches strictly in batches of 10 so DB payload is light & performant
         $page = max(1, (int) $request->query('page', 1));
@@ -1269,15 +1257,16 @@ class MatchesController extends Controller
     /**
      * Generate structured matches list from DB candidates with real dynamic data-wise match percentage
      */
-    public function getMatchesData(
+    /**
+     * Build the authoritative pool of candidate matches
+     */
+    public function getMatchesPool(
         Candidate $candidate,
         string $targetGender,
-        string $tab,
         array $shortlistedIds = [],
         array $sentInterestIds = [],
         array $receivedInterestIds = [],
-        array $acceptedCandidateIds = [],
-        array $shortlistIdOrder = []
+        array $acceptedCandidateIds = []
     ): array {
         $query = Candidate::with(['photos', 'bluetick'])
             ->where(function ($q) {
@@ -1300,17 +1289,18 @@ class MatchesController extends Controller
         }
 
         if (! empty($targetReligions)) {
-            $query->where(function ($q) use ($targetReligions, $tab, $acceptedCandidateIds, $shortlistedIds) {
+            $query->where(function ($q) use ($targetReligions, $acceptedCandidateIds, $shortlistedIds) {
                 $q->where(function ($sub) use ($targetReligions) {
                     foreach ($targetReligions as $r) {
                         $sub->orWhere('religion', 'LIKE', '%'.$r.'%');
                     }
                 });
 
-                // Preserve explicitly connected or shortlisted profiles in respective tabs
-                if ($tab === 'accepted' && ! empty($acceptedCandidateIds)) {
+                // Preserve explicitly connected or shortlisted profiles
+                if (! empty($acceptedCandidateIds)) {
                     $q->orWhereIn('id', $acceptedCandidateIds);
-                } elseif ($tab === 'shortlisted' && ! empty($shortlistedIds)) {
+                }
+                if (! empty($shortlistedIds)) {
                     $q->orWhereIn('id', $shortlistedIds);
                 }
             });
@@ -1454,10 +1444,47 @@ class MatchesController extends Controller
             ];
         }
 
-        // Filter based on tab and guarantee latest data appears 1st
+        return $pool;
+    }
+
+    /**
+     * Check if a match candidate is near the logged-in candidate
+     */
+    private function isNearMeCandidate(array $m, string $myCity, string $myState): bool
+    {
+        if (!empty($m['is_shortlisted'])) {
+            return false;
+        }
+        $cCity = strtolower(trim($m['city'] ?? ''));
+        $cState = strtolower(trim($m['state'] ?? ''));
+        if (!empty($myCity) && (str_contains($cCity, $myCity) || str_contains($myCity, $cCity))) {
+            return true;
+        }
+        if (!empty($myState) && (str_contains($cState, $myState) || str_contains($myState, $cState))) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if a match candidate is a fresh/new recommendation
+     */
+    private function isNewCandidate(array $m): bool
+    {
+        return empty($m['is_accepted']) && ($m['request_type'] ?? 'none') === 'none' && empty($m['is_shortlisted']);
+    }
+
+    /**
+     * Filter pool of candidates for a specific tab
+     */
+    public function filterMatchesPool(
+        array $pool,
+        string $tab,
+        Candidate $candidate,
+        array $shortlistIdOrder = []
+    ): array {
         if ($tab === 'shortlisted') {
             $filtered = array_filter($pool, fn ($m) => !empty($m['is_shortlisted']));
-            // Sort by shortlist timestamp/id descending (latest shortlisted candidate appears 1st)
             usort($filtered, function ($a, $b) use ($shortlistIdOrder) {
                 $orderA = $shortlistIdOrder[$a['id']] ?? ($shortlistIdOrder[(string) $a['db_id']] ?? ($shortlistIdOrder[$a['db_id']] ?? 0));
                 $orderB = $shortlistIdOrder[$b['id']] ?? ($shortlistIdOrder[(string) $b['db_id']] ?? ($shortlistIdOrder[$b['db_id']] ?? 0));
@@ -1467,32 +1494,79 @@ class MatchesController extends Controller
                 return ($b['db_id'] ?? 0) <=> ($a['db_id'] ?? 0);
             });
         } elseif ($tab === 'accepted') {
-            $filtered = array_filter($pool, fn ($m) => $m['is_accepted'] || $m['request_type'] === 'accepted');
+            $filtered = array_filter($pool, fn ($m) => !empty($m['is_accepted']) || ($m['request_type'] ?? '') === 'accepted');
             usort($filtered, fn ($a, $b) => ($b['db_id'] ?? 0) <=> ($a['db_id'] ?? 0));
         } elseif ($tab === 'near_me') {
             $myCity = strtolower(trim($candidate->city ?? $candidate->district ?? ''));
             $myState = strtolower(trim($candidate->state ?? ''));
-            $filtered = array_filter($pool, function ($m) use ($myCity, $myState) {
-                if (!empty($m['is_shortlisted'])) return false;
-                $cCity = strtolower(trim($m['city'] ?? ''));
-                $cState = strtolower(trim($m['state'] ?? ''));
-                if (!empty($myCity) && (str_contains($cCity, $myCity) || str_contains($myCity, $cCity))) return true;
-                if (!empty($myState) && (str_contains($cState, $myState) || str_contains($myState, $cState))) return true;
-                return false;
-            });
+            $filtered = array_filter($pool, fn ($m) => $this->isNearMeCandidate($m, $myCity, $myState));
             usort($filtered, fn ($a, $b) => ($b['db_id'] ?? 0) <=> ($a['db_id'] ?? 0));
         } elseif ($tab === 'my_matches') {
-            // 'my_matches' ONLY contains candidates user sent interest to and not yet accepted
-            $filtered = array_filter($pool, fn ($m) => $m['request_type'] === 'sent' && ! $m['is_accepted']);
+            $filtered = array_filter($pool, fn ($m) => ($m['request_type'] ?? '') === 'sent' && empty($m['is_accepted']));
             usort($filtered, fn ($a, $b) => ($b['db_id'] ?? 0) <=> ($a['db_id'] ?? 0));
         } else {
-            // Today's Picks (NEW tab): ONLY fresh recommendations that haven't been contacted, accepted, or shortlisted
-            $filtered = array_filter($pool, fn ($m) => ! $m['is_accepted'] && $m['request_type'] === 'none' && empty($m['is_shortlisted']));
-            // Sort newest candidate registered 1st (Requirement A: matches screen latest data 1st)
+            // New / Todays tab
+            $filtered = array_filter($pool, fn ($m) => $this->isNewCandidate($m));
             usort($filtered, fn ($a, $b) => ($b['db_id'] ?? 0) <=> ($a['db_id'] ?? 0));
         }
 
         return array_values($filtered);
+    }
+
+    /**
+     * Compute stable, authoritative counts across all tabs
+     */
+    public function computePoolCounts(
+        array $pool,
+        Candidate $candidate,
+        int $shortlistedCount,
+        int $acceptedCount
+    ): array {
+        $myCity = strtolower(trim($candidate->city ?? $candidate->district ?? ''));
+        $myState = strtolower(trim($candidate->state ?? ''));
+
+        $todaysCount = 0;
+        $nearMeCount = 0;
+        $myMatchesCount = 0;
+
+        foreach ($pool as $m) {
+            if ($this->isNewCandidate($m)) {
+                $todaysCount++;
+            }
+            if ($this->isNearMeCandidate($m, $myCity, $myState)) {
+                $nearMeCount++;
+            }
+            if (($m['request_type'] ?? '') === 'sent' && empty($m['is_accepted'])) {
+                $myMatchesCount++;
+            }
+        }
+
+        return [
+            'todays' => $todaysCount,
+            'new' => $todaysCount,
+            'all' => $todaysCount,
+            'my_matches' => $myMatchesCount,
+            'shortlisted' => $shortlistedCount,
+            'accepted' => $acceptedCount,
+            'near_me' => $nearMeCount,
+        ];
+    }
+
+    /**
+     * Generate structured matches list from DB candidates with real dynamic data-wise match percentage
+     */
+    public function getMatchesData(
+        Candidate $candidate,
+        string $targetGender,
+        string $tab,
+        array $shortlistedIds = [],
+        array $sentInterestIds = [],
+        array $receivedInterestIds = [],
+        array $acceptedCandidateIds = [],
+        array $shortlistIdOrder = []
+    ): array {
+        $pool = $this->getMatchesPool($candidate, $targetGender, $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds);
+        return $this->filterMatchesPool($pool, $tab, $candidate, $shortlistIdOrder);
     }
 
     /**
