@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\MatchesController;
 use App\Mail\NewCandidateRegistrationAdminMail;
 use App\Models\Bluetick;
-use App\Models\Branch;
 use App\Models\Candidate;
 use App\Models\CandidatePhoto;
 use App\Models\ConnectionRequest;

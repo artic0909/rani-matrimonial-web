@@ -6,7 +6,6 @@ use App\Mail\HelpInquiryAdminReply;
 use App\Mail\TicketReplyCandidateNotification;
 use App\Models\Admin;
 use App\Models\Bluetick;
-use App\Models\Branch;
 use App\Models\Candidate;
 use App\Models\ConnectionRequest;
 use App\Models\DeleteAccountRequest;
@@ -116,7 +115,8 @@ class AdminController extends Controller
             $femaleCandidates = Candidate::where('gender', 'female')->whereBetween('created_at', [$start, $end])->count();
             $verifiedCandidates = Candidate::whereBetween('created_at', [$start, $end])->whereHas('bluetick', fn($bq) => $bq->where('is_accept', 1))->count();
             $unverifiedCandidates = Candidate::whereBetween('created_at', [$start, $end])->whereDoesntHave('bluetick', fn($bq) => $bq->where('is_accept', 1))->count();
-            $totalBranches = Branch::whereBetween('created_at', [$start, $end])->count();
+            $totalExecutivePartners = \App\Models\ExecutivePartner::count();
+            $totalGroundPartners = \App\Models\GroundPartner::count();
 
             // 2. Verification & Connections in Range
             $pendingBlueTicks = Bluetick::with('candidate')->where('is_accept', 0)->whereBetween('created_at', [$start, $end])->latest()->get();
@@ -258,7 +258,8 @@ class AdminController extends Controller
             $femaleCandidates = Candidate::where('gender', 'female')->count();
             $verifiedCandidates = Candidate::whereHas('bluetick', fn($bq) => $bq->where('is_accept', 1))->count();
             $unverifiedCandidates = Candidate::whereDoesntHave('bluetick', fn($bq) => $bq->where('is_accept', 1))->count();
-            $totalBranches = Branch::count(); // Regional Franchise Centers from database
+            $totalExecutivePartners = \App\Models\ExecutivePartner::count();
+            $totalGroundPartners = \App\Models\GroundPartner::count();
 
             // 2. Verification & Connections
             $pendingBlueTicks = Bluetick::with('candidate')->where('is_accept', 0)->latest()->get();
@@ -400,7 +401,8 @@ class AdminController extends Controller
             'femaleCandidates',
             'verifiedCandidates',
             'unverifiedCandidates',
-            'totalBranches',
+            'totalExecutivePartners',
+            'totalGroundPartners',
             'activeCandidatesPercent',
             'deactivatedCandidatesPercent',
             'maleCandidatesPercent',
@@ -784,315 +786,6 @@ class AdminController extends Controller
 
         // Default: Render dedicated interactive web receipt view with Print & Save as PDF controls
         return view('admin.transaction.receipt', compact('candidate', 'wallet', 'transaction'));
-    }
-
-    /**
-     * Branches Directory & Management
-     */
-    public function branches(Request $request)
-    {
-        $search = trim($request->query('search', ''));
-        $status = strtolower($request->query('status', 'all'));
-
-        $query = Branch::withCount('referrals')->latest();
-
-        if ($status === 'active') {
-            $query->where('is_active', true);
-        } elseif (in_array($status, ['inactive', 'deactivated'])) {
-            $query->where('is_active', false);
-        }
-
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                  ->orWhere('code', 'LIKE', "%{$search}%")
-                  ->orWhere('city', 'LIKE', "%{$search}%")
-                  ->orWhere('state', 'LIKE', "%{$search}%")
-                  ->orWhere('phone', 'LIKE', "%{$search}%")
-                  ->orWhere('designation', 'LIKE', "%{$search}%")
-                  ->orWhere('full_address', 'LIKE', "%{$search}%");
-            });
-        }
-
-        $branches = $query->paginate(15)->withQueryString();
-
-        $counts = [
-            'all' => Branch::count(),
-            'active' => Branch::where('is_active', true)->count(),
-            'inactive' => Branch::where('is_active', false)->count(),
-            'cities' => Branch::distinct('city')->count('city'),
-        ];
-
-        return view('admin.branch.index', compact('branches', 'counts', 'search', 'status'));
-    }
-
-    /**
-     * Store a new branch
-     */
-    public function storeBranch(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'city' => 'required|string|max:100',
-            'state' => 'required|string|max:100',
-            'full_address' => 'required|string|max:1000',
-            'designation' => 'required|string|max:100',
-            'aadhar_front' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:5120',
-            'aadhar_back' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:5120',
-        ]);
-
-        $data = $request->only(['name', 'phone', 'city', 'state', 'full_address', 'designation']);
-
-        if ($request->hasFile('aadhar_front')) {
-            $frontFile = $request->file('aadhar_front');
-            $frontName = 'branch_front_' . time() . '_' . rand(1000, 9999) . '.' . $frontFile->getClientOriginalExtension();
-            $data['aadhar_front'] = $frontFile->storeAs('branches', $frontName, 'public');
-        }
-
-        if ($request->hasFile('aadhar_back')) {
-            $backFile = $request->file('aadhar_back');
-            $backName = 'branch_back_' . time() . '_' . rand(1000, 9999) . '.' . $backFile->getClientOriginalExtension();
-            $data['aadhar_back'] = $backFile->storeAs('branches', $backName, 'public');
-        }
-
-        $branch = Branch::create($data);
-
-        return response()->json([
-            'success' => true,
-            'message' => "Branch {$branch->name} ({$branch->code}) created successfully!",
-            'branch' => $branch,
-        ]);
-    }
-
-    /**
-     * Show single branch details with full referral records, date filters, and analytics
-     */
-    public function showBranch(Request $request, $id)
-    {
-        $branch = Branch::findOrFail($id);
-
-        if ($request->wantsJson() && !$request->has('page') && !$request->has('filter_ajax')) {
-            return response()->json([
-                'success' => true,
-                'branch' => $branch,
-                'front_url' => $branch->aadhar_front_url,
-                'back_url' => $branch->aadhar_back_url,
-            ]);
-        }
-
-        // Filter Inputs
-        $startDate = $request->query('start_date');
-        $endDate = $request->query('end_date');
-        $dateType = $request->query('date_type', 'created_at'); // 'created_at' or 'first_amount_add_date'
-        $rechargeStatus = $request->query('recharge_status', 'all'); // 'all', 'recharged', 'pending'
-        $search = trim((string) $request->query('search', ''));
-        $quickRange = $request->query('quick_range', 'all');
-
-        // Apply quick range presets if dates not manually passed
-        if ($quickRange && $quickRange !== 'all' && empty($startDate) && empty($endDate)) {
-            $today = Carbon::today();
-            if ($quickRange === 'today') {
-                $startDate = $today->format('Y-m-d');
-                $endDate = $today->format('Y-m-d');
-            } elseif ($quickRange === 'yesterday') {
-                $startDate = $today->copy()->subDay()->format('Y-m-d');
-                $endDate = $today->copy()->subDay()->format('Y-m-d');
-            } elseif ($quickRange === 'this_week') {
-                $startDate = $today->copy()->startOfWeek()->format('Y-m-d');
-                $endDate = $today->copy()->endOfWeek()->format('Y-m-d');
-            } elseif ($quickRange === 'this_month') {
-                $startDate = $today->copy()->startOfMonth()->format('Y-m-d');
-                $endDate = $today->copy()->endOfMonth()->format('Y-m-d');
-            } elseif ($quickRange === 'last_month') {
-                $startDate = $today->copy()->subMonth()->startOfMonth()->format('Y-m-d');
-                $endDate = $today->copy()->subMonth()->endOfMonth()->format('Y-m-d');
-            } elseif ($quickRange === 'this_year') {
-                $startDate = $today->copy()->startOfYear()->format('Y-m-d');
-                $endDate = $today->copy()->endOfYear()->format('Y-m-d');
-            }
-        }
-
-        // Base query for referrals of this branch
-        $baseQuery = Referral::with(['candidate.photos', 'candidate.wallet', 'candidate.bluetick'])
-            ->where('branch_id', $branch->id);
-
-        // Filter by recharge status
-        if ($rechargeStatus === 'recharged') {
-            $baseQuery->where(function ($q) {
-                $q->where('first_wallet_recharge_amount', '>', 0)
-                  ->orWhereNotNull('first_amount_add_date');
-            });
-        } elseif ($rechargeStatus === 'pending') {
-            $baseQuery->where(function ($q) {
-                $q->where(function ($sq) {
-                    $sq->whereNull('first_wallet_recharge_amount')
-                       ->orWhere('first_wallet_recharge_amount', '<=', 0);
-                })->whereNull('first_amount_add_date');
-            });
-        }
-
-        // Filter by date
-        $targetDateCol = in_array($dateType, ['created_at', 'first_amount_add_date', 'updated_at']) ? $dateType : 'created_at';
-        if (!empty($startDate)) {
-            $baseQuery->whereDate($targetDateCol, '>=', $startDate);
-        }
-        if (!empty($endDate)) {
-            $baseQuery->whereDate($targetDateCol, '<=', $endDate);
-        }
-
-        // Search in candidate name, profile id, phone, email, city
-        if (!empty($search)) {
-            $baseQuery->whereHas('candidate', function ($q) use ($search) {
-                $q->where('first_name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('candidate_code', 'like', "%{$search}%")
-                  ->orWhere('profile_id', 'like', "%{$search}%")
-                  ->orWhere('mobile', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('city', 'like', "%{$search}%");
-            });
-        }
-
-        // Paginate results
-        $referrals = $baseQuery->latest('id')->paginate(15)->withQueryString();
-
-        // Overall Branch Referral Lifetime Stats (unfiltered)
-        $allReferralsQuery = Referral::where('branch_id', $branch->id);
-        $referralStats = [
-            'total_referred' => (clone $allReferralsQuery)->count(),
-            'total_recharged' => (clone $allReferralsQuery)->where(function($q) {
-                $q->where('first_wallet_recharge_amount', '>', 0)
-                  ->orWhereNotNull('first_amount_add_date');
-            })->count(),
-            'pending_recharge' => (clone $allReferralsQuery)->where(function($q) {
-                $q->where(function($sq) {
-                    $sq->whereNull('first_wallet_recharge_amount')
-                       ->orWhere('first_wallet_recharge_amount', '<=', 0);
-                })->whereNull('first_amount_add_date');
-            })->count(),
-            'total_first_recharge_revenue' => (clone $allReferralsQuery)->sum('first_wallet_recharge_amount'),
-        ];
-
-        // Filtered stats
-        $filteredStats = [
-            'count' => $referrals->total(),
-            'recharge_sum' => (clone $baseQuery)->sum('first_wallet_recharge_amount'),
-        ];
-
-        return view('admin.branch.show', compact(
-            'branch',
-            'referrals',
-            'referralStats',
-            'filteredStats',
-            'startDate',
-            'endDate',
-            'dateType',
-            'rechargeStatus',
-            'search',
-            'quickRange'
-        ));
-    }
-
-    /**
-     * Update an existing branch
-     */
-    public function updateBranch(Request $request, $id)
-    {
-        $branch = Branch::findOrFail($id);
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'city' => 'required|string|max:100',
-            'state' => 'required|string|max:100',
-            'full_address' => 'required|string|max:1000',
-            'designation' => 'required|string|max:100',
-            'aadhar_front' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:5120',
-            'aadhar_back' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:5120',
-        ]);
-
-        $data = $request->only(['name', 'phone', 'city', 'state', 'full_address', 'designation']);
-
-        if ($request->hasFile('aadhar_front')) {
-            if ($branch->aadhar_front && Storage::disk('public')->exists($branch->aadhar_front)) {
-                Storage::disk('public')->delete($branch->aadhar_front);
-            }
-            $frontFile = $request->file('aadhar_front');
-            $frontName = 'branch_front_' . time() . '_' . rand(1000, 9999) . '.' . $frontFile->getClientOriginalExtension();
-            $data['aadhar_front'] = $frontFile->storeAs('branches', $frontName, 'public');
-        }
-
-        if ($request->hasFile('aadhar_back')) {
-            if ($branch->aadhar_back && Storage::disk('public')->exists($branch->aadhar_back)) {
-                Storage::disk('public')->delete($branch->aadhar_back);
-            }
-            $backFile = $request->file('aadhar_back');
-            $backName = 'branch_back_' . time() . '_' . rand(1000, 9999) . '.' . $backFile->getClientOriginalExtension();
-            $data['aadhar_back'] = $backFile->storeAs('branches', $backName, 'public');
-        }
-
-        $branch->update($data);
-
-        if ($request->wantsJson() || $request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => "Branch {$branch->name} ({$branch->code}) updated successfully!",
-                'branch' => $branch,
-            ]);
-        }
-
-        return redirect()->route('admin.branches.show', $branch->id)->with('success', "Branch {$branch->name} ({$branch->code}) updated successfully!");
-    }
-
-    /**
-     * Toggle Branch Operational / Inactive Status
-     */
-    public function toggleBranchStatus(Request $request, $id)
-    {
-        $branch = Branch::findOrFail($id);
-        $branch->is_active = !$branch->is_active;
-        $branch->save();
-
-        $statusMsg = "Branch {$branch->name} is now " . ($branch->is_active ? 'Active (Operational)' : 'Inactive (Closed)') . '.';
-
-        if ($request->wantsJson() || $request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'is_active' => (bool) $branch->is_active,
-                'message' => $statusMsg,
-            ]);
-        }
-
-        return redirect()->back()->with('success', $statusMsg);
-    }
-
-    /**
-     * Delete branch record
-     */
-    public function destroyBranch(Request $request, $id)
-    {
-        $branch = Branch::findOrFail($id);
-        $name = $branch->name;
-        $code = $branch->code;
-
-        if ($branch->aadhar_front && Storage::disk('public')->exists($branch->aadhar_front)) {
-            Storage::disk('public')->delete($branch->aadhar_front);
-        }
-        if ($branch->aadhar_back && Storage::disk('public')->exists($branch->aadhar_back)) {
-            Storage::disk('public')->delete($branch->aadhar_back);
-        }
-
-        $branch->delete();
-
-        if ($request->wantsJson() || $request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => "Branch {$name} ({$code}) was deleted successfully.",
-            ]);
-        }
-
-        return redirect()->route('admin.branches.index')->with('success', "Branch {$name} ({$code}) was deleted successfully.");
     }
 
     /**

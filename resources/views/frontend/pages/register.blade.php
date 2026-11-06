@@ -358,6 +358,7 @@
                                     <input type="tel" x-ref="dobDay" x-model="formData.dob_day" 
                                            @input="handleDobDay($event)" 
                                            @keydown="handleDobKeydown($event, 'day')"
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                            placeholder="DD" maxlength="2" 
                                            class="w-full px-1 sm:px-2 py-2.5 sm:py-4 rounded-xl theme-input font-bold text-center text-lg sm:text-xl">
                                 </div>
@@ -367,6 +368,7 @@
                                     <input type="tel" x-ref="dobMonth" x-model="formData.dob_month" 
                                            @input="handleDobMonth($event)" 
                                            @keydown="handleDobKeydown($event, 'month')"
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                            placeholder="MM" maxlength="2" 
                                            class="w-full px-1 sm:px-2 py-2.5 sm:py-4 rounded-xl theme-input font-bold text-center text-lg sm:text-xl">
                                 </div>
@@ -376,6 +378,7 @@
                                     <input type="tel" x-ref="dobYear" x-model="formData.dob_year" 
                                            @input="handleDobYear($event)" 
                                            @keydown="handleDobKeydown($event, 'year')"
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                            placeholder="YYYY" maxlength="4" 
                                            class="w-full px-1 sm:px-2 py-2.5 sm:py-4 rounded-xl theme-input font-bold text-center text-lg sm:text-xl">
                                 </div>
@@ -501,7 +504,8 @@
 
                             <div>
                                 <label class="block text-xs sm:text-sm font-medium text-white/90 mb-1 sm:mb-1.5 ml-1">Pincode</label>
-                                <input type="text" name="pincode" x-model="formData.pincode" placeholder="e.g. 700016" maxlength="10"
+                                <input type="text" name="pincode" x-model="formData.pincode" placeholder="e.g. 700016" maxlength="6"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                     class="w-full px-4 py-2.5 sm:px-5 sm:py-3.5 rounded-xl theme-input text-sm sm:text-base"
                                     @input="formData.pincode = $event.target.value.replace(/[^0-9]/g, '')">
                             </div>

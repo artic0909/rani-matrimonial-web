@@ -307,20 +307,20 @@
             </a>
           </div>
 
-          <!-- KPA 8: Total Branches -->
+          <!-- KPA 8: Ground Partners (GP) & Executive Partners (EP) -->
           <div class="col-xl-3 col-lg-4 col-sm-6">
-            <a href="{{ route('admin.branches.index') }}" class="card card-clickable p-3 mb-0 h-100">
+            <a href="{{ route('admin.ground-partners.index') }}" class="card card-clickable p-3 mb-0 h-100">
               <div class="kpa-card-inner">
                 <div>
-                  <div class="kpa-stat-title">Regional Branches</div>
-                  <div class="kpa-stat-value">{{ number_format($totalBranches) }}</div>
+                  <div class="kpa-stat-title">Ground Partners (GP)</div>
+                  <div class="kpa-stat-value">{{ number_format($totalGroundPartners ?? 0) }}</div>
                 </div>
                 <div class="kpa-icon-box" style="background-color: rgba(15, 74, 50, 0.12); color: var(--brand-forest-medium);">
-                  <i class="bi bi-buildings-fill"></i>
+                  <i class="bi bi-geo-alt-fill"></i>
                 </div>
               </div>
               <div class="kpa-stat-footer">
-                <span>Franchise centers & offices</span>
+                <span>{{ number_format($totalExecutivePartners ?? 0) }} Executive Partners (EP)</span>
                 <i class="bi bi-arrow-right kpa-arrow-icon"></i>
               </div>
             </a>

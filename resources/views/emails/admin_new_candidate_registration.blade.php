@@ -292,61 +292,6 @@
                             @endif
                         </table>
                     </div>
-                @elseif(isset($branch) && $branch)
-                    <div class="branch-highlight-box">
-                        <div class="branch-highlight-title">
-                            🏢 Onboarded via Branch Franchise Referral
-                        </div>
-                        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                            <tr>
-                                <td style="width: 38%; color: #78350f; font-weight: 600; padding: 5px 0;">Branch Referral Code:</td>
-                                <td style="width: 62%; color: #3b0000; font-weight: 700; padding: 5px 0;">
-                                    <span class="branch-code-pill">{{ $branch->code }}</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="width: 38%; color: #78350f; font-weight: 600; padding: 5px 0;">Branch / Center Name:</td>
-                                <td style="width: 62%; color: #750000; font-weight: 800; padding: 5px 0;">
-                                    {{ $branch->name }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="width: 38%; color: #78350f; font-weight: 600; padding: 5px 0;">Manager & Designation:</td>
-                                <td style="width: 62%; color: #3b0000; font-weight: 600; padding: 5px 0;">
-                                    {{ $branch->designation ?? 'Branch Manager' }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="width: 38%; color: #78350f; font-weight: 600; padding: 5px 0;">Contact Mobile:</td>
-                                <td style="width: 62%; color: #750000; font-weight: 700; padding: 5px 0;">
-                                    <a href="tel:{{ $branch->phone }}" style="color: #750000; text-decoration: none; font-weight: 800;">
-                                        {{ $branch->phone }}
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="width: 38%; color: #78350f; font-weight: 600; padding: 5px 0;">Branch City / State:</td>
-                                <td style="width: 62%; color: #3b0000; font-weight: 600; padding: 5px 0;">
-                                    {{ $branch->city }}, {{ $branch->state }}
-                                </td>
-                            </tr>
-                            @if($branch->full_address)
-                            <tr>
-                                <td style="width: 38%; color: #78350f; font-weight: 600; padding: 5px 0;">Full Physical Address:</td>
-                                <td style="width: 62%; color: #4a0404; font-weight: 500; padding: 5px 0; white-space: pre-line;">
-                                    {{ $branch->full_address }}
-                                </td>
-                            </tr>
-                            @endif
-                            <tr>
-                                <td colspan="2" style="padding-top: 12px;">
-                                    <a href="{{ url('/admin/branches/' . $branch->id) }}" style="color: #750000; font-weight: 800; font-size: 12px; text-decoration: underline;">
-                                        View Branch Referral Register & Analytics →
-                                    </a>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
                 @endif
 
                 <!-- 1. Primary Contact & Personal Details -->
@@ -490,10 +435,10 @@
                     <tr>
                         <td class="info-label">Registration Mode:</td>
                         <td class="info-val">
-                            @if($branch)
-                                <strong style="color: #750000;">Branch Franchise: {{ $branch->name }} ({{ $branch->code }})</strong>
+                            @if(isset($groundPartner) && $groundPartner)
+                                <strong style="color: #750000;">Ground Partner (GP): {{ $groundPartner->name }} ({{ $groundPartner->code }})</strong>
                             @else
-                                <span style="color: #78350f; font-weight: 600;">Direct Website Registration</span>
+                                <span style="color: #78350f; font-weight: 600;">Direct Registration</span>
                             @endif
                         </td>
                     </tr>

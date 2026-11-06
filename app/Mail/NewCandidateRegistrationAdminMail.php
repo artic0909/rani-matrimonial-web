@@ -2,7 +2,6 @@
 
 namespace App\Mail;
 
-use App\Models\Branch;
 use App\Models\Candidate;
 use App\Models\GroundPartner;
 use Illuminate\Bus\Queueable;
@@ -17,16 +16,14 @@ class NewCandidateRegistrationAdminMail extends Mailable
 
     public Candidate $candidate;
     public ?GroundPartner $groundPartner;
-    public ?Branch $branch;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Candidate $candidate, ?GroundPartner $groundPartner = null, ?Branch $branch = null)
+    public function __construct(Candidate $candidate, ?GroundPartner $groundPartner = null)
     {
         $this->candidate = $candidate;
         $this->groundPartner = $groundPartner;
-        $this->branch = $branch;
     }
 
     /**
@@ -36,7 +33,7 @@ class NewCandidateRegistrationAdminMail extends Mailable
     {
         $code = $this->candidate->display_code ?? ('RM' . str_pad((string)$this->candidate->id, 5, '0', STR_PAD_LEFT));
         $name = trim(($this->candidate->first_name ?? '') . ' ' . ($this->candidate->last_name ?? ''));
-        $partnerTag = $this->groundPartner ? " [GP: {$this->groundPartner->code}]" : ($this->branch ? " [Branch: {$this->branch->code}]" : "");
+        $partnerTag = $this->groundPartner ? " [GP: {$this->groundPartner->code}]" : "";
 
         return new Envelope(
             subject: "🔔 New Registration Alert: {$name} ({$code}){$partnerTag} - Rani Matrimonial",

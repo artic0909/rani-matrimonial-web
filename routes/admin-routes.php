@@ -16,14 +16,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('auth:admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
-        // Main Modules: Candidates, Transactions, Branches, Blue Ticks
+        // Main Modules: Candidates, Transactions, EP & GP Partners, Blue Ticks
         Route::get('/candidates', [AdminController::class, 'candidates'])->name('candidates.index');
         Route::get('/candidates/{id}', [AdminController::class, 'candidateDetails'])->name('candidates.show');
         Route::post('/candidates/{id}/toggle-status', [AdminController::class, 'toggleCandidateStatus'])->name('candidates.toggle-status');
         Route::get('/transactions', [AdminController::class, 'transactions'])->name('transactions.index');
         Route::get('/transactions/{id}/receipt', [AdminController::class, 'downloadTransactionReceipt'])->name('transactions.receipt');
-        // Deprecated Branches -> Redirect to Executive Partners
-        Route::redirect('/branches', '/admin/executive-partners');
 
         // Executive Partners (EP) Management
         Route::get('/executive-partners', [ExecutivePartnerController::class, 'index'])->name('executive-partners.index');
