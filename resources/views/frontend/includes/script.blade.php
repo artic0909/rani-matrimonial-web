@@ -23,13 +23,13 @@
 
 // Photo Privacy Verification Engine
 window.RaniPhotoPrivacy = {
-    currentCandidate: @json(Auth::check() ? [
+    currentCandidate: {!! json_encode(Auth::check() ? [
         'id' => Auth::id(),
         'candidate_code' => Auth::user()->candidate_code ?? null,
         'profile_id' => Auth::user()->profile_id ?? null,
         'is_bluetick_verified' => (bool)(Auth::user()->is_bluetick_verified ?? false),
         'selfie_verified' => (bool)(Auth::user()->selfie_verified ?? false),
-    ] : null),
+    ] : null) !!},
 
     shouldBlurProfilePhoto: function(targetCandidate) {
         if (!targetCandidate) return false;
