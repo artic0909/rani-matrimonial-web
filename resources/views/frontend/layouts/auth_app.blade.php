@@ -25,6 +25,9 @@
             border-radius: 18px !important;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
         }
+        .rani-swal-popup .swal2-html-container {
+            color: #f8fafc !important;
+        }
         .rani-swal-title {
             color: #D4AF37 !important;
             font-family: 'Playfair Display', serif !important;

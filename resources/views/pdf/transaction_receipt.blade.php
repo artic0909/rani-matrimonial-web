@@ -456,7 +456,7 @@
                             <div style="font-size: 7.5pt; color: #777777; margin-top: 2pt;">Transaction Ref: #{{ $transaction->transaction_id }}</div>
                         @endif
                     </td>
-                    <td style="text-align: center; color: #555555;">998311</td>
+                    <td style="text-align: center; color: #555555;">999359</td>
                     <td style="text-align: center;">1</td>
                     <td style="text-align: right; font-weight: bold; color: #111111;">
                         <span class="rupee">&#8377;</span> {{ number_format($baseAmount, 2) }}
@@ -468,7 +468,7 @@
                         <strong>Platform Fee (2%)</strong>
                         <div style="font-size: 7.5pt; color: #777777; margin-top: 2pt;">Payment gateway and digital platform processing charges</div>
                     </td>
-                    <td style="text-align: center; color: #555555;">998311</td>
+                    <td style="text-align: center; color: #555555;">998315</td>
                     <td style="text-align: center;">1</td>
                     <td style="text-align: right; font-weight: bold; color: #111111;">
                         <span class="rupee">&#8377;</span> {{ number_format($platformFee, 2) }}

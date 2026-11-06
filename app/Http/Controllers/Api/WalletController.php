@@ -429,6 +429,13 @@ class WalletController extends Controller
         $amount = (float) $request->amount;
         $amountInPaise = (int) round($amount * 100);
 
+        $baseAmount = $request->filled('base_amount') 
+            ? (float) $request->base_amount 
+            : round($amount / 1.02, 2);
+        $platformFee = $request->filled('platform_fee') 
+            ? (float) $request->platform_fee 
+            : round($amount - $baseAmount, 2);
+
         $key = config('services.razorpay.key') ?: env('RAZORPAY_KEY');
         $secret = config('services.razorpay.secret') ?: env('RAZORPAY_SECRET');
 
@@ -451,8 +458,14 @@ class WalletController extends Controller
                     'candidate_id' => (string) $candidate->id,
                     'candidate_code' => $candidate->display_code,
                     'purpose' => 'Wallet Recharge',
+                    'base_amount' => (string) $baseAmount,
+                    'platform_fee' => (string) $platformFee,
                 ],
             ]);
+
+            $description = $platformFee > 0 
+                ? 'Royal Wallet Top-up (₹' . number_format($baseAmount, 2) . ' + 2% Fee: ₹' . number_format($platformFee, 2) . ')'
+                : 'Royal Wallet Top-up (₹' . number_format($amount, 2) . ')';
 
             return response()->json([
                 'success' => true,
@@ -461,7 +474,7 @@ class WalletController extends Controller
                 'amount' => $order['amount'],
                 'currency' => $order['currency'] ?? 'INR',
                 'name' => 'Rani Matrimonial',
-                'description' => 'Royal Wallet Top-up (₹' . number_format($amount, 2) . ')',
+                'description' => $description,
                 'prefill' => [
                     'name' => trim(($candidate->first_name ?? '') . ' ' . ($candidate->last_name ?? '')),
                     'contact' => $candidate->phone ?? ($candidate->mobile ?? ''),

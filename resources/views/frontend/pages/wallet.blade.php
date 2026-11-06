@@ -334,12 +334,12 @@
 
             <!-- Predefined Amount Pills -->
             <div class="space-y-1.5 sm:space-y-2">
-                <label class="text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Select Amount (INR)</label>
+                <label class="text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-wider">Select Royal Pack (INR)</label>
                 <div class="grid grid-cols-4 gap-1.5 sm:gap-2">
-                    <button type="button" @click="rechargeAmount = 200" :class="rechargeAmount === 200 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-xs' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl border text-[11px] sm:text-xs font-semibold transition-all">₹ 200</button>
                     <button type="button" @click="rechargeAmount = 500" :class="rechargeAmount === 500 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-xs' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl border text-[11px] sm:text-xs font-semibold transition-all">₹ 500</button>
                     <button type="button" @click="rechargeAmount = 1000" :class="rechargeAmount === 1000 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-xs' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl border text-[11px] sm:text-xs font-semibold transition-all">₹ 1,000</button>
                     <button type="button" @click="rechargeAmount = 2500" :class="rechargeAmount === 2500 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-xs' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl border text-[11px] sm:text-xs font-semibold transition-all">₹ 2,500</button>
+                    <button type="button" @click="rechargeAmount = 5000" :class="rechargeAmount === 5000 ? 'bg-rani-primary text-white font-bold border-rani-primary shadow-xs' : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'" class="py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl border text-[11px] sm:text-xs font-semibold transition-all">₹ 5,000</button>
                 </div>
             </div>
 
@@ -355,7 +355,40 @@
                            placeholder="500" 
                            class="w-full pl-8 sm:pl-9 pr-3 sm:pr-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rani-gold text-sm sm:text-base font-bold text-gray-800">
                 </div>
-                <p class="text-[10px] sm:text-[11px] text-gray-400">Min: ₹ 1 | Max: ₹ 1,00,000</p>
+                <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-gray-400">
+                    <span>Min: ₹ 1 | Max: ₹ 1,00,000</span>
+                    <div class="flex items-center gap-1">
+                        <button type="button" @click="rechargeAmount = (Number(rechargeAmount) || 0) + 100" class="px-1.5 py-0.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold transition-colors">+₹100</button>
+                        <button type="button" @click="rechargeAmount = (Number(rechargeAmount) || 0) + 200" class="px-1.5 py-0.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold transition-colors">+₹200</button>
+                        <button type="button" @click="rechargeAmount = (Number(rechargeAmount) || 0) + 500" class="px-1.5 py-0.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold transition-colors">+₹500</button>
+                        <button type="button" @click="rechargeAmount = (Number(rechargeAmount) || 0) + 1000" class="px-1.5 py-0.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold transition-colors">+₹1000</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transparent 2% Platform Fee & Total Payable Breakdown -->
+            <div x-show="rechargeAmount && rechargeAmount > 0" class="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-2">
+                <div class="flex items-center justify-between text-xs sm:text-sm text-gray-700">
+                    <span class="font-medium">Topup Amount:</span>
+                    <span class="font-bold text-gray-900" x-text="'₹ ' + Number(rechargeAmount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>
+                </div>
+                <div class="flex items-center justify-between text-xs sm:text-sm text-amber-900">
+                    <span class="font-medium flex items-center gap-1.5">
+                        <span>Platform Fee (2%):</span>
+                        <span class="text-[10px] bg-amber-200/90 text-amber-950 px-1.5 py-0.5 rounded font-bold">+2%</span>
+                    </span>
+                    <span class="font-bold text-amber-950" x-text="'+ ₹ ' + getPlatformFee().toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>
+                </div>
+                <div class="pt-2 border-t border-amber-200/90 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs sm:text-sm font-extrabold text-rani-primary-dark">Total Payable Amount:</span>
+                        <p class="text-[10px] text-emerald-700 font-semibold flex items-center gap-1 mt-0.5">
+                            <svg class="w-3.5 h-3.5 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            <span>100% of ₹<span x-text="getTotalPayable().toFixed(2)"></span> will be added to wallet</span>
+                        </p>
+                    </div>
+                    <span class="text-sm sm:text-base font-extrabold text-rani-primary font-serif" x-text="'₹ ' + getTotalPayable().toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>
+                </div>
             </div>
 
             <!-- Razorpay Gateway Info Banner -->
@@ -380,7 +413,7 @@
                         class="w-full py-2.5 sm:py-3.5 rounded-lg sm:rounded-xl bg-gradient-to-r from-rani-primary to-rani-primary-dark hover:from-rani-primary-dark hover:to-rani-primary text-white font-bold text-xs sm:text-sm shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50">
                     <span x-show="!isProcessingRecharge" class="flex items-center gap-1.5 sm:gap-2">
                         <span>Pay</span>
-                        <span x-text="'₹ ' + Number(rechargeAmount || 0).toLocaleString('en-IN')"></span>
+                        <span x-text="'₹ ' + getTotalPayable().toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>
                         <span>via Razorpay</span>
                         <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </span>
@@ -516,6 +549,18 @@ function walletManager(initialData) {
             return '₹ ' + val.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         },
 
+        getPlatformFee() {
+            const base = parseFloat(this.rechargeAmount || 0);
+            if (isNaN(base) || base <= 0) return 0;
+            return Math.round((base * 0.02) * 100) / 100;
+        },
+
+        getTotalPayable() {
+            const base = parseFloat(this.rechargeAmount || 0);
+            if (isNaN(base) || base <= 0) return 0;
+            return Math.round((base + this.getPlatformFee()) * 100) / 100;
+        },
+
         formatDate(dateStr) {
             if (!dateStr) return '';
             try {
@@ -549,8 +594,8 @@ function walletManager(initialData) {
         },
 
         async submitRecharge() {
-            const amount = parseFloat(this.rechargeAmount);
-            if (isNaN(amount) || amount < 1) {
+            const baseAmount = parseFloat(this.rechargeAmount);
+            if (isNaN(baseAmount) || baseAmount < 1) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Invalid Amount',
@@ -559,6 +604,9 @@ function walletManager(initialData) {
                 });
                 return;
             }
+
+            const platformFee = this.getPlatformFee();
+            const totalAmount = this.getTotalPayable();
 
             this.isProcessingRecharge = true;
 
@@ -572,7 +620,9 @@ function walletManager(initialData) {
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        amount: amount
+                        amount: totalAmount,
+                        base_amount: baseAmount,
+                        platform_fee: platformFee
                     })
                 });
 
@@ -596,7 +646,7 @@ function walletManager(initialData) {
                     amount: orderData.amount,
                     currency: orderData.currency || 'INR',
                     name: orderData.name || 'Rani Matrimonial',
-                    description: orderData.description || ('Wallet Top-up - ₹' + amount),
+                    description: orderData.description || ('Wallet Top-up: ₹' + baseAmount + ' + 2% Platform Fee: ₹' + platformFee),
                     image: '{{ asset("logo.png") }}',
                     order_id: orderData.order_id,
                     prefill: {
@@ -627,7 +677,9 @@ function walletManager(initialData) {
                                     razorpay_payment_id: response.razorpay_payment_id,
                                     razorpay_order_id: response.razorpay_order_id,
                                     razorpay_signature: response.razorpay_signature,
-                                    amount: amount
+                                    amount: totalAmount,
+                                    base_amount: baseAmount,
+                                    platform_fee: platformFee
                                 })
                             });
 
@@ -645,7 +697,10 @@ function walletManager(initialData) {
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Payment Successful!',
-                                    text: verifyData.message || 'Money has been successfully credited to your Royal Wallet.',
+                                    html: '<div class="space-y-2 text-center text-white py-1">' +
+                                          '<p class="text-base text-white leading-relaxed"><span class="text-[#f5d061] font-bold text-lg">₹' + Number(totalAmount).toLocaleString("en-IN", {minimumFractionDigits: 2}) + '</span> has been added to your Royal Wallet.</p>' +
+                                          '<div class="pt-1"><span class="text-xs text-amber-200/95 bg-black/30 rounded-full py-1.5 px-4 inline-block border border-amber-500/30">Topup: ₹' + Number(baseAmount).toLocaleString("en-IN", {minimumFractionDigits: 2}) + ' &bull; 2% Platform Fee: ₹' + Number(platformFee).toLocaleString("en-IN", {minimumFractionDigits: 2}) + '</span></div>' +
+                                          '</div>',
                                     customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
                                 }).then(() => {
                                     window.location.reload();
