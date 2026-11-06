@@ -694,6 +694,28 @@ class AuthController extends Controller
             'selfie_data' => 'nullable|string',
         ]);
 
+        // Validate Referral Code if provided
+        $groundPartner = null;
+        if (!empty($validated['referral_code'])) {
+            $rawCode = trim((string) $validated['referral_code']);
+            $groundPartner = GroundPartner::where('status', 'active')
+                ->where(function ($q) use ($rawCode) {
+                    $q->whereRaw('LOWER(code) = ?', [strtolower($rawCode)])
+                      ->orWhere('id', is_numeric($rawCode) ? (int) $rawCode : 0);
+                })
+                ->first();
+
+            if (! $groundPartner) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You put a wrong GP code. Please enter a valid Ground Partner Code or leave it blank.',
+                    'errors' => [
+                        'referral_code' => ['You put a wrong GP code. Please enter a valid Ground Partner Code or leave it blank.']
+                    ]
+                ], 422);
+            }
+        }
+
         $mobile = $this->cleanMobile($validated['mobile']);
         $validated['mobile'] = $mobile;
 
@@ -789,31 +811,20 @@ class AuthController extends Controller
         }
 
         // Process Optional Ground Partner (GP) Referral Code
-        $groundPartner = null;
-        if ($request->filled('referral_code')) {
-            $rawCode = trim((string) $request->input('referral_code'));
-            $groundPartner = GroundPartner::where('status', 'active')
-                ->where(function ($q) use ($rawCode) {
-                    $q->whereRaw('LOWER(code) = ?', [strtolower($rawCode)])
-                      ->orWhere('id', is_numeric($rawCode) ? (int) $rawCode : 0);
-                })
-                ->first();
-
-            if ($groundPartner) {
-                GpReferral::firstOrCreate(
-                    [
-                        'candidate_id' => $candidate->id,
-                        'gp_id' => $groundPartner->id,
-                    ],
-                    [
-                        'payment_id' => null,
-                        'amount' => 0.00,
-                        'payment_status' => 'pending',
-                        'register_date' => now(),
-                        'payment_date' => null,
-                    ]
-                );
-            }
+        if ($groundPartner) {
+            GpReferral::firstOrCreate(
+                [
+                    'candidate_id' => $candidate->id,
+                    'gp_id' => $groundPartner->id,
+                ],
+                [
+                    'payment_id' => null,
+                    'amount' => 0.00,
+                    'payment_status' => 'pending',
+                    'register_date' => now(),
+                    'payment_date' => null,
+                ]
+            );
         }
 
         // Welcome WhatsApp Message

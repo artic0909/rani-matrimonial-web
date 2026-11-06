@@ -33,6 +33,7 @@ Route::post('/help-center/submit', [HelpSupportController::class, 'submitHelp'])
 // Search Routes (Available for both authenticated candidates and visitors)
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 Route::post('/api/search/filter', [SearchController::class, 'filter'])->name('search.filter');
+Route::get('/api/verify-gp-code', [AuthController::class, 'verifyGpCode'])->name('verify.gp.code');
 
 // Legal & Compliance Pages (SUmatra Sales Private Limited / Rani Matrimonial)
 Route::get('/privacy-policy', function () {

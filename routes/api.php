@@ -26,6 +26,7 @@ Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.o
 Route::post('/check-user-exists', [AuthController::class, 'checkUserExists'])->name('check.user.exists');
 
 // Registration Flows
+Route::get('/verify-gp-code', [\App\Http\Controllers\AuthController::class, 'verifyGpCode'])->name('api.verify.gp.code');
 Route::post('/send-registration-otp', [AuthController::class, 'sendRegistrationOtp'])->name('send.registration.otp');
 Route::post('/verify-registration-otp', [AuthController::class, 'verifyRegistrationOtp'])->name('verify.registration.otp');
 Route::post('/send-selfie-link', [AuthController::class, 'sendSelfieLink'])->name('send.selfie.link');

@@ -797,16 +797,64 @@
                         </div>
 
                         <!-- Optional Ground Partner Referral Code -->
-                        <div class="mt-3.5 sm:mt-6 p-3 sm:p-4 bg-white/10 border border-rani-gold/40 rounded-xl sm:rounded-2xl backdrop-blur-sm">
-                            <label class="block text-xs sm:text-sm font-semibold text-white mb-1 sm:mb-1.5">
-                                Referral Code <span class="text-[10px] sm:text-xs text-white/70 font-normal">(Optional)</span>
-                            </label>
-                            <input type="text" 
-                                   x-model="formData.referral_code" 
-                                   placeholder="Enter Ground Partner Code (e.g. GP001)" 
-                                   class="w-full theme-input py-2 px-3 sm:py-3 sm:px-4 rounded-xl font-mono uppercase tracking-wider text-sm sm:text-base"
-                                   maxlength="30">
-                            <p class="text-[10px] sm:text-xs text-white/60 mt-1 sm:mt-1.5">If you were assisted or referred by a Ground Partner (GP), please enter their partner code.</p>
+                        <div class="mt-3.5 sm:mt-6 p-3.5 sm:p-4.5 bg-white/10 border rounded-xl sm:rounded-2xl backdrop-blur-sm transition-all duration-300"
+                             :class="{
+                                 'border-rani-gold/40': !gpValidationState,
+                                 'border-emerald-400/80 bg-emerald-950/20': gpValidationState === 'valid',
+                                 'border-red-400/80 bg-red-950/20': gpValidationState === 'invalid'
+                             }">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block text-xs sm:text-sm font-semibold text-white">
+                                    Referral Code <span class="text-[10px] sm:text-xs text-white/70 font-normal">(Optional)</span>
+                                </label>
+                                <span x-show="isCheckingGp" class="text-[11px] text-rani-gold flex items-center gap-1 font-medium" style="display: none;">
+                                    <svg class="animate-spin h-3.5 w-3.5 text-rani-gold" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                    Verifying code...
+                                </span>
+                            </div>
+
+                            <div class="relative">
+                                <input type="text" 
+                                       x-model="formData.referral_code" 
+                                       @input.debounce.600ms="checkGpCode(false)"
+                                       @blur="checkGpCode(true)"
+                                       placeholder="Enter Ground Partner Code (e.g. GP001)" 
+                                       class="w-full theme-input py-2 px-3 sm:py-3 sm:px-4 rounded-xl font-mono uppercase tracking-wider text-sm sm:text-base pr-10 transition-colors"
+                                       :class="{
+                                           'border-emerald-400 focus:border-emerald-400 focus:ring-emerald-400/30': gpValidationState === 'valid',
+                                           'border-red-400 focus:border-red-400 focus:ring-red-400/30': gpValidationState === 'invalid'
+                                       }"
+                                       maxlength="30">
+                                
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <template x-if="gpValidationState === 'valid'">
+                                        <svg class="h-5 w-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </template>
+                                    <template x-if="gpValidationState === 'invalid'">
+                                        <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <template x-if="gpValidationState === 'valid'">
+                                <div class="mt-2 flex items-center gap-1.5 text-xs text-emerald-300 font-medium bg-emerald-900/40 border border-emerald-500/30 px-3 py-1.5 rounded-lg">
+                                    <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                    <span x-text="gpValidationMessage"></span>
+                                </div>
+                            </template>
+                            <template x-if="gpValidationState === 'invalid'">
+                                <div class="mt-2 flex items-center gap-1.5 text-xs text-red-300 font-medium bg-red-900/40 border border-red-500/30 px-3 py-1.5 rounded-lg">
+                                    <svg class="w-4 h-4 text-red-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                    <span x-text="gpValidationMessage"></span>
+                                </div>
+                            </template>
+                            <template x-if="!gpValidationState">
+                                <p class="text-[10px] sm:text-xs text-white/60 mt-1 sm:mt-1.5">If you were assisted or referred by a Ground Partner (GP), please enter their partner code.</p>
+                            </template>
                         </div>
                         
                         <div class="mt-4 pt-3 sm:mt-8 sm:pt-6 border-t border-white/20">
@@ -863,6 +911,10 @@
             isVerifyingOtp: false,
             isSelfieVerified: false,
             isSubmitting: false,
+            isCheckingGp: false,
+            gpValidationState: null,
+            gpValidationMessage: '',
+            lastCheckedGpCode: '',
 
             onReligionChange() {
                 this.formData.community = '';
@@ -1331,12 +1383,75 @@
                     this.showError("Error sending link. Please try again.");
                 });
             },
-            submitForm(e) {
+            async checkGpCode(showAlertOnInvalid = false) {
+                const raw = (this.formData.referral_code || '').trim();
+                if (!raw) {
+                    this.gpValidationState = null;
+                    this.gpValidationMessage = '';
+                    this.lastCheckedGpCode = '';
+                    return true;
+                }
+
+                // If already checked this exact code and state is known
+                if (raw.toUpperCase() === (this.lastCheckedGpCode || '').toUpperCase() && this.gpValidationState !== null) {
+                    if (this.gpValidationState === 'invalid' && showAlertOnInvalid) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid GP Code',
+                            text: 'You put a wrong GP code. Please enter a valid Ground Partner Code or leave it blank.',
+                            confirmButtonText: 'OK',
+                            customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                        });
+                    }
+                    return this.gpValidationState === 'valid';
+                }
+
+                this.isCheckingGp = true;
+                try {
+                    const res = await fetch(`/api/verify-gp-code?code=${encodeURIComponent(raw)}`, {
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    const data = await res.json();
+                    this.isCheckingGp = false;
+                    this.lastCheckedGpCode = raw.toUpperCase();
+
+                    if (data.valid) {
+                        this.gpValidationState = 'valid';
+                        this.gpValidationMessage = data.message || `Partner Verified: ${data.gp.name} (${data.gp.code})`;
+                        return true;
+                    } else {
+                        this.gpValidationState = 'invalid';
+                        this.gpValidationMessage = data.message || 'You put a wrong GP code.';
+                        if (showAlertOnInvalid) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Invalid GP Code',
+                                text: 'You put a wrong GP code. Please enter a valid Ground Partner Code or leave it blank.',
+                                confirmButtonText: 'OK',
+                                customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                            });
+                        }
+                        return false;
+                    }
+                } catch (e) {
+                    this.isCheckingGp = false;
+                    return false;
+                }
+            },
+            async submitForm(e) {
                 if(this.isSubmitting) return;
 
                 if (!this.isSelfieVerified) {
                     this.showError("Please complete the Live Selfie Verification to register.");
                     return;
+                }
+
+                // Immediate check if a GP referral code was typed
+                if (this.formData.referral_code && this.formData.referral_code.trim()) {
+                    const isValidGp = await this.checkGpCode(true);
+                    if (!isValidGp) {
+                        return;
+                    }
                 }
 
                 this.isSubmitting = true;
@@ -1374,9 +1489,16 @@
                 fetch(form.action, {
                     method: 'POST',
                     body: fd,
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (response.status === 422) {
+                        return response.json().then(data => {
+                            throw data;
+                        });
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     this.isSubmitting = false;
                     if(data.success && data.redirect) {
@@ -1387,7 +1509,19 @@
                 })
                 .catch(error => {
                     this.isSubmitting = false;
-                    this.showError('An error occurred. Please try again.');
+                    if (error && error.errors && error.errors.referral_code) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Invalid GP Code',
+                            text: error.errors.referral_code[0] || 'You put a wrong GP code. Please enter a valid Ground Partner Code or leave it blank.',
+                            confirmButtonText: 'OK',
+                            customClass: { popup: 'rani-swal-popup', title: 'rani-swal-title', confirmButton: 'rani-swal-confirm' }
+                        });
+                    } else if (error && error.message) {
+                        this.showError(error.message);
+                    } else {
+                        this.showError('An error occurred. Please try again.');
+                    }
                 });
             }
         }

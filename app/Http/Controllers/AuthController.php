@@ -358,6 +358,48 @@ class AuthController extends Controller
         return response()->json(['success' => false]);
     }
 
+    /**
+     * Real-time verification of Ground Partner (GP) referral code
+     */
+    public function verifyGpCode(Request $request)
+    {
+        $code = trim((string) $request->query('code', $request->input('code', '')));
+
+        if (empty($code)) {
+            return response()->json([
+                'success' => false,
+                'valid' => false,
+                'message' => 'Please enter a GP code.',
+            ]);
+        }
+
+        $gp = GroundPartner::where('status', 'active')
+            ->where(function ($q) use ($code) {
+                $q->whereRaw('LOWER(code) = ?', [strtolower($code)])
+                  ->orWhere('id', is_numeric($code) ? (int) $code : 0);
+            })
+            ->first();
+
+        if ($gp) {
+            return response()->json([
+                'success' => true,
+                'valid' => true,
+                'message' => "Valid Ground Partner: {$gp->name} ({$gp->code})",
+                'gp' => [
+                    'id' => $gp->id,
+                    'name' => $gp->name,
+                    'code' => $gp->code,
+                ],
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'valid' => false,
+            'message' => 'You put a wrong GP code. Please enter a valid Ground Partner Code or leave it blank.',
+        ]);
+    }
+
     // Register Step 1 (Modal form submission)
     public function showRegister()
     {
@@ -435,6 +477,28 @@ class AuthController extends Controller
             'selfie_image' => 'nullable',
             'selfie_data' => 'nullable|string',
         ]);
+
+        // Validate Referral Code if provided
+        $groundPartner = null;
+        if (!empty($validated['referral_code'])) {
+            $rawCode = trim((string) $validated['referral_code']);
+            $groundPartner = GroundPartner::where('status', 'active')
+                ->where(function ($q) use ($rawCode) {
+                    $q->whereRaw('LOWER(code) = ?', [strtolower($rawCode)])
+                      ->orWhere('id', is_numeric($rawCode) ? (int) $rawCode : 0);
+                })
+                ->first();
+
+            if (! $groundPartner) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You put a wrong GP code. Please enter a valid Ground Partner Code or leave it blank.',
+                    'errors' => [
+                        'referral_code' => ['You put a wrong GP code. Please enter a valid Ground Partner Code or leave it blank.']
+                    ]
+                ], 422);
+            }
+        }
 
         // Parse hobbies_interests if passed as JSON string
         if (isset($validated['hobbies_interests']) && is_string($validated['hobbies_interests'])) {
@@ -528,31 +592,20 @@ class AuthController extends Controller
         }
 
         // Process Optional Ground Partner (GP) Referral Code
-        $groundPartner = null;
-        if ($request->filled('referral_code')) {
-            $rawCode = trim((string) $request->input('referral_code'));
-            $groundPartner = GroundPartner::where('status', 'active')
-                ->where(function ($q) use ($rawCode) {
-                    $q->whereRaw('LOWER(code) = ?', [strtolower($rawCode)])
-                      ->orWhere('id', is_numeric($rawCode) ? (int) $rawCode : 0);
-                })
-                ->first();
-
-            if ($groundPartner) {
-                GpReferral::firstOrCreate(
-                    [
-                        'candidate_id' => $candidate->id,
-                        'gp_id' => $groundPartner->id,
-                    ],
-                    [
-                        'payment_id' => null,
-                        'amount' => 0.00,
-                        'payment_status' => 'pending',
-                        'register_date' => now(),
-                        'payment_date' => null,
-                    ]
-                );
-            }
+        if ($groundPartner) {
+            GpReferral::firstOrCreate(
+                [
+                    'candidate_id' => $candidate->id,
+                    'gp_id' => $groundPartner->id,
+                ],
+                [
+                    'payment_id' => null,
+                    'amount' => 0.00,
+                    'payment_status' => 'pending',
+                    'register_date' => now(),
+                    'payment_date' => null,
+                ]
+            );
         }
 
         // Clear selfie & registration cache
