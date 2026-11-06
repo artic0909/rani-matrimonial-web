@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\Branch;
 use App\Models\Candidate;
+use App\Models\GroundPartner;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -15,14 +16,16 @@ class NewCandidateRegistrationAdminMail extends Mailable
     use Queueable, SerializesModels;
 
     public Candidate $candidate;
+    public ?GroundPartner $groundPartner;
     public ?Branch $branch;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Candidate $candidate, ?Branch $branch = null)
+    public function __construct(Candidate $candidate, ?GroundPartner $groundPartner = null, ?Branch $branch = null)
     {
         $this->candidate = $candidate;
+        $this->groundPartner = $groundPartner;
         $this->branch = $branch;
     }
 
@@ -33,10 +36,10 @@ class NewCandidateRegistrationAdminMail extends Mailable
     {
         $code = $this->candidate->display_code ?? ('RM' . str_pad((string)$this->candidate->id, 5, '0', STR_PAD_LEFT));
         $name = trim(($this->candidate->first_name ?? '') . ' ' . ($this->candidate->last_name ?? ''));
-        $branchTag = $this->branch ? " [Branch: {$this->branch->code}]" : "";
+        $partnerTag = $this->groundPartner ? " [GP: {$this->groundPartner->code}]" : ($this->branch ? " [Branch: {$this->branch->code}]" : "");
 
         return new Envelope(
-            subject: "🔔 New Registration Alert: {$name} ({$code}){$branchTag} - Rani Matrimonial",
+            subject: "🔔 New Registration Alert: {$name} ({$code}){$partnerTag} - Rani Matrimonial",
         );
     }
 
@@ -52,6 +55,8 @@ class NewCandidateRegistrationAdminMail extends Mailable
 
     /**
      * Get the attachments for the message.
+     *
+     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
     public function attachments(): array
     {

@@ -257,8 +257,42 @@
                     </div>
                 </div>
 
-                <!-- SPECIAL BRANCH REFERRAL DETAILS (If Candidate Registered via Branch Referral Code) -->
-                @if($branch)
+                <!-- SPECIAL GROUND PARTNER OR BRANCH REFERRAL DETAILS -->
+                @if(isset($groundPartner) && $groundPartner)
+                    <div class="branch-highlight-box">
+                        <div class="branch-highlight-title">
+                            🤝 Onboarded via Ground Partner (GP) Referral
+                        </div>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                            <tr>
+                                <td style="width: 38%; color: #78350f; font-weight: 600; padding: 5px 0;">GP Referral Code:</td>
+                                <td style="width: 62%; color: #3b0000; font-weight: 700; padding: 5px 0;">
+                                    <span class="branch-code-pill">{{ $groundPartner->code }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 38%; color: #78350f; font-weight: 600; padding: 5px 0;">Ground Partner Name:</td>
+                                <td style="width: 62%; color: #750000; font-weight: 800; padding: 5px 0;">
+                                    {{ $groundPartner->name }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 38%; color: #78350f; font-weight: 600; padding: 5px 0;">Mobile Number:</td>
+                                <td style="width: 62%; color: #3b0000; font-weight: 600; padding: 5px 0;">
+                                    {{ $groundPartner->mobile }}
+                                </td>
+                            </tr>
+                            @if($groundPartner->executivePartner)
+                            <tr>
+                                <td style="width: 38%; color: #78350f; font-weight: 600; padding: 5px 0;">Executive Partner (EP):</td>
+                                <td style="width: 62%; color: #3b0000; font-weight: 700; padding: 5px 0;">
+                                    {{ $groundPartner->executivePartner->name }} ({{ $groundPartner->executivePartner->code }})
+                                </td>
+                            </tr>
+                            @endif
+                        </table>
+                    </div>
+                @elseif(isset($branch) && $branch)
                     <div class="branch-highlight-box">
                         <div class="branch-highlight-title">
                             🏢 Onboarded via Branch Franchise Referral

@@ -65,11 +65,11 @@
       <div class="card p-3 p-xl-3.5 rounded-4 shadow-sm border-0 h-100 bg-white">
         <div class="d-flex align-items-center justify-content-between">
           <div>
-            <span class="text-uppercase fw-bold text-muted d-block" style="font-size: 0.725rem; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Inactive GPs</span>
-            <h2 class="fw-bold mb-0 text-secondary" style="font-size: 1.75rem; line-height: 1.2;">{{ number_format($counts['inactive']) }}</h2>
+            <span class="text-uppercase fw-bold text-muted d-block" style="font-size: 0.725rem; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Recharged Candidates</span>
+            <h2 class="fw-bold mb-0 text-success" style="font-size: 1.75rem; line-height: 1.2;">{{ number_format($counts['paid_candidates']) }}</h2>
           </div>
-          <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px; background-color: rgba(108, 117, 125, 0.12); color: #6c757d; font-size: 1.35rem;">
-            <i class="bi bi-eye-slash-fill"></i>
+          <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px; background-color: rgba(34, 197, 94, 0.12); color: var(--sys-green); font-size: 1.35rem;">
+            <i class="bi bi-person-check-fill"></i>
           </div>
         </div>
       </div>
@@ -79,11 +79,11 @@
       <div class="card p-3 p-xl-3.5 rounded-4 shadow-sm border-0 h-100 bg-white">
         <div class="d-flex align-items-center justify-content-between">
           <div>
-            <span class="text-uppercase fw-bold text-muted d-block" style="font-size: 0.725rem; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Executive Partners Represented</span>
-            <h2 class="fw-bold mb-0 text-primary" style="font-size: 1.75rem; line-height: 1.2;">{{ number_format($counts['eps_count']) }}</h2>
+            <span class="text-uppercase fw-bold text-muted d-block" style="font-size: 0.725rem; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Total 1st Recharges</span>
+            <h2 class="fw-bold mb-0 text-primary" style="font-size: 1.75rem; line-height: 1.2;">₹ {{ number_format($counts['total_revenue']) }}</h2>
           </div>
           <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px; background-color: rgba(13, 110, 253, 0.1); color: #0d6efd; font-size: 1.35rem;">
-            <i class="bi bi-person-badge-fill"></i>
+            <i class="bi bi-cash-stack"></i>
           </div>
         </div>
       </div>
@@ -163,6 +163,7 @@
             <th>Ground Partner Name</th>
             <th>Executive Partner (EP)</th>
             <th>Mobile Number</th>
+            <th>Referred Candidates</th>
             <th>Status</th>
             <th>Registered Date</th>
             <th class="text-center pe-4" style="width: 130px;">Actions</th>
@@ -205,6 +206,18 @@
               <td>
                 <a href="tel:{{ $partner->mobile }}" class="text-decoration-none text-dark fw-semibold">
                   <i class="bi bi-telephone text-muted me-1 small"></i>{{ $partner->mobile }}
+                </a>
+              </td>
+              <td>
+                <a href="{{ route('admin.ground-partners.show', $partner->id) }}" class="text-decoration-none">
+                  <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1 fw-bold" title="Candidates who recharged/paid">
+                    <i class="bi bi-patch-check-fill me-1"></i> {{ $partner->paid_referrals_count ?? 0 }} Paid
+                  </span>
+                  @if(($partner->total_referrals_count ?? 0) > ($partner->paid_referrals_count ?? 0))
+                    <span class="badge bg-light text-muted border px-2 py-1 small ms-1" title="Total candidates registered via this GP">
+                      {{ $partner->total_referrals_count }} Total
+                    </span>
+                  @endif
                 </a>
               </td>
               <td>

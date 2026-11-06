@@ -65,11 +65,11 @@
       <div class="card p-3 p-xl-3.5 rounded-4 shadow-sm border-0 h-100 bg-white">
         <div class="d-flex align-items-center justify-content-between">
           <div>
-            <span class="text-uppercase fw-bold text-muted d-block" style="font-size: 0.725rem; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Inactive Partners</span>
-            <h2 class="fw-bold mb-0 text-secondary" style="font-size: 1.75rem; line-height: 1.2;">{{ number_format($counts['inactive']) }}</h2>
+            <span class="text-uppercase fw-bold text-muted d-block" style="font-size: 0.725rem; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Total Ground Partners</span>
+            <h2 class="fw-bold mb-0 text-info" style="font-size: 1.75rem; line-height: 1.2;">{{ number_format($counts['total_gps']) }}</h2>
           </div>
-          <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px; background-color: rgba(108, 117, 125, 0.12); color: #6c757d; font-size: 1.35rem;">
-            <i class="bi bi-person-slash"></i>
+          <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px; background-color: rgba(13, 202, 240, 0.12); color: #0dcaf0; font-size: 1.35rem;">
+            <i class="bi bi-people-fill"></i>
           </div>
         </div>
       </div>
@@ -79,11 +79,11 @@
       <div class="card p-3 p-xl-3.5 rounded-4 shadow-sm border-0 h-100 bg-white">
         <div class="d-flex align-items-center justify-content-between">
           <div>
-            <span class="text-uppercase fw-bold text-muted d-block" style="font-size: 0.725rem; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Total Ground Partners</span>
-            <h2 class="fw-bold mb-0 text-info" style="font-size: 1.75rem; line-height: 1.2;">{{ number_format($counts['total_gps']) }}</h2>
+            <span class="text-uppercase fw-bold text-muted d-block" style="font-size: 0.725rem; letter-spacing: 0.06em; margin-bottom: 0.35rem;">Recharged Candidates</span>
+            <h2 class="fw-bold mb-0 text-success" style="font-size: 1.75rem; line-height: 1.2;">{{ number_format($counts['paid_candidates']) }}</h2>
           </div>
-          <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px; background-color: rgba(13, 202, 240, 0.12); color: #0dcaf0; font-size: 1.35rem;">
-            <i class="bi bi-people-fill"></i>
+          <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 46px; height: 46px; background-color: rgba(34, 197, 94, 0.12); color: var(--sys-green); font-size: 1.35rem;">
+            <i class="bi bi-patch-check-fill"></i>
           </div>
         </div>
       </div>
@@ -143,6 +143,7 @@
             <th>Executive Partner Name</th>
             <th>Mobile Number</th>
             <th>Ground Partners (GP)</th>
+            <th>Referred Candidates</th>
             <th>Status</th>
             <th>Registered Date</th>
             <th class="text-center pe-4" style="width: 130px;">Actions</th>
@@ -179,6 +180,18 @@
                    class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 text-decoration-none px-2.5 py-1 fw-bold"
                    title="View Ground Partners assigned to this EP">
                   <i class="bi bi-people-fill me-1"></i> {{ $partner->ground_partners_count }} GPs
+                </a>
+              </td>
+              <td>
+                <a href="{{ route('admin.executive-partners.show', ['id' => $partner->id, 'tab' => 'candidates']) }}" class="text-decoration-none">
+                  <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1 fw-bold" title="Recharged candidates under this EP's GPs">
+                    <i class="bi bi-patch-check-fill me-1"></i> {{ $partner->paid_candidates_count ?? 0 }} Paid
+                  </span>
+                  @if(($partner->total_candidates_count ?? 0) > ($partner->paid_candidates_count ?? 0))
+                    <span class="badge bg-light text-muted border px-2 py-1 small ms-1" title="Total candidates registered">
+                      {{ $partner->total_candidates_count }} Total
+                    </span>
+                  @endif
                 </a>
               </td>
               <td>

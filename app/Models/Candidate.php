@@ -243,6 +243,14 @@ class Candidate extends Authenticatable
     }
 
     /**
+     * Ground Partner referral record
+     */
+    public function gpReferral(): HasOne
+    {
+        return $this->hasOne(GpReferral::class, 'candidate_id');
+    }
+
+    /**
      * Referral record linking to the branch that onboarded/referred this candidate.
      */
     public function referral(): HasOne

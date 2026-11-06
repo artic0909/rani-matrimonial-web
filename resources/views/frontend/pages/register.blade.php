@@ -796,17 +796,17 @@
                             Identity Verified!
                         </div>
 
-                        <!-- Optional Branch Referral Code -->
+                        <!-- Optional Ground Partner Referral Code -->
                         <div class="mt-3.5 sm:mt-6 p-3 sm:p-4 bg-white/10 border border-rani-gold/40 rounded-xl sm:rounded-2xl backdrop-blur-sm">
                             <label class="block text-xs sm:text-sm font-semibold text-white mb-1 sm:mb-1.5">
                                 Referral Code <span class="text-[10px] sm:text-xs text-white/70 font-normal">(Optional)</span>
                             </label>
                             <input type="text" 
                                    x-model="formData.referral_code" 
-                                   placeholder="Enter Branch Code (e.g. BRM001)" 
+                                   placeholder="Enter Ground Partner Code (e.g. GP001)" 
                                    class="w-full theme-input py-2 px-3 sm:py-3 sm:px-4 rounded-xl font-mono uppercase tracking-wider text-sm sm:text-base"
                                    maxlength="30">
-                            <p class="text-[10px] sm:text-xs text-white/60 mt-1 sm:mt-1.5">If you were assisted or referred by a regional branch center, please enter their branch code.</p>
+                            <p class="text-[10px] sm:text-xs text-white/60 mt-1 sm:mt-1.5">If you were assisted or referred by a Ground Partner (GP), please enter their partner code.</p>
                         </div>
                         
                         <div class="mt-4 pt-3 sm:mt-8 sm:pt-6 border-t border-white/20">

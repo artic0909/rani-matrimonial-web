@@ -18,6 +18,8 @@ use App\Models\Hobby;
 use App\Models\Income;
 use App\Models\MaritalStatus;
 use App\Models\Notification;
+use App\Models\GroundPartner;
+use App\Models\GpReferral;
 use App\Models\Qualification;
 use App\Models\Referral;
 use App\Models\Religion;
@@ -786,20 +788,29 @@ class AuthController extends Controller
             ]);
         }
 
-        // Branch Referral Code
+        // Process Optional Ground Partner (GP) Referral Code
+        $groundPartner = null;
         if ($request->filled('referral_code')) {
             $rawCode = trim((string) $request->input('referral_code'));
-            $branch = Branch::whereRaw('LOWER(code) = ?', [strtolower($rawCode)])
-                ->orWhere('id', is_numeric($rawCode) ? (int) $rawCode : 0)
+            $groundPartner = GroundPartner::where('status', 'active')
+                ->where(function ($q) use ($rawCode) {
+                    $q->whereRaw('LOWER(code) = ?', [strtolower($rawCode)])
+                      ->orWhere('id', is_numeric($rawCode) ? (int) $rawCode : 0);
+                })
                 ->first();
 
-            if ($branch) {
-                Referral::firstOrCreate(
-                    ['candidate_id' => $candidate->id],
+            if ($groundPartner) {
+                GpReferral::firstOrCreate(
                     [
-                        'branch_id' => $branch->id,
-                        'first_wallet_recharge_amount' => 0.00,
-                        'first_amount_add_date' => null,
+                        'candidate_id' => $candidate->id,
+                        'gp_id' => $groundPartner->id,
+                    ],
+                    [
+                        'payment_id' => null,
+                        'amount' => 0.00,
+                        'payment_status' => 'pending',
+                        'register_date' => now(),
+                        'payment_date' => null,
                     ]
                 );
             }
@@ -842,7 +853,7 @@ class AuthController extends Controller
         // New Candidate Registration Email to Admin
         try {
             $adminEmail = env('ADMIN_NOTIFICATION_EMAIL', 'sumatra.sales2424@gmail.com') ?: 'sumatra.sales2424@gmail.com';
-            Mail::to($adminEmail)->send(new NewCandidateRegistrationAdminMail($candidate, isset($branch) && $branch ? $branch : null));
+            Mail::to($adminEmail)->send(new NewCandidateRegistrationAdminMail($candidate, $groundPartner));
         } catch (\Exception $e) {
             Log::error('Admin Registration Email Notification Error (API): ' . $e->getMessage());
         }

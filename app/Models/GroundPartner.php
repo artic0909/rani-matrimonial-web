@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GroundPartner extends Model
 {
@@ -64,6 +65,22 @@ class GroundPartner extends Model
     public function ep(): BelongsTo
     {
         return $this->executivePartner();
+    }
+
+    /**
+     * Referrals recorded under this ground partner
+     */
+    public function referrals(): HasMany
+    {
+        return $this->hasMany(GpReferral::class, 'gp_id');
+    }
+
+    /**
+     * Paid referrals recorded under this ground partner
+     */
+    public function paidReferrals(): HasMany
+    {
+        return $this->hasMany(GpReferral::class, 'gp_id')->where('payment_status', 'paid');
     }
 
     /**

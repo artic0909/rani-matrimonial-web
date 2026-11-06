@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class ExecutivePartner extends Model
 {
@@ -63,6 +64,23 @@ class ExecutivePartner extends Model
     public function gps(): HasMany
     {
         return $this->groundPartners();
+    }
+
+    /**
+     * All GP Referrals under this Executive Partner
+     */
+    public function gpReferrals(): HasManyThrough
+    {
+        return $this->hasManyThrough(GpReferral::class, GroundPartner::class, 'ep_id', 'gp_id', 'id', 'id');
+    }
+
+    /**
+     * All Paid GP Referrals under this Executive Partner
+     */
+    public function paidGpReferrals(): HasManyThrough
+    {
+        return $this->hasManyThrough(GpReferral::class, GroundPartner::class, 'ep_id', 'gp_id', 'id', 'id')
+            ->where('gp_referrals.payment_status', 'paid');
     }
 
     /**
