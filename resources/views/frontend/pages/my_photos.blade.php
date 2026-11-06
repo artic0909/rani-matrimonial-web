@@ -313,6 +313,11 @@
                                 <input type="radio" value="Visible to Members I like and to all Premium Members" x-model="settings.photo_privacy" class="w-4 h-4 text-rani-primary focus:ring-rani-primary border-gray-300">
                                 <span class="text-xs sm:text-sm text-gray-700 font-medium">Visible to Members I like and to all Premium Members</span>
                             </label>
+
+                            <label class="flex items-center gap-2.5 sm:gap-3 cursor-pointer">
+                                <input type="radio" value="Visible only to Members I like" x-model="settings.photo_privacy" class="w-4 h-4 text-rani-primary focus:ring-rani-primary border-gray-300">
+                                <span class="text-xs sm:text-sm text-gray-700 font-medium">Visible only to Members I like</span>
+                            </label>
                         </div>
                     </div>
 
@@ -322,6 +327,21 @@
                         
                         <div class="space-y-2.5 sm:space-y-3">
                             <label class="flex items-center gap-2.5 sm:gap-3 cursor-pointer">
+                                <input type="radio" value="Visible to all Members" x-model="settings.album_privacy" class="w-4 h-4 text-rani-primary focus:ring-rani-primary border-gray-300">
+                                <span class="text-xs sm:text-sm text-gray-700 font-medium">Visible to all Members</span>
+                            </label>
+
+                            <label class="flex items-center gap-2.5 sm:gap-3 cursor-pointer">
+                                <input type="radio" value="Visible to all with request" x-model="settings.album_privacy" class="w-4 h-4 text-rani-primary focus:ring-rani-primary border-gray-300">
+                                <span class="text-xs sm:text-sm text-gray-700 font-medium">Visible to all with request</span>
+                            </label>
+
+                            <label class="flex items-center gap-2.5 sm:gap-3 cursor-pointer">
+                                <input type="radio" value="Blur until request accepted" x-model="settings.album_privacy" class="w-4 h-4 text-rani-primary focus:ring-rani-primary border-gray-300">
+                                <span class="text-xs sm:text-sm text-gray-700 font-medium">Blur until request accepted</span>
+                            </label>
+
+                            <label class="flex items-center gap-2.5 sm:gap-3 cursor-pointer">
                                 <input type="radio" value="Visible to Members I like and to all Premium Members" x-model="settings.album_privacy" class="w-4 h-4 text-rani-primary focus:ring-rani-primary border-gray-300">
                                 <span class="text-xs sm:text-sm text-gray-700 font-medium">Visible to Members I like and to all Premium Members</span>
                             </label>
@@ -329,11 +349,6 @@
                             <label class="flex items-center gap-2.5 sm:gap-3 cursor-pointer">
                                 <input type="radio" value="Only visible to members I like" x-model="settings.album_privacy" class="w-4 h-4 text-rani-primary focus:ring-rani-primary border-gray-300">
                                 <span class="text-xs sm:text-sm text-gray-700 font-medium">Only visible to members I like</span>
-                            </label>
-
-                            <label class="flex items-center gap-2.5 sm:gap-3 cursor-pointer">
-                                <input type="radio" value="Visible to all Members" x-model="settings.album_privacy" class="w-4 h-4 text-rani-primary focus:ring-rani-primary border-gray-300">
-                                <span class="text-xs sm:text-sm text-gray-700 font-medium">Visible to all Members</span>
                             </label>
                         </div>
                     </div>

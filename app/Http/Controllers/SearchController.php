@@ -669,6 +669,8 @@ class SearchController extends Controller
                 'country' => $c->country ?: 'India',
                 'photo' => $photo,
                 'photos' => $allPhotos,
+                'photo_privacy' => $c->photo_privacy ?? 'Visible to all Members (Recommended)',
+                'album_privacy' => $c->album_privacy ?? 'Visible to all Members',
                 'verified' => (bool) ($c->bluetick && (int) $c->bluetick->is_accept === 1),
                 'match_score' => $matchScore,
                 'match_reasons' => $matchReasons,

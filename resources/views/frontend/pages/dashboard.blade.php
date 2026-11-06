@@ -311,8 +311,15 @@
 
                                 <!-- Photo & Basic Info (Non-hyperlinked) -->
                                 <div class="flex items-center gap-3 sm:gap-3.5 mb-2.5 sm:mb-3">
-                                    <div class="relative shrink-0">
-                                        <img :src="match.photo" :alt="match.first_name" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-rani-gold/40 shadow-xs">
+                                    <div class="relative shrink-0 overflow-hidden rounded-full w-14 h-14 sm:w-16 sm:h-16">
+                                        <img :src="match.photo" :alt="match.first_name" 
+                                             :class="(window.RaniPhotoPrivacy && window.RaniPhotoPrivacy.shouldBlurProfilePhoto(match)) ? 'filter blur-sm scale-110' : ''"
+                                             class="w-full h-full rounded-full object-cover border-2 border-rani-gold/40 shadow-xs">
+                                        <template x-if="window.RaniPhotoPrivacy && window.RaniPhotoPrivacy.shouldBlurProfilePhoto(match)">
+                                            <span class="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center pointer-events-none">
+                                                <svg class="w-4 h-4 text-rani-gold" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                                            </span>
+                                        </template>
                                         <template x-if="match.verified">
                                             <span class="absolute bottom-0 right-0 bg-gradient-to-tr from-blue-600 via-sky-500 to-sky-400 text-white rounded-full p-0.5 border border-white shadow-xs flex items-center justify-center" title="Blue Tick Verified">
                                                 <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>

@@ -270,4 +270,70 @@ class Candidate extends Authenticatable
     {
         return $this->hasOne(DeleteAccountRequest::class, 'candidate_id')->latestOfMany();
     }
+
+    /**
+     * Check if primary profile photo should be blurred for a viewing candidate
+     */
+    public function shouldBlurProfilePhotoFor(?Candidate $viewer = null, bool $isAccepted = false, bool $isReceived = false): bool
+    {
+        if ($viewer && (string) $viewer->id === (string) $this->id) {
+            return false;
+        }
+
+        $privacy = $this->photo_privacy ?? 'Visible to all Members (Recommended)';
+        if ($privacy === 'Visible to all Members (Recommended)') {
+            return false;
+        }
+
+        if ($privacy === 'Visible only to Members I like') {
+            return ! $isAccepted && ! $isReceived;
+        }
+
+        if ($privacy === 'Visible to Members I like and to all Premium Members') {
+            if ($isAccepted || $isReceived) {
+                return false;
+            }
+            $isPremium = $viewer && ($viewer->is_bluetick_verified || $viewer->selfie_verified || ($viewer->bluetick && (int) $viewer->bluetick->is_accept === 1));
+            return ! $isPremium;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if gallery photo (index > 0) should be blurred
+     */
+    public function shouldBlurGalleryPhotoFor(?Candidate $viewer = null, int $photoIndex = 0, bool $isAccepted = false, bool $isReceived = false): bool
+    {
+        if ($photoIndex === 0) {
+            return $this->shouldBlurProfilePhotoFor($viewer, $isAccepted, $isReceived);
+        }
+
+        if ($viewer && (string) $viewer->id === (string) $this->id) {
+            return false;
+        }
+
+        $privacy = $this->album_privacy ?? 'Visible to all Members';
+        if ($privacy === 'Visible to all Members') {
+            return false;
+        }
+
+        if ($privacy === 'Blur until request accepted' || $privacy === 'Visible to all with request') {
+            return ! $isAccepted;
+        }
+
+        if ($privacy === 'Only visible to members I like') {
+            return ! $isAccepted && ! $isReceived;
+        }
+
+        if ($privacy === 'Visible to Members I like and to all Premium Members') {
+            if ($isAccepted || $isReceived) {
+                return false;
+            }
+            $isPremium = $viewer && ($viewer->is_bluetick_verified || $viewer->selfie_verified || ($viewer->bluetick && (int) $viewer->bluetick->is_accept === 1));
+            return ! $isPremium;
+        }
+
+        return false;
+    }
 }

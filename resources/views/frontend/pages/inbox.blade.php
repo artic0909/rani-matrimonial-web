@@ -103,7 +103,18 @@
                                      
                                     <img :src="match.photo" 
                                          :alt="match.first_name" 
+                                         :class="isProfilePhotoBlurred(match) ? 'filter blur-lg scale-110' : ''"
                                          class="w-full h-full object-cover object-top transition-transform duration-700 group-hover/photo:scale-105">
+                                    
+                                    <!-- Blurred Lock Overlay -->
+                                    <template x-if="isProfilePhotoBlurred(match)">
+                                        <div class="absolute inset-0 z-10 flex items-center justify-center bg-black/35 backdrop-blur-xs pointer-events-none">
+                                            <div class="px-3 py-1.5 rounded-full bg-black/75 border border-rani-gold/80 shadow-lg text-white flex items-center gap-1.5">
+                                                <svg class="w-3.5 h-3.5 text-rani-gold" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                                                <span class="text-[11px] font-bold font-sans tracking-wide text-amber-100">Photo Protected</span>
+                                            </div>
+                                        </div>
+                                    </template>
                                     
                                     <!-- Top Gradient Overlay -->
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none"></div>
@@ -543,7 +554,19 @@
                 <div class="relative max-h-[72vh] sm:max-h-[76vh] flex items-center justify-center">
                     <img :src="currentGalleryPhoto" 
                          :alt="galleryCandidate ? galleryCandidate.first_name : 'Photo'" 
+                         :class="isGalleryPhotoBlurred(galleryCandidate, activePhotoIndex) ? 'filter blur-xl scale-105' : ''"
                          class="max-h-[72vh] sm:max-h-[76vh] max-w-[92vw] sm:max-w-3xl object-contain rounded-2xl border-2 border-rani-gold/50 shadow-[0_25px_60px_rgba(0,0,0,0.9)] transition-transform duration-300">
+
+                    <!-- Lock Banner in Lightbox when blurred -->
+                    <template x-if="isGalleryPhotoBlurred(galleryCandidate, activePhotoIndex)">
+                        <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/55 backdrop-blur-xs rounded-2xl p-6 text-center select-none">
+                            <div class="w-16 h-16 rounded-full bg-black/80 border-2 border-rani-gold text-rani-gold flex items-center justify-center shadow-xl mb-3">
+                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                            </div>
+                            <h4 class="font-serif font-bold text-lg sm:text-xl text-white tracking-wide" x-text="activePhotoIndex === 0 ? 'Profile Photo Protected' : 'Album Photos Locked'"></h4>
+                            <p class="text-xs sm:text-sm text-gray-200 mt-1 max-w-md" x-text="activePhotoIndex === 0 ? 'This member has restricted profile photo visibility.' : 'Photos are blurred until your connection request is accepted.'"></p>
+                        </div>
+                    </template>
                 </div>
 
                 <!-- Floating Right Arrow -->
@@ -562,9 +585,16 @@
                 <template x-for="(photoUrl, pIdx) in galleryPhotos" :key="pIdx">
                     <button type="button" 
                             @click="activePhotoIndex = pIdx" 
-                            class="w-13 h-13 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer bg-black/40"
+                            class="w-13 h-13 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer bg-black/40 relative"
                             :class="activePhotoIndex === pIdx ? 'border-rani-gold scale-110 shadow-[0_0_16px_rgba(212,175,55,0.85)] ring-2 ring-rani-gold/70 opacity-100' : 'border-white/25 opacity-50 hover:opacity-90 hover:border-rani-gold/60'">
-                        <img :src="photoUrl" class="w-full h-full object-cover">
+                        <img :src="photoUrl" 
+                             :class="isGalleryPhotoBlurred(galleryCandidate, pIdx) ? 'filter blur-sm scale-110' : ''"
+                             class="w-full h-full object-cover">
+                        <template x-if="isGalleryPhotoBlurred(galleryCandidate, pIdx)">
+                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5 text-rani-gold" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                            </div>
+                        </template>
                     </button>
                 </template>
             </div>
@@ -613,6 +643,14 @@ function inboxManager(initialData) {
         closeFullProfile() {
             this.fullProfileModalOpen = false;
             document.body.style.overflow = 'auto';
+        },
+
+        isProfilePhotoBlurred(match) {
+            return window.RaniPhotoPrivacy ? window.RaniPhotoPrivacy.shouldBlurProfilePhoto(match) : false;
+        },
+
+        isGalleryPhotoBlurred(match, index) {
+            return window.RaniPhotoPrivacy ? window.RaniPhotoPrivacy.shouldBlurGalleryPhoto(match, index) : false;
         },
 
         openPhotoGallery(match, initialIndex = 0) {

@@ -147,6 +147,8 @@ class InboxController extends Controller
                 'diet' => $sender->diet ?? 'Vegetarian',
                 'photo' => $photo,
                 'photos' => $allPhotos,
+                'photo_privacy' => $sender->photo_privacy ?? 'Visible to all Members (Recommended)',
+                'album_privacy' => $sender->album_privacy ?? 'Visible to all Members',
                 'match_score' => $matchResult['score'],
                 'match_reasons' => array_slice($matchResult['reasons'], 0, 3),
                 'badge' => $isAccepted ? 'Accepted Connection' : '📥 Received Interest',

@@ -918,7 +918,18 @@
                                          
                                         <img :src="match.photo" 
                                              :alt="match.first_name" 
+                                             :class="isProfilePhotoBlurred(match) ? 'filter blur-lg scale-110' : ''"
                                              class="w-full h-full object-cover object-top transition-transform duration-700 group-hover/photo:scale-105">
+                                        
+                                        <!-- Blurred Lock Overlay -->
+                                        <template x-if="isProfilePhotoBlurred(match)">
+                                            <div class="absolute inset-0 z-10 flex items-center justify-center bg-black/35 backdrop-blur-xs pointer-events-none">
+                                                <div class="px-2.5 py-1 rounded-full bg-black/75 border border-rani-gold/80 shadow-lg text-white flex items-center gap-1.5">
+                                                    <svg class="w-3 h-3 text-rani-gold" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                                                    <span class="text-[10px] sm:text-[11px] font-bold font-sans tracking-wide text-amber-100">Photo Protected</span>
+                                                </div>
+                                            </div>
+                                        </template>
                                         
                                         <!-- Top Gradient Overlay -->
                                         <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none"></div>
@@ -1542,8 +1553,28 @@
             <!-- Central Image Stage -->
             <div class="relative flex-1 w-full max-w-4xl flex items-center justify-center my-auto min-h-0 py-2">
                 <template x-if="activeGalleryPhotos && activeGalleryPhotos.length > 0">
-                    <img :src="activeGalleryPhotos[activePhotoIndex]" 
-                         class="max-h-[68vh] sm:max-h-[72vh] max-w-full object-contain rounded-2xl shadow-2xl border border-rani-gold/30 ring-4 ring-black/40">
+                    <div class="relative max-h-[68vh] sm:max-h-[72vh] flex items-center justify-center">
+                        <img :src="activeGalleryPhotos[activePhotoIndex]" 
+                             :class="isGalleryPhotoBlurred(activeGalleryMatch, activePhotoIndex) ? 'filter blur-xl scale-105' : ''"
+                             class="max-h-[68vh] sm:max-h-[72vh] max-w-full object-contain rounded-2xl shadow-2xl border border-rani-gold/30 ring-4 ring-black/40">
+
+                        <!-- Lock Banner in Lightbox when blurred -->
+                        <template x-if="isGalleryPhotoBlurred(activeGalleryMatch, activePhotoIndex)">
+                            <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/55 backdrop-blur-xs rounded-2xl p-6 text-center select-none">
+                                <div class="w-16 h-16 rounded-full bg-black/80 border-2 border-rani-gold text-rani-gold flex items-center justify-center shadow-xl mb-3">
+                                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                                </div>
+                                <h4 class="font-serif font-bold text-lg sm:text-xl text-white tracking-wide" x-text="activePhotoIndex === 0 ? 'Profile Photo Protected' : 'Album Photos Locked'"></h4>
+                                <p class="text-xs sm:text-sm text-gray-200 mt-1 max-w-md" x-text="activePhotoIndex === 0 ? 'This member has restricted profile photo visibility.' : 'Photos are blurred until your connection request is accepted.'"></p>
+                                <button type="button" 
+                                        x-show="activeGalleryMatch && !activeGalleryMatch.is_accepted"
+                                        @click="sendInterest(activeGalleryMatch); photoGalleryOpen = false" 
+                                        class="mt-4 px-6 py-2.5 rounded-full bg-gradient-to-r from-rani-gold to-yellow-500 hover:from-yellow-400 hover:to-rani-gold text-rani-dark font-bold text-xs sm:text-sm shadow-lg hover:scale-105 active:scale-95 transition-all">
+                                    Connect to Unlock
+                                </button>
+                            </div>
+                        </template>
+                    </div>
                 </template>
 
                 <!-- Left Arrow -->
@@ -1572,9 +1603,16 @@
                     <template x-for="(pUrl, idx) in activeGalleryPhotos" :key="idx">
                         <button type="button" 
                                 @click="activePhotoIndex = idx"
-                                class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer"
+                                class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer relative"
                                 :class="activePhotoIndex === idx ? 'border-rani-gold scale-110 shadow-lg ring-2 ring-white' : 'border-white/30 opacity-60 hover:opacity-100'">
-                            <img :src="pUrl" class="w-full h-full object-cover">
+                            <img :src="pUrl" 
+                                 :class="isGalleryPhotoBlurred(activeGalleryMatch, idx) ? 'filter blur-sm scale-110' : ''"
+                                 class="w-full h-full object-cover">
+                            <template x-if="isGalleryPhotoBlurred(activeGalleryMatch, idx)">
+                                <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                    <svg class="w-3.5 h-3.5 text-rani-gold" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                                </div>
+                            </template>
                         </button>
                     </template>
                 </div>
@@ -2031,6 +2069,14 @@ window.searchManager = function() {
             } catch (err) {
                 console.error('Send Interest error:', err);
             }
+        },
+
+        isProfilePhotoBlurred(match) {
+            return window.RaniPhotoPrivacy ? window.RaniPhotoPrivacy.shouldBlurProfilePhoto(match) : false;
+        },
+
+        isGalleryPhotoBlurred(match, index) {
+            return window.RaniPhotoPrivacy ? window.RaniPhotoPrivacy.shouldBlurGalleryPhoto(match, index) : false;
         },
 
         openPhotoGallery(match, initialIdx = 0) {

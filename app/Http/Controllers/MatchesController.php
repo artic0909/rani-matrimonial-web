@@ -1243,6 +1243,8 @@ class MatchesController extends Controller
                 'diet' => $c->diet ?? 'Vegetarian',
                 'photo' => $photo,
                 'photos' => $allPhotos,
+                'photo_privacy' => $c->photo_privacy ?? 'Visible to all Members (Recommended)',
+                'album_privacy' => $c->album_privacy ?? 'Visible to all Members',
                 'match_score' => $matchScore,
                 'match_reasons' => array_slice($matchReasons, 0, 3),
                 'badge' => $badge,

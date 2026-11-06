@@ -175,9 +175,21 @@
                          src="{{ $photo }}"
                          alt="{{ $profileName }}" 
                          onerror="this.src='{{ asset('img/' . (strtolower($profile->gender ?? 'female') === 'female' ? 'female' : 'male') . '/correct1.png') }}'"
+                         :class="isPhotoBlurred(activePhotoIndex) ? 'filter blur-xl scale-110' : ''"
                          class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105">
                     
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none"></div>
+
+                    <!-- Lock Overlay when blurred -->
+                    <template x-if="isPhotoBlurred(activePhotoIndex)">
+                        <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/55 backdrop-blur-xs p-6 text-center select-none">
+                            <div class="w-14 h-14 rounded-full bg-black/80 border-2 border-rani-gold text-rani-gold flex items-center justify-center shadow-xl mb-2.5">
+                                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                            </div>
+                            <h4 class="font-serif font-bold text-base sm:text-lg text-white tracking-wide" x-text="activePhotoIndex === 0 ? 'Profile Photo Protected' : 'Album Photo Locked'"></h4>
+                            <p class="text-[11px] sm:text-xs text-amber-100/90 mt-1" x-text="activePhotoIndex === 0 ? 'Visible to connected members only' : 'Blurred until connection is accepted'"></p>
+                        </div>
+                    </template>
 
                     <!-- Verified Badge -->
                     @if($profile->is_bluetick_verified || ($profile->bluetick && (int)$profile->bluetick->is_accept === 1))
@@ -207,7 +219,13 @@
                                 :class="activePhotoIndex === idx ? 'border-rani-gold shadow-md scale-95' : 'border-transparent opacity-60 hover:opacity-100'">
                             <img :src="pic" 
                                  onerror="this.src='{{ asset('img/' . (strtolower($profile->gender ?? 'female') === 'female' ? 'female' : 'male') . '/correct1.png') }}'" 
+                                 :class="isPhotoBlurred(idx) ? 'filter blur-sm scale-110' : ''"
                                  class="w-full h-full object-cover">
+                            <template x-if="isPhotoBlurred(idx)">
+                                <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                    <svg class="w-3.5 h-3.5 text-rani-gold" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                                </div>
+                            </template>
                         </button>
                     </template>
                 </div>
@@ -689,8 +707,19 @@
         </button>
 
         <!-- Main Lightbox Image -->
-        <div class="max-w-4xl max-h-[85vh] overflow-hidden rounded-xl sm:rounded-2xl relative shadow-2xl">
-            <img :src="photos[activePhotoIndex]" class="max-w-full max-h-[85vh] object-contain mx-auto">
+        <div class="max-w-4xl max-h-[85vh] overflow-hidden rounded-xl sm:rounded-2xl relative shadow-2xl flex items-center justify-center">
+            <img :src="photos[activePhotoIndex]" 
+                 :class="isPhotoBlurred(activePhotoIndex) ? 'filter blur-2xl scale-105' : ''"
+                 class="max-w-full max-h-[85vh] object-contain mx-auto">
+            <template x-if="isPhotoBlurred(activePhotoIndex)">
+                <div class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-xs p-6 text-center select-none">
+                    <div class="w-16 h-16 rounded-full bg-black/80 border-2 border-rani-gold text-rani-gold flex items-center justify-center shadow-xl mb-3">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                    </div>
+                    <h4 class="font-serif font-bold text-lg sm:text-xl text-white tracking-wide" x-text="activePhotoIndex === 0 ? 'Profile Photo Protected' : 'Album Photo Locked'"></h4>
+                    <p class="text-xs sm:text-sm text-gray-200 mt-1 max-w-md" x-text="activePhotoIndex === 0 ? 'This member has restricted profile photo visibility.' : 'Photos are blurred until your connection request is accepted.'"></p>
+                </div>
+            </template>
         </div>
 
         <!-- Next Button -->
@@ -713,6 +742,19 @@ function profileViewManager() {
         activePhotoIndex: 0,
         photos: @json($allPhotos),
         lightboxOpen: false,
+        profileData: @json([
+            'id' => $profile->id,
+            'candidate_code' => $profile->candidate_code,
+            'profile_id' => $profile->profile_id,
+            'photo_privacy' => $profile->photo_privacy ?? 'Visible to all Members (Recommended)',
+            'album_privacy' => $profile->album_privacy ?? 'Visible to all Members',
+            'is_accepted' => $isAccepted,
+            'is_interest_received' => $isReceivedByMe,
+            'request_type' => $isAccepted ? 'accepted' : ($isReceivedByMe ? 'received' : ($isSentByMe ? 'sent' : 'none')),
+        ]),
+        isPhotoBlurred(index) {
+            return window.RaniPhotoPrivacy ? window.RaniPhotoPrivacy.shouldBlurGalleryPhoto(this.profileData, index) : false;
+        },
         shortlisted: {{ $isShortlisted ? 'true' : 'false' }},
         isAccepted: {{ $isAccepted ? 'true' : 'false' }},
         isPending: {{ $isPending ? 'true' : 'false' }},
