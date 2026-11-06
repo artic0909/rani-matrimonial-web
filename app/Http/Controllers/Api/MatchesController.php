@@ -72,13 +72,49 @@ class MatchesController extends Controller
         $rawShortlisted = Shortlisted::where('candidate_id', $candidate->id)
             ->orderBy('id', 'desc')
             ->get(['id', 'profile_id', 'created_at']);
+        $shortlistedProfileIds = $rawShortlisted->pluck('profile_id')->map(fn($id) => (string) $id)->toArray();
+
+        // Load sent connection requests (pending only)
+        $sentRequests = ConnectionRequest::where('sender_id', $candidate->id)->pending()->get();
+        $sentReceiverIds = $sentRequests->pluck('receiver_id')->toArray();
+
+        // Load received connection requests (pending only)
+        $receivedRequests = ConnectionRequest::where('receiver_id', $candidate->id)->pending()->get();
+        $receivedSenderIds = $receivedRequests->pluck('sender_id')->toArray();
+
+        // Load accepted connection requests
+        $acceptedConnections = ConnectionRequest::accepted()
+            ->where(function ($q) use ($candidate) {
+                $q->where('sender_id', $candidate->id)
+                    ->orWhere('receiver_id', $candidate->id);
+            })
+            ->get();
+        $acceptedOtherIds = $acceptedConnections->map(fn($c) => ($c->sender_id === $candidate->id) ? $c->receiver_id : $c->sender_id)->toArray();
+
+        // Bulk load all referenced candidate objects in 1-2 fast queries instead of N+1
+        $numericIds = array_values(array_unique(array_filter(array_merge(
+            $sentReceiverIds,
+            $receivedSenderIds,
+            $acceptedOtherIds,
+            array_filter($shortlistedProfileIds, 'is_numeric')
+        ))));
+        $candidatesById = !empty($numericIds) ? Candidate::whereIn('id', $numericIds)->get()->keyBy('id') : collect();
+        $candidatesByCode = !empty($shortlistedProfileIds) 
+            ? Candidate::whereIn('candidate_code', $shortlistedProfileIds)->orWhereIn('profile_id', $shortlistedProfileIds)->get()
+            : collect();
+        foreach ($candidatesByCode as $c) {
+            $candidatesById[$c->id] = $c;
+        }
+
+        // Map shortlisted IDs
         $shortlistedIds = [];
         $shortlistIdOrder = [];
         foreach ($rawShortlisted as $item) {
             $sid = (string) $item->profile_id;
             $shortlistedIds[] = $sid;
             $shortlistIdOrder[$sid] = $item->id;
-            $sc = Candidate::where('profile_id', $sid)->orWhere('candidate_code', $sid)->orWhere('id', is_numeric($sid) ? $sid : 0)->first();
+            $sc = $candidatesById->get(is_numeric($sid) ? (int)$sid : 0)
+                ?? $candidatesByCode->first(fn($c) => $c->candidate_code === $sid || $c->profile_id === $sid);
             if ($sc) {
                 $code = $sc->getDisplayCodeAttribute();
                 $idStr = (string) $sc->id;
@@ -91,11 +127,10 @@ class MatchesController extends Controller
         }
         $shortlistedIds = array_values(array_unique($shortlistedIds));
 
-        // Load sent connection requests (pending only)
-        $sentRequests = ConnectionRequest::where('sender_id', $candidate->id)->pending()->get();
+        // Sent interest IDs
         $sentInterestIds = [];
-        foreach ($sentRequests as $sr) {
-            $rec = Candidate::find($sr->receiver_id);
+        foreach ($sentReceiverIds as $rId) {
+            $rec = $candidatesById->get($rId);
             if ($rec) {
                 $sentInterestIds[] = $rec->getDisplayCodeAttribute();
                 $sentInterestIds[] = (string) $rec->id;
@@ -103,11 +138,10 @@ class MatchesController extends Controller
         }
         $sentInterestIds = array_values(array_unique($sentInterestIds));
 
-        // Load received connection requests (pending only)
-        $receivedRequests = ConnectionRequest::where('receiver_id', $candidate->id)->pending()->get();
+        // Received interest IDs
         $receivedInterestIds = [];
-        foreach ($receivedRequests as $rr) {
-            $sender = Candidate::find($rr->sender_id);
+        foreach ($receivedSenderIds as $sId) {
+            $sender = $candidatesById->get($sId);
             if ($sender) {
                 $receivedInterestIds[] = $sender->getDisplayCodeAttribute();
                 $receivedInterestIds[] = (string) $sender->id;
@@ -115,20 +149,11 @@ class MatchesController extends Controller
         }
         $receivedInterestIds = array_values(array_unique($receivedInterestIds));
 
-        // Load accepted connection requests (where candidate is either sender or receiver)
-        $acceptedConnections = ConnectionRequest::accepted()
-            ->where(function ($q) use ($candidate) {
-                $q->where('sender_id', $candidate->id)
-                    ->orWhere('receiver_id', $candidate->id);
-            })
-            ->get();
-
-        $acceptedCandidateIds = [];
+        // Accepted candidate IDs
+        $acceptedCandidateIds = array_values(array_unique($acceptedOtherIds));
         $acceptedProfileCodes = [];
-        foreach ($acceptedConnections as $conn) {
-            $otherId = ($conn->sender_id === $candidate->id) ? $conn->receiver_id : $conn->sender_id;
-            $acceptedCandidateIds[] = $otherId;
-            $other = Candidate::find($otherId);
+        foreach ($acceptedCandidateIds as $oId) {
+            $other = $candidatesById->get($oId);
             if ($other) {
                 $acceptedProfileCodes[] = $other->getDisplayCodeAttribute();
                 $acceptedProfileCodes[] = (string) $other->id;
@@ -136,31 +161,24 @@ class MatchesController extends Controller
         }
         $acceptedProfileCodes = array_values(array_unique($acceptedProfileCodes));
 
-        // Full pool for dynamic counts (with latest-first ordering and shortlist order map)
-        $allMatches = $this->getMatchesData($candidate, $targetGender, 'my_matches', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds, $shortlistIdOrder);
-        $todaysMatches = $this->getMatchesData($candidate, $targetGender, 'todays', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds, $shortlistIdOrder);
-        $acceptedMatches = $this->getMatchesData($candidate, $targetGender, 'accepted', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds, $shortlistIdOrder);
-        $shortlistedMatches = $this->getMatchesData($candidate, $targetGender, 'shortlisted', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds, $shortlistIdOrder);
-        $nearMeMatches = $this->getMatchesData($candidate, $targetGender, 'near_me', $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds, $shortlistIdOrder);
+        // Filtered matches for the active tab (computed ONLY for the requested tab)
+        $matches = $this->getMatchesData($candidate, $targetGender, $tab, $shortlistedIds, $sentInterestIds, $receivedInterestIds, $acceptedCandidateIds, $shortlistIdOrder);
 
-        // Filtered matches for the active tab
-        $matches = match ($tab) {
-            'todays', 'new', 'all' => $todaysMatches,
-            'my_matches' => $allMatches,
-            'accepted' => $acceptedMatches,
-            'near_me' => $nearMeMatches,
-            default => $shortlistedMatches,
-        };
+        // Lightweight dynamic counts
+        $shortlistedCount = count($rawShortlisted);
+        $acceptedCount = count($acceptedConnections);
+        $todaysCount = in_array($tab, ['todays', 'new', 'all'])
+            ? count($matches)
+            : Candidate::where(function($q) { $q->where('is_active', true)->orWhereNull('is_active'); })->where('gender', $targetGender)->where('id', '!=', $candidate->id)->count();
 
-        // Counts for tabs (full counts across categories)
         $counts = [
-            'todays' => count($todaysMatches),
-            'new' => count($todaysMatches),
-            'all' => count($todaysMatches),
-            'my_matches' => count($todaysMatches),
-            'shortlisted' => count($shortlistedMatches),
-            'accepted' => count($acceptedMatches),
-            'near_me' => count($nearMeMatches),
+            'todays' => $todaysCount,
+            'new' => $todaysCount,
+            'all' => $todaysCount,
+            'my_matches' => $todaysCount,
+            'shortlisted' => $shortlistedCount,
+            'accepted' => $acceptedCount,
+            'near_me' => ($tab === 'near_me') ? count($matches) : $todaysCount,
         ];
 
         // Paginate filtered matches strictly in batches of 10 so DB payload is light & performant
