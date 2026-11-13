@@ -75,7 +75,8 @@
                         To register an account or create a matrimonial profile on Rani Matrimonial, you must satisfy the following strict criteria:
                     </p>
                     <ul class="list-disc pl-6 space-y-2.5">
-                        <li><strong>Legal Age for Marriage:</strong> You must be of legal marriageable age as per the laws of India (minimum 18 years for females and 21 years for males at the time of registration).</li>
+                        <li><strong>Legal Age for Marriage:</strong> You must be of legal marriageable age as per the laws of India (minimum 18 years for females and 21 years for males at the time of registration). <strong>Minors (individuals under the age of 18) are strictly prohibited from registering or using this platform.</strong></li>
+                        <li><strong>Zero Tolerance for Child Sexual Abuse and Exploitation (CSAE):</strong> Rani Matrimonial and Sumatra Sales Pvt. Ltd. strictly prohibit any form of CSAE or Child Sexual Abuse Material (CSAM). Violations will result in immediate permanent account termination and referral to law enforcement. Read our comprehensive <a href="{{ route('child.safety') }}" class="text-rani-primary font-bold underline">Child Safety Standards Policy</a>.</li>
                         <li><strong>Strictly Matrimonial Purpose:</strong> Rani Matrimonial is an exclusive match-making platform created solely to facilitate holy matrimony and lifelong marital unions. <strong>This platform is NOT a dating app, hookup portal, or casual social network.</strong> Profiles found misusing the portal for dating or commercial solicitation will be summarily banned.</li>
                         <li><strong>Marital Capacity:</strong> You must be legally single, divorced (with decree absolute), widowed, or annulled. You must not be legally prohibited from entering into a valid marriage.</li>
                     </ul>

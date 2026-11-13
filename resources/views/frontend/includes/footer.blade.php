@@ -49,6 +49,7 @@
                         <li><a href="{{ route('help.center') }}" class="hover:text-rani-gold hover:underline transition-colors">Help Center</a></li>
                         <li><a href="{{ route('privacy.policy') }}" class="hover:text-rani-gold hover:underline transition-colors">Privacy Policy</a></li>
                         <li><a href="{{ route('terms.conditions') }}" class="hover:text-rani-gold hover:underline transition-colors">Terms & Conditions</a></li>
+                        <li><a href="{{ route('child.safety') }}" class="hover:text-rani-gold hover:underline transition-colors text-amber-300 font-medium">Child Safety Standards</a></li>
                     </ul>
                 </div>
 

@@ -44,6 +44,14 @@ Route::get('/terms-and-conditions', function () {
     return view('frontend.pages.terms_conditions');
 })->name('terms.conditions');
 
+Route::get('/child-safety-policy', function () {
+    return view('frontend.pages.child_safety');
+})->name('child.safety');
+
+Route::get('/child-safety-standards', function () {
+    return view('frontend.pages.child_safety');
+});
+
 // Candidate Registration Pages & Web Logout
 Route::get('/register/selfie-capture', [AuthController::class, 'showSelfieCapture'])->name('register.selfie.capture');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register.page');

@@ -181,10 +181,27 @@
                     </p>
                 </section>
 
-                <!-- 8. Grievance Officer & Contact Details -->
+                <!-- 8. Child Safety & Zero Tolerance for CSAE -->
+                <section class="border-b border-gray-100 pb-8">
+                    <h2 class="text-2xl font-serif font-bold text-rani-primary-dark mb-4 flex items-center gap-3">
+                        <span class="flex items-center justify-center w-8 h-8 rounded-xl bg-rani-light/60 text-rani-primary-dark text-sm font-bold shadow-sm border border-rani-gold/20">8</span>
+                        Child Safety Standards & CSAE Zero Tolerance
+                    </h2>
+                    <p class="mb-3">
+                        <strong>Rani Matrimonial</strong> (operated by <strong>Sumatra Sales Pvt. Ltd.</strong>) strictly enforces a zero-tolerance policy regarding <strong>Child Sexual Abuse and Exploitation (CSAE)</strong> and <strong>Child Sexual Abuse Material (CSAM)</strong>. Our platform is exclusively reserved for consenting legal adults seeking matrimonial alliances (females 18+, males 21+). Minors under 18 years of age are strictly prohibited.
+                    </p>
+                    <p class="text-sm text-gray-600 mb-3">
+                        We actively moderate user submissions, enforce mandatory selfie verification, and immediately report any predatory or abusive behavior to law enforcement authorities.
+                    </p>
+                    <p class="text-sm">
+                        Please review our dedicated <a href="{{ route('child.safety') }}" class="text-rani-primary font-bold underline">Child Safety Standards Policy</a> for comprehensive details and reporting channels.
+                    </p>
+                </section>
+
+                <!-- 9. Grievance Officer & Contact Details -->
                 <section class="bg-gradient-to-br from-rani-primary to-rani-primary-dark text-white p-6 sm:p-8 rounded-2xl shadow-xl border border-rani-gold/30">
                     <h2 class="text-xl font-serif font-bold text-rani-gold mb-3 flex items-center gap-2">
-                        <span>🛡️</span> 8. Grievance Redressal & Contact Information
+                        <span>🛡️</span> 9. Grievance Redressal & Contact Information
                     </h2>
                     <p class="text-sm text-rani-gold-light/90 mb-4">
                         In compliance with the Information Technology Act 2000 and the Digital Personal Data Protection laws of India, any queries or grievances concerning personal data may be submitted to our designated officer:
