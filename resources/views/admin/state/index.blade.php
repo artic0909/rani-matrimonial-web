@@ -282,6 +282,25 @@
     document.addEventListener('DOMContentLoaded', () => {
         createModalInstance = new bootstrap.Modal(document.getElementById('createMasterModal'));
         editModalInstance = new bootstrap.Modal(document.getElementById('editMasterModal'));
+
+        // Auto-focus input when modal opens
+        const createModalEl = document.getElementById('createMasterModal');
+        createModalEl.addEventListener('shown.bs.modal', () => {
+            const nameInput = document.getElementById('create_name');
+            if (nameInput) {
+                nameInput.focus();
+                nameInput.select();
+            }
+        });
+
+        const editModalEl = document.getElementById('editMasterModal');
+        editModalEl.addEventListener('shown.bs.modal', () => {
+            const nameInput = document.getElementById('edit_name');
+            if (nameInput) {
+                nameInput.focus();
+                nameInput.select();
+            }
+        });
         
         // Select2 filter change listener
         $(document).on('change', '#filter-parent', function() {
@@ -528,7 +547,10 @@
             $('#create_parent_id').val(currentFilterParent).trigger('change');
         }
         createModalInstance.show();
-        setTimeout(() => document.getElementById('create_name').focus(), 300);
+        setTimeout(() => {
+            const input = document.getElementById('create_name');
+            if (input) input.focus();
+        }, 350);
     }
 
     function handleCreateSubmit(e) {
