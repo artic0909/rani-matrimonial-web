@@ -518,7 +518,8 @@
         form.reset();
         clearValidationErrors('create');
         if ($('#create_parent_id').length) {
-            $('#create_parent_id').val('').trigger('change');
+            const currentFilterParent = $('#filter-parent').length ? ($('#filter-parent').val() || '') : (state.parentId || '');
+            $('#create_parent_id').val(currentFilterParent).trigger('change');
         }
         createModalInstance.show();
         setTimeout(() => document.getElementById('create_name').focus(), 300);
