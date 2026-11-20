@@ -18,6 +18,7 @@ use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -711,6 +712,60 @@ class AdminController extends Controller
             'is_active' => (bool)$candidate->is_active,
             'message' => "Candidate profile for {$candidate->first_name} is now " . ($candidate->is_active ? 'Active (Publicly Visible)' : 'Deactivated (Hidden from Public)') . '.',
         ]);
+    }
+
+    /**
+     * Delete Candidate Account permanently along with photos and related data
+     */
+    public function destroyCandidate(Request $request, $id)
+    {
+        $candidate = Candidate::findOrFail($id);
+        $candidateName = trim(($candidate->first_name ?? '') . ' ' . ($candidate->last_name ?? ''));
+        $candidateCode = $candidate->candidate_code ?? ('RM' . str_pad($candidate->id, 5, '0', STR_PAD_LEFT));
+
+        DB::transaction(function () use ($candidate) {
+            // 1. Delete physical photo files from storage
+            if ($candidate->photos) {
+                foreach ($candidate->photos as $photo) {
+                    if ($photo->photo_path && Storage::disk('public')->exists($photo->photo_path)) {
+                        Storage::disk('public')->delete($photo->photo_path);
+                    }
+                }
+            }
+
+            if ($candidate->profile_picture && Storage::disk('public')->exists($candidate->profile_picture)) {
+                Storage::disk('public')->delete($candidate->profile_picture);
+            }
+
+            // 2. Delete Aadhaar verification files if any
+            if ($candidate->blueticks) {
+                foreach ($candidate->blueticks as $bt) {
+                    if ($bt->aadhar_photo_front && Storage::disk('public')->exists($bt->aadhar_photo_front)) {
+                        Storage::disk('public')->delete($bt->aadhar_photo_front);
+                    }
+                    if ($bt->aadhar_photo_back && Storage::disk('public')->exists($bt->aadhar_photo_back)) {
+                        Storage::disk('public')->delete($bt->aadhar_photo_back);
+                    }
+                }
+            }
+
+            // 3. Delete Sanctum API tokens
+            if (method_exists($candidate, 'tokens')) {
+                $candidate->tokens()->delete();
+            }
+
+            // 4. Delete candidate record (cascade removes related rows in DB)
+            $candidate->delete();
+        });
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Candidate {$candidateName} ({$candidateCode}) has been deleted permanently.",
+            ]);
+        }
+
+        return redirect()->route('admin.candidates.index')->with('success', "Candidate {$candidateName} ({$candidateCode}) has been deleted permanently.");
     }
 
     /**

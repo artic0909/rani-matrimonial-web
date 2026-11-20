@@ -21,6 +21,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/candidates', [AdminController::class, 'candidates'])->name('candidates.index');
         Route::get('/candidates/{id}', [AdminController::class, 'candidateDetails'])->name('candidates.show');
         Route::post('/candidates/{id}/toggle-status', [AdminController::class, 'toggleCandidateStatus'])->name('candidates.toggle-status');
+        Route::delete('/candidates/{id}', [AdminController::class, 'destroyCandidate'])->name('candidates.destroy');
         Route::get('/transactions', [AdminController::class, 'transactions'])->name('transactions.index');
         Route::get('/transactions/{id}/receipt', [AdminController::class, 'downloadTransactionReceipt'])->name('transactions.receipt');
 

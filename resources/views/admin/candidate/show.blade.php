@@ -55,6 +55,13 @@
                     <span>WhatsApp</span>
                 </a>
             @endif
+            <button type="button" 
+                    class="btn-custom btn-custom-danger btn-custom-sm shadow-xs" 
+                    onclick="confirmDeleteCandidate({{ $candidate->id }}, '{{ addslashes($candidate->first_name . ' ' . $candidate->last_name) }}', '{{ $candidate->candidate_code ?? $candidate->profile_id }}')" 
+                    title="Delete Candidate Account Permanently">
+                <i class="bi bi-trash"></i>
+                <span>Delete Candidate</span>
+            </button>
             <a href="{{ route('admin.candidates.index') }}" class="btn-custom btn-custom-light btn-custom-sm">
                 <i class="bi bi-arrow-left"></i>
                 <span>Candidates List</span>
@@ -1911,6 +1918,69 @@
                 icon: 'error',
                 title: 'Error',
                 text: 'An unexpected error occurred while processing rejection.'
+            });
+        });
+    }
+
+    // Permanently Delete Candidate
+    function confirmDeleteCandidate(id, name, code) {
+        Swal.fire({
+            title: 'Delete Candidate?',
+            html: `Are you sure you want to permanently delete candidate <strong>${name} (${code})</strong>?<br><br><span class="text-danger small">Warning: This will permanently delete the candidate's profile, photos, wallet, and all related account activity. This action cannot be undone!</span>`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '<i class="bi bi-trash-fill me-1"></i> Yes, Delete Permanently',
+            confirmButtonColor: '#dc3545',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true,
+            focusCancel: true
+        }).then((res) => {
+            if (!res.isConfirmed) return;
+
+            Swal.fire({
+                title: 'Deleting Candidate...',
+                text: 'Please wait while profile data is being purged.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            fetch(`{{ url('/admin/candidates') }}/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Candidate Deleted!',
+                        text: data.message,
+                        timer: 1800,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = "{{ route('admin.candidates.index') }}";
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Delete Failed',
+                        text: data.message || 'Error deleting candidate'
+                    });
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Could not delete candidate. Please try again.'
+                });
             });
         });
     }
