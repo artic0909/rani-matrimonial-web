@@ -557,7 +557,6 @@ class AdminController extends Controller
                   ->orWhere('last_name', 'LIKE', "%{$search}%")
                   ->orWhere('email', 'LIKE', "%{$search}%")
                   ->orWhere('mobile', 'LIKE', "%{$search}%")
-                  ->orWhere('phone', 'LIKE', "%{$search}%")
                   ->orWhere('candidate_code', 'LIKE', "%{$search}%")
                   ->orWhere('profile_id', 'LIKE', "%{$search}%")
                   ->orWhere('city', 'LIKE', "%{$search}%");
@@ -1497,7 +1496,7 @@ class AdminController extends Controller
                             ->orWhere('last_name', 'like', "%{$search}%")
                             ->orWhere('profile_id', 'like', "%{$search}%")
                             ->orWhere('candidate_code', 'like', "%{$search}%")
-                            ->orWhere('phone', 'like', "%{$search}%");
+                            ->orWhere('mobile', 'like', "%{$search}%");
                     });
             });
         }
