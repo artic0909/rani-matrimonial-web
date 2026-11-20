@@ -62,35 +62,37 @@ class Wallet extends Model
                 'payment_method' => $paymentMethod,
             ]);
 
-            // Check and update first wallet recharge for candidate referral
-            $referral = Referral::where('candidate_id', $this->candidate_id)
-                ->whereNull('first_amount_add_date')
-                ->first();
+            // Check and update first wallet recharge for candidate referral (only for actual payments, not free coupons)
+            if (!in_array($category, ['Coupon', 'Bonus'])) {
+                $referral = Referral::where('candidate_id', $this->candidate_id)
+                    ->whereNull('first_amount_add_date')
+                    ->first();
 
-            if ($referral) {
-                $referral->update([
-                    'first_wallet_recharge_amount' => $amount,
-                    'first_amount_add_date' => now(),
-                ]);
-            }
-
-            // Check and update first wallet recharge for Ground Partner (GP) referral
-            $gpReferral = GpReferral::where('candidate_id', $this->candidate_id)
-                ->where('payment_status', 'pending')
-                ->first();
-
-            if ($gpReferral) {
-                $extractedPayId = null;
-                if (!empty($description) && preg_match('/Payment ID:\s*([a-zA-Z0-9_]+)/i', $description, $m)) {
-                    $extractedPayId = $m[1];
+                if ($referral) {
+                    $referral->update([
+                        'first_wallet_recharge_amount' => $amount,
+                        'first_amount_add_date' => now(),
+                    ]);
                 }
 
-                $gpReferral->update([
-                    'payment_id' => $extractedPayId ?: $transaction->transaction_id,
-                    'amount' => $amount,
-                    'payment_status' => 'paid',
-                    'payment_date' => now(),
-                ]);
+                // Check and update first wallet recharge for Ground Partner (GP) referral
+                $gpReferral = GpReferral::where('candidate_id', $this->candidate_id)
+                    ->where('payment_status', 'pending')
+                    ->first();
+
+                if ($gpReferral) {
+                    $extractedPayId = null;
+                    if (!empty($description) && preg_match('/Payment ID:\s*([a-zA-Z0-9_]+)/i', $description, $m)) {
+                        $extractedPayId = $m[1];
+                    }
+
+                    $gpReferral->update([
+                        'payment_id' => $extractedPayId ?: $transaction->transaction_id,
+                        'amount' => $amount,
+                        'payment_status' => 'paid',
+                        'payment_date' => now(),
+                    ]);
+                }
             }
 
             return $transaction;

@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Admin\MasterDataController;
 use App\Http\Controllers\Admin\ExecutivePartnerController;
 use App\Http\Controllers\Admin\GroundPartnerController;
+use App\Http\Controllers\Admin\CouponController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -44,6 +45,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Shorthand redirect aliases for /admin/ep and /admin/gp
         Route::redirect('/ep', '/admin/executive-partners');
         Route::redirect('/gp', '/admin/ground-partners');
+
+        // Coupons Management
+        Route::get('/coupons', [CouponController::class, 'index'])->name('coupons.index');
+        Route::post('/coupons', [CouponController::class, 'store'])->name('coupons.store');
+        Route::put('/coupons/{id}', [CouponController::class, 'update'])->name('coupons.update');
+        Route::post('/coupons/{id}/toggle-status', [CouponController::class, 'toggleStatus'])->name('coupons.toggle-status');
+        Route::delete('/coupons/{id}', [CouponController::class, 'destroy'])->name('coupons.destroy');
+        Route::get('/coupons/{id}/usages', [CouponController::class, 'usages'])->name('coupons.usages');
         Route::get('/blueticks', [AdminController::class, 'bluetickRequests'])->name('blueticks');
         Route::post('/bluetick/{id}/approve', [AdminController::class, 'approveBluetick'])->name('bluetick.approve');
         Route::post('/bluetick/{id}/reject', [AdminController::class, 'rejectBluetick'])->name('bluetick.reject');

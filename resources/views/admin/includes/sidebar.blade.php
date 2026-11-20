@@ -33,6 +33,12 @@
             <span>Transactions</span>
           </a>
         </li>
+        <li class="sidebar-menu-item">
+          <a href="{{ route('admin.coupons.index') }}" class="sidebar-menu-link {{ request()->routeIs('admin.coupons*') ? 'active' : '' }}" id="menu-coupons" title="Coupons">
+            <i class="bi bi-ticket-perforated-fill text-success"></i>
+            <span>Coupons</span>
+          </a>
+        </li>
 
         <li class="sidebar-menu-item">
           <a href="{{ route('admin.executive-partners.index') }}" class="sidebar-menu-link {{ request()->routeIs('admin.executive-partners*') ? 'active' : '' }}" id="menu-executive-partners" title="Executive Partners (EP)">

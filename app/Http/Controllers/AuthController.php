@@ -16,6 +16,7 @@ use App\Models\MaritalStatus;
 use App\Models\Notification;
 use App\Models\GroundPartner;
 use App\Models\GpReferral;
+use App\Models\Coupon;
 use App\Models\Qualification;
 use App\Models\Referral;
 use App\Models\Religion;
@@ -635,6 +636,9 @@ class AuthController extends Controller
                 ]
             );
         }
+
+        // Auto-apply Active Welcome Coupon or Specified Code
+        Coupon::applyRegistrationCoupon($candidate, $request->input('coupon_code'));
 
         // Clear selfie & registration cache
         Cache::forget('selfie_verified_' . $mobile);
