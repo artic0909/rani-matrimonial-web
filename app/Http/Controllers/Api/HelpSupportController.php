@@ -7,6 +7,7 @@ use App\Mail\AdminNewHelpNotification;
 use App\Mail\AdminNewTicketNotification;
 use App\Mail\HelpInquiryUserConfirmation;
 use App\Mail\TicketCreatedCandidateNotification;
+use App\Models\Candidate;
 use App\Models\Help;
 use App\Models\Story;
 use App\Models\Ticket;
@@ -248,6 +249,68 @@ class HelpSupportController extends Controller
         return response()->json([
             'success' => true,
             'stories' => $stories,
+        ]);
+    }
+
+    /**
+     * In-App Profile & Child Safety Reporting Mechanism
+     * (Complies with Google Play Child Safety Standards Policy)
+     */
+    public function reportCandidate(Request $request)
+    {
+        $candidate = $request->user() ?? Auth::user();
+        if (!$candidate) {
+            return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
+        }
+
+        $validated = $request->validate([
+            'reported_candidate_id' => 'required',
+            'reason' => 'required|string|max:200',
+            'details' => 'nullable|string|max:3000',
+        ]);
+
+        $reported = Candidate::find($validated['reported_candidate_id']);
+        $reportedCode = $reported ? ($reported->candidate_code ?? 'ID: ' . $reported->id) : 'ID: ' . $validated['reported_candidate_id'];
+        $reportedName = $reported ? trim(($reported->first_name ?? '') . ' ' . ($reported->last_name ?? '')) : 'Unknown Candidate';
+
+        $isChildSafety = str_contains(strtolower($validated['reason']), 'child') ||
+                         str_contains(strtolower($validated['reason']), 'underage') ||
+                         str_contains(strtolower($validated['reason']), 'csae');
+
+        $priority = $isChildSafety ? 'urgent' : 'high';
+        $subject = ($isChildSafety ? '🚨 [URGENT CHILD SAFETY / CSAE] ' : '🚩 [PROFILE REPORT] ') . "Candidate {$reportedCode} ({$reportedName})";
+
+        $reporterName = trim(($candidate->first_name ?? '') . ' ' . ($candidate->last_name ?? ''));
+        $reporterCode = $candidate->candidate_code ?? ('RM' . str_pad($candidate->id, 5, '0', STR_PAD_LEFT));
+
+        $message = "=== IN-APP SAFETY & PROFILE REPORT ===\n\n"
+                 . "Reported Profile: {$reportedName} ({$reportedCode})\n"
+                 . "Reported Candidate ID: {$validated['reported_candidate_id']}\n"
+                 . "Reported By: {$reporterName} ({$reporterCode}, ID: {$candidate->id})\n"
+                 . "Category / Reason: {$validated['reason']}\n"
+                 . "Details: " . ($validated['details'] ?: 'No additional details provided.') . "\n\n"
+                 . "Platform: Android / iOS App (In-App Feedback & Safety Mechanism)\n"
+                 . "Timestamp: " . now()->toDateTimeString();
+
+        $ticket = Ticket::create([
+            'candidate_id' => $candidate->id,
+            'priority' => $priority,
+            'subject' => $subject,
+            'message' => $message,
+            'status' => 'open',
+        ]);
+
+        // Send alert email to Admin Safety Team
+        try {
+            Mail::to(self::ADMIN_EMAIL)->send(new AdminNewTicketNotification($ticket, $candidate));
+        } catch (\Exception $e) {
+            Log::error("Failed to send safety report alert email: " . $e->getMessage());
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Thank you for your report. Our Trust & Safety team has received your submission and will take immediate action.',
+            'ticket_id' => $ticket->id,
         ]);
     }
 }
