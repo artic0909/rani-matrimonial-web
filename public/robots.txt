@@ -1,2 +1,25 @@
 User-agent: *
-Disallow:
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /my-profile
+Disallow: /my-photos
+Disallow: /inbox
+Disallow: /wallet
+Disallow: /wallet/
+Disallow: /bluetick-verification
+Disallow: /support
+Disallow: /api/
+
+Allow: /
+Allow: /search
+Allow: /register
+Allow: /success-stories
+Allow: /about
+Allow: /help-center
+Allow: /contact-us
+Allow: /child-safety-standards
+Allow: /child-safety-policy
+Allow: /privacy-policy
+Allow: /terms-and-conditions
+
+Sitemap: https://ranimatrimonial.com/sitemap.xml
